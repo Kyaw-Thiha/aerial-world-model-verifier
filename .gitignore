@@ -1,2 +1,13 @@
 .env
-
+data/
+third_party/
+.pixi/
+__pycache__/
+*.pyc
+.pytest_cache/
+# large artifacts under results/ (keep json/yaml/png/md)
+results/**/*.npy
+results/**/*.npz
+results/**/*.mp4
+results/**/*.pt
+results/**/*.ckpt
