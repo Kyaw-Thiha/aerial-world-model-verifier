@@ -33,12 +33,18 @@ FLIGHTS = {
 
 image = (
     modal.Image.from_registry("nvidia/cuda:12.4.1-devel-ubuntu22.04", add_python="3.10")
-    .apt_install("git", "wget", "unzip", "build-essential", "libgl1", "libglib2.0-0")
-    .pip_install("torch==2.3.1", "torchvision==0.18.1",
+    .apt_install("git", "wget", "unzip", "build-essential", "clang", "libgl1", "libglib2.0-0")
+    .pip_install("wheel", "setuptools")
+    .pip_install("torch==2.3.0", "torchvision==0.18.0",
                  index_url="https://download.pytorch.org/whl/cu121")
-    .pip_install("torch-scatter", index_url="https://data.pyg.org/whl/torch-2.3.1+cu121.html")
+    # pyg serves a find-links page, not a simple index: --index-url returns "no versions"
+    .run_commands("pip install torch-scatter -f "
+                  "https://data.pyg.org/whl/torch-2.3.0+cu121.html")
     .pip_install("numpy==1.26.4", "pandas", "pyyaml", "opencv-python-headless", "einops", "pypose", "kornia",
                  "plyfile", "yacs", "evo", "tqdm", "numba", "matplotlib", "scipy")
+    # Modal builds images on CPU-only builders, so torch cannot detect a GPU arch and
+    # _get_cuda_arch_flags() raises IndexError; pin the arch the runs use (A10G = sm_86).
+    .env({"TORCH_CUDA_ARCH_LIST": "8.6"})
     .run_commands(
         f"git clone https://github.com/princeton-vl/DPVO {DPVO_ROOT}",
         f"cd {DPVO_ROOT} && git checkout {DPVO_COMMIT}",

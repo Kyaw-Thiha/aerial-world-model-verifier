@@ -1,0 +1,40 @@
+# Phase 1 (depicted tilt) resolved config. Values here are the ones the run id's
+# config.yaml was built from; edit here, not in the experiment defaults.
+dataset: tii
+video_root: data/raw/tii_video
+mocap_root: data/raw/tii
+frames_root: data/raw/tii_frames
+
+# virtual pinhole view (only used by the undistorted GeoCalib route and by DPVO)
+virtual_camera:
+  fov_deg: 100.0
+  out_size: [640, 480]
+  out_fps: 20.0          # frame stride 6 at the native 120 Hz
+
+# camera mount: analytic matrix at the per-flight recorded uptilt (see decisions [A])
+mount: analytic_uptilt
+
+# GeoCalib: primary route is the raw fisheye with its strong-distortion model
+geocalib:
+  input: raw_fisheye
+  camera_model: simple_divisional
+  weights: distorted
+  focal_prior: null
+  commit: 1dedb29f94fc11b896c5f572005978aeebccd67f
+  alternatives: [undistorted_pinhole_prior, undistorted_pinhole_free]
+
+# DPVO
+dpvo:
+  commit: 0ac95b656d1fda91c271d2a106460d19ad966fc7
+  in_fps: 20.0
+  fov_deg: 100.0
+
+# fusion
+fusion:
+  gains: [0.02, 0.05, 0.1, 0.2, 0.4, 1.0]
+  gain_selection: leave_one_flight_out
+
+# evaluation
+speed_bins_mps: [[0, 5], [5, 10], [10, 15], [15, 20], [20, 99]]
+min_lean_tilt_deg: 10.0
+splits: by_flight

@@ -1,0 +1,399 @@
+{
+  "run_id": "20261108T054543Z_3697b73",
+  "git": "3697b73",
+  "config": {
+    "tag": "prior_frames_6",
+    "geocalib_summary": {
+      "mode": "prior",
+      "device": "cuda",
+      "fov_deg": 100.0,
+      "stride": 4,
+      "gpu": "NVIDIA A10",
+      "geocalib_commit": "1dedb29f94fc11b896c5f572005978aeebccd67f",
+      "flights": {
+        "flight-01a-ellipse": {
+          "n": 6,
+          "seconds": 1.9042253494262695,
+          "fps": 3.150887578409646,
+          "peak_gpu_gb": 0.426471936,
+          "virtual_valid_frac": 0.458544921875
+        },
+        "flight-04a-ellipse": {
+          "n": 6,
+          "seconds": 0.9661777019500732,
+          "fps": 6.210037747600645,
+          "peak_gpu_gb": 0.425764352,
+          "virtual_valid_frac": 0.458544921875
+        },
+        "flight-07a-lemniscate": {
+          "n": 6,
+          "seconds": 0.8489277362823486,
+          "fps": 7.067739388838196,
+          "peak_gpu_gb": 0.425764352,
+          "virtual_valid_frac": 0.458544921875
+        },
+        "flight-13a-trackRATM": {
+          "n": 6,
+          "seconds": 0.9719257354736328,
+          "fps": 6.1733111708129815,
+          "peak_gpu_gb": 0.425764352,
+          "virtual_valid_frac": 0.46783203125
+        },
+        "flight-01p-ellipse": {
+          "n": 6,
+          "seconds": 1.017864465713501,
+          "fps": 5.8946944334029086,
+          "peak_gpu_gb": 0.425764352,
+          "virtual_valid_frac": 0.458544921875
+        },
+        "flight-07p-lemniscate": {
+          "n": 6,
+          "seconds": 0.9864556789398193,
+          "fps": 6.082381730974902,
+          "peak_gpu_gb": 0.425764352,
+          "virtual_valid_frac": 0.458544921875
+        },
+        "flight-13p-trackRATM": {
+          "n": 6,
+          "seconds": 1.0200386047363281,
+          "fps": 5.882130315598156,
+          "peak_gpu_gb": 0.425764352,
+          "virtual_valid_frac": 0.46973307291666666
+        },
+        "flight-16p-trackRATM": {
+          "n": 6,
+          "seconds": 0.8434877395629883,
+          "fps": 7.113322125000424,
+          "peak_gpu_gb": 0.425764352,
+          "virtual_valid_frac": 0.46973307291666666
+        }
+      }
+    },
+    "speed_bins": [
+      [
+        0,
+        5
+      ],
+      [
+        5,
+        10
+      ],
+      [
+        10,
+        15
+      ],
+      [
+        15,
+        20
+      ],
+      [
+        20,
+        99
+      ]
+    ],
+    "offset_policy": "one constant rotation per flight, reported not applied by default",
+    "mount": "analytic R_cb at the recorded per-flight uptilt"
+  },
+  "flights": {
+    "flight-01a-ellipse": {
+      "control": "autonomous",
+      "track": "ellipse",
+      "uptilt_metadata_deg": 50.0,
+      "exposure": "auto",
+      "diagnostics": {
+        "fx_fy_ratio": 0.748935494687858,
+        "corners_representable": false,
+        "theta_at_peak_deg": 56.36766971278199
+      },
+      "true_tilt_deg": {
+        "median": 7.413851445107561,
+        "p90": 48.22034243580585
+      },
+      "raw": {
+        "n": 6,
+        "rmse_deg": 36.71021066524466,
+        "median_deg": 24.809275318482264,
+        "p90_deg": 48.87950441034377,
+        "by_speed": {}
+      },
+      "with_constant_offset": {
+        "n": 6,
+        "rmse_deg": 57.56125334654889,
+        "median_deg": 50.94431227255061,
+        "p90_deg": 75.16317424147866,
+        "by_speed": {}
+      },
+      "offset_rotvec_deg": [
+        -26.322629331540345,
+        0.0028529921585408466,
+        -0.12420431288134141
+      ],
+      "offset_angle_deg": 26.322922515871422
+    },
+    "flight-01p-ellipse": {
+      "control": "piloted",
+      "track": "ellipse",
+      "uptilt_metadata_deg": 30.0,
+      "exposure": "auto",
+      "diagnostics": {
+        "fx_fy_ratio": 0.748935494687858,
+        "corners_representable": false,
+        "theta_at_peak_deg": 56.36766971278199
+      },
+      "true_tilt_deg": {
+        "median": 23.399181698457078,
+        "p90": 26.41980935460461
+      },
+      "raw": {
+        "n": 6,
+        "rmse_deg": 9.846956737265243,
+        "median_deg": 4.958309204953733,
+        "p90_deg": 14.043345554323405,
+        "by_speed": {}
+      },
+      "with_constant_offset": {
+        "n": 6,
+        "rmse_deg": 15.7972980729495,
+        "median_deg": 12.059085169227785,
+        "p90_deg": 21.13898511634739,
+        "by_speed": {}
+      },
+      "offset_rotvec_deg": [
+        -7.11233150634444,
+        -0.6546500102315426,
+        -0.1976837548727718
+      ],
+      "offset_angle_deg": 7.145131556449925
+    },
+    "flight-04a-ellipse": {
+      "control": "autonomous",
+      "track": "ellipse",
+      "uptilt_metadata_deg": 50.0,
+      "exposure": "fixed",
+      "diagnostics": {
+        "fx_fy_ratio": 0.748935494687858,
+        "corners_representable": false,
+        "theta_at_peak_deg": 56.36766971278199
+      },
+      "true_tilt_deg": {
+        "median": 1.1575098507564383,
+        "p90": 52.65506567834474
+      },
+      "raw": {
+        "n": 6,
+        "rmse_deg": 17.079976788100385,
+        "median_deg": 18.016774731690106,
+        "p90_deg": 22.410971024676762,
+        "by_speed": {}
+      },
+      "with_constant_offset": {
+        "n": 6,
+        "rmse_deg": 25.607045992578836,
+        "median_deg": 25.55332352042317,
+        "p90_deg": 33.83784195949839,
+        "by_speed": {}
+      },
+      "offset_rotvec_deg": [
+        -11.33947450426326,
+        -0.9414566505653855,
+        -1.4757542883875656
+      ],
+      "offset_angle_deg": 11.473790715252939
+    },
+    "flight-07a-lemniscate": {
+      "control": "autonomous",
+      "track": "lemniscate",
+      "uptilt_metadata_deg": 40.0,
+      "exposure": "auto",
+      "diagnostics": {
+        "fx_fy_ratio": 0.748935494687858,
+        "corners_representable": false,
+        "theta_at_peak_deg": 56.36766971278199
+      },
+      "true_tilt_deg": {
+        "median": 2.9203958881936414,
+        "p90": 35.92792874353639
+      },
+      "raw": {
+        "n": 6,
+        "rmse_deg": 41.37966027688206,
+        "median_deg": 28.4938460279121,
+        "p90_deg": 56.21460767625939,
+        "by_speed": {
+          "0-5": {
+            "n": 5,
+            "median_deg": 28.274790041875814,
+            "rmse_deg": 25.65025402436771
+          }
+        }
+      },
+      "with_constant_offset": {
+        "n": 6,
+        "rmse_deg": 60.14859112682893,
+        "median_deg": 52.12054047432042,
+        "p90_deg": 75.3755183107908,
+        "by_speed": {
+          "0-5": {
+            "n": 5,
+            "median_deg": 51.803418613208414,
+            "rmse_deg": 49.07467317777444
+          }
+        }
+      },
+      "offset_rotvec_deg": [
+        -22.400561101394267,
+        5.6142058729431215,
+        11.410491130759494
+      ],
+      "offset_angle_deg": 25.758566596109887
+    },
+    "flight-07p-lemniscate": {
+      "control": "piloted",
+      "track": "lemniscate",
+      "uptilt_metadata_deg": 30.0,
+      "exposure": "auto",
+      "diagnostics": {
+        "fx_fy_ratio": 0.748935494687858,
+        "corners_representable": false,
+        "theta_at_peak_deg": 56.36766971278199
+      },
+      "true_tilt_deg": {
+        "median": 24.31027992792582,
+        "p90": 28.114311550569802
+      },
+      "raw": {
+        "n": 6,
+        "rmse_deg": 9.783778163113787,
+        "median_deg": 3.105408605903696,
+        "p90_deg": 14.031152696093878,
+        "by_speed": {}
+      },
+      "with_constant_offset": {
+        "n": 6,
+        "rmse_deg": 14.168708987797377,
+        "median_deg": 8.877289341657669,
+        "p90_deg": 19.236643631488857,
+        "by_speed": {}
+      },
+      "offset_rotvec_deg": [
+        -6.031819272796549,
+        0.3903468338213586,
+        -0.06063021479643884
+      ],
+      "offset_angle_deg": 6.044740723414075
+    },
+    "flight-13a-trackRATM": {
+      "control": "autonomous",
+      "track": "trackRATM",
+      "uptilt_metadata_deg": 50.0,
+      "exposure": "auto",
+      "diagnostics": {
+        "fx_fy_ratio": 0.7481683673932702,
+        "corners_representable": false,
+        "theta_at_peak_deg": 61.12998927905511
+      },
+      "true_tilt_deg": {
+        "median": 2.741673625881452,
+        "p90": 84.88978998503066
+      },
+      "raw": {
+        "n": 6,
+        "rmse_deg": 56.274003546385764,
+        "median_deg": 29.79324845681889,
+        "p90_deg": 88.8641394174386,
+        "by_speed": {}
+      },
+      "with_constant_offset": {
+        "n": 6,
+        "rmse_deg": 68.1787657001764,
+        "median_deg": 52.18531030729031,
+        "p90_deg": 92.79280041350184,
+        "by_speed": {}
+      },
+      "offset_rotvec_deg": [
+        -21.24062011838731,
+        -3.806532112529489,
+        -12.380819285536946
+      ],
+      "offset_angle_deg": 24.878470932082653
+    },
+    "flight-13p-trackRATM": {
+      "control": "piloted",
+      "track": "trackRATM",
+      "uptilt_metadata_deg": 50.0,
+      "exposure": "auto",
+      "diagnostics": {
+        "fx_fy_ratio": 0.7501379460290665,
+        "corners_representable": false,
+        "theta_at_peak_deg": 61.594538284669696
+      },
+      "true_tilt_deg": {
+        "median": 89.8441035350958,
+        "p90": 108.52993181819343
+      },
+      "raw": {
+        "n": 6,
+        "rmse_deg": 64.6430499748335,
+        "median_deg": 63.52897475608099,
+        "p90_deg": 90.69945281609958,
+        "by_speed": {}
+      },
+      "with_constant_offset": {
+        "n": 6,
+        "rmse_deg": 101.43858124976741,
+        "median_deg": 106.7994400103025,
+        "p90_deg": 132.228521810848,
+        "by_speed": {}
+      },
+      "offset_rotvec_deg": [
+        36.488226225394754,
+        -4.7624194421781665,
+        34.110783266490216
+      ],
+      "offset_angle_deg": 50.17585900682011
+    },
+    "flight-16p-trackRATM": {
+      "control": "piloted",
+      "track": "trackRATM",
+      "uptilt_metadata_deg": 50.0,
+      "exposure": "fixed",
+      "diagnostics": {
+        "fx_fy_ratio": 0.7501379460290665,
+        "corners_representable": false,
+        "theta_at_peak_deg": 61.594538284669696
+      },
+      "true_tilt_deg": {
+        "median": 59.45913078504513,
+        "p90": 73.19193661356593
+      },
+      "raw": {
+        "n": 6,
+        "rmse_deg": 10.451507493293896,
+        "median_deg": 7.262288708317019,
+        "p90_deg": 14.666987305578651,
+        "by_speed": {}
+      },
+      "with_constant_offset": {
+        "n": 6,
+        "rmse_deg": 11.094270746226233,
+        "median_deg": 8.937278581123834,
+        "p90_deg": 15.053717479388244,
+        "by_speed": {}
+      },
+      "offset_rotvec_deg": [
+        1.6641041058493873,
+        0.11902093888039729,
+        1.8837846212702742
+      ],
+      "offset_angle_deg": 2.51635708084746
+    }
+  },
+  "pooled": {
+    "n_flights": 8,
+    "mean_of_flight_rmse_deg": 30.77114295563991,
+    "median_flight_rmse_deg": 26.89509372667252,
+    "mean_of_flight_rmse_with_offset_deg": 44.2493144028592,
+    "gate_1a_target_deg": 5.0,
+    "gate_1a_pass": false
+  }
+}

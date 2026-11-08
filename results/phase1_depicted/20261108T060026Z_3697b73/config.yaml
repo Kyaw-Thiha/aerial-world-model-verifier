@@ -1,0 +1,15 @@
+tag: div10
+geocalib_summary: not yet written
+speed_bins:
+- - 0
+  - 5
+- - 5
+  - 10
+- - 10
+  - 15
+- - 15
+  - 20
+- - 20
+  - 99
+offset_policy: one constant rotation per flight, reported not applied by default
+mount: analytic R_cb at the recorded per-flight uptilt

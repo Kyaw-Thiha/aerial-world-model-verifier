@@ -49,6 +49,7 @@ def run(mode: str = "prior", per_flight: int = 16, stride: int = 4,
         fov: float = 100.0, source: str = "frames", run_tag: str = "",
         flights: list[str] | None = None) -> dict:
     import json
+    import shutil
     import time
     import zipfile
     from pathlib import Path
@@ -77,28 +78,35 @@ def run(mode: str = "prior", per_flight: int = 16, stride: int = 4,
         vc = U.virtual_camera(cal["K"], cal["dist"], (640, 480), fov_deg=fov)
         rows = []
 
-        if source == "frames":
-            fdir = Path(VOLUME_MOUNT) / "tii_frames" / flight
-            names = sorted(fdir.glob("*.jpg"))
-            step = max(1, len(names) // per_flight) if per_flight else 1
-            items = [(p.name, cv2.imread(str(p))) for p in names[::step]]
-        else:  # stream the zip itself
-            zp = Path(VOLUME_MOUNT) / "tii_video" / control / f"camera_{flight}.zip"
-            with zipfile.ZipFile(zp) as z:
-                names = sorted(n for n in z.namelist() if n.lower().endswith(".jpg"))
-                step = stride if per_flight == 0 else max(1, len(names) // per_flight)
-                items = []
-                for n in names[::step]:
-                    buf = np.frombuffer(z.read(n), dtype=np.uint8)
-                    items.append((Path(n).name, cv2.imdecode(buf, cv2.IMREAD_COLOR)))
+        def items():
+            if source == "frames":
+                fdir = Path(VOLUME_MOUNT) / "tii_frames" / flight
+                names = sorted(fdir.glob("*.jpg"))
+                step = max(1, len(names) // per_flight) if per_flight else 1
+                for p in names[::step]:
+                    yield p.name, cv2.imread(str(p))
+            else:  # copy the zip to local disk first: random reads inside a large file
+                # on the Volume mount cost ~10x more than one sequential copy
+                zp = Path(VOLUME_MOUNT) / "tii_video" / control / f"camera_{flight}.zip"
+                local = Path("/tmp") / zp.name
+                if not local.exists():
+                    shutil.copyfile(zp, local)
+                with zipfile.ZipFile(local) as z:
+                    names = sorted(n for n in z.namelist() if n.lower().endswith(".jpg"))
+                    step = stride if per_flight == 0 else max(1, len(names) // per_flight)
+                    for n in names[::step]:
+                        buf = np.frombuffer(z.read(n), dtype=np.uint8)
+                        yield Path(n).name, cv2.imdecode(buf, cv2.IMREAD_COLOR)
 
         t0 = time.time()
-        for name, img in items:
+        for name, img in items():
             if img is None:
                 continue
             if mode in ("undistorted", "free", "prior"):
                 x = U.undistort(img, vc)
-                priors = {"focal": torch.tensor([vc.K[0, 0], vc.K[1, 1]], device=device)} \
+                # scalar focal prior: GeoCalib stacks it with per-image scalars, so a
+                # length-2 tensor breaks get_trivial_estimation
+                priors = {"focal": torch.tensor(float(vc.K[0, 0]), device=device)} \
                     if mode == "prior" else None
                 cm = "pinhole"
             else:  # divisional on the raw fisheye
@@ -119,6 +127,7 @@ def run(mode: str = "prior", per_flight: int = 16, stride: int = 4,
         dt = time.time() - t0
         peak = torch.cuda.max_memory_allocated() / 1e9 if device == "cuda" else 0.0
         (out_dir / f"{flight}.jsonl").write_text("\n".join(json.dumps(r) for r in rows))
+        volume.commit()
         info["flights"][flight] = {"n": len(rows), "seconds": dt,
                                    "fps": len(rows) / dt if dt else 0.0,
                                    "peak_gpu_gb": peak, "virtual_valid_frac": vc.valid_fraction}
@@ -131,9 +140,70 @@ def run(mode: str = "prior", per_flight: int = 16, stride: int = 4,
     return info
 
 
+@app.function(image=image, gpu="A10G", volumes={VOLUME_MOUNT: volume}, timeout=1800)
+def probe(flights: list[str], angles: list[float], per_flight: int = 3,
+          fov: float = 100.0, run_tag: str = "probe") -> dict:
+    """Synthetic-rotation probe: does the recovered gravity rotate with the view?
+
+    For each frame the virtual camera is tilted by ``R_rot = Rx(theta)`` and the
+    estimator is run again. A consistent pipeline gives
+    ``up_est(theta) == R_rot @ up_est(0)``; comparing that to the mocap truth
+    separates "the estimator is biased on this scene" from "the geometry is wrong".
+    """
+    import json
+    from pathlib import Path
+
+    import cv2
+    import numpy as np
+    import torch
+    from scipy.spatial.transform import Rotation
+    from geocalib import GeoCalib
+
+    from src.datasets.tii_video import flight_parts, load_calibration
+    from src.perception import undistort as U
+
+    model = GeoCalib(weights="pinhole").to("cuda")
+    out_dir = Path(VOLUME_MOUNT) / "geocalib" / run_tag
+    out_dir.mkdir(parents=True, exist_ok=True)
+    rows = []
+    for flight in flights:
+        control, track = flight_parts(flight)
+        cal = load_calibration(Path(VOLUME_MOUNT) / "tii_video" / "calibration", control, track)
+        fdir = Path(VOLUME_MOUNT) / "tii_frames" / flight
+        names = sorted(fdir.glob("*.jpg"))
+        step = max(1, len(names) // per_flight)
+        for p in names[::step][:per_flight]:
+            img = cv2.imread(str(p))
+            for th in angles:
+                R_rot = Rotation.from_euler("x", th, degrees=True).as_matrix()
+                vc = U.virtual_camera(cal["K"], cal["dist"], (640, 480), fov_deg=fov, R_rot=R_rot)
+                x = U.undistort(img, vc)
+                feed = torch.from_numpy(cv2.cvtColor(x, cv2.COLOR_BGR2RGB)).permute(2, 0, 1)
+                feed = feed.float().to("cuda") / 255.0
+                with torch.no_grad():
+                    res = model.calibrate(feed, camera_model="pinhole",
+                                          priors={"focal": torch.tensor(float(vc.K[0, 0]),
+                                                                        device="cuda")})
+                g = res["gravity"].vec3d.detach().cpu().numpy().ravel()
+                rows.append({"flight": flight, "frame": p.name, "angle_deg": th,
+                             "up_cam": [float(v) for v in g],
+                             "valid_fraction": vc.valid_fraction})
+        print(f"{flight}: probed {per_flight} frames x {len(angles)} angles", flush=True)
+    (out_dir / "probe.jsonl").write_text("\n".join(json.dumps(r) for r in rows))
+    volume.commit()
+    return {"rows": len(rows), "path": str(out_dir / "probe.jsonl")}
+
+
 @app.local_entrypoint()
 def main(mode: str = "prior", per_flight: int = 16, stride: int = 4, fov: float = 100.0,
-         source: str = "frames", run_tag: str = ""):
+         source: str = "frames", run_tag: str = "", probe_flights: str = "",
+         probe_angles: str = "-20,0,20", flights: str = ""):
     import json
 
-    print(json.dumps(run.remote(mode, per_flight, stride, fov, source, run_tag), indent=2))
+    if probe_flights:
+        print(json.dumps(probe.remote(probe_flights.split(","),
+                                      [float(a) for a in probe_angles.split(",")],
+                                      per_flight, fov), indent=2))
+        return
+    fl = [f for f in flights.split(",") if f] or None
+    print(json.dumps(run.remote(mode, per_flight, stride, fov, source, run_tag, fl), indent=2))

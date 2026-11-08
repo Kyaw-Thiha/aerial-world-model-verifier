@@ -113,15 +113,18 @@ def main() -> int:
         z_true = np.einsum("nij,j->ni", R_bw_true, np.array([0.0, 0.0, 1.0]))
         speed = np.linalg.norm(np.gradient(clip.pos, clip.t, axis=0)[idx], axis=1)
 
-        rel = relative_rotations(R_vo)
         gal = gravity_align(R_vo, up_cam)
+        # run the filter in the gravity-aligned frame, otherwise its correction
+        # target (world up) is e3 in a frame where up is not e3
+        R_al = np.einsum("ij,njk->nik", gal["R_align"], R_vo)
+        rel = relative_rotations(R_al)
         rec = {"n": int(len(keep)), "gravity_align": {k: (v.tolist() if isinstance(v, np.ndarray)
                                                           else v) for k, v in gal.items()},
                "uptilt_metadata_deg": clip.cam_uptilt_deg,
                "true_tilt_deg_median": float(np.median(tilt_of(z_true))),
                "gains": {}}
         for g in GAINS:
-            res = complementary_filter(rel, up_cam, gain=g, R_align=gal["R_align"])
+            res = complementary_filter(rel, up_cam, gain=g)
             z_est = body_z_from_camera(res.R, R_cb)
             tilt_est, tilt_tru = tilt_of(z_est), tilt_of(z_true)
             err = tilt_est - tilt_tru

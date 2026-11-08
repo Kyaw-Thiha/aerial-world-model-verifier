@@ -81,6 +81,11 @@ def summarize(err: np.ndarray, speeds: np.ndarray) -> dict:
            "rmse_deg": float(np.sqrt(np.mean(err**2))) if len(err) else None,
            "median_deg": float(np.median(err)) if len(err) else None,
            "p90_deg": float(np.percentile(err, 90)) if len(err) else None,
+           "p99_deg": float(np.percentile(err, 99)) if len(err) else None,
+           "frac_over_10_deg": float(np.mean(err > 10.0)) if len(err) else None,
+           "frac_over_20_deg": float(np.mean(err > 20.0)) if len(err) else None,
+           "trimmed_rmse_deg": float(np.sqrt(np.mean(np.sort(err)[:max(1, int(0.9 * len(err)))] ** 2)))
+           if len(err) else None,
            "by_speed": {}}
     for lo, hi in SPEED_BINS:
         m = (speeds >= lo) & (speeds < hi)
@@ -92,7 +97,24 @@ def summarize(err: np.ndarray, speeds: np.ndarray) -> dict:
 
 
 def plots(out: Path, metrics: dict) -> None:
-    """Error vs speed (per flight and pooled) and a per-flight bar chart."""
+    """Error vs speed (per flight), per-flight bars, and the pooled speed curve."""
+    if "pooled_all_frames" in metrics:
+        pa = metrics["pooled_all_frames"]
+        if pa["by_speed"]:
+            fig, ax = plt.subplots(figsize=(6.4, 3.8))
+            keys = sorted(pa["by_speed"], key=lambda k: float(k.split("-")[0]))
+            xs = [0.5 * (float(k.split("-")[0]) + min(float(k.split("-")[1]), 24)) for k in keys]
+            ax.plot(xs, [pa["by_speed"][k]["median_deg"] for k in keys], "o-", label="median")
+            ax.plot(xs, [pa["by_speed"][k]["rmse_deg"] for k in keys], "s--", label="RMSE")
+            ax.axhline(5.0, color="k", ls="--", lw=1, label="Gate 1a target")
+            ax.set_xlabel("speed (m/s)")
+            ax.set_ylabel("depicted-tilt error (deg)")
+            ax.set_title(f"pooled over {pa['n']} frames")
+            ax.grid(alpha=0.3)
+            ax.legend(fontsize=8)
+            fig.tight_layout()
+            fig.savefig(out / "error_vs_speed_pooled.png", dpi=150)
+            plt.close(fig)
     fig, ax = plt.subplots(figsize=(7, 4.2))
     for flight, rec in metrics["flights"].items():
         bins = list(rec["raw"]["by_speed"].items())
@@ -135,19 +157,29 @@ def main() -> int:
     ap.add_argument("--video-root", default="data/raw/tii_video")
     ap.add_argument("--mocap-root", default="data/raw/tii")
     ap.add_argument("--flights", nargs="*", default=None)
+    ap.add_argument("--config", default="configs/phase1.yaml")
     args = ap.parse_args()
+    if args.config and Path(args.config).exists():
+        y = yaml.safe_load(Path(args.config).read_text()) or {}
+        for k in ("video_root", "mocap_root"):
+            if k in y and getattr(args, k) == ap.get_default(k):
+                setattr(args, k, y[k])
+        if "geocalib_root" in y:
+            pass
 
     run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ") + "_" + git_hash()
     out = Path("results/phase1_depicted") / run_id
     out.mkdir(parents=True, exist_ok=True)
     src = Path(args.geocalib_root) / args.tag
-    summary_in = json.loads((src / "summary.json").read_text())
+    summary_in = (json.loads((src / "summary.json").read_text())
+                  if (src / "summary.json").exists() else "not yet written")
     cfg = {"tag": args.tag, "geocalib_summary": summary_in, "speed_bins": SPEED_BINS,
            "offset_policy": "one constant rotation per flight, reported not applied by default",
            "mount": "analytic R_cb at the recorded per-flight uptilt"}
     (out / "config.yaml").write_text(yaml.safe_dump(cfg, sort_keys=False))
 
     metrics: dict = {"run_id": run_id, "git": git_hash(), "config": cfg, "flights": {}}
+    pooled_err, pooled_speed, pooled_group = [], [], []
     for jl in sorted(src.glob("*.jsonl")):
         flight = jl.stem
         control, track = flight_parts(flight)
@@ -157,7 +189,7 @@ def main() -> int:
         R_cb = F.camera_to_body_pitched(np.radians(clip.cam_uptilt_deg))
 
         rows = [json.loads(x) for x in jl.read_text().splitlines() if x.strip()]
-        est, tru, spd, tilt = [], [], [], []
+        est, tru, spd, tilt, fnames = [], [], [], [], []
         for r in rows:
             if r.get("gravity_up_cam") is None:
                 continue
@@ -168,6 +200,7 @@ def main() -> int:
             tru.append(u_t)
             spd.append(v)
             tilt.append(th)
+            fnames.append(r["frame"])
         if len(est) < 5:
             print(f"{flight}: only {len(est)} usable frames, skipped")
             continue
@@ -190,8 +223,12 @@ def main() -> int:
                "offset_rotvec_deg": [float(x) for x in rv],
                "offset_angle_deg": float(np.linalg.norm(rv))}
         metrics["flights"][flight] = rec
+        pooled_err.append(err)
+        pooled_speed.append(spd)
+        pooled_group.append([(control, track, rec["exposure"])] * len(err))
         np.savez_compressed(out / f"frames_{flight}.npz", est_up=est, true_up=tru,
-                            speed=spd, true_tilt=tilt, err_deg=err, err_deg_offset=err_off)
+                            speed=spd, true_tilt=tilt, err_deg=err, err_deg_offset=err_off,
+                            frame=np.array(fnames))
         print(f"{flight:24s} n={len(err):4d} rmse={rec['raw']['rmse_deg']:6.2f} "
               f"med={rec['raw']['median_deg']:6.2f} | offset {rec['offset_angle_deg']:5.2f} deg "
               f"-> rmse {rec['with_constant_offset']['rmse_deg']:6.2f}", flush=True)
@@ -209,6 +246,19 @@ def main() -> int:
             "gate_1a_pass": bool(np.median(allerr) < 5.0)}
         print("pooled:", json.dumps(metrics["pooled"], indent=2))
 
+    if pooled_err:
+        E = np.concatenate(pooled_err)
+        S = np.concatenate(pooled_speed)
+        G = [g for row in pooled_group for g in row]
+        metrics["pooled_all_frames"] = summarize(E, S)
+        for field, idx in (("control", 0), ("track", 1), ("exposure", 2)):
+            groups = sorted({g[idx] for g in G})
+            metrics[f"pooled_by_{field}"] = {
+                str(g): {"n": int(sum(1 for x in G if x[idx] == g)),
+                         "median_deg": float(np.median(E[[i for i, x in enumerate(G) if x[idx] == g]])),
+                         "rmse_deg": float(np.sqrt(np.mean(E[[i for i, x in enumerate(G)
+                                                              if x[idx] == g]] ** 2)))}
+                for g in groups if g is not None and sum(1 for x in G if x[idx] == g) >= 5}
     plots(out, metrics)
     (out / "metrics.json").write_text(json.dumps(metrics, indent=2, default=float))
     (out / "git.txt").write_text(git_hash() + "\n")

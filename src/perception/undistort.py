@@ -107,12 +107,15 @@ class VirtualCamera:
 def virtual_camera(K: np.ndarray, dist: np.ndarray, image_size: tuple[int, int],
                    fov_deg: float = DEFAULT_FOV_DEG,
                    out_size: tuple[int, int] | None = None,
-                   flip_vertical: bool = False) -> VirtualCamera:
+                   flip_vertical: bool = False,
+                   R_rot: np.ndarray | None = None) -> VirtualCamera:
     """Pinhole view of the fisheye with horizontal ``fov_deg`` and ``out_size``.
 
-    The virtual camera keeps the optical axis and the image centre of the source
-    (no rotation), so a ray at angle theta from the axis lands at the same
-    azimuth in both images.
+    By default the virtual camera keeps the optical axis and the image centre of
+    the source, so a ray at angle theta from the axis lands at the same azimuth in
+    both images. ``R_rot`` (3x3, source-frame -> virtual-frame) tilts the virtual
+    camera; it is what the synthetic-rotation probe uses to check, on real frames,
+    that an estimator's reported gravity moves by the injected amount.
     """
     w_src, h_src = image_size
     w_out, h_out = out_size or (w_src, h_src)
@@ -129,6 +132,12 @@ def virtual_camera(K: np.ndarray, dist: np.ndarray, image_size: tuple[int, int],
     y = (v - K_out[1, 2]) / f
     if flip_vertical:
         y = -y
+    if R_rot is not None:
+        R_rot = np.asarray(R_rot, dtype=np.float64)
+        ray = np.stack([x, y, np.ones_like(x)], axis=-1)          # virtual rays
+        ray = ray @ R_rot                                         # into the source frame
+        ray = ray / ray[..., 2:3]
+        x, y = ray[..., 0], ray[..., 1]
     r = np.hypot(x, y)
     theta = np.degrees(np.arctan(r))
 
