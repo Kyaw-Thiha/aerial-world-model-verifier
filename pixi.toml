@@ -19,6 +19,18 @@ python-dotenv = ">=1.0"
 boto3 = ">=1.34"
 modal = "*"
 
+# Track A perception stack. CPU-only on purpose: every real GPU job runs in a
+# `remote/` Modal image, so the local env only needs to import and test wrappers.
+# See docs/decisions.md [A] 2026-11-08.
+[feature.gpu.dependencies]
+opencv = "*"
+pytorch-cpu = "*"
+torchvision = "*"
+
+[environments]
+default = { solve-group = "default" }
+gpu = { features = ["gpu"], solve-group = "default" }
+
 [tasks]
 test = "pytest -q"
 fetch-tii = "python scripts/fetch_tii.py"

@@ -1,0 +1,17 @@
+fov_deg: 100.0
+window_s:
+- 0.3
+- 1.6
+max_frames: 10
+frames_root: data/raw/tii_frames
+flights:
+  autonomous:
+  - flight-01a-ellipse
+  - flight-04a-ellipse
+  - flight-07a-lemniscate
+  - flight-13a-trackRATM
+  piloted:
+  - flight-01p-ellipse
+  - flight-07p-lemniscate
+  - flight-13p-trackRATM
+  - flight-16p-trackRATM

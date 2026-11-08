@@ -1,0 +1,67 @@
+{
+  "run_id": "20261108T052437Z_838a001",
+  "git": "838a001",
+  "config": {
+    "fov_deg": 100.0,
+    "window_s": [
+      0.3,
+      1.6
+    ],
+    "max_frames": 10,
+    "frames_root": "data/raw/tii_frames",
+    "flights": {
+      "autonomous": [
+        "flight-01a-ellipse",
+        "flight-04a-ellipse",
+        "flight-07a-lemniscate",
+        "flight-13a-trackRATM"
+      ],
+      "piloted": [
+        "flight-01p-ellipse",
+        "flight-07p-lemniscate",
+        "flight-13p-trackRATM",
+        "flight-16p-trackRATM"
+      ]
+    }
+  },
+  "flights": {
+    "flight-01a-ellipse": {
+      "n_frames": 3,
+      "n_tracked": 226,
+      "baseline_m": 0.24372733026254687,
+      "window_s": [
+        0.486002,
+        1.444142
+      ],
+      "source_speed_mps": 0.24272609998005593,
+      "rms_json": 1.159849103803295,
+      "solved_json": {
+        "rms": 0.7487352830010502,
+        "delta_deg": 45.702868657777906,
+        "rotvec_delta": [
+          -0.06120504509041642,
+          0.4065243975571174,
+          0.6835657711336457
+        ]
+      },
+      "rms_jsonT": 2.3253617147926247,
+      "solved_jsonT": {
+        "rms": 0.9832157429035373,
+        "delta_deg": 172.45476771927042,
+        "rotvec_delta": [
+          -0.9530304347080781,
+          1.152207236746814,
+          2.6122156492809476
+        ]
+      },
+      "mount_offset_vs_json": {
+        "rotvec_deg": [
+          -3.5067907685887607,
+          23.292132249121224,
+          39.16543370556345
+        ],
+        "angle_deg": 45.702868657777906
+      }
+    }
+  }
+}

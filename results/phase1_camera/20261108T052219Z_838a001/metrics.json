@@ -1,0 +1,2372 @@
+{
+  "run_id": "20261108T052219Z_838a001",
+  "git": "838a001",
+  "config": {
+    "fov_deg": 100.0,
+    "out_size": [
+      640,
+      480
+    ],
+    "frames_per_flight": 4,
+    "video_root": "data/raw/tii_video",
+    "frames_root": "data/raw/tii_frames",
+    "mocap_root": "data/raw/tii",
+    "flights": [
+      "flight-01a-ellipse",
+      "flight-04a-ellipse",
+      "flight-07a-lemniscate",
+      "flight-13a-trackRATM",
+      "flight-01p-ellipse",
+      "flight-07p-lemniscate",
+      "flight-13p-trackRATM",
+      "flight-16p-trackRATM"
+    ],
+    "virtual_camera": "square pixels, same optical axis as source"
+  },
+  "flights": {
+    "flight-01a-ellipse": {
+      "diagnostics": {
+        "fx": 289.8846763939774,
+        "fy": 387.06227498911073,
+        "fx_fy_ratio": 0.748935494687858,
+        "principal_point": [
+          316.58338771731684,
+          241.86918974530997
+        ],
+        "image_size": [
+          640,
+          480
+        ],
+        "max_observed_rd": 1.2787523644809256,
+        "rd_peak": 0.9815093591000644,
+        "theta_at_peak_deg": 56.36766971278199,
+        "corners": {
+          "tl": {
+            "rd": 1.2582390350236903,
+            "theta_deg": null
+          },
+          "tr": {
+            "rd": 1.2787523644809256,
+            "theta_deg": null
+          },
+          "bl": {
+            "rd": 1.2534704060301332,
+            "theta_deg": null
+          },
+          "br": {
+            "rd": 1.2740605163027214,
+            "theta_deg": null
+          }
+        },
+        "corners_representable": false,
+        "diagonal_representable_deg": 112.73533942556398
+      },
+      "virtual_camera": {
+        "valid_fraction": 0.458544921875,
+        "max_source_theta_deg": 45.508548933409486,
+        "focal_px": 268.51188197672957
+      },
+      "uptilt_metadata_deg": 50.0,
+      "extrinsic_key": "ellipse",
+      "frames": [
+        {
+          "frame": "00000_1691756159816137.jpg",
+          "t_rel_s": 0.017047,
+          "speed_mps": 0.00647939844263558,
+          "straightness_raw": {
+            "n": 428,
+            "n_long": 138,
+            "max_len": 124.53035812263305,
+            "p95_len": 83.74890179013497
+          },
+          "straightness_undistorted": {
+            "n": 294,
+            "n_long": 57,
+            "max_len": 152.5190709854535,
+            "p95_len": 62.97393487749282
+          },
+          "overlay_json": {
+            "up_visible": 0.0,
+            "up_px": [
+              317.14598604893007,
+              -8.348468068962234
+            ],
+            "up_in_front": true,
+            "horizon_points_in_image": 0
+          },
+          "overlay_jsonT": {
+            "up_visible": 1.0,
+            "up_px": [
+              547.7753032288841,
+              256.17161725280573
+            ],
+            "up_in_front": true,
+            "horizon_points_in_image": 76
+          },
+          "vp_ransac": {
+            "vp_px": [
+              -0.0011828032555900275,
+              0.005303854929306217
+            ],
+            "inliers": 0,
+            "n_long": 57
+          },
+          "up_json_px": [
+            317.14598604893007,
+            -8.348468068962234
+          ],
+          "vp_minus_up_json_px": [
+            -317.14716885218564,
+            8.35377192389154
+          ],
+          "up_jsonT_px": [
+            547.7753032288841,
+            256.17161725280573
+          ],
+          "vp_minus_up_jsonT_px": [
+            -547.7764860321397,
+            -256.1663133978764
+          ]
+        },
+        {
+          "frame": "00689_1691756165551849.jpg",
+          "t_rel_s": 5.752759,
+          "speed_mps": 0.011601934722418205,
+          "straightness_raw": {
+            "n": 369,
+            "n_long": 133,
+            "max_len": 114.73182538455771,
+            "p95_len": 83.15939417459622
+          },
+          "straightness_undistorted": {
+            "n": 274,
+            "n_long": 60,
+            "max_len": 153.76921405722274,
+            "p95_len": 62.572147112619135
+          },
+          "overlay_json": {
+            "up_visible": 1.0,
+            "up_px": [
+              311.9028474542196,
+              10.649776895759175
+            ],
+            "up_in_front": true,
+            "horizon_points_in_image": 0
+          },
+          "overlay_jsonT": {
+            "up_visible": 1.0,
+            "up_px": [
+              554.8429766909475,
+              242.24538506186573
+            ],
+            "up_in_front": true,
+            "horizon_points_in_image": 122
+          },
+          "vp_ransac": {
+            "vp_px": [
+              -0.001629354507708526,
+              0.005660511948956854
+            ],
+            "inliers": 0,
+            "n_long": 60
+          },
+          "up_json_px": [
+            311.9028474542196,
+            10.649776895759175
+          ],
+          "vp_minus_up_json_px": [
+            -311.90447680872734,
+            -10.644116383810218
+          ],
+          "up_jsonT_px": [
+            554.8429766909475,
+            242.24538506186573
+          ],
+          "vp_minus_up_jsonT_px": [
+            -554.8446060454552,
+            -242.2397245499168
+          ]
+        },
+        {
+          "frame": "01378_1691756171293206.jpg",
+          "t_rel_s": 11.494116,
+          "speed_mps": 6.766800716583851,
+          "straightness_raw": {
+            "n": 244,
+            "n_long": 65,
+            "max_len": 116.2522443235627,
+            "p95_len": 89.30159562717196
+          },
+          "straightness_undistorted": {
+            "n": 201,
+            "n_long": 56,
+            "max_len": 172.14093365106885,
+            "p95_len": 80.20554907257436
+          },
+          "overlay_json": {
+            "up_visible": false,
+            "up_px": [
+              322.7779918100463,
+              -0.06037422545637128
+            ],
+            "up_in_front": false,
+            "horizon_points_in_image": 187
+          },
+          "overlay_jsonT": {
+            "up_visible": 0.0,
+            "up_px": [
+              521.322053333667,
+              1674.4556644449185
+            ],
+            "up_in_front": true,
+            "horizon_points_in_image": 199
+          },
+          "vp_ransac": {
+            "vp_px": [
+              0.0020982836755530183,
+              0.0011383070437423451
+            ],
+            "inliers": 0,
+            "n_long": 56
+          },
+          "up_json_px": [
+            322.7779918100463,
+            -0.06037422545637128
+          ],
+          "vp_minus_up_json_px": [
+            -322.77589352637074,
+            0.061512532500113626
+          ],
+          "up_jsonT_px": [
+            521.322053333667,
+            1674.4556644449185
+          ],
+          "vp_minus_up_jsonT_px": [
+            -521.3199550499914,
+            -1674.4545261378748
+          ]
+        },
+        {
+          "frame": "02067_1691756177034295.jpg",
+          "t_rel_s": 17.235205,
+          "speed_mps": 0.05343081027436215,
+          "straightness_raw": {
+            "n": 396,
+            "n_long": 139,
+            "max_len": 131.9001776526534,
+            "p95_len": 87.05764240671832
+          },
+          "straightness_undistorted": {
+            "n": 283,
+            "n_long": 60,
+            "max_len": 147.4274970448037,
+            "p95_len": 62.702248211446296
+          },
+          "overlay_json": {
+            "up_visible": 1.0,
+            "up_px": [
+              312.80893221495404,
+              10.195300851885094
+            ],
+            "up_in_front": true,
+            "horizon_points_in_image": 0
+          },
+          "overlay_jsonT": {
+            "up_visible": 1.0,
+            "up_px": [
+              553.61940624577,
+              242.5882701721779
+            ],
+            "up_in_front": true,
+            "horizon_points_in_image": 121
+          },
+          "vp_ransac": {
+            "vp_px": [
+              0.0006186053529666775,
+              0.002860364250125304
+            ],
+            "inliers": 0,
+            "n_long": 60
+          },
+          "up_json_px": [
+            312.80893221495404,
+            10.195300851885094
+          ],
+          "vp_minus_up_json_px": [
+            -312.8083136096011,
+            -10.192440487634968
+          ],
+          "up_jsonT_px": [
+            553.61940624577,
+            242.5882701721779
+          ],
+          "vp_minus_up_jsonT_px": [
+            -553.618787640417,
+            -242.58540980792776
+          ]
+        }
+      ],
+      "elevation_json": {
+        "median_deg": 49.553989907775794,
+        "p10_deg": -21.60296034932796,
+        "p90_deg": 50.95106325843264
+      },
+      "elevation_jsonT": {
+        "median_deg": 48.76213501625659,
+        "p10_deg": 17.307100501413757,
+        "p90_deg": 49.46233728676706
+      }
+    },
+    "flight-04a-ellipse": {
+      "diagnostics": {
+        "fx": 289.8846763939774,
+        "fy": 387.06227498911073,
+        "fx_fy_ratio": 0.748935494687858,
+        "principal_point": [
+          316.58338771731684,
+          241.86918974530997
+        ],
+        "image_size": [
+          640,
+          480
+        ],
+        "max_observed_rd": 1.2787523644809256,
+        "rd_peak": 0.9815093591000644,
+        "theta_at_peak_deg": 56.36766971278199,
+        "corners": {
+          "tl": {
+            "rd": 1.2582390350236903,
+            "theta_deg": null
+          },
+          "tr": {
+            "rd": 1.2787523644809256,
+            "theta_deg": null
+          },
+          "bl": {
+            "rd": 1.2534704060301332,
+            "theta_deg": null
+          },
+          "br": {
+            "rd": 1.2740605163027214,
+            "theta_deg": null
+          }
+        },
+        "corners_representable": false,
+        "diagonal_representable_deg": 112.73533942556398
+      },
+      "virtual_camera": {
+        "valid_fraction": 0.458544921875,
+        "max_source_theta_deg": 45.508548933409486,
+        "focal_px": 268.51188197672957
+      },
+      "uptilt_metadata_deg": 50.0,
+      "extrinsic_key": "ellipse",
+      "frames": [
+        {
+          "frame": "00000_1691758657114646.jpg",
+          "t_rel_s": 0.017825999999999998,
+          "speed_mps": 0.010462870971004895,
+          "straightness_raw": {
+            "n": 257,
+            "n_long": 88,
+            "max_len": 115.87301703862316,
+            "p95_len": 80.28523329758325
+          },
+          "straightness_undistorted": {
+            "n": 159,
+            "n_long": 51,
+            "max_len": 149.91199974126954,
+            "p95_len": 74.12010877326524
+          },
+          "overlay_json": {
+            "up_visible": 1.0,
+            "up_px": [
+              317.3470411201203,
+              18.958871235689458
+            ],
+            "up_in_front": true,
+            "horizon_points_in_image": 0
+          },
+          "overlay_jsonT": {
+            "up_visible": 1.0,
+            "up_px": [
+              547.6583709397798,
+              235.79669127802188
+            ],
+            "up_in_front": true,
+            "horizon_points_in_image": 116
+          },
+          "vp_ransac": {
+            "vp_px": [
+              0.00556864846229349,
+              0.001420973642563593
+            ],
+            "inliers": 0,
+            "n_long": 51
+          },
+          "up_json_px": [
+            317.3470411201203,
+            18.958871235689458
+          ],
+          "vp_minus_up_json_px": [
+            -317.341472471658,
+            -18.957450262046894
+          ],
+          "up_jsonT_px": [
+            547.6583709397798,
+            235.79669127802188
+          ],
+          "vp_minus_up_jsonT_px": [
+            -547.6528022913176,
+            -235.79527030437933
+          ]
+        },
+        {
+          "frame": "00892_1691758664549055.jpg",
+          "t_rel_s": 7.452235,
+          "speed_mps": 0.0013537769970534512,
+          "straightness_raw": {
+            "n": 241,
+            "n_long": 90,
+            "max_len": 107.70314592769006,
+            "p95_len": 87.80337795878849
+          },
+          "straightness_undistorted": {
+            "n": 176,
+            "n_long": 49,
+            "max_len": 163.7711650318918,
+            "p95_len": 71.8256846453828
+          },
+          "overlay_json": {
+            "up_visible": 1.0,
+            "up_px": [
+              313.0059716668966,
+              15.5292355320544
+            ],
+            "up_in_front": true,
+            "horizon_points_in_image": 0
+          },
+          "overlay_jsonT": {
+            "up_visible": 1.0,
+            "up_px": [
+              553.44100851789,
+              238.45662637068835
+            ],
+            "up_in_front": true,
+            "horizon_points_in_image": 122
+          },
+          "vp_ransac": {
+            "vp_px": [
+              1.321005301106692,
+              -0.8553489073286733
+            ],
+            "inliers": 1,
+            "n_long": 49
+          },
+          "up_json_px": [
+            313.0059716668966,
+            15.5292355320544
+          ],
+          "vp_minus_up_json_px": [
+            -311.6849663657899,
+            -16.384584439383072
+          ],
+          "up_jsonT_px": [
+            553.44100851789,
+            238.45662637068835
+          ],
+          "vp_minus_up_jsonT_px": [
+            -552.1200032167834,
+            -239.31197527801703
+          ]
+        },
+        {
+          "frame": "01784_1691758671982206.jpg",
+          "t_rel_s": 14.885385999999999,
+          "speed_mps": 6.990780176214855,
+          "straightness_raw": {
+            "n": 126,
+            "n_long": 48,
+            "max_len": 132.48778448909098,
+            "p95_len": 99.3749640118219
+          },
+          "straightness_undistorted": {
+            "n": 112,
+            "n_long": 43,
+            "max_len": 168.75997487807837,
+            "p95_len": 105.98077998774157
+          },
+          "overlay_json": {
+            "up_visible": false,
+            "up_px": [
+              393.1851459719312,
+              -1.7161388429551607
+            ],
+            "up_in_front": false,
+            "horizon_points_in_image": 197
+          },
+          "overlay_jsonT": {
+            "up_visible": 0.0,
+            "up_px": [
+              314.3837160989177,
+              823.9826337525856
+            ],
+            "up_in_front": true,
+            "horizon_points_in_image": 189
+          },
+          "vp_ransac": {
+            "vp_px": [
+              0.004371581887140609,
+              0.0017513188383527958
+            ],
+            "inliers": 0,
+            "n_long": 43
+          },
+          "up_json_px": [
+            393.1851459719312,
+            -1.7161388429551607
+          ],
+          "vp_minus_up_json_px": [
+            -393.18077439004406,
+            1.7178901617935136
+          ],
+          "up_jsonT_px": [
+            314.3837160989177,
+            823.9826337525856
+          ],
+          "vp_minus_up_jsonT_px": [
+            -314.3793445170306,
+            -823.9808824337472
+          ]
+        },
+        {
+          "frame": "02675_1691758679406651.jpg",
+          "t_rel_s": 22.309831,
+          "speed_mps": 0.2271922737287502,
+          "straightness_raw": {
+            "n": 236,
+            "n_long": 85,
+            "max_len": 122.5080611224854,
+            "p95_len": 94.08846091479242
+          },
+          "straightness_undistorted": {
+            "n": 163,
+            "n_long": 53,
+            "max_len": 168.760213496361,
+            "p95_len": 89.04067321169049
+          },
+          "overlay_json": {
+            "up_visible": 1.0,
+            "up_px": [
+              312.3396130654401,
+              11.41322260467993
+            ],
+            "up_in_front": true,
+            "horizon_points_in_image": 0
+          },
+          "overlay_jsonT": {
+            "up_visible": 1.0,
+            "up_px": [
+              554.2694680736802,
+              241.65440603383936
+            ],
+            "up_in_front": true,
+            "horizon_points_in_image": 122
+          },
+          "vp_ransac": {
+            "vp_px": [
+              -0.0025673874855651527,
+              0.007456967597718926
+            ],
+            "inliers": 0,
+            "n_long": 53
+          },
+          "up_json_px": [
+            312.3396130654401,
+            11.41322260467993
+          ],
+          "vp_minus_up_json_px": [
+            -312.3421804529257,
+            -11.405765637082212
+          ],
+          "up_jsonT_px": [
+            554.2694680736802,
+            241.65440603383936
+          ],
+          "vp_minus_up_jsonT_px": [
+            -554.2720354611657,
+            -241.64694906624163
+          ]
+        }
+      ],
+      "elevation_json": {
+        "median_deg": 49.82498573195815,
+        "p10_deg": -13.286079587005649,
+        "p90_deg": 50.7767909676418
+      },
+      "elevation_jsonT": {
+        "median_deg": 48.806296181033346,
+        "p10_deg": 23.602661191634084,
+        "p90_deg": 49.47356164650354
+      }
+    },
+    "flight-07a-lemniscate": {
+      "diagnostics": {
+        "fx": 289.8846763939774,
+        "fy": 387.06227498911073,
+        "fx_fy_ratio": 0.748935494687858,
+        "principal_point": [
+          316.58338771731684,
+          241.86918974530997
+        ],
+        "image_size": [
+          640,
+          480
+        ],
+        "max_observed_rd": 1.2787523644809256,
+        "rd_peak": 0.9815093591000644,
+        "theta_at_peak_deg": 56.36766971278199,
+        "corners": {
+          "tl": {
+            "rd": 1.2582390350236903,
+            "theta_deg": null
+          },
+          "tr": {
+            "rd": 1.2787523644809256,
+            "theta_deg": null
+          },
+          "bl": {
+            "rd": 1.2534704060301332,
+            "theta_deg": null
+          },
+          "br": {
+            "rd": 1.2740605163027214,
+            "theta_deg": null
+          }
+        },
+        "corners_representable": false,
+        "diagonal_representable_deg": 112.73533942556398
+      },
+      "virtual_camera": {
+        "valid_fraction": 0.458544921875,
+        "max_source_theta_deg": 45.508548933409486,
+        "focal_px": 268.51188197672957
+      },
+      "uptilt_metadata_deg": 40.0,
+      "extrinsic_key": "lemniscate",
+      "frames": [
+        {
+          "frame": "00000_1691752810285667.jpg",
+          "t_rel_s": 0.019847,
+          "speed_mps": 0.2536880294766344,
+          "straightness_raw": {
+            "n": 357,
+            "n_long": 101,
+            "max_len": 301.6957057496743,
+            "p95_len": 108.6727865818343
+          },
+          "straightness_undistorted": {
+            "n": 261,
+            "n_long": 77,
+            "max_len": 200.7015221600637,
+            "p95_len": 91.32682313273644
+          },
+          "overlay_json": {
+            "up_visible": 0.0,
+            "up_px": [
+              319.9485699425834,
+              -52.677361274010366
+            ],
+            "up_in_front": true,
+            "horizon_points_in_image": 0
+          },
+          "overlay_jsonT": {
+            "up_visible": 1.0,
+            "up_px": [
+              638.7655411585413,
+              220.67984883727908
+            ],
+            "up_in_front": true,
+            "horizon_points_in_image": 137
+          },
+          "vp_ransac": {
+            "vp_px": [
+              0.0019755557207959736,
+              0.0018987521784193015
+            ],
+            "inliers": 1,
+            "n_long": 77
+          },
+          "up_json_px": [
+            319.9485699425834,
+            -52.677361274010366
+          ],
+          "vp_minus_up_json_px": [
+            -319.9465943868626,
+            52.679260026188786
+          ],
+          "up_jsonT_px": [
+            638.7655411585413,
+            220.67984883727908
+          ],
+          "vp_minus_up_jsonT_px": [
+            -638.7635656028204,
+            -220.67795008510066
+          ]
+        },
+        {
+          "frame": "00942_1691752818194721.jpg",
+          "t_rel_s": 7.928901,
+          "speed_mps": 0.003757988713291478,
+          "straightness_raw": {
+            "n": 387,
+            "n_long": 90,
+            "max_len": 221.35461621060455,
+            "p95_len": 108.70453092100598
+          },
+          "straightness_undistorted": {
+            "n": 283,
+            "n_long": 60,
+            "max_len": 161.34202240920217,
+            "p95_len": 90.05112798138853
+          },
+          "overlay_json": {
+            "up_visible": 0.0,
+            "up_px": [
+              311.92594003253987,
+              -49.46143321856016
+            ],
+            "up_in_front": true,
+            "horizon_points_in_image": 0
+          },
+          "overlay_jsonT": {
+            "up_visible": 0.0,
+            "up_px": [
+              652.2872185214399,
+              217.84861451555483
+            ],
+            "up_in_front": true,
+            "horizon_points_in_image": 139
+          },
+          "vp_ransac": {
+            "vp_px": [
+              0.0005740901474496473,
+              0.006629115063779805
+            ],
+            "inliers": 0,
+            "n_long": 60
+          },
+          "up_json_px": [
+            311.92594003253987,
+            -49.46143321856016
+          ],
+          "vp_minus_up_json_px": [
+            -311.92536594239243,
+            49.46806233362394
+          ],
+          "up_jsonT_px": [
+            652.2872185214399,
+            217.84861451555483
+          ],
+          "vp_minus_up_jsonT_px": [
+            -652.2866444312924,
+            -217.84198540049104
+          ]
+        },
+        {
+          "frame": "01885_1691752826119199.jpg",
+          "t_rel_s": 15.853378999999999,
+          "speed_mps": 6.767677225881141,
+          "straightness_raw": {
+            "n": 259,
+            "n_long": 74,
+            "max_len": 172.93868481360695,
+            "p95_len": 82.4226571413871
+          },
+          "straightness_undistorted": {
+            "n": 233,
+            "n_long": 46,
+            "max_len": 167.50790366391374,
+            "p95_len": 65.57303826883289
+          },
+          "overlay_json": {
+            "up_visible": 0.0,
+            "up_px": [
+              685.9030645013695,
+              104.31284874536874
+            ],
+            "up_in_front": true,
+            "horizon_points_in_image": 150
+          },
+          "overlay_jsonT": {
+            "up_visible": 1.0,
+            "up_px": [
+              305.4517475666375,
+              169.88271211616785
+            ],
+            "up_in_front": true,
+            "horizon_points_in_image": 0
+          },
+          "vp_ransac": {
+            "vp_px": [
+              0.0031309986423862365,
+              0.0029628101219314985
+            ],
+            "inliers": 0,
+            "n_long": 46
+          },
+          "up_json_px": [
+            685.9030645013695,
+            104.31284874536874
+          ],
+          "vp_minus_up_json_px": [
+            -685.8999335027271,
+            -104.30988593524681
+          ],
+          "up_jsonT_px": [
+            305.4517475666375,
+            169.88271211616785
+          ],
+          "vp_minus_up_jsonT_px": [
+            -305.4486165679951,
+            -169.8797493060459
+          ]
+        },
+        {
+          "frame": "02827_1691752833967812.jpg",
+          "t_rel_s": 23.701992,
+          "speed_mps": 0.06139906162265616,
+          "straightness_raw": {
+            "n": 390,
+            "n_long": 92,
+            "max_len": 229.17503838538835,
+            "p95_len": 104.60018163896787
+          },
+          "straightness_undistorted": {
+            "n": 280,
+            "n_long": 64,
+            "max_len": 147.7983362273408,
+            "p95_len": 86.49237827233462
+          },
+          "overlay_json": {
+            "up_visible": 0.0,
+            "up_px": [
+              312.00391783368184,
+              -39.92338007292517
+            ],
+            "up_in_front": true,
+            "horizon_points_in_image": 0
+          },
+          "overlay_jsonT": {
+            "up_visible": 0.0,
+            "up_px": [
+              652.3972684320754,
+              210.65462506096037
+            ],
+            "up_in_front": true,
+            "horizon_points_in_image": 139
+          },
+          "vp_ransac": {
+            "vp_px": [
+              -0.018878376982323745,
+              0.02728816297297503
+            ],
+            "inliers": 0,
+            "n_long": 64
+          },
+          "up_json_px": [
+            312.00391783368184,
+            -39.92338007292517
+          ],
+          "vp_minus_up_json_px": [
+            -312.0227962106642,
+            39.95066823589814
+          ],
+          "up_jsonT_px": [
+            652.3972684320754,
+            210.65462506096037
+          ],
+          "vp_minus_up_jsonT_px": [
+            -652.4161468090578,
+            -210.6273368979874
+          ]
+        }
+      ],
+      "elevation_json": {
+        "median_deg": 42.73038763803822,
+        "p10_deg": 18.727431078665145,
+        "p90_deg": 43.892891744091735
+      },
+      "elevation_jsonT": {
+        "median_deg": 38.998344395377075,
+        "p10_deg": 7.5016726636845865,
+        "p90_deg": 59.66196227741909
+      }
+    },
+    "flight-13a-trackRATM": {
+      "diagnostics": {
+        "fx": 286.71469312178044,
+        "fy": 383.2221537522858,
+        "fx_fy_ratio": 0.7481683673932702,
+        "principal_point": [
+          316.9925488921773,
+          206.62347762827878
+        ],
+        "image_size": [
+          640,
+          480
+        ],
+        "max_observed_rd": 1.333443875308547,
+        "rd_peak": 1.096340980732933,
+        "theta_at_peak_deg": 61.12998927905511,
+        "corners": {
+          "tl": {
+            "rd": 1.2300675460603983,
+            "theta_deg": null
+          },
+          "tr": {
+            "rd": 1.2489573632785829,
+            "theta_deg": null
+          },
+          "bl": {
+            "rd": 1.3157675483082627,
+            "theta_deg": null
+          },
+          "br": {
+            "rd": 1.333443875308547,
+            "theta_deg": null
+          }
+        },
+        "corners_representable": false,
+        "diagonal_representable_deg": 122.25997855811022
+      },
+      "virtual_camera": {
+        "valid_fraction": 0.46783203125,
+        "max_source_theta_deg": 46.40505494857872,
+        "focal_px": 268.51188197672957
+      },
+      "uptilt_metadata_deg": 50.0,
+      "extrinsic_key": "trackRATM",
+      "frames": [
+        {
+          "frame": "00000_1704701147040493.jpg",
+          "t_rel_s": 0.019673,
+          "speed_mps": 0.0012610196852789587,
+          "straightness_raw": {
+            "n": 504,
+            "n_long": 141,
+            "max_len": 139.78194907558816,
+            "p95_len": 85.02441315882672
+          },
+          "straightness_undistorted": {
+            "n": 352,
+            "n_long": 65,
+            "max_len": 158.97229313255608,
+            "p95_len": 71.92854994941403
+          },
+          "overlay_json": {
+            "up_visible": 1.0,
+            "up_px": [
+              319.50550789536123,
+              11.330544804355242
+            ],
+            "up_in_front": true,
+            "horizon_points_in_image": 0
+          },
+          "overlay_jsonT": {
+            "up_visible": 1.0,
+            "up_px": [
+              544.8011249293007,
+              241.68032048730407
+            ],
+            "up_in_front": true,
+            "horizon_points_in_image": 46
+          },
+          "vp_ransac": {
+            "vp_px": [
+              0.0042586627632754765,
+              0.0004435147652235871
+            ],
+            "inliers": 0,
+            "n_long": 65
+          },
+          "up_json_px": [
+            319.50550789536123,
+            11.330544804355242
+          ],
+          "vp_minus_up_json_px": [
+            -319.50124923259796,
+            -11.330101289590019
+          ],
+          "up_jsonT_px": [
+            544.8011249293007,
+            241.68032048730407
+          ],
+          "vp_minus_up_jsonT_px": [
+            -544.7968662665374,
+            -241.67987697253884
+          ]
+        },
+        {
+          "frame": "01420_1704701158899350.jpg",
+          "t_rel_s": 11.87853,
+          "speed_mps": 0.967358640770852,
+          "straightness_raw": {
+            "n": 423,
+            "n_long": 113,
+            "max_len": 151.97828909386956,
+            "p95_len": 88.82456558683475
+          },
+          "straightness_undistorted": {
+            "n": 299,
+            "n_long": 67,
+            "max_len": 158.97330527351437,
+            "p95_len": 72.56087026840277
+          },
+          "overlay_json": {
+            "up_visible": 1.0,
+            "up_px": [
+              319.1823969806458,
+              28.692792168450865
+            ],
+            "up_in_front": true,
+            "horizon_points_in_image": 0
+          },
+          "overlay_jsonT": {
+            "up_visible": 1.0,
+            "up_px": [
+              545.2345380909054,
+              228.0791458149185
+            ],
+            "up_in_front": true,
+            "horizon_points_in_image": 61
+          },
+          "vp_ransac": {
+            "vp_px": [
+              0.00260491794402056,
+              0.0019683025386920618
+            ],
+            "inliers": 0,
+            "n_long": 67
+          },
+          "up_json_px": [
+            319.1823969806458,
+            28.692792168450865
+          ],
+          "vp_minus_up_json_px": [
+            -319.1797920627018,
+            -28.690823865912172
+          ],
+          "up_jsonT_px": [
+            545.2345380909054,
+            228.0791458149185
+          ],
+          "vp_minus_up_jsonT_px": [
+            -545.2319331729614,
+            -228.0771775123798
+          ]
+        },
+        {
+          "frame": "02840_1704701170732198.jpg",
+          "t_rel_s": 23.711378,
+          "speed_mps": 7.652608888126864,
+          "straightness_raw": {
+            "n": 430,
+            "n_long": 88,
+            "max_len": 129.2576564419788,
+            "p95_len": 78.02765202761965
+          },
+          "straightness_undistorted": {
+            "n": 291,
+            "n_long": 47,
+            "max_len": 147.6755259315491,
+            "p95_len": 68.78678487141144
+          },
+          "overlay_json": {
+            "up_visible": 0.0,
+            "up_px": [
+              -19.962843688543956,
+              33.489685963264066
+            ],
+            "up_in_front": true,
+            "horizon_points_in_image": 145
+          },
+          "overlay_jsonT": {
+            "up_visible": 0.0,
+            "up_px": [
+              3460.6753343412142,
+              142.22644357639552
+            ],
+            "up_in_front": true,
+            "horizon_points_in_image": 167
+          },
+          "vp_ransac": {
+            "vp_px": [
+              0.004119423770504587,
+              0.0023120830932749177
+            ],
+            "inliers": 0,
+            "n_long": 47
+          },
+          "up_json_px": [
+            -19.962843688543956,
+            33.489685963264066
+          ],
+          "vp_minus_up_json_px": [
+            19.96696311231446,
+            -33.48737388017079
+          ],
+          "up_jsonT_px": [
+            3460.6753343412142,
+            142.22644357639552
+          ],
+          "vp_minus_up_jsonT_px": [
+            -3460.6712149174436,
+            -142.22413149330225
+          ]
+        },
+        {
+          "frame": "04259_1704701182556483.jpg",
+          "t_rel_s": 35.535663,
+          "speed_mps": 14.573917818946237,
+          "straightness_raw": {
+            "n": 320,
+            "n_long": 46,
+            "max_len": 154.30883437372864,
+            "p95_len": 78.53758501270238
+          },
+          "straightness_undistorted": {
+            "n": 230,
+            "n_long": 46,
+            "max_len": 150.8687096649827,
+            "p95_len": 92.53285848959062
+          },
+          "overlay_json": {
+            "up_visible": 0.0,
+            "up_px": [
+              2308.735913976734,
+              -855.3098997974901
+            ],
+            "up_in_front": true,
+            "horizon_points_in_image": 182
+          },
+          "overlay_jsonT": {
+            "up_visible": 1.0,
+            "up_px": [
+              191.82048979434916,
+              330.0423222167757
+            ],
+            "up_in_front": true,
+            "horizon_points_in_image": 0
+          },
+          "vp_ransac": {
+            "vp_px": [
+              -0.04207832670156738,
+              0.04028701971313149
+            ],
+            "inliers": 0,
+            "n_long": 46
+          },
+          "up_json_px": [
+            2308.735913976734,
+            -855.3098997974901
+          ],
+          "vp_minus_up_json_px": [
+            -2308.7779923034354,
+            855.3501868172032
+          ],
+          "up_jsonT_px": [
+            191.82048979434916,
+            330.0423222167757
+          ],
+          "vp_minus_up_jsonT_px": [
+            -191.8625681210507,
+            -330.0020351970626
+          ]
+        }
+      ],
+      "elevation_json": {
+        "median_deg": 50.01852741193136,
+        "p10_deg": -2.322185971020999,
+        "p90_deg": 52.655640928714114
+      },
+      "elevation_jsonT": {
+        "median_deg": 49.52418590425729,
+        "p10_deg": -5.208445821747873,
+        "p90_deg": 50.39511613441752
+      }
+    },
+    "flight-01p-ellipse": {
+      "diagnostics": {
+        "fx": 289.8846763939774,
+        "fy": 387.06227498911073,
+        "fx_fy_ratio": 0.748935494687858,
+        "principal_point": [
+          316.58338771731684,
+          241.86918974530997
+        ],
+        "image_size": [
+          640,
+          480
+        ],
+        "max_observed_rd": 1.2787523644809256,
+        "rd_peak": 0.9815093591000644,
+        "theta_at_peak_deg": 56.36766971278199,
+        "corners": {
+          "tl": {
+            "rd": 1.2582390350236903,
+            "theta_deg": null
+          },
+          "tr": {
+            "rd": 1.2787523644809256,
+            "theta_deg": null
+          },
+          "bl": {
+            "rd": 1.2534704060301332,
+            "theta_deg": null
+          },
+          "br": {
+            "rd": 1.2740605163027214,
+            "theta_deg": null
+          }
+        },
+        "corners_representable": false,
+        "diagonal_representable_deg": 112.73533942556398
+      },
+      "virtual_camera": {
+        "valid_fraction": 0.458544921875,
+        "max_source_theta_deg": 45.508548933409486,
+        "focal_px": 268.51188197672957
+      },
+      "uptilt_metadata_deg": 30.0,
+      "extrinsic_key": "piloted",
+      "frames": [
+        {
+          "frame": "00000_1691231729047999.jpg",
+          "t_rel_s": 0.017359,
+          "speed_mps": 0.0023259462918951814,
+          "straightness_raw": {
+            "n": 468,
+            "n_long": 143,
+            "max_len": 147.54750836878407,
+            "p95_len": 82.25155618761264
+          },
+          "straightness_undistorted": {
+            "n": 321,
+            "n_long": 72,
+            "max_len": 152.255873378105,
+            "p95_len": 72.66303384177213
+          },
+          "overlay_json": {
+            "up_visible": 1.0,
+            "up_px": [
+              325.8794230692197,
+              72.228574062865
+            ],
+            "up_in_front": true,
+            "horizon_points_in_image": 0
+          },
+          "overlay_jsonT": {
+            "up_visible": 1.0,
+            "up_px": [
+              467.3849193957272,
+              249.7802252656846
+            ],
+            "up_in_front": true,
+            "horizon_points_in_image": 0
+          },
+          "vp_ransac": {
+            "vp_px": [
+              -0.007364822514800921,
+              0.01399011926563326
+            ],
+            "inliers": 0,
+            "n_long": 72
+          },
+          "up_json_px": [
+            325.8794230692197,
+            72.228574062865
+          ],
+          "vp_minus_up_json_px": [
+            -325.88678789173446,
+            -72.21458394359937
+          ],
+          "up_jsonT_px": [
+            467.3849193957272,
+            249.7802252656846
+          ],
+          "vp_minus_up_jsonT_px": [
+            -467.39228421824197,
+            -249.76623514641898
+          ]
+        },
+        {
+          "frame": "03234_1691231755998254.jpg",
+          "t_rel_s": 26.967613999999998,
+          "speed_mps": 7.179195689299412,
+          "straightness_raw": {
+            "n": 342,
+            "n_long": 68,
+            "max_len": 150.1238655837276,
+            "p95_len": 76.53393698694418
+          },
+          "straightness_undistorted": {
+            "n": 230,
+            "n_long": 46,
+            "max_len": 168.54124957627818,
+            "p95_len": 83.594529828121
+          },
+          "overlay_json": {
+            "up_visible": 0.0,
+            "up_px": [
+              399.51217618733,
+              -44.20971752990016
+            ],
+            "up_in_front": true,
+            "horizon_points_in_image": 77
+          },
+          "overlay_jsonT": {
+            "up_visible": 1.0,
+            "up_px": [
+              406.4168884724105,
+              321.6546620375993
+            ],
+            "up_in_front": true,
+            "horizon_points_in_image": 0
+          },
+          "vp_ransac": {
+            "vp_px": [
+              -0.00011088907577504844,
+              0.0031586812315158377
+            ],
+            "inliers": 0,
+            "n_long": 46
+          },
+          "up_json_px": [
+            399.51217618733,
+            -44.20971752990016
+          ],
+          "vp_minus_up_json_px": [
+            -399.51228707640576,
+            44.21287621113168
+          ],
+          "up_jsonT_px": [
+            406.4168884724105,
+            321.6546620375993
+          ],
+          "vp_minus_up_jsonT_px": [
+            -406.41699936148626,
+            -321.65150335636775
+          ]
+        },
+        {
+          "frame": "06467_1691231782940156.jpg",
+          "t_rel_s": 53.909515999999996,
+          "speed_mps": 6.4004461017270335,
+          "straightness_raw": {
+            "n": 496,
+            "n_long": 96,
+            "max_len": 175.99640636712667,
+            "p95_len": 92.92434838689819
+          },
+          "straightness_undistorted": {
+            "n": 331,
+            "n_long": 75,
+            "max_len": 137.757212503177,
+            "p95_len": 82.1129807549131
+          },
+          "overlay_json": {
+            "up_visible": 0.0,
+            "up_px": [
+              342.1843950646162,
+              -96.71025571809668
+            ],
+            "up_in_front": true,
+            "horizon_points_in_image": 172
+          },
+          "overlay_jsonT": {
+            "up_visible": 1.0,
+            "up_px": [
+              454.89623981136594,
+              357.0865896676423
+            ],
+            "up_in_front": true,
+            "horizon_points_in_image": 0
+          },
+          "vp_ransac": {
+            "vp_px": [
+              0.3484780033209128,
+              -0.3813512244582799
+            ],
+            "inliers": 1,
+            "n_long": 75
+          },
+          "up_json_px": [
+            342.1843950646162,
+            -96.71025571809668
+          ],
+          "vp_minus_up_json_px": [
+            -341.8359170612953,
+            96.32890449363839
+          ],
+          "up_jsonT_px": [
+            454.89623981136594,
+            357.0865896676423
+          ],
+          "vp_minus_up_jsonT_px": [
+            -454.54776180804504,
+            -357.46794089210056
+          ]
+        },
+        {
+          "frame": "09701_1691231809889490.jpg",
+          "t_rel_s": 80.85884999999999,
+          "speed_mps": 3.0143159335550975,
+          "straightness_raw": {
+            "n": 400,
+            "n_long": 99,
+            "max_len": 161.09276772312938,
+            "p95_len": 95.86088398854436
+          },
+          "straightness_undistorted": {
+            "n": 286,
+            "n_long": 75,
+            "max_len": 144.26440403712812,
+            "p95_len": 94.41580794668687
+          },
+          "overlay_json": {
+            "up_visible": 0.0,
+            "up_px": [
+              608.7688713984222,
+              -248.9501085955535
+            ],
+            "up_in_front": true,
+            "horizon_points_in_image": 171
+          },
+          "overlay_jsonT": {
+            "up_visible": 1.0,
+            "up_px": [
+              313.6567475411031,
+              378.5685020205466
+            ],
+            "up_in_front": true,
+            "horizon_points_in_image": 0
+          },
+          "vp_ransac": {
+            "vp_px": [
+              0.0017011004942947981,
+              0.0019867131086589575
+            ],
+            "inliers": 0,
+            "n_long": 75
+          },
+          "up_json_px": [
+            608.7688713984222,
+            -248.9501085955535
+          ],
+          "vp_minus_up_json_px": [
+            -608.7671702979279,
+            248.95209530866217
+          ],
+          "up_jsonT_px": [
+            313.6567475411031,
+            378.5685020205466
+          ],
+          "vp_minus_up_jsonT_px": [
+            -313.65504644060877,
+            -378.56651530743795
+          ]
+        }
+      ],
+      "elevation_json": {
+        "median_deg": 36.66572341324942,
+        "p10_deg": 25.632548390810403,
+        "p90_deg": 45.986145449000695
+      },
+      "elevation_jsonT": {
+        "median_deg": 58.483124335523286,
+        "p10_deg": 52.620935959258425,
+        "p90_deg": 65.41709810116797
+      }
+    },
+    "flight-07p-lemniscate": {
+      "diagnostics": {
+        "fx": 289.8846763939774,
+        "fy": 387.06227498911073,
+        "fx_fy_ratio": 0.748935494687858,
+        "principal_point": [
+          316.58338771731684,
+          241.86918974530997
+        ],
+        "image_size": [
+          640,
+          480
+        ],
+        "max_observed_rd": 1.2787523644809256,
+        "rd_peak": 0.9815093591000644,
+        "theta_at_peak_deg": 56.36766971278199,
+        "corners": {
+          "tl": {
+            "rd": 1.2582390350236903,
+            "theta_deg": null
+          },
+          "tr": {
+            "rd": 1.2787523644809256,
+            "theta_deg": null
+          },
+          "bl": {
+            "rd": 1.2534704060301332,
+            "theta_deg": null
+          },
+          "br": {
+            "rd": 1.2740605163027214,
+            "theta_deg": null
+          }
+        },
+        "corners_representable": false,
+        "diagonal_representable_deg": 112.73533942556398
+      },
+      "virtual_camera": {
+        "valid_fraction": 0.458544921875,
+        "max_source_theta_deg": 45.508548933409486,
+        "focal_px": 268.51188197672957
+      },
+      "uptilt_metadata_deg": 30.0,
+      "extrinsic_key": "piloted",
+      "frames": [
+        {
+          "frame": "00000_1691236589759721.jpg",
+          "t_rel_s": 0.017991,
+          "speed_mps": 0.006628687230502725,
+          "straightness_raw": {
+            "n": 468,
+            "n_long": 120,
+            "max_len": 199.0670443289397,
+            "p95_len": 87.0498390492126
+          },
+          "straightness_undistorted": {
+            "n": 319,
+            "n_long": 77,
+            "max_len": 173.51464584508338,
+            "p95_len": 69.73825548233296
+          },
+          "overlay_json": {
+            "up_visible": 1.0,
+            "up_px": [
+              321.99638226038326,
+              85.96305677488775
+            ],
+            "up_in_front": true,
+            "horizon_points_in_image": 0
+          },
+          "overlay_jsonT": {
+            "up_visible": 1.0,
+            "up_px": [
+              471.64929811084414,
+              238.21384496556357
+            ],
+            "up_in_front": true,
+            "horizon_points_in_image": 0
+          },
+          "vp_ransac": {
+            "vp_px": [
+              -0.005394129889604766,
+              0.012441960402255023
+            ],
+            "inliers": 1,
+            "n_long": 77
+          },
+          "up_json_px": [
+            321.99638226038326,
+            85.96305677488775
+          ],
+          "vp_minus_up_json_px": [
+            -322.0017763902729,
+            -85.95061481448549
+          ],
+          "up_jsonT_px": [
+            471.64929811084414,
+            238.21384496556357
+          ],
+          "vp_minus_up_jsonT_px": [
+            -471.65469224073377,
+            -238.20140300516132
+          ]
+        },
+        {
+          "frame": "03276_1691236617088438.jpg",
+          "t_rel_s": 27.346708,
+          "speed_mps": 4.675971591104625,
+          "straightness_raw": {
+            "n": 496,
+            "n_long": 106,
+            "max_len": 218.71697152653425,
+            "p95_len": 97.87297020331579
+          },
+          "straightness_undistorted": {
+            "n": 332,
+            "n_long": 73,
+            "max_len": 154.8083468253025,
+            "p95_len": 88.94641095448657
+          },
+          "overlay_json": {
+            "up_visible": 0.0,
+            "up_px": [
+              369.0346612994817,
+              -40.13722522225589
+            ],
+            "up_in_front": true,
+            "horizon_points_in_image": 58
+          },
+          "overlay_jsonT": {
+            "up_visible": 1.0,
+            "up_px": [
+              430.29558447457924,
+              322.9500287644191
+            ],
+            "up_in_front": true,
+            "horizon_points_in_image": 0
+          },
+          "vp_ransac": {
+            "vp_px": [
+              0.0010419240604531248,
+              0.0030331198257168585
+            ],
+            "inliers": 0,
+            "n_long": 73
+          },
+          "up_json_px": [
+            369.0346612994817,
+            -40.13722522225589
+          ],
+          "vp_minus_up_json_px": [
+            -369.0336193754212,
+            40.14025834208161
+          ],
+          "up_jsonT_px": [
+            430.29558447457924,
+            322.9500287644191
+          ],
+          "vp_minus_up_jsonT_px": [
+            -430.29454255051877,
+            -322.94699564459336
+          ]
+        },
+        {
+          "frame": "06551_1691236644379843.jpg",
+          "t_rel_s": 54.638113,
+          "speed_mps": 5.720165976704367,
+          "straightness_raw": {
+            "n": 519,
+            "n_long": 95,
+            "max_len": 167.79173020919646,
+            "p95_len": 81.16999616981057
+          },
+          "straightness_undistorted": {
+            "n": 344,
+            "n_long": 61,
+            "max_len": 140.92104105821886,
+            "p95_len": 79.28689070797279
+          },
+          "overlay_json": {
+            "up_visible": 0.0,
+            "up_px": [
+              268.3158662541256,
+              -168.6442971424189
+            ],
+            "up_in_front": true,
+            "horizon_points_in_image": 181
+          },
+          "overlay_jsonT": {
+            "up_visible": 1.0,
+            "up_px": [
+              519.5427789909694,
+              406.46698889829065
+            ],
+            "up_in_front": true,
+            "horizon_points_in_image": 70
+          },
+          "vp_ransac": {
+            "vp_px": [
+              -0.0006940200412629908,
+              0.007138633396245213
+            ],
+            "inliers": 0,
+            "n_long": 61
+          },
+          "up_json_px": [
+            268.3158662541256,
+            -168.6442971424189
+          ],
+          "vp_minus_up_json_px": [
+            -268.3165602741668,
+            168.65143577581514
+          ],
+          "up_jsonT_px": [
+            519.5427789909694,
+            406.46698889829065
+          ],
+          "vp_minus_up_jsonT_px": [
+            -519.5434730110106,
+            -406.4598502648944
+          ]
+        },
+        {
+          "frame": "09827_1691236671679063.jpg",
+          "t_rel_s": 81.937333,
+          "speed_mps": 3.7758886494140818,
+          "straightness_raw": {
+            "n": 531,
+            "n_long": 108,
+            "max_len": 149.95420875656615,
+            "p95_len": 79.50282586990221
+          },
+          "straightness_undistorted": {
+            "n": 363,
+            "n_long": 71,
+            "max_len": 168.5408356389415,
+            "p95_len": 74.38481269983849
+          },
+          "overlay_json": {
+            "up_visible": 0.0,
+            "up_px": [
+              409.3449689280645,
+              -46.71634935933196
+            ],
+            "up_in_front": true,
+            "horizon_points_in_image": 83
+          },
+          "overlay_jsonT": {
+            "up_visible": 1.0,
+            "up_px": [
+              399.28670396637744,
+              321.89723762762446
+            ],
+            "up_in_front": true,
+            "horizon_points_in_image": 0
+          },
+          "vp_ransac": {
+            "vp_px": [
+              0.0007012123002558523,
+              0.0028239071601782154
+            ],
+            "inliers": 0,
+            "n_long": 71
+          },
+          "up_json_px": [
+            409.3449689280645,
+            -46.71634935933196
+          ],
+          "vp_minus_up_json_px": [
+            -409.3442677157642,
+            46.719173266492135
+          ],
+          "up_jsonT_px": [
+            399.28670396637744,
+            321.89723762762446
+          ],
+          "vp_minus_up_jsonT_px": [
+            -399.2860027540772,
+            -321.8944137204643
+          ]
+        }
+      ],
+      "elevation_json": {
+        "median_deg": 38.83384928555237,
+        "p10_deg": 28.026625335509213,
+        "p90_deg": 50.15147672193484
+      },
+      "elevation_jsonT": {
+        "median_deg": 55.995826016983465,
+        "p10_deg": 38.61145095436916,
+        "p90_deg": 66.13843376988402
+      }
+    },
+    "flight-13p-trackRATM": {
+      "diagnostics": {
+        "fx": 286.96242885678896,
+        "fy": 382.54621083475985,
+        "fx_fy_ratio": 0.7501379460290665,
+        "principal_point": [
+          318.64041082328777,
+          223.7222973061012
+        ],
+        "image_size": [
+          640,
+          480
+        ],
+        "max_observed_rd": 1.3049528071411367,
+        "rd_peak": 1.1065241364413858,
+        "theta_at_peak_deg": 61.594538284669696,
+        "corners": {
+          "tl": {
+            "rd": 1.2549848159111192,
+            "theta_deg": null
+          },
+          "tr": {
+            "rd": 1.26337650815378,
+            "theta_deg": null
+          },
+          "bl": {
+            "rd": 1.2968301799688966,
+            "theta_deg": null
+          },
+          "br": {
+            "rd": 1.3049528071411367,
+            "theta_deg": null
+          }
+        },
+        "corners_representable": false,
+        "diagonal_representable_deg": 123.18907656933939
+      },
+      "virtual_camera": {
+        "valid_fraction": 0.46973307291666666,
+        "max_source_theta_deg": 45.97692464650245,
+        "focal_px": 268.51188197672957
+      },
+      "uptilt_metadata_deg": 50.0,
+      "extrinsic_key": "piloted",
+      "frames": [
+        {
+          "frame": "00000_1721811766780427.jpg",
+          "t_rel_s": 0.016787,
+          "speed_mps": 0.002433269335332982,
+          "straightness_raw": {
+            "n": 493,
+            "n_long": 129,
+            "max_len": 135.92593789906138,
+            "p95_len": 86.86885410347965
+          },
+          "straightness_undistorted": {
+            "n": 335,
+            "n_long": 73,
+            "max_len": 141.8984562970012,
+            "p95_len": 69.99208591665423
+          },
+          "overlay_json": {
+            "up_visible": 1.0,
+            "up_px": [
+              268.58332359078975,
+              54.10557799489209
+            ],
+            "up_in_front": true,
+            "horizon_points_in_image": 0
+          },
+          "overlay_jsonT": {
+            "up_visible": 1.0,
+            "up_px": [
+              536.1433924984215,
+              267.06382230291314
+            ],
+            "up_in_front": true,
+            "horizon_points_in_image": 34
+          },
+          "vp_ransac": {
+            "vp_px": [
+              0.0009479473897373605,
+              0.003597580008072421
+            ],
+            "inliers": 0,
+            "n_long": 73
+          },
+          "up_json_px": [
+            268.58332359078975,
+            54.10557799489209
+          ],
+          "vp_minus_up_json_px": [
+            -268.5823756434,
+            -54.10198041488402
+          ],
+          "up_jsonT_px": [
+            536.1433924984215,
+            267.06382230291314
+          ],
+          "vp_minus_up_jsonT_px": [
+            -536.1424445510318,
+            -267.06022472290505
+          ]
+        },
+        {
+          "frame": "01367_1721811778205755.jpg",
+          "t_rel_s": 11.442115,
+          "speed_mps": 12.156596244668561,
+          "straightness_raw": {
+            "n": 435,
+            "n_long": 94,
+            "max_len": 145.89839460420808,
+            "p95_len": 82.02618471801878
+          },
+          "straightness_undistorted": {
+            "n": 312,
+            "n_long": 62,
+            "max_len": 138.45668969197655,
+            "p95_len": 74.71965625866173
+          },
+          "overlay_json": {
+            "up_visible": false,
+            "up_px": [
+              460.1842936134158,
+              11.093430404169737
+            ],
+            "up_in_front": false,
+            "horizon_points_in_image": 217
+          },
+          "overlay_jsonT": {
+            "up_visible": 0.0,
+            "up_px": [
+              202.69760924801164,
+              580.2852900205951
+            ],
+            "up_in_front": true,
+            "horizon_points_in_image": 127
+          },
+          "vp_ransac": {
+            "vp_px": [
+              -0.0045397897790852215,
+              0.010375593919622703
+            ],
+            "inliers": 0,
+            "n_long": 62
+          },
+          "up_json_px": [
+            460.1842936134158,
+            11.093430404169737
+          ],
+          "vp_minus_up_json_px": [
+            -460.18883340319485,
+            -11.083054810250115
+          ],
+          "up_jsonT_px": [
+            202.69760924801164,
+            580.2852900205951
+          ],
+          "vp_minus_up_jsonT_px": [
+            -202.70214903779072,
+            -580.2749144266754
+          ]
+        },
+        {
+          "frame": "02733_1721811789588684.jpg",
+          "t_rel_s": 22.825044,
+          "speed_mps": 6.886602982288102,
+          "straightness_raw": {
+            "n": 556,
+            "n_long": 87,
+            "max_len": 242.25122157449255,
+            "p95_len": 82.75792861350304
+          },
+          "straightness_undistorted": {
+            "n": 373,
+            "n_long": 52,
+            "max_len": 138.4563820916266,
+            "p95_len": 72.65291291649795
+          },
+          "overlay_json": {
+            "up_visible": false,
+            "up_px": [
+              137.453204966376,
+              43.01236418283946
+            ],
+            "up_in_front": false,
+            "horizon_points_in_image": 210
+          },
+          "overlay_jsonT": {
+            "up_visible": false,
+            "up_px": [
+              518.1757697419616,
+              419.02015561813084
+            ],
+            "up_in_front": false,
+            "horizon_points_in_image": 201
+          },
+          "vp_ransac": {
+            "vp_px": [
+              0.002382053334108344,
+              0.001107624002373843
+            ],
+            "inliers": 0,
+            "n_long": 52
+          },
+          "up_json_px": [
+            137.453204966376,
+            43.01236418283946
+          ],
+          "vp_minus_up_json_px": [
+            -137.4508229130419,
+            -43.01125655883709
+          ],
+          "up_jsonT_px": [
+            518.1757697419616,
+            419.02015561813084
+          ],
+          "vp_minus_up_jsonT_px": [
+            -518.1733876886275,
+            -419.01904799412847
+          ]
+        },
+        {
+          "frame": "04100_1721811801099414.jpg",
+          "t_rel_s": 34.335774,
+          "speed_mps": 12.96921815719542,
+          "straightness_raw": {
+            "n": 450,
+            "n_long": 101,
+            "max_len": 135.3425725329592,
+            "p95_len": 81.823964217811
+          },
+          "straightness_undistorted": {
+            "n": 309,
+            "n_long": 65,
+            "max_len": 138.3059085311061,
+            "p95_len": 68.05664779768209
+          },
+          "overlay_json": {
+            "up_visible": false,
+            "up_px": [
+              468.79019244199935,
+              16.699933437330202
+            ],
+            "up_in_front": false,
+            "horizon_points_in_image": 221
+          },
+          "overlay_jsonT": {
+            "up_visible": 0.0,
+            "up_px": [
+              187.57249082041298,
+              571.5755961212719
+            ],
+            "up_in_front": true,
+            "horizon_points_in_image": 122
+          },
+          "vp_ransac": {
+            "vp_px": [
+              3.326727623663829e-05,
+              0.005137246480927078
+            ],
+            "inliers": 2,
+            "n_long": 65
+          },
+          "up_json_px": [
+            468.79019244199935,
+            16.699933437330202
+          ],
+          "vp_minus_up_json_px": [
+            -468.7901591747231,
+            -16.694796190849274
+          ],
+          "up_jsonT_px": [
+            187.57249082041298,
+            571.5755961212719
+          ],
+          "vp_minus_up_jsonT_px": [
+            -187.57245755313676,
+            -571.570458874791
+          ]
+        }
+      ],
+      "elevation_json": {
+        "median_deg": 2.345883839731979,
+        "p10_deg": -23.382793834520882,
+        "p90_deg": 39.89459813959653
+      },
+      "elevation_jsonT": {
+        "median_deg": 27.25998691285293,
+        "p10_deg": 2.128617654594476,
+        "p90_deg": 53.32248918576856
+      }
+    },
+    "flight-16p-trackRATM": {
+      "diagnostics": {
+        "fx": 286.96242885678896,
+        "fy": 382.54621083475985,
+        "fx_fy_ratio": 0.7501379460290665,
+        "principal_point": [
+          318.64041082328777,
+          223.7222973061012
+        ],
+        "image_size": [
+          640,
+          480
+        ],
+        "max_observed_rd": 1.3049528071411367,
+        "rd_peak": 1.1065241364413858,
+        "theta_at_peak_deg": 61.594538284669696,
+        "corners": {
+          "tl": {
+            "rd": 1.2549848159111192,
+            "theta_deg": null
+          },
+          "tr": {
+            "rd": 1.26337650815378,
+            "theta_deg": null
+          },
+          "bl": {
+            "rd": 1.2968301799688966,
+            "theta_deg": null
+          },
+          "br": {
+            "rd": 1.3049528071411367,
+            "theta_deg": null
+          }
+        },
+        "corners_representable": false,
+        "diagonal_representable_deg": 123.18907656933939
+      },
+      "virtual_camera": {
+        "valid_fraction": 0.46973307291666666,
+        "max_source_theta_deg": 45.97692464650245,
+        "focal_px": 268.51188197672957
+      },
+      "uptilt_metadata_deg": 50.0,
+      "extrinsic_key": "piloted",
+      "frames": [
+        {
+          "frame": "00000_1721811163276377.jpg",
+          "t_rel_s": 0.019736999999999998,
+          "speed_mps": 0.022072016153523586,
+          "straightness_raw": {
+            "n": 266,
+            "n_long": 84,
+            "max_len": 125.28053650334544,
+            "p95_len": 89.28867230055721
+          },
+          "straightness_undistorted": {
+            "n": 202,
+            "n_long": 58,
+            "max_len": 147.29015843948878,
+            "p95_len": 82.34194926067735
+          },
+          "overlay_json": {
+            "up_visible": 1.0,
+            "up_px": [
+              291.9934154725491,
+              49.878585966946986
+            ],
+            "up_in_front": true,
+            "horizon_points_in_image": 0
+          },
+          "overlay_jsonT": {
+            "up_visible": 1.0,
+            "up_px": [
+              506.14276847481113,
+              269.324709721179
+            ],
+            "up_in_front": true,
+            "horizon_points_in_image": 0
+          },
+          "vp_ransac": {
+            "vp_px": [
+              -0.014103089075964697,
+              0.017197744510464408
+            ],
+            "inliers": 0,
+            "n_long": 58
+          },
+          "up_json_px": [
+            291.9934154725491,
+            49.878585966946986
+          ],
+          "vp_minus_up_json_px": [
+            -292.00751856162503,
+            -49.861388222436524
+          ],
+          "up_jsonT_px": [
+            506.14276847481113,
+            269.324709721179
+          ],
+          "vp_minus_up_jsonT_px": [
+            -506.1568715638871,
+            -269.30751197666854
+          ]
+        },
+        {
+          "frame": "00952_1721811171242979.jpg",
+          "t_rel_s": 7.986339,
+          "speed_mps": 14.462266502444882,
+          "straightness_raw": {
+            "n": 127,
+            "n_long": 43,
+            "max_len": 113.76180308318652,
+            "p95_len": 93.78577751375069
+          },
+          "straightness_undistorted": {
+            "n": 109,
+            "n_long": 40,
+            "max_len": 153.6323559768965,
+            "p95_len": 94.23693166876045
+          },
+          "overlay_json": {
+            "up_visible": false,
+            "up_px": [
+              342.61079834585456,
+              44.17019466450597
+            ],
+            "up_in_front": false,
+            "horizon_points_in_image": 56
+          },
+          "overlay_jsonT": {
+            "up_visible": false,
+            "up_px": [
+              269.1691733032499,
+              500.05366510057314
+            ],
+            "up_in_front": false,
+            "horizon_points_in_image": 200
+          },
+          "vp_ransac": {
+            "vp_px": [
+              0.007799771701956267,
+              -0.003482352151673431
+            ],
+            "inliers": 0,
+            "n_long": 40
+          },
+          "up_json_px": [
+            342.61079834585456,
+            44.17019466450597
+          ],
+          "vp_minus_up_json_px": [
+            -342.6029985741526,
+            -44.17367701665764
+          ],
+          "up_jsonT_px": [
+            269.1691733032499,
+            500.05366510057314
+          ],
+          "vp_minus_up_jsonT_px": [
+            -269.16137353154795,
+            -500.0571474527248
+          ]
+        },
+        {
+          "frame": "01904_1721811179227840.jpg",
+          "t_rel_s": 15.9712,
+          "speed_mps": 18.506149591332402,
+          "straightness_raw": {
+            "n": 271,
+            "n_long": 76,
+            "max_len": 138.43991329452356,
+            "p95_len": 94.1273507601015
+          },
+          "straightness_undistorted": {
+            "n": 219,
+            "n_long": 50,
+            "max_len": 130.0845629559536,
+            "p95_len": 85.01149538491627
+          },
+          "overlay_json": {
+            "up_visible": 0.0,
+            "up_px": [
+              -220.01773220531618,
+              -1599.2213113802022
+            ],
+            "up_in_front": true,
+            "horizon_points_in_image": 203
+          },
+          "overlay_jsonT": {
+            "up_visible": 0.0,
+            "up_px": [
+              704.3612497673352,
+              777.4438631219434
+            ],
+            "up_in_front": true,
+            "horizon_points_in_image": 178
+          },
+          "vp_ransac": {
+            "vp_px": [
+              0.00052279195339515,
+              0.0024647218070612585
+            ],
+            "inliers": 0,
+            "n_long": 50
+          },
+          "up_json_px": [
+            -220.01773220531618,
+            -1599.2213113802022
+          ],
+          "vp_minus_up_json_px": [
+            220.01825499726957,
+            1599.2237761020092
+          ],
+          "up_jsonT_px": [
+            704.3612497673352,
+            777.4438631219434
+          ],
+          "vp_minus_up_jsonT_px": [
+            -704.3607269753818,
+            -777.4413984001363
+          ]
+        },
+        {
+          "frame": "02855_1721811187178381.jpg",
+          "t_rel_s": 23.921740999999997,
+          "speed_mps": 16.359157141508984,
+          "straightness_raw": {
+            "n": 184,
+            "n_long": 57,
+            "max_len": 178.5005663660388,
+            "p95_len": 103.06007554081971
+          },
+          "straightness_undistorted": {
+            "n": 150,
+            "n_long": 50,
+            "max_len": 146.92004253601638,
+            "p95_len": 98.42018055497992
+          },
+          "overlay_json": {
+            "up_visible": false,
+            "up_px": [
+              348.9612642701552,
+              -27.017819495158278
+            ],
+            "up_in_front": false,
+            "horizon_points_in_image": 201
+          },
+          "overlay_jsonT": {
+            "up_visible": 0.0,
+            "up_px": [
+              398.12350488334715,
+              773.7081111170254
+            ],
+            "up_in_front": true,
+            "horizon_points_in_image": 188
+          },
+          "vp_ransac": {
+            "vp_px": [
+              0.0011134001967497721,
+              0.0018594481177684778
+            ],
+            "inliers": 1,
+            "n_long": 50
+          },
+          "up_json_px": [
+            348.9612642701552,
+            -27.017819495158278
+          ],
+          "vp_minus_up_json_px": [
+            -348.96015086995845,
+            27.01967894327605
+          ],
+          "up_jsonT_px": [
+            398.12350488334715,
+            773.7081111170254
+          ],
+          "vp_minus_up_jsonT_px": [
+            -398.1223914831504,
+            -773.7062516689076
+          ]
+        }
+      ],
+      "elevation_json": {
+        "median_deg": -1.954456639479876,
+        "p10_deg": -30.215507118807132,
+        "p90_deg": 22.340236780257303
+      },
+      "elevation_jsonT": {
+        "median_deg": 23.205092689286577,
+        "p10_deg": 2.0650406143515205,
+        "p90_deg": 49.067878382706795
+      }
+    }
+  }
+}

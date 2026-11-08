@@ -1,0 +1,18 @@
+fov_deg: 100.0
+out_size:
+- 640
+- 480
+frames_per_flight: 4
+video_root: data/raw/tii_video
+frames_root: data/raw/tii_frames
+mocap_root: data/raw/tii
+flights:
+- flight-01a-ellipse
+- flight-04a-ellipse
+- flight-07a-lemniscate
+- flight-13a-trackRATM
+- flight-01p-ellipse
+- flight-07p-lemniscate
+- flight-13p-trackRATM
+- flight-16p-trackRATM
+virtual_camera: square pixels, same optical axis as source
