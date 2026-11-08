@@ -104,14 +104,15 @@ By speed (pooled):
 
 | speed (m/s) | n | median | RMSE |
 | --- | --- | --- | --- |
-| 0-5 | 815 | 3.48 | 5.14 |
-| 5-10 | 104 | 3.93 | 8.29 |
-| 10-15 | 35 | 2.99 | 32.32 |
-| 15-20 | 65 | 3.89 | 37.29 |
-| 20+ | 14 | 4.12 | 21.72 |
+| 0-5 | 2790 | 3.68 | 9.88 |
+| 5-10 | 1609 | 3.87 | 27.71 |
+| 10-15 | 358 | 8.77 | 43.59 |
+| 15-20 | 223 | 7.49 | 36.84 |
+| 20+ | 27 | 9.83 | 13.62 |
 
-(These five rows are from the two-autonomous-flight run, where the speed profile is the
-broadest; the eight-flight run's bins are dominated by the slower piloted flights.)
+The median degrades above 10 m/s (3.7 -> 8.8 deg) and the RMSE is worst in the same band:
+unlike the Phase 0 physics residual, this estimator's error *does* grow with speed, which
+is what motion blur and the gate-filled field of view would predict.
 
 **The error is heavy-tailed, not biased.** The median is flat in speed (2.99-4.12 deg,
 i.e. it does not degrade the way Phase 0's physics residual does), while the RMSE
@@ -153,9 +154,11 @@ Blur and exposure (the breakdown the plan asks for):
   1.6 %. Weak and not monotone, so blur is a contributor, not the cause.
 - By track type (5,007 frames): ellipse median 3.28 deg (RMSE 7.50), lemniscate 3.37
   (13.95), trackRATM 7.57 (37.55) — the gate-dense circuit is the hard scene.
-- By control: piloted ellipse/lemniscate are the *best* flights of all (RMSE 3.8 and 4.2
-  deg), and the piloted trackRATM flights the worst (31-34 deg). Control mode is not the
-  variable; track and body attitude are.
+- By exposure: `auto` median 3.96 / RMSE 22.11, `fixed` 4.00 / 23.53, i.e. no difference
+  once the flights are pooled, so the earlier per-flight impression was a speed confound.
+- By control: pooled autonomous median 4.57 / RMSE 30.96, piloted 3.83 / 17.10 — but the
+  spread inside each group is bigger than between them (3.8 to 44 deg RMSE), so control
+  mode is not the variable; track and body attitude are.
 
 The undistorted route cannot help either: 46 % valid pixels, and a released lens model
 that does not cover the frame.
