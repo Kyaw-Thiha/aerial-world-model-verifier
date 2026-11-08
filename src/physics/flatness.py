@@ -125,6 +125,56 @@ def tilt_deg(z_B: np.ndarray, g: float = G0) -> np.ndarray:
     return np.degrees(np.arccos(c))
 
 
+def tilt_from_roll_pitch(roll: np.ndarray, pitch: np.ndarray, degrees: bool = False) -> np.ndarray:
+    """Tilt of the body z-axis for a ZYX attitude, in degrees.
+
+    Yaw does not tilt the thrust axis, so only roll and pitch enter. Used to turn a
+    recorded attitude into the same quantity the flatness equation predicts, so a
+    dataset's *depicted* tilt and its *implied* tilt can be compared without two
+    copies of this formula drifting apart.
+    """
+    r = np.radians(roll) if degrees else np.asarray(roll, dtype=np.float64)
+    p = np.radians(pitch) if degrees else np.asarray(pitch, dtype=np.float64)
+    c = np.clip(np.cos(r) * np.cos(p), -1.0, 1.0)
+    return np.degrees(np.arccos(c))
+
+
+def implied_tilt_from_positions(
+    pos: np.ndarray,
+    dt: float,
+    window: int = 11,
+    polyorder: int = 3,
+    k_d: float = 0.0,
+    g: float = G0,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Implied tilt (deg) from a position track, plus a mask of usable samples.
+
+    One implementation shared by the mocap floor, the ANWM audit and later pixel
+    stages: differentiate twice, invert flatness, take the tilt. Invalid samples
+    (window edges, free fall) are NaN in ``tilt`` and False in ``mask``.
+    """
+    from src.physics.diff import savgol_derivatives
+
+    pos = np.asarray(pos, dtype=np.float64).reshape(-1, 3)
+    n = len(pos)
+    w = min(window, n - 1)
+    if w % 2 == 0:
+        w -= 1
+    if w < polyorder + 2:
+        raise ValueError(f"too few frames ({n}) for window {w} and polyorder {polyorder}")
+    vel, acc = savgol_derivatives(pos, dt, w, polyorder)
+    half = w // 2
+    sl = slice(half, n - half)
+    ok = valid_thrust_mask(acc[sl], vel[sl], k_d, g)
+    tilt = np.full(n, np.nan)
+    idx = np.arange(sl.start, sl.stop)[ok]
+    if len(idx):
+        tilt[idx] = tilt_deg(implied_thrust_axis(acc[sl][ok], vel[sl][ok], k_d, g))
+    mask = np.zeros(n, dtype=bool)
+    mask[idx] = True
+    return tilt, mask
+
+
 def angle_between_deg(u: np.ndarray, w: np.ndarray) -> np.ndarray:
     """Angle between two vectors in degrees, robust near 0 and 180 degrees.
 

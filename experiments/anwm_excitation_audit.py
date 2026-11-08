@@ -1,185 +1,223 @@
-"""Excitation audit for ANWM's action space, using the floor physics code.
+"""Excitation audit on released ANWM trajectories: how much tilt does the data imply?
 
-ANWM releases no action sequences or trajectories, so this is a *distribution*
-audit of the action set the paper describes, not a replay of their data:
+The release fixes metric *distance* per step (3.30 m mean spacing; AerialVLN's own
+action set is 5 m forward, 2 m up/down, 15 deg yaw) but never fixes a duration.
+Since `tan(theta) = |a_xy| / (a_z + g)` and `a` scales as 1/dt^2, the implied tilt
+is undefined until a dt is chosen. This audit therefore never reports a single
+number: it sweeps dt, and separately measures which dt best explains the roll and
+pitch the released frames actually carry.
 
-* 48 actions per segment, one recorded frame per action.
-* Action set: forward/backward, left/right, up/down, yaw left/right.
-* Speeds: 5 m/s horizontal, 2 m/s vertical, 15 deg/s yaw.
-* Time step per action is not stated in the paper. It is inferred from two
-  independent statements: evaluation horizons of 4/8/16/32 s over 48 frames give
-  0.667 s, and 48 steps at the action speeds give a path length close to the
-  reported 80.7 m. The audit therefore runs 1/3, 2/3 and 1 s and shows the
-  sensitivity, because implied tilt scales with 1/dt.
-
-Two readings of the same data are reported, because they answer different
-questions:
-
-* ``step``: acceleration as the exact velocity change between consecutive
-  actions (velocity is piecewise constant). This is what the commanded
-  trajectory implies.
-* ``sg``: the same positions put through the verifier's own differentiator at
-  the frame rate, which is what a pixel-based verifier would effectively see.
-
-Outputs ``results/anwm_excitation/audit.json`` plus a printed table.
+Input: `data/raw/anwm/*.npz` from `scripts/fetch_anwm.py` (pose keys only, no images).
+Output: `results/anwm_excitation/audit.json`.
 """
 from __future__ import annotations
 
+import argparse
 import json
 from pathlib import Path
 
 import numpy as np
 
-from src.physics.diff import savgol_derivatives
-from src.physics.flatness import G0, angle_between_deg, implied_thrust_axis, tilt_deg
+from src.physics.flatness import G0, implied_tilt_from_positions, tilt_from_roll_pitch
 
 ROOT = Path(__file__).resolve().parents[1]
+IN_DIR = ROOT / "data/raw/anwm"
+OUT_DIR = ROOT / "results/anwm_excitation"
+SPLIT_DIR = ROOT / "third_party/anwm/data/splits/airvln_16"
 
-# Paper-stated action set (Sec. 3.2): body-frame velocity commands.
-ACTIONS = {
-    "forward": (5.0, 0.0, 0.0, 0.0),
-    "backward": (-5.0, 0.0, 0.0, 0.0),
-    "left": (0.0, 5.0, 0.0, 0.0),
-    "right": (0.0, -5.0, 0.0, 0.0),
-    "up": (0.0, 0.0, 2.0, 0.0),
-    "down": (0.0, 0.0, -2.0, 0.0),
-    "yaw_left": (0.0, 0.0, 0.0, np.radians(15.0)),
-    "yaw_right": (0.0, 0.0, 0.0, -np.radians(15.0)),
-}
-STEPS_PER_SEGMENT = 48
-N_SEGMENTS = 4000
-K_D_FITTED = 0.297  # from the mocap floor run
-TILT_SIGNAL_DEG = 10.0
-SUSTAIN_S = 0.2  # a frame counts as testable only if the tilt holds this long
+K_D_FLOOR = 0.297          # from results/phase0_floor (mocap fit, 1/s)
+TILT_THRESHOLD_DEG = 10.0  # the verifier's signal threshold
+CANDIDATE_DT = {"paper_1s": 1.0, "spacing_3p30m_at_5ms": 3.30 / 5.0, "code_input_fps4": 0.25}
+DT_GRID = np.geomspace(0.05, 2.0, 48)
+SG_WINDOW, SG_POLY = 11, 3
 
 
-def _rot_z(yaw: np.ndarray) -> np.ndarray:
-    c, s = np.cos(yaw), np.sin(yaw)
-    R = np.zeros((len(yaw), 3, 3))
-    R[:, 0, 0], R[:, 0, 1] = c, -s
-    R[:, 1, 0], R[:, 1, 1] = s, c
-    R[:, 2, 2] = 1.0
-    return R
+def load_split() -> tuple[set[str], set[str]]:
+    def names(split: str) -> set[str]:
+        p = SPLIT_DIR / split / "traj_names.txt"
+        return set(p.read_text().split()) if p.exists() else set()
+    return names("train"), names("test")
 
 
-def simulate(rng: np.random.Generator, dt: float, n_seg: int) -> dict:
-    """Random 48-action segments; returns post-action positions and velocities."""
-    names = list(ACTIONS)
-    acts = rng.integers(0, len(names), size=(n_seg, STEPS_PER_SEGMENT))
-    params = np.array([ACTIONS[n] for n in names])  # (8, 4)
-
-    yaw = np.zeros(n_seg)
-    pos = np.zeros((n_seg, 3))
-    pos_hist = np.zeros((n_seg, STEPS_PER_SEGMENT, 3))
-    vel_hist = np.zeros((n_seg, STEPS_PER_SEGMENT, 3))  # world velocity during each step
-    for k in range(STEPS_PER_SEGMENT):
-        p = params[acts[:, k]]
-        yaw_mid = yaw + 0.5 * p[:, 3] * dt
-        v_world = _rot_z(yaw_mid)[:, :, :] @ np.stack(
-            [p[:, 0], p[:, 1], p[:, 2]], axis=1)[:, :, None]
-        v_world = v_world[:, :, 0]
-        pos = pos + v_world * dt
-        yaw = yaw + p[:, 3] * dt
-        pos_hist[:, k] = pos
-        vel_hist[:, k] = v_world
-    return {"pos": pos_hist, "vel": vel_hist, "actions": acts, "names": names}
+def implied_tilt(pts: np.ndarray, dt: float, k_d: float = 0.0) -> np.ndarray:
+    tilt, _ = implied_tilt_from_positions(pts, dt, SG_WINDOW, SG_POLY, k_d)
+    return tilt
 
 
-def step_acceleration(sim: dict, dt: float) -> tuple[np.ndarray, np.ndarray]:
-    """Exact acceleration at each boundary, and the mid-step velocity."""
-    v = sim["vel"]
-    dv = np.diff(v, axis=1) / dt
-    v_mid = 0.5 * (v[:, 1:] + v[:, :-1])
-    return dv, v_mid
+def per_step_tilt(pts: np.ndarray, dt: float, k_d: float = 0.0) -> np.ndarray:
+    """Tilt demanded by the *commanded* per-step velocity change.
 
-
-def sustained_fraction(tilt: np.ndarray, dt: float, threshold: float, span_s: float) -> float:
-    """Fraction of frames whose tilt stays above threshold for at least span_s."""
-    n_need = max(1, int(round(span_s / dt)))
-    above = tilt >= threshold
-    if n_need == 1:
-        return float(above.mean())
-    kernel = np.ones(n_need)
-    run = np.apply_along_axis(lambda r: np.convolve(r.astype(float), kernel, "valid"), -1, above)
-    return float(np.mean(run >= n_need - 1) if run.size else 0.0)
-
-
-def audit_dt(dt: float, rng: np.random.Generator) -> dict:
-    sim = simulate(rng, dt, N_SEGMENTS)
-    dv, v_mid = step_acceleration(sim, dt)
-
-    out = {"dt_s": dt, "frames_per_second": 1.0 / dt}
-
-    # (a) exact commanded acceleration between actions
-    for label, k_d in (("drag_free", 0.0), ("fitted_drag", K_D_FITTED)):
-        a = dv.reshape(-1, 3)
-        v = v_mid.reshape(-1, 3)
-        tilt = tilt_deg(implied_thrust_axis(a, v, k_d))
-        out[f"step_{label}"] = {
-            "median_tilt_deg": float(np.median(tilt)),
-            "p90_tilt_deg": float(np.percentile(tilt, 90)),
-            "p99_tilt_deg": float(np.percentile(tilt, 99)),
-            "frac_frames_gt_10deg": float(np.mean(tilt > TILT_SIGNAL_DEG)),
-            "frac_sustained_gt_10deg_0.2s": sustained_fraction(
-                tilt.reshape(N_SEGMENTS, -1), dt, TILT_SIGNAL_DEG, SUSTAIN_S),
-        }
-
-    # (b) the verifier's own differentiator on the sampled positions
-    window, poly = 5, 3
-    n_need = max(window, 4 * window + 1)
-    clips_pos = sim["pos"][: max(1, n_need // STEPS_PER_SEGMENT) + 1]
-    frames = clips_pos.reshape(-1, 3)
-    t = np.arange(len(frames)) * dt
-    vel, acc = savgol_derivatives(frames, dt, window, poly)
-    half = window // 2
-    sl = slice(half, len(frames) - half)
-    for label, k_d in (("drag_free", 0.0), ("fitted_drag", K_D_FITTED)):
-        a, v = acc[sl], vel[sl]
-        ok = np.linalg.norm(a + np.array([0.0, 0.0, G0]), axis=1) > 1.0
-        tilt = np.full(len(a), np.nan)
-        tilt[ok] = tilt_deg(implied_thrust_axis(a[ok], v[ok], k_d))
-        out[f"sg_{label}"] = {
-            "window": window, "polyorder": poly,
-            "median_tilt_deg": float(np.nanmedian(tilt)),
-            "p90_tilt_deg": float(np.nanpercentile(tilt, 90)),
-            "frac_frames_gt_10deg": float(np.nanmean(tilt > TILT_SIGNAL_DEG)),
-        }
-
-    # cruise tilt: what a level camera would need to be at 5 m/s and 2 m/s
-    out["cruise_tilt_deg"] = {
-        f"k_d={K_D_FITTED}": {
-            "horizontal_5ms": float(np.degrees(np.arctan(K_D_FITTED * 5.0 / G0))),
-            "vertical_2ms": float(np.degrees(np.arctan(K_D_FITTED * 2.0 / G0))),
-        }
-    }
-    sp = np.linalg.norm(sim["vel"].reshape(-1, 3), axis=1)
-    out["speed_stats_ms"] = {"mean": float(sp.mean()), "max": float(sp.max()),
-                             "frac_frames_moving_gt_10ms": float(np.mean(sp > 10.0))}
-    out["mean_path_length_m"] = float(
-        np.linalg.norm(np.diff(sim["pos"], axis=1), axis=2).sum(axis=1).mean())
+    These trajectories are teleported: each frame is a new pose with a piecewise
+    constant velocity, so the acceleration is a jump between frames rather than a
+    smooth curve. A Savitzky-Golay window smears those jumps over ~10 steps and
+    understates them; this estimator computes a_k = (v_k - v_{k-1}) / dt directly,
+    which is the honest reading of what the data commands.
+    """
+    v = np.diff(pts, axis=0) / dt                      # (T-1, 3) velocity per step
+    dv = np.diff(v, axis=0) / dt                       # (T-2, 3) acceleration at boundaries
+    v_mid = 0.5 * (v[1:] + v[:-1])
+    denom = dv[:, 2] + G0
+    ok = np.linalg.norm(dv + np.array([0.0, 0.0, G0]), axis=1) > 1.0
+    out = np.full(len(dv), np.nan)
+    if ok.any():
+        out[ok] = np.degrees(np.arctan2(
+            np.linalg.norm((dv + k_d * v_mid)[ok][:, :2], axis=1), denom[ok]))
     return out
 
 
-def main() -> int:
-    rng = np.random.default_rng(0)
-    results = {f"dt_{dt:.3f}": audit_dt(dt, rng) for dt in (1 / 3, 2 / 3, 1.0)}
-    out_dir = ROOT / "results" / "anwm_excitation"
-    out_dir.mkdir(parents=True, exist_ok=True)
-    (out_dir / "audit.json").write_text(json.dumps(
-        {"actions": {k: list(map(float, v)) for k, v in ACTIONS.items()},
-         "steps_per_segment": STEPS_PER_SEGMENT, "n_segments": N_SEGMENTS,
-         "tilt_signal_deg": TILT_SIGNAL_DEG, "k_d_fitted": K_D_FITTED,
-         "results": results}, indent=2))
+def audit_trajectory(path: Path) -> dict:
+    z = np.load(path, allow_pickle=False)
+    pts = np.asarray(z["point"], dtype=np.float64) if "point" in z.files else \
+        np.column_stack([np.asarray(z["position"], dtype=np.float64), np.zeros(len(z["position"]))])
+    roll = np.asarray(z["roll"], dtype=np.float64).ravel() if "roll" in z.files else None
+    pitch = np.asarray(z["pitch"], dtype=np.float64).ravel() if "pitch" in z.files else None
+    dep = tilt_from_roll_pitch(roll, pitch, degrees=False) \
+        if roll is not None and pitch is not None else None
 
-    print(f"{'dt (s)':>7} {'fps':>6} {'step p50':>9} {'step p90':>9} {'step >10deg':>11} "
-          f"{'sustained':>10} {'sg p50':>8} {'sg >10deg':>10} {'path (m)':>9}")
-    for name, r in results.items():
-        s, g = r["step_fitted_drag"], r["sg_fitted_drag"]
-        print(f"{r['dt_s']:7.3f} {r['frames_per_second']:6.2f} {s['median_tilt_deg']:9.1f} "
-              f"{s['p90_tilt_deg']:9.1f} {s['frac_frames_gt_10deg']:11.3f} "
-              f"{s['frac_sustained_gt_10deg_0.2s']:10.3f} {g['median_tilt_deg']:8.1f} "
-              f"{g['frac_frames_gt_10deg']:10.3f} {r['mean_path_length_m']:9.1f}")
-    print("\ncruise tilt with fitted drag:", results["dt_0.667"]["cruise_tilt_deg"])
+    row = {"file": path.name, "n_frames": int(len(pts)), "dt": {}}
+    for tag, dt in CANDIDATE_DT.items():
+        entry = {"dt_s": dt}
+        for label, k_d in (("drag_free", 0.0), ("k_d_floor", K_D_FLOOR)):
+            t = implied_tilt(pts, dt, k_d)
+            finite = np.isfinite(t)
+            entry[label] = {
+                "median_tilt_deg": float(np.nanmedian(t)),
+                "p90_tilt_deg": float(np.nanpercentile(t, 90)),
+                "frac_frames_gt_10deg": float(np.nanmean(t > TILT_THRESHOLD_DEG)),
+                "n_valid": int(finite.sum()),
+            }
+        for label, k_d in (("drag_free", 0.0), ("k_d_floor", K_D_FLOOR)):
+            t = per_step_tilt(pts, dt, k_d)
+            entry[f"per_step_{label}"] = {
+                "median_tilt_deg": float(np.nanmedian(t)),
+                "p90_tilt_deg": float(np.nanpercentile(t, 90)),
+                "frac_frames_gt_10deg": float(np.nanmean(t > TILT_THRESHOLD_DEG)),
+            }
+        if dep is not None:
+            t = implied_tilt(pts, dt, K_D_FLOOR)
+            m = np.isfinite(t)
+            entry["median_abs_diff_vs_depicted_deg"] = float(np.median(np.abs(t[m] - dep[m])))
+        row["dt"][tag] = entry
+
+    if dep is not None:
+        row["depicted_tilt_deg"] = {
+            "median": float(np.median(dep)),
+            "p90": float(np.percentile(dep, 90)),
+            "frac_gt_10deg": float(np.mean(dep > TILT_THRESHOLD_DEG)),
+        }
+        best = None
+        for dt in DT_GRID:
+            try:
+                t = implied_tilt(pts, dt, K_D_FLOOR)
+            except ValueError:
+                continue
+            m = np.isfinite(t)
+            if m.sum() < 20:
+                continue
+            score = float(np.median(np.abs(t[m] - dep[m])))
+            if best is None or score < best[1]:
+                best = (float(dt), score)
+        row["best_dt_by_attitude"] = {"dt_s": best[0], "median_abs_diff_deg": best[1]} if best else None
+    return row
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--limit", type=int, default=None)
+    args = ap.parse_args()
+    files = sorted(IN_DIR.glob("*.npz"))[: args.limit]
+    if not files:
+        raise SystemExit(f"no npz in {IN_DIR}; run scripts/fetch_anwm.py --fetch-test")
+    train, test = load_split()
+
+    rows = []
+    att = []
+    for p in files:
+        r = audit_trajectory(p)
+        z = np.load(p, allow_pickle=False)
+        if "roll" in z.files and "pitch" in z.files:
+            att.append((float(np.abs(z["roll"]).max()), float(np.abs(z["pitch"]).max()),
+                        float(np.abs(z["roll"]).mean()), float(np.abs(z["pitch"]).mean())))
+        stem = p.stem
+        r["split"] = "test" if stem in test else "train" if stem in train else "unknown"
+        rows.append(r)
+
+    def pooled(metric_path: str) -> dict | None:
+        vals = []
+        for r in rows:
+            node = r
+            for k in metric_path.split("."):
+                node = node[k]
+            vals.append(node)
+        vals = [v for v in vals if v is not None]
+        return {"mean": float(np.mean(vals)), "min": float(np.min(vals)),
+                "max": float(np.max(vals))} if vals else None
+
+    summary = {
+        "source": "EmbodiedCity/ANWM-Dataset (apache-2.0), pose keys only",
+        "n_trajectories": len(rows),
+        "n_test_split": sum(r["split"] == "test" for r in rows),
+        "n_train_split": sum(r["split"] == "train" for r in rows),
+        "k_d_used": K_D_FLOOR,
+        "tilt_threshold_deg": TILT_THRESHOLD_DEG,
+        "sg": {"window": SG_WINDOW, "polyorder": SG_POLY},
+        "dt_is_undefined_in_release": True,
+        "by_dt": {
+            tag: {
+                "dt_s": dt,
+                "implied_median_tilt_deg_drag_free": pooled(f"dt.{tag}.drag_free.median_tilt_deg"),
+                "implied_median_tilt_deg_k_d": pooled(f"dt.{tag}.k_d_floor.median_tilt_deg"),
+                "frac_gt_10deg_k_d": pooled(f"dt.{tag}.k_d_floor.frac_frames_gt_10deg"),
+                "per_step_median_tilt_deg_drag_free": pooled(f"dt.{tag}.per_step_drag_free.median_tilt_deg"),
+                "per_step_p90_tilt_deg_drag_free": pooled(f"dt.{tag}.per_step_drag_free.p90_tilt_deg"),
+                "per_step_frac_gt_10deg_drag_free": pooled(f"dt.{tag}.per_step_drag_free.frac_frames_gt_10deg"),
+                "median_abs_diff_vs_depicted": pooled(f"dt.{tag}.median_abs_diff_vs_depicted_deg"),
+            }
+            for tag, dt in CANDIDATE_DT.items()
+        },
+        "depicted_attitude": {
+            "max_abs_roll_rad": max(a[0] for a in att) if att else None,
+            "max_abs_pitch_rad": max(a[1] for a in att) if att else None,
+            "mean_abs_roll_rad": float(np.mean([a[2] for a in att])) if att else None,
+            "mean_abs_pitch_rad": float(np.mean([a[3] for a in att])) if att else None,
+            "note": "roll and pitch are the recorded reference-path attitude; FFP uses them, "
+                    "so these are the attitudes the released frames depict",
+        },
+        "best_dt_by_attitude": {
+            "median": float(np.median([r["best_dt_by_attitude"]["dt_s"] for r in rows
+                                       if r.get("best_dt_by_attitude")])),
+            "n": sum(bool(r.get("best_dt_by_attitude")) for r in rows),
+            "grid_max_s": float(DT_GRID[-1]),
+            "degenerate": bool(
+                any(r.get("best_dt_by_attitude") for r in rows)
+                and abs(float(np.median([r["best_dt_by_attitude"]["dt_s"] for r in rows
+                                         if r.get("best_dt_by_attitude")])) - DT_GRID[-1]) < 1e-9),
+            "why": "depicted tilt is identically zero, so the objective decreases with dt and "
+                   "runs to the grid edge; use the per-dt discrepancy table instead",
+        } if any(r.get("best_dt_by_attitude") for r in rows) else None,
+        "per_trajectory": rows,
+    }
+    OUT_DIR.mkdir(parents=True, exist_ok=True)
+    (OUT_DIR / "audit.json").write_text(json.dumps(summary, indent=1))
+
+    print(f"trajectories {len(rows)} (test {summary['n_test_split']}, train {summary['n_train_split']})")
+    print(f"{'dt':26s} {'dt s':>6} {'sg(0)':>7} {'sg(k_d)':>8} {'sg>10':>6} "
+          f"{'step(0)':>8} {'step p90':>9} {'step>10':>8}")
+    for tag, v in summary["by_dt"].items():
+        m0 = v["implied_median_tilt_deg_drag_free"]
+        mk = v["implied_median_tilt_deg_k_d"]
+        f10 = v["frac_gt_10deg_k_d"]
+        dd = v["median_abs_diff_vs_depicted"]
+        ps = v["per_step_median_tilt_deg_drag_free"]
+        pp = v["per_step_p90_tilt_deg_drag_free"]
+        pf = v["per_step_frac_gt_10deg_drag_free"]
+        print(f"{tag:26s} {v['dt_s']:6.3f} "
+              f"{m0['mean'] if m0 else float('nan'):7.2f} {mk['mean'] if mk else float('nan'):8.2f} "
+              f"{f10['mean'] if f10 else float('nan'):6.3f} "
+              f"{ps['mean'] if ps else float('nan'):8.2f} {pp['mean'] if pp else float('nan'):9.2f} "
+              f"{pf['mean'] if pf else float('nan'):8.3f}")
+    if summary["best_dt_by_attitude"]:
+        print("best dt by attitude agreement:", summary["best_dt_by_attitude"])
     return 0
 
 

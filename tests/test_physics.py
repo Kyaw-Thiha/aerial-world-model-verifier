@@ -176,3 +176,41 @@ def test_savgol_window_validation():
         savgol_derivatives(pos, 0.01, 3, 2)
     with pytest.raises(ValueError, match="exceeds"):
         savgol_derivatives(pos, 0.01, 11, 2)
+
+
+def test_tilt_from_roll_pitch_matches_rotation():
+    """Recorded roll/pitch must give the same tilt as the rotation's third column."""
+    from src.physics.flatness import tilt_from_roll_pitch
+
+    for roll_d, pitch_d in ((0.0, 0.0), (10.0, 0.0), (0.0, 20.0), (-25.0, 15.0), (60.0, -40.0)):
+        R = Rotation.from_euler("ZYX", [37.0, pitch_d, roll_d], degrees=True)
+        z = R.as_matrix()[:, 2]
+        expected = np.degrees(np.arccos(np.clip(z[2], -1.0, 1.0)))
+        got = float(tilt_from_roll_pitch(np.radians(roll_d), np.radians(pitch_d)))
+        assert got == pytest.approx(expected, abs=1e-9)
+    assert float(tilt_from_roll_pitch(0.0, 0.0)) == pytest.approx(0.0, abs=1e-9)
+
+
+def test_implied_tilt_from_positions_matches_direct_chain():
+    """The shared pipeline agrees with calling the primitives by hand."""
+    from src.physics.flatness import implied_tilt_from_positions
+
+    dt, n, window, poly = 1.0, 60, 11, 3
+    t = np.arange(n) * dt
+    a = np.array([3.0, -2.0, 0.5])
+    pos = np.zeros((n, 3)) + 0.5 * a * (t**2)[:, None]
+    tilt, mask = implied_tilt_from_positions(pos, dt, window, poly)
+    vel, acc = savgol_derivatives(pos, dt, window, poly)
+    sl = edge_slice(n, window)
+    direct = tilt_deg(implied_thrust_axis(acc[sl], vel[sl]))
+    np.testing.assert_allclose(tilt[sl], direct, atol=1e-9)
+    assert mask[sl].all()
+    assert not mask[: window // 2].any()
+    assert np.isnan(tilt[: window // 2]).all()
+
+
+def test_implied_tilt_rejects_too_few_frames():
+    from src.physics.flatness import implied_tilt_from_positions
+
+    with pytest.raises(ValueError, match="too few frames"):
+        implied_tilt_from_positions(np.zeros((3, 3)), 1.0, window=11, polyorder=3)
