@@ -121,9 +121,9 @@ Can we start from a TII frame? Yes, with one learned component:
 | `K` | TII ships `camera_calibration/calib_*.json/npz`; recompute after undistortion | available |
 | depth | **Pi-Long**, as in the real-world route (`real/tools/fill_depth_pilong.py`) | needs a model run |
 | pose | TII mocap gives exact pose (275 Hz); use it instead of Sekai's reconstruction | available, better than the real pipeline |
-| target pose | integrate the commanded action sequence | available |
+| target pose | must be **built by integrating the commanded actions** into 4x4 poses: the release's own generation path reads recorded poses (`real/dataset.py:169-179`), so this is an adapter we write, not an existing feature | needs code |
 
-So the missing piece is depth only. The real-video route
+So the missing pieces are depth and a pose-synthesis adapter. The real-video route
 (`real/tools/process_youtube_to_airvln16_format.py`) expects an `extrinsic` npz per clip,
 resamples to `--out_fps 4` (line 517-523) and can zero the attitude (`--pitch_roll zero`,
 line 646) — we would instead pass mocap attitude. (**verified** for the code paths; the
