@@ -1,0 +1,148 @@
+{
+  "run_id": "20261108T133023Z_c738aa8",
+  "git": "c738aa8",
+  "config": {
+    "dpvo_tag": ".",
+    "geocalib_tag": "div10",
+    "gains": [
+      0.02,
+      0.05,
+      0.1,
+      0.2,
+      0.4,
+      1.0
+    ],
+    "pose_convention": "camera_to_world",
+    "speed_bins": [
+      [
+        0,
+        5
+      ],
+      [
+        5,
+        10
+      ],
+      [
+        10,
+        15
+      ],
+      [
+        15,
+        20
+      ],
+      [
+        20,
+        99
+      ]
+    ],
+    "fit_flights": null
+  },
+  "flights": {
+    "flight-01p-ellipse": {
+      "n": 1267,
+      "vo_relative_rotation_check": {
+        "median_abs_err_deg": 1.5368448995500619,
+        "median_scale_ratio": 0.8892473563449059,
+        "median_true_step_deg": 2.149120212864407
+      },
+      "gravity_align": {
+        "R_align": [
+          [
+            0.9868644767828504,
+            0.017184263233102025,
+            -0.16063376220846745
+          ],
+          [
+            0.017184263233102025,
+            0.977519060490944,
+            0.2101456339637768
+          ],
+          [
+            0.16063376220846745,
+            -0.2101456339637768,
+            0.9643835372737943
+          ]
+        ],
+        "mean_up_vo": [
+          0.16063376220846745,
+          -0.2101456339637768,
+          0.9643835372737943
+        ],
+        "spread_median_deg": 22.60176026946131,
+        "spread_p90_deg": 52.116992114577634,
+        "spread_n": 1267
+      },
+      "uptilt_metadata_deg": 30.0,
+      "true_tilt_deg_median": 24.26378687362767,
+      "gains": {
+        "0.02": {
+          "tilt_rmse_deg": 11.351824149306573,
+          "tilt_median_abs_deg": 7.016122211357036,
+          "lean_median_deg": 81.53620079757036,
+          "lean_n": 1202,
+          "yaw_align_rad": 0.7057731641095334,
+          "up_err_after_median_deg": 10.480290438662129
+        },
+        "0.05": {
+          "tilt_rmse_deg": 8.058516125408254,
+          "tilt_median_abs_deg": 5.189759025571604,
+          "lean_median_deg": 83.27622470903069,
+          "lean_n": 1202,
+          "yaw_align_rad": 0.582120892542334,
+          "up_err_after_median_deg": 6.900979359300094
+        },
+        "0.1": {
+          "tilt_rmse_deg": 6.31238501580367,
+          "tilt_median_abs_deg": 3.9343278043828036,
+          "lean_median_deg": 84.99567765577453,
+          "lean_n": 1202,
+          "yaw_align_rad": 0.4705119369893724,
+          "up_err_after_median_deg": 5.016859840781698
+        },
+        "0.2": {
+          "tilt_rmse_deg": 4.513115160723319,
+          "tilt_median_abs_deg": 2.8760557396144986,
+          "lean_median_deg": 84.01311832407883,
+          "lean_n": 1202,
+          "yaw_align_rad": 0.20310811082956098,
+          "up_err_after_median_deg": 3.267961426636694
+        },
+        "0.4": {
+          "tilt_rmse_deg": 2.9546246507905467,
+          "tilt_median_abs_deg": 2.187161799533076,
+          "lean_median_deg": 90.72159402287643,
+          "lean_n": 1202,
+          "yaw_align_rad": -0.2888005020290386,
+          "up_err_after_median_deg": 1.7264543955665452
+        },
+        "1.0": {
+          "tilt_rmse_deg": 2.2717051401030446,
+          "tilt_median_abs_deg": 1.8982564695878494,
+          "lean_median_deg": 90.4213546546704,
+          "lean_n": 1202,
+          "yaw_align_rad": -0.7339918706663513,
+          "up_err_after_median_deg": 0.0
+        }
+      }
+    }
+  },
+  "leave_one_flight_out": {
+    "flight-01p-ellipse": {
+      "gain": 1.0,
+      "tilt_rmse_deg": 2.2717051401030446,
+      "tilt_median_abs_deg": 1.8982564695878494,
+      "lean_median_deg": 90.4213546546704,
+      "lean_n": 1202,
+      "yaw_align_rad": -0.7339918706663513,
+      "up_err_after_median_deg": 0.0
+    }
+  },
+  "pooled": {
+    "median_flight_tilt_rmse_deg": 2.2717051401030446,
+    "gate1_tilt_target_deg": 5.0,
+    "gate1_tilt_pass": true,
+    "median_flight_lean_deg": 90.4213546546704,
+    "gate1_lean_target_deg": 15.0,
+    "gate1_lean_pass": false
+  }
+}

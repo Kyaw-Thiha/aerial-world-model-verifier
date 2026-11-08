@@ -196,14 +196,24 @@ def main() -> int:
                     return 1e3
                 return float(np.median(angle_between_deg(z[m], z_dep[m])))
 
-            opt = minimize_scalar(cost, bounds=(0.2 * s_oracle, 5.0 * s_oracle), method="bounded")
+            # monocular scale is only defined up to sign* magnitude: the least-squares
+            # oracle scale can come out negative if the VO track is mirrored, so search
+            # both branches and keep the better one
+            s_ref = abs(s_oracle) or 1.0
+            cands = []
+            for lo, hi in ((0.05 * s_ref, 5.0 * s_ref), (-5.0 * s_ref, -0.05 * s_ref)):
+                r_ = minimize_scalar(cost, bounds=(lo, hi), method="bounded")
+                cands.append(r_)
+            opt = min(cands, key=lambda r_: r_.fun)
             z_fit, okf = implied_from_positions(float(opt.x) * p_al, dt_native, w_s, K_D)
             m = okf & np.isfinite(z_fit).all(axis=1)
             if m.sum() >= 30:
                 errt = tilt_deg(z_fit[m]) - tilt_deg(z_true[m])
                 res = angle_between_deg(z_fit[m], z_dep[m])
                 row["fitted_scale"] = {
-                    "scale": float(opt.x), "scale_over_oracle": float(opt.x / s_oracle),
+                    "scale": float(opt.x),
+                    "scale_over_oracle": float(opt.x / s_oracle) if s_oracle else None,
+                    "same_sign_as_oracle": bool(np.sign(opt.x) == np.sign(s_oracle)),
                     "n": int(m.sum()),
                     "implied_tilt_rmse_deg": float(np.sqrt(np.mean(errt**2))),
                     "lean_median_deg": lean_err(z_fit[m], z_true[m]),

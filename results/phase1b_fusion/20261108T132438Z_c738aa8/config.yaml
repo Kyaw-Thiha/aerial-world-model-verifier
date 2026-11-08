@@ -1,0 +1,22 @@
+dpvo_tag: .
+geocalib_tag: div10
+gains:
+- 0.02
+- 0.05
+- 0.1
+- 0.2
+- 0.4
+- 1.0
+pose_convention: world_to_camera
+speed_bins:
+- - 0
+  - 5
+- - 5
+  - 10
+- - 10
+  - 15
+- - 15
+  - 20
+- - 20
+  - 99
+fit_flights: null

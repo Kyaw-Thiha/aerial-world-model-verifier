@@ -1,0 +1,14 @@
+dpvo_tag: .
+geocalib_tag: div10
+windows_s:
+- 0.05
+- 0.075
+- 0.11
+- 0.16
+- 0.24
+- 0.37
+polyorder: 3
+k_d: 0.295
+fps_diff: 0.0
+depicted_gain: 0.2
+note: window chosen on fit flights only

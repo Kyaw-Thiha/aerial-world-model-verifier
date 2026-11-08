@@ -1,0 +1,70 @@
+tag: div10
+geocalib_summary:
+  mode: divisional
+  device: cuda
+  fov_deg: 100.0
+  stride: 10
+  gpu: NVIDIA A10
+  geocalib_commit: 1dedb29f94fc11b896c5f572005978aeebccd67f
+  flights:
+    flight-01a-ellipse:
+      n: 270
+      seconds: 54.393409729003906
+      fps: 4.963836636555428
+      peak_gpu_gb: 0.426470912
+      virtual_valid_frac: 0.458544921875
+    flight-04a-ellipse:
+      n: 350
+      seconds: 66.6860511302948
+      fps: 5.248473917223725
+      peak_gpu_gb: 0.425763328
+      virtual_valid_frac: 0.458544921875
+    flight-07a-lemniscate:
+      n: 370
+      seconds: 68.9834852218628
+      fps: 5.363602589953467
+      peak_gpu_gb: 0.425763328
+      virtual_valid_frac: 0.458544921875
+    flight-13a-trackRATM:
+      n: 557
+      seconds: 107.6234712600708
+      fps: 5.175450981821766
+      peak_gpu_gb: 0.425763328
+      virtual_valid_frac: 0.46783203125
+    flight-01p-ellipse:
+      n: 1267
+      seconds: 248.31192874908447
+      fps: 5.102453218348139
+      peak_gpu_gb: 0.425763328
+      virtual_valid_frac: 0.458544921875
+    flight-07p-lemniscate:
+      n: 1284
+      seconds: 256.4280240535736
+      fps: 5.007253028365353
+      peak_gpu_gb: 0.425763328
+      virtual_valid_frac: 0.458544921875
+    flight-13p-trackRATM:
+      n: 536
+      seconds: 117.31443572044373
+      fps: 4.568917684412424
+      peak_gpu_gb: 0.425763328
+      virtual_valid_frac: 0.46973307291666666
+    flight-16p-trackRATM:
+      n: 373
+      seconds: 78.51749992370605
+      fps: 4.750533325213321
+      peak_gpu_gb: 0.425763328
+      virtual_valid_frac: 0.46973307291666666
+speed_bins:
+- - 0
+  - 5
+- - 5
+  - 10
+- - 10
+  - 15
+- - 15
+  - 20
+- - 20
+  - 99
+offset_policy: one constant rotation per flight, reported not applied by default
+mount: analytic R_cb at the recorded per-flight uptilt

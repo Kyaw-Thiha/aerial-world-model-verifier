@@ -49,11 +49,18 @@ def git_hash() -> str:
         return "unknown"
 
 
-def poses_to_rot(poses: np.ndarray) -> np.ndarray:
-    """DPVO pose rows (tx ty tz qx qy qz qw) -> (N, 3, 3) camera->VO-world."""
+def poses_to_rot(poses: np.ndarray, convention: str = "camera_to_world") -> np.ndarray:
+    """DPVO pose rows (tx ty tz qx qy qz qw) -> (N, 3, 3) camera<->VO-world.
+
+    The upstream demo feeds these to TUM's ``PoseTrajectory3D`` as camera-to-world, so
+    that is the default; ``world_to_camera`` transposes them, which is the obvious
+    alternative failure mode and is testable because the rotation *angle* between
+    consecutive frames is invariant under inversion.
+    """
     q = poses[:, 3:7]
     q = q / np.linalg.norm(q, axis=1, keepdims=True)
-    return Rotation.from_quat(q).as_matrix()
+    R = Rotation.from_quat(q).as_matrix()
+    return R if convention == "camera_to_world" else np.transpose(R, (0, 2, 1))
 
 
 def tilt_of(z: np.ndarray) -> np.ndarray:
@@ -68,6 +75,10 @@ def main() -> int:
     ap.add_argument("--gc-tag", required=True)
     ap.add_argument("--mocap-root", default="data/raw/tii")
     ap.add_argument("--fit-flights", nargs="*", default=None)
+    ap.add_argument("--dpvo-glob", default="*_stride10_*/poses.npz",
+                    help="which DPVO runs to score; must match the GeoCalib stride")
+    ap.add_argument("--pose-convention", default="camera_to_world",
+                    choices=["camera_to_world", "world_to_camera"])
     args = ap.parse_args()
 
     run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ") + "_" + git_hash()
@@ -76,11 +87,15 @@ def main() -> int:
     dpvo_dir = Path(args.dpvo_root) / args.dpvo_tag
     gc_dir = Path(args.geocalib_root) / args.gc_tag
     cfg = {"dpvo_tag": args.dpvo_tag, "geocalib_tag": args.gc_tag, "gains": GAINS,
+           "pose_convention": args.pose_convention,
            "speed_bins": SPEED_BINS, "fit_flights": args.fit_flights}
     (out / "config.yaml").write_text(yaml.safe_dump(cfg, sort_keys=False))
 
     per_flight: dict = {}
-    for npz in sorted(dpvo_dir.glob("*_stride*").glob("poses.npz")) or sorted(dpvo_dir.glob("*/poses.npz")):
+    npx = sorted(dpvo_dir.glob(args.dpvo_glob or "*/poses.npz"))
+    if not npx:
+        raise SystemExit(f"no DPVO pose files under {dpvo_dir}")
+    for npz in npx:
         flight = npz.parent.name.split("_stride")[0]
         jl = gc_dir / f"{flight}.jsonl"
         if not jl.exists():
@@ -101,7 +116,7 @@ def main() -> int:
             print(f"{flight}: {len(keep)} frames with both inputs, skipped")
             continue
         keep = np.asarray(keep)
-        R_vo = poses_to_rot(poses[keep])
+        R_vo = poses_to_rot(poses[keep], args.pose_convention)
         up_cam = np.stack([gc[int(frame_ts[i])] for i in keep])
         up_cam /= np.linalg.norm(up_cam, axis=1, keepdims=True)
         control, track = flight_parts(flight)
@@ -118,7 +133,17 @@ def main() -> int:
         # target (world up) is e3 in a frame where up is not e3
         R_al = np.einsum("ij,njk->nik", gal["R_align"], R_vo)
         rel = relative_rotations(R_al)
-        rec = {"n": int(len(keep)), "gravity_align": {k: (v.tolist() if isinstance(v, np.ndarray)
+        # mount-free VO rotation check: the rotation *angle* between consecutive
+        # frames is invariant to the camera-to-body rotation and the VO frame, so it
+        # can be compared with mocap without any alignment
+        ang_vo = np.degrees(Rotation.from_matrix(rel).magnitude())
+        ang_true = np.degrees(Rotation.from_matrix(
+            relative_rotations(F.body_to_world(clip.quat[idx]))).magnitude())
+        vo_rot_check = {"median_abs_err_deg": float(np.median(np.abs(ang_vo - ang_true))),
+                        "median_scale_ratio": float(np.median(ang_vo / np.maximum(ang_true, 1e-9))),
+                        "median_true_step_deg": float(np.median(ang_true))}
+        rec = {"n": int(len(keep)), "vo_relative_rotation_check": vo_rot_check,
+               "gravity_align": {k: (v.tolist() if isinstance(v, np.ndarray)
                                                           else v) for k, v in gal.items()},
                "uptilt_metadata_deg": clip.cam_uptilt_deg,
                "true_tilt_deg_median": float(np.median(tilt_of(z_true))),
@@ -129,19 +154,27 @@ def main() -> int:
             tilt_est, tilt_tru = tilt_of(z_est), tilt_of(z_true)
             err = tilt_est - tilt_tru
             lean = lean_error_deg(z_est, z_true, min_tilt_deg=10.0)
+            # vector angle between the estimated and true thrust axis: a scalar tilt
+            # difference cannot see an azimuth error, this can
+            cos = ((z_est * z_true).sum(axis=1)
+                   / (np.linalg.norm(z_est, axis=1) * np.linalg.norm(z_true, axis=1)))
+            axis_vec = np.degrees(np.arccos(np.clip(cos, -1.0, 1.0)))
             rec["gains"][str(g)] = {
                 "tilt_rmse_deg": float(np.sqrt(np.mean(err**2))),
                 "tilt_median_abs_deg": float(np.median(np.abs(err))),
                 "lean_median_deg": lean.get("median_abs_deg"),
                 "lean_n": lean.get("n", 0),
                 "yaw_align_rad": lean.get("yaw_align_rad"),
-                "up_err_after_median_deg": float(np.median(res.up_err_after_deg))}
+                "up_err_after_median_deg": float(np.median(res.up_err_after_deg)),
+                "axis_vector_median_deg": float(np.median(axis_vec)),
+                "axis_vector_rmse_deg": float(np.sqrt(np.mean(axis_vec**2)))}
             if g == GAINS[0]:
                 np.savez_compressed(out / f"frames_{flight}.npz", z_est=z_est, z_true=z_true,
                                     speed=speed, tilt_est=tilt_est, tilt_tru=tilt_tru)
         per_flight[flight] = rec
         best = min(GAINS, key=lambda g: per_flight[flight]["gains"][str(g)]["tilt_rmse_deg"])
-        print(f"{flight:24s} n={len(keep):4d} align_spread={gal['spread_median_deg']:5.2f} "
+        print(f"{flight:24s} n={len(keep):4d} vo_rot_err={vo_rot_check['median_abs_err_deg']:5.2f} "
+              f"align_spread={gal['spread_median_deg']:5.2f} "
               f"best_gain={best} rmse={per_flight[flight]['gains'][str(best)]['tilt_rmse_deg']:6.2f} "
               f"lean={per_flight[flight]['gains'][str(best)]['lean_median_deg']}", flush=True)
 

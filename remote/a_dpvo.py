@@ -78,7 +78,7 @@ def fetch_weights() -> dict:
 
 @app.function(image=image, gpu="A10G", volumes={VOLUME_MOUNT: volume}, timeout=3 * 3600)
 def run(flight: str, stride: int = 4, fov: float = 100.0, max_frames: int = 0,
-        run_tag: str = "") -> dict:
+        run_tag: str = "", scale: float = 0.5, patches: int = 48) -> dict:
     import json
     import sys
     import time
@@ -103,8 +103,14 @@ def run(flight: str, stride: int = 4, fov: float = 100.0, max_frames: int = 0,
     torch.backends.cudnn.benchmark = True
 
     cfg.merge_from_file(f"{DPVO_ROOT}/config/default.yaml")
+    # an A10G OOMs with the default patch budget at 640x480; the demo's own 0.5x
+    # downscale plus a smaller patch set keeps the correlation volume affordable
+    cfg.PATCHES_PER_FRAME = patches
+    cfg.REMOVAL_WINDOW = 12
+    cfg.OPTIMIZATION_WINDOW = 8
+    cfg.PATCH_LIFETIME = 5
     weights = Path(VOLUME_MOUNT) / "dpvo_models" / "dpvo.pth"
-    tag = run_tag or f"{Path(flight).name}_stride{stride}_fov{int(fov)}"
+    tag = run_tag or f"{Path(flight).name}_stride{stride}_fov{int(fov)}_s{scale}"
     out_dir = Path(VOLUME_MOUNT) / "dpvo" / tag
     out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -116,33 +122,47 @@ def run(flight: str, stride: int = 4, fov: float = 100.0, max_frames: int = 0,
         frames, ts = [], []
         for n in names:
             img = cv2.imdecode(np.frombuffer(z.read(n), dtype=np.uint8), cv2.IMREAD_COLOR)
-            frames.append(U.undistort(img, vc))
+            und = U.undistort(img, vc)
+            if scale != 1.0:
+                und = cv2.resize(und, None, fx=scale, fy=scale, interpolation=cv2.INTER_AREA)
+            frames.append(und)
             ts.append(int(Path(n).stem.split("_")[1]))
     h, w = frames[0].shape[:2]
     h, w = h - h % 16, w - w % 16
-    K = vc.K.copy()
-    K[0, 2] = K[0, 2] * w / vc.out_size[0]
-    K[1, 2] = K[1, 2] * h / vc.out_size[1]
-    K[0, 0] *= w / vc.out_size[0]
-    K[1, 1] *= h / vc.out_size[1]
+    K = vc.K.copy() * np.array([[scale, 1.0, scale], [1.0, scale, scale], [1.0, 1.0, 1.0]])
     intr = np.array([K[0, 0], K[1, 1], K[0, 2], K[1, 2]], dtype=np.float32)
 
+    props = torch.cuda.get_device_properties(0)
+    free_b, total_b = torch.cuda.mem_get_info()
+    mem_info = {"gpu_name": props.name, "total_gb": round(total_b / 1e9, 2),
+                "free_at_start_gb": round(free_b / 1e9, 2),
+                "mixed_precision": bool(cfg.MIXED_PRECISION), "BUFFER_SIZE": int(cfg.BUFFER_SIZE)}
+    print("mem_info", mem_info, flush=True)
     slam = DPVO(cfg, str(weights), ht=h, wd=w, viz=False)
     t0 = time.time()
     losses = []
-    for t, f in enumerate(frames):
-        im = torch.from_numpy(np.ascontiguousarray(f[:h, :w])).permute(2, 0, 1).cuda()
-        slam(t, im, torch.from_numpy(intr).cuda())
-        if hasattr(slam, "pg") and hasattr(slam.pg, "n"):
-            losses.append(int(slam.pg.n))
+    # without no_grad, autograd keeps every intermediate and the GPU fills up
+    with torch.no_grad():
+        for t, f in enumerate(frames):
+            im = torch.from_numpy(np.ascontiguousarray(f[:h, :w])).permute(2, 0, 1).cuda()
+            slam(t, im, torch.from_numpy(intr).cuda())
+            if hasattr(slam, "pg") and hasattr(slam.pg, "n"):
+                losses.append(int(slam.pg.n))
     wall = time.time() - t0
-    poses, tstamps = slam.terminate()
+    try:
+        poses, tstamps = slam.terminate()
+    except torch.cuda.OutOfMemoryError:  # surface memory, not a serialisation error
+        free_b, total_b = torch.cuda.mem_get_info()
+        return {"error": "cuda_oom", "mem_info": mem_info,
+                "free_at_failure_gb": round(free_b / 1e9, 2), "n_frames_fed": len(frames)}
     poses = np.asarray(poses, dtype=np.float64)
     peak = torch.cuda.max_memory_allocated() / 1e9
     rec = {"flight": flight, "stride": stride, "fov_deg": fov, "n_frames_fed": len(frames),
+           "mem_info": mem_info,
            "n_poses": int(len(poses)), "seconds": wall,
            "fps": len(frames) / wall if wall else 0.0, "peak_gpu_gb": peak,
-           "virtual_valid_frac": vc.valid_fraction, "image_hw": [h, w],
+           "virtual_valid_frac": vc.valid_fraction, "image_hw": [h, w], "scale": scale,
+           "patches_per_frame": patches,
            "intrinsics_fx_fy_cx_cy": intr.tolist(), "patch_counts": losses[::50],
            "dpvo_commit": DPVO_COMMIT,
            "pose_layout": "tx ty tz qx qy qz qw (DPVO convention, up to scale)"}
@@ -158,11 +178,13 @@ def run(flight: str, stride: int = 4, fov: float = 100.0, max_frames: int = 0,
 
 @app.local_entrypoint()
 def main(flight: str = "flight-01a-ellipse", stride: int = 4, fov: float = 100.0,
-         max_frames: int = 0, all: bool = False, fetch: bool = True):
+         max_frames: int = 0, all: bool = False, fetch: bool = True, scale: float = 0.5,
+         patches: int = 48):
     import json
 
     if fetch:
         print("weights:", json.dumps(fetch_weights.remote()))
     flights = [f for v in FLIGHTS.values() for f in v] if all else [flight]
     for f in flights:
-        print(json.dumps(run.remote(f, stride, fov, max_frames), indent=2)[:800])
+        print(json.dumps(run.remote(f, stride, fov, max_frames, "", scale, patches),
+                         indent=2)[:800])
