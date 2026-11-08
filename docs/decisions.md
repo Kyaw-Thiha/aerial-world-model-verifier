@@ -69,3 +69,11 @@ One line per structural choice, with the reason. Newest at the bottom.
 - ANWM action time step is **not stated** in the paper. Inferred as 0.667 s per action from 32 s horizons over 48 frames, cross-checked against the reported 80.7 m average path (our random-action simulation gives 94 m at 0.667 s, 47 m at 0.333 s, 141 m at 1 s). The excitation audit (`experiments/anwm_excitation_audit.py`, `results/anwm_excitation/audit.json`) therefore reports dt = 1/3, 2/3 and 1 s rather than one number, because implied tilt scales as 1/dt.
 - Excitation audit result at the most likely dt = 0.667 s: median step-implied tilt 34.6 deg, p90 49.2 deg, 69% of action boundaries above the 10 deg signal threshold; constant 5 m/s cruise needs only 8.6 deg with the fitted drag, so **ANWM's testable signal lives at action transitions, not in cruise**, and low-excitation segments must be reported as not testable rather than infeasible.
 - ANWM outputs 224x224 at ~1.5 fps (inferred), one frame per action, 4-frame context; that frame rate is far below what a VO-based depicted-tilt estimate needs, which independently pushes ANWM clips toward the abstain bucket.
+
+## Compute plumbing smoke tests
+
+- R2 helper lives in `src/utils/r2.py` (boto3 against the R2 S3 endpoint, region `auto`), CLI in `scripts/sync_r2.py` exposed as `pixi run sync-r2`. Uploads are read back and re-hashed so a truncated object fails at the source. Bucket name comes from `.env` (`R2_BUCKET`); credentials are only ever reported as `set`/`MISSING`, never printed.
+- Round trip verified: `smoke/r2_smoke.txt`, 42 bytes, sha256 `73485279...e9dae` on both sides, local diff after download identical.
+- Modal smoke app lives in `remote/modal_smoke.py` with its own image (`debian_slim` + `numpy==2.1.3`), deliberately independent of `pixi.toml`. The only shared pin is numpy's major series, recorded here; the pixi env uses whatever conda-forge resolves.
+- Modal Volume `awmv-smoke-vol` mounted at `/vol`; the smoke run wrote and read back `/vol/smoke.txt`. Auth came from the existing `~/.modal.toml`, not from `.env` (`MODAL_TOKEN_ID`/`SECRET` are unset there); a Modal Secret is the right route for functions that need the R2 keys.
+- Smoke run result: GPU `Tesla T4` visible, `nvidia-smi` exit 0, volume round trip true, app completed in ~18 s. No real GPU workload was started.
