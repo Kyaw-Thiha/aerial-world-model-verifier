@@ -375,11 +375,12 @@ climb at 5 m/s horizontal plus 1.5 m/s vertical reads 5.2 here and is legal.
 
 ## Delivery status at the end of this handoff
 
-- Regime C: **49 clips** generated and pulled.
-- Regime A: generated from the 20 native starts; the run was interrupted and resumed twice (client
-  disconnects), so the delivered count is whatever the volume holds at the moment of the final
-  pull — the resume path means a rerun of `run_generate --regimes A` fills any gap without
-  duplicating work.
+- Regime C: **49 clips**, generated, pulled, indexed and synced to R2.
+- Regime A: **12 of 25** at the time of writing. The run was interrupted three times, each time by
+  the local Modal client being torn down (the app then stops with "local client disconnected"),
+  not by the model; each restart resumes and skips the finished clips. One more
+  `modal run --detach remote/b_anwm.py::run_generate --regimes A` finishes the remaining 13 in
+  about an hour with no duplicated work.
 - Regime B: the first four windows per flight were picked at 15% of each flight, which on
   `flight-01a-ellipse` is still the stationary lineup: those clips had a **zero-extent commanded
   path** and were deleted rather than shipped. The B set was rebuilt to pick moving windows
