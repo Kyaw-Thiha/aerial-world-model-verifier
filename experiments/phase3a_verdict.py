@@ -294,6 +294,7 @@ def evaluation(records: list[dict], prereg: dict,
                    per_clip_threshold.get((r["flight"], r["clip_id"]), np.nan))]
         res[f"heldout_acceptance_{label}"] = float(np.mean(acc)) if acc else None
         res[f"n_{label}"] = len(acc)
+    res["diagnostics"] = diagnostics(records)
     res["gate3"] = {
         "real_acceptance_at_least_0.95": res.get("heldout_acceptance") is not None
         and res["heldout_acceptance"] >= 0.95,
