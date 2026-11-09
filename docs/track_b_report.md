@@ -262,7 +262,7 @@ commit, visual-integrity statistics) and, for Regime A, `gt/` with the recorded 
 
 - `src/generation/audit.py`, `paths.py`, `anwm_env.py`, `experiments/anwm_{audit_corrected,kd_split,path_audit,build_clips}.py`
 - `remote/b_anwm.py` (image, slim extraction, smoke, native validation, generation), `remote/b_native.py`
-- `tests/test_anwm_audit.py`, `tests/test_generation_paths.py` (18 tests; full suite 53 passed, 1 skipped on the CPU env)
+- `tests/test_anwm_audit.py` (5), `tests/test_generation_paths.py` (18), `tests/test_generation_poses.py` (4): full suite **57 passed, 1 skipped** on the CPU env (the skip is the ANWM action-construction test, which needs torch; it runs in the GPU env and passes there)
 
 ## Blockers found
 
