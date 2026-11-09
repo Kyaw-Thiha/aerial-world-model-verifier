@@ -26,7 +26,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-from src.score import (auroc, conformal_quantile, score_clip, spearman)
+from src.score import (auroc, auroc_detect, conformal_quantile, score_clip, spearman)
 from src.score.prereg import verify_prereg
 from src.score.verdict import clip_index, speed_bin
 
@@ -117,6 +117,38 @@ def score_flight(spec_path: Path, cond_rows: dict[str, dict[str, dict]], clips: 
     return out
 
 
+def _bin_groups(fit: list[dict], bins: list[list[float]], min_n: int) -> list[dict]:
+    """Merge bins by the pre-registered rule: a bin under ``min_n`` joins the one below.
+
+    Bins are ordered low speed first; the lowest bin has no neighbour below, so it joins
+    the one above. The merge chain is returned so the report can show which bins the
+    data actually supported.
+    """
+    keys = [f"{lo:g}-{hi:g}" for lo, hi in bins]
+    counts = {k: sum(1 for r in fit if r["bin"] == k) for k in keys}
+    groups = [{"label": k, "bins": [k], "n": counts[k]} for k in keys]
+    i = 0
+    while i < len(groups):
+        if groups[i]["n"] >= min_n or len(groups) == 1:
+            i += 1
+            continue
+        if i == 0:                      # lowest bin: merge upward
+            groups[0] = {"label": f"{groups[0]['label']}+{groups[1]['label']}",
+                         "bins": groups[0]["bins"] + groups[1]["bins"],
+                         "n": groups[0]["n"] + groups[1]["n"]}
+            del groups[1]
+        else:                           # merge into the neighbour below
+            groups[i - 1] = {"label": groups[i - 1]["label"],
+                             "bins": groups[i - 1]["bins"] + groups[i]["bins"],
+                             "n": groups[i - 1]["n"] + groups[i]["n"]}
+            del groups[i]
+        i = max(0, i - 1)
+    for g in groups:
+        vals = [r["score"] for r in fit if r["bin"] in g["bins"]]
+        g["threshold"] = conformal_quantile(vals, 0.05) if vals else float("nan")
+    return groups
+
+
 def thresholds_for(records: list[dict], prereg: dict, holdout: str | None,
                    policy: str = "non_trackratm") -> dict:
     """Conformal thresholds from the fit flights (all but ``holdout``), per speed bin.
@@ -127,24 +159,28 @@ def thresholds_for(records: list[dict], prereg: dict, holdout: str | None,
     """
     th = prereg["thresholds"]
     bins = th["speed_bins_mps"]
+    alpha = th["alpha"]
+    min_n = 25
     fit = [r for r in records if r["condition"] == "identity" and r["testable"]
            and (holdout is None or r["flight"] != holdout)
            and (policy == "all_flights" or r["flight"] not in TRACK_A_FLIGHTS)]
-    per_bin = {}
-    for lo, hi in bins:
-        key = f"{lo:g}-{hi:g}"
-        vals = [r["score"] for r in fit if r["bin"] == key]
-        if len(vals) >= 25:
-            per_bin[key] = {"n": len(vals), "threshold": conformal_quantile(vals, th["alpha"])}
+    groups = _bin_groups(fit, bins, min_n) if fit else []
+    per_bin = {g["label"]: {"n": g["n"], "bins": g["bins"], "threshold": g["threshold"]}
+               for g in groups}
     pooled = {"n": len(fit),
-              "threshold": conformal_quantile([r["score"] for r in fit], th["alpha"])
+              "threshold": conformal_quantile([r["score"] for r in fit], alpha)
               if fit else float("nan")}
-    return {"per_bin": per_bin, "pooled": pooled}
+    return {"per_bin": per_bin, "pooled": pooled,
+            "merge_rule": f"bin under {min_n} clips merges into the neighbour below",
+            "raw_counts": {f"{lo:g}-{hi:g}": sum(1 for r in fit if r["bin"] == f"{lo:g}-{hi:g}")
+                           for lo, hi in bins}}
 
 
 def threshold_lookup(th: dict, bin_key: str) -> float:
-    if bin_key in th["per_bin"]:
-        return th["per_bin"][bin_key]["threshold"]
+    """Threshold for a clip's speed bin, via the merged groups."""
+    for info in th["per_bin"].values():
+        if bin_key in info["bins"]:
+            return info["threshold"]
     return th["pooled"]["threshold"]
 
 
@@ -192,10 +228,9 @@ def evaluation(records: list[dict], prereg: dict,
         res["families"][cond] = {
             "family": FAMILY[cond], "n": int(ok.sum()),
             "rejection_rate": float(np.mean(sco[ok] > thr[ok])) if ok.any() else None,
-            "auroc": auroc(pos[ok], sco[ok]) if ok.any() else None,
+            "auroc": auroc_detect(pos[ok], sco[ok]) if ok.any() else None,
             "score_median_real": float(np.median(pos[ok])) if ok.any() else None,
             "score_median_negative": float(np.median(sco[ok])) if ok.any() else None,
-            "auroc_holdout": auroc(pos[ok], sco[ok]) if ok.any() else None,
             "spearman_vs_magnitude": spearman(sco[ok], [p[1]["tilt_implied_median"]
                                                         for p, k in zip(pairs, ok) if k]),
         }
@@ -219,7 +254,7 @@ def evaluation(records: list[dict], prereg: dict,
                     pos.append(p["score"])
                     neg_scores.append(r["score"])
                     names.append(cond)
-    res["family_auroc_pooled"] = auroc(np.array(pos), np.array(neg_scores)) if pos else None
+    res["family_auroc_pooled"] = auroc_detect(np.array(pos), np.array(neg_scores)) if pos else None
 
     # separate report for trackRATM flights
     for label, sel in (("trackratm", lambda f: f in TRACK_A_FLIGHTS),

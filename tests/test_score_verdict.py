@@ -91,6 +91,14 @@ def test_conformal_quantile_and_coverage():
     assert conformal_quantile(np.array([1.0]), 0.05) == float("inf")
 
 
+def test_auroc_detect_orientation():
+    from src.score import auroc_detect
+    real = np.array([2.0, 3.0, 4.0])
+    viol = np.array([20.0, 30.0, 40.0])
+    assert auroc_detect(real, viol) == 1.0        # violations score higher -> detected
+    assert auroc_detect(viol, real) == 0.0
+
+
 def test_auroc_and_spearman_behave():
     assert auroc(np.array([5.0, 6.0]), np.array([0.0, 1.0])) == 1.0
     assert auroc(np.array([0.0, 1.0]), np.array([5.0, 6.0])) == 0.0

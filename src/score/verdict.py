@@ -250,6 +250,16 @@ def auroc(positive: np.ndarray, negative: np.ndarray) -> float:
     return float((rp - len(p) * (len(p) + 1) / 2.0) / (len(p) * len(q)))
 
 
+def auroc_detect(real: np.ndarray, violation: np.ndarray) -> float:
+    """AUROC with the violation as the positive class (higher score = more suspicious).
+
+    The clip score is a residual, so a working verifier gives the *negative* a higher
+    score than a real clip. Quoting ``auroc(real, negative)`` would report 0.0 for a
+    perfect detector, so the orientation is named explicitly here.
+    """
+    return auroc(violation, real)
+
+
 def spearman(x: np.ndarray, y: np.ndarray) -> float:
     x = np.asarray(x, dtype=np.float64)
     y = np.asarray(y, dtype=np.float64)
