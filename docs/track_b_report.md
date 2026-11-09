@@ -356,3 +356,17 @@ commit, visual-integrity statistics) and, for Regime A, `gt/` with the recorded 
 
 Peak speed is the 3-D speed; the caps are per axis (horizontal 5 m/s, vertical 2 m/s), so a
 climb at 5 m/s horizontal plus 1.5 m/s vertical reads 5.2 here and is legal.
+
+## Delivery
+
+- R2, prefix `track-b/`:
+  - `clips/` — the whole clip tree (`<regime>/<clip_id>/{frames,gt,manifest.json,strip.png}`),
+    `clips/clips_index.csv`, `clips/variance.json`, plus `audit.json`, `specs.json`,
+    `starts.json`, `starts_coverage.json` for reproducibility.
+  - `weights/0200000_ema.pth.tar` + `weights/manifest.json` — slim EMA checkpoint with both
+    sha256 hashes (mirrored and size-verified).
+- Local: `results/anwm_native/` (Gate 2 rollouts, contact sheets, `summary.json`),
+  `results/anwm_path_audit/audit.json`, `results/anwm_excitation/{audit,audit_corrected,kd_split}.json`,
+  `results/anwm_clips/specs.json`, `results/anwm_starts/`.
+- Read `docs/track_b_clips.md` first: it defines the clip layout, the manifest fields and the
+  snippet that recomputes a clip's commanded tilt at any dt.
