@@ -392,11 +392,6 @@ def generate(specs_json: str, sampling_steps: int = 250, sync_r2_prefix: str | N
         obs, sup = _context_inputs(ds, traj, ctx_times, target_poses)
 
         # actions along the commanded path, straight through ANWM's own construction
-        class _Shim:
-            len_traj_pred = 16
-            normalize = True
-            data_config = ds.data_config
-
         act, _ = ds._compute_actions({"point": pos, "yaw": yaw.reshape(-1, 1)}, 0,
                                      np.array([n - 1]))
         from anwm.utils import get_delta_np, normalize_data
@@ -423,6 +418,8 @@ def generate(specs_json: str, sampling_steps: int = 250, sync_r2_prefix: str | N
                               "step_spacing_m": float(np.mean(np.linalg.norm(np.diff(pos, axis=0), axis=1)))},
             "designed_required_tilt_deg": sp.get("designed_tilt_deg"),
             "seed": int(sp.get("seed", 0)), "sampling_steps": sampling_steps,
+            "slim_checkpoint_sha256": json.load(open("/w/slim/manifest.json"))["slim_sha256"],
+            "code_commit": sp.get("code_commit"),
             "camera_axis_change_spread": spread, "meta": sp.get("meta", {}),
             "frames": len(preds),
         }
@@ -520,7 +517,13 @@ def run_generate(specs_path: str = "results/anwm_clips/specs.json", regimes: str
     The specs are small (a few hundred KB); the function writes one clip at a time and commits
     after each, so a failure keeps the finished clips and a rerun skips them.
     """
+    import subprocess
+
+    commit = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True,
+                            text=True).stdout.strip()
     specs = json.load(open(specs_path))
+    for s in specs:
+        s["code_commit"] = commit
     keep = set(regimes.split(","))
     specs = [s for s in specs if s["regime"] in keep]
     if seed_offset:
