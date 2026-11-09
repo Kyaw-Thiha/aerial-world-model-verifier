@@ -211,10 +211,11 @@ Smallest violation rejected 80% of the time: **- deg**
 | Spearman, score vs injected tilt change | > 0.8 | **0.82** | pass |
 | null edit / control accepted at the real rate | within 5 pp | identity is exact (it *is* the real condition); the yaw control is rejected 35% vs 10% | **fail** |
 
-**The score separates; the threshold is what fails.** The diagnosis, in the order the
-numbers point at:
+**The score separates the large violations; what fails is the operating point, and its
+cause is a five-clip tail in the real scores.** The diagnosis, in the order the numbers
+point at:
 
-1. **A five-clip tail, not discrimination, is binding.** The real clips are tight —
+1. **A five-clip tail, not discrimination, is binding at 80% rejection.** The real clips are tight —
    median 2.9 deg, p90 8.9 — and then there are **5 of 83 clips above 40 deg** (49-80),
    four of them on `flight-13a-trackRATM` and one on `flight-07a-lemniscate`. Those five
    push the 95th percentile from about 9 to 44.9, and this is threshold-free: the 20th
