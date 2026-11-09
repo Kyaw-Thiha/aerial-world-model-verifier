@@ -11,6 +11,8 @@ import argparse
 import json
 from pathlib import Path
 
+import numpy as np
+
 
 def fmt(x, nd=2):
     if x is None:
@@ -107,6 +109,22 @@ def main() -> int:
                          f"{fmt(v['lag_median_ms'], 1)} | {fmt(v['lag_at_bound_frac'], 3)} | "
                          f"{fmt(v['abstain_frac'], 3)} |")
         lines.append("")
+    recs = m["records"]
+    flights = sorted({r["flight"] for r in recs})
+    conds = [c for c in ["identity"] + ["tilt_k0", "tilt_k05", "tilt_k15", "mirror_roll",
+                                        "yaw_control"] if any(r["condition"] == c for r in recs)]
+    lines.append("### Score by flight and condition (median over testable clips, deg)\n")
+    lines.append("| flight | testable/total | " + " | ".join(conds) + " |")
+    lines.append("| --- | --- | " + " | ".join("---" for _ in conds) + " |")
+    for fl in flights:
+        ident = [r for r in recs if r["flight"] == fl and r["condition"] == "identity"]
+        cell = [f"{sum(r['testable'] for r in ident)}/{len(ident)}"]
+        for c in conds:
+            vals = [r["score"] for r in recs
+                    if r["flight"] == fl and r["condition"] == c and r["testable"]]
+            cell.append(fmt(float(np.median(vals))) if vals else "-")
+        lines.append("| " + fl + " | " + " | ".join(cell) + " |")
+    lines.append("")
     g = ev.get("gate3", {})
     lines.append("### Gate 3\n")
     for k, v in g.items():
