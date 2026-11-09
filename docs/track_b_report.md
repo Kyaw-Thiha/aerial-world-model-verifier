@@ -304,3 +304,30 @@ The pose convention was verified inside the same run: rebuilding the recorded po
 - The FFP ablation (FFP-on vs FFP-off) is still the one control that separates "the model learned
   attitude" from "the model was handed a depth-projected future". Nothing in this handoff touches
   it.
+
+## Appendix: Regime C designs (required tilt at the nominal 1 s)
+
+| maneuver | yaw policy | target deg | reachable | peak per-step drag-free | peak per-step with k_d | peak speed m/s | peak yaw rate deg/s | travel turn deg/step |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| cruise | course | None | True | 0.0 | 8.6 | 5.00 | 0.0 | 0.0 |
+| turn | course | 5.0 | True | 5.0 | 9.8 | 4.99 | 9.9 | 9.9 |
+| turn | fixed | 5.0 | True | 5.0 | 9.8 | 4.99 | 0.0 | 9.9 |
+| turn | course | 10.0 | False | 7.4 | 11.2 | 4.99 | 14.8 | 14.8 |
+| turn | fixed | 10.0 | True | 10.0 | 13.0 | 4.97 | 0.0 | 20.1 |
+| turn | course | 20.0 | False | 7.4 | 11.2 | 4.99 | 14.8 | 14.8 |
+| turn | fixed | 20.0 | True | 19.9 | 21.2 | 4.88 | 0.0 | 42.7 |
+| slalom | course | 5.0 | True | 4.9 | 9.8 | 4.99 | 9.9 | 9.9 |
+| slalom | fixed | 5.0 | True | 4.9 | 9.8 | 4.99 | 0.0 | 9.9 |
+| slalom | course | 10.0 | False | 7.1 | 11.0 | 4.99 | 14.8 | 14.8 |
+| slalom | fixed | 10.0 | True | 10.0 | 12.9 | 4.97 | 0.0 | 35.7 |
+| slalom | course | 20.0 | False | 7.1 | 11.0 | 4.99 | 14.8 | 14.8 |
+| slalom | fixed | 20.0 | False | 11.0 | 13.7 | 4.96 | 0.0 | 29.9 |
+| accel_brake | course | 5.0 | True | 5.0 | 12.1 | 5.00 | 0.0 | 0.0 |
+| accel_brake | course | 10.0 | True | 9.9 | 14.9 | 5.00 | 0.0 | 0.0 |
+| accel_brake | course | 20.0 | True | 19.9 | 22.5 | 5.00 | 0.0 | 0.0 |
+| climb_turn | course | 5.0 | True | 5.0 | 9.8 | 5.21 | 9.9 | 9.9 |
+| climb_turn | fixed | 5.0 | True | 5.0 | 9.8 | 5.21 | 0.0 | 9.9 |
+| climb_turn | course | 10.0 | False | 7.4 | 11.2 | 5.21 | 14.8 | 14.8 |
+| climb_turn | fixed | 10.0 | True | 10.0 | 13.0 | 5.20 | 0.0 | 20.1 |
+| climb_turn | course | 20.0 | False | 7.4 | 11.2 | 5.21 | 14.8 | 14.8 |
+| climb_turn | fixed | 20.0 | True | 19.9 | 21.2 | 5.11 | 0.0 | 42.7 |
