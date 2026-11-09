@@ -38,14 +38,19 @@ def usable_starts() -> list[dict]:
     out = []
     for traj, v in data.items():
         for r in v["candidates"]:
+            if not r["positions"]:
+                continue
+            # The criterion is measured FFP coverage. Keeping the depth-p90 flag as a second gate
+            # (as the first version did) silently dropped a candidate whose depth p90 is 4.7 m but
+            # whose projected prior has 23.7% coverage; the delivered 82-clip set predates this
+            # fix and therefore uses 19 of the 20 candidates (see reports/b04_clip_set.md).
             c = cov.get((traj, r["ct"]))
             if c is not None and not c["usable"]:
                 continue
-            if r["usable"] and r["positions"]:
-                out.append({"traj": traj, "ct": r["ct"], "positions": r["positions"],
-                            "yaw": r["yaw"],
-                            "prior_coverage_min": (c or {}).get("coverage_min"),
-                            "depth_p50_m": (c or {}).get("depth_p50_m")})
+            out.append({"traj": traj, "ct": r["ct"], "positions": r["positions"],
+                        "yaw": r["yaw"],
+                        "prior_coverage_min": (c or {}).get("coverage_min"),
+                        "depth_p50_m": (c or {}).get("depth_p50_m")})
     return out
 
 
