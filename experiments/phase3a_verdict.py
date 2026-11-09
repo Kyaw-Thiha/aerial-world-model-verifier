@@ -519,6 +519,30 @@ def plots(out: Path, records: list[dict], ev: dict) -> None:
     fig.savefig(out / "score_cdf.png", dpi=140)
     plt.close(fig)
 
+    # ROC per negative family, paired clip by clip
+    real_by_clip = {(r["flight"], r["clip_id"]): r["score"] for r in records
+                    if r["condition"] == "identity" and r["testable"]}
+    fig, ax = plt.subplots(figsize=(5.2, 5))
+    for cond in NEGATIVES:
+        pairs = [(real_by_clip[(r["flight"], r["clip_id"])], r["score"]) for r in records
+                 if r["condition"] == cond and r["testable"]
+                 and (r["flight"], r["clip_id"]) in real_by_clip]
+        if len(pairs) < 4:
+            continue
+        pos = np.array([p[0] for p in pairs])
+        neg = np.array([p[1] for p in pairs])
+        thr = np.unique(np.concatenate([pos, neg]))
+        tpr = [(neg > t).mean() for t in thr]
+        fpr = [(pos > t).mean() for t in thr]
+        ax.plot(fpr, tpr, label=f"{cond} (AUROC {auroc_detect(pos, neg):.2f})")
+    ax.plot([0, 1], [0, 1], "k:", lw=1)
+    ax.set_xlabel("false positive rate (real clips rejected)")
+    ax.set_ylabel("true positive rate (negatives rejected)")
+    ax.legend(fontsize=7)
+    fig.tight_layout()
+    fig.savefig(out / "roc.png", dpi=140)
+    plt.close(fig)
+
     fig, ax = plt.subplots(figsize=(7, 4.2))
     ks, rej = [], []
     for cond, m in ev["mdv"].items():
