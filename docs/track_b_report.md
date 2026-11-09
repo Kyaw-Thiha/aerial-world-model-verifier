@@ -124,6 +124,21 @@ proceed. The per-frame number is measured on synthetic tensors; real 16-frame co
 adds VAE encodes, so the generation budget carries a 20% margin and the clip set is split by
 regime so one long run cannot be lost.
 
+## Task 4: start states
+
+Depth in the released pickles is metres with a **500 m far clip** (p50 52 m, p90 exactly 500), so
+"forward depth exceeds the path extent" tested on a high percentile is vacuous. The filter is
+therefore measured instead of inferred: FFP is run from the 16 context frames to the 16 target
+poses of the recorded path and the fraction of non-zero pixels in each projected image is
+reported. Result: **20 of 20 candidate starts are usable**, minimum per-step coverage 0.197
+(worst start) to 0.773, median about 0.5, so the projected prior is never empty on this data. The
+20 starts are 4 windows each from 5 trajectories; the clip set uses all 20.
+
+This measurement also pinned the pose convention: rebuilding each recorded pose as
+`[R_z(yaw) @ R_ec | xyz]` from `point`/`yaw` reproduces the released `pose` array to
+**2.2e-16**, with `R_ec` constant across frames to 3.3e-16. That is what makes commanded paths
+workable through FFP without a learned pose model.
+
 ## Task 3 and Task 6: path library and path-only audit
 
 `src/generation/paths.py` has one `PathSpec` (time, world position, yaw, metadata) with three

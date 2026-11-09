@@ -331,11 +331,11 @@ def validate_native(names="", sampling_steps: int = 250, lpips_net: str = "alex"
                 (model, diffusion, vae), curr, delta[:, i:i + 1].to(device), 1, 28,
                 device=device, num_cond=CTX, num_goals=1, x_supervised=proj[:, i:i + 1].to(device))
             curr = torch.cat((curr, x_pred.unsqueeze(1)), dim=1)[:, 1:]
-            preds.append(x_pred.clamp(-1, 1))
+            preds.append(x_pred.clamp(-1, 1).float())
         pred = torch.stack(preds, 1)
 
-        g01 = ((gt.to(device) + 1) / 2).clamp(0, 1)
-        p01 = ((pred + 1) / 2).clamp(0, 1)
+        g01 = ((gt.to(device) + 1) / 2).clamp(0, 1).float()
+        p01 = ((pred + 1) / 2).clamp(0, 1).float()
         d_lpips = [float(lp(2 * p01[:, i] - 1, 2 * g01[:, i] - 1).mean()) for i in range(gt.shape[1])]
         flat = lambda t: t.flatten(1)
         collapse = {

@@ -141,7 +141,7 @@ def main() -> int:
         by_regime[s["regime"]] = by_regime.get(s["regime"], 0) + 1
     print("specs", len(specs), by_regime, "->", OUT)
     # measured on A10G: 17.57 s per generated frame at 250 sampling steps (remote/b_anwm.py::smoke)
-    per_clip_s = 17.57 * 16
+    per_clip_s = 17.57 * 16 + 40  # + measured FFP time (~40 s per clip, 16 targets x 16 sources)
     hours = len(specs) * per_clip_s / 3600
     print(f"projected: {len(specs)} clips x 16 frames x 17.57 s = {hours:.1f} GPU-hours "
           f"= US${hours * 1.10:.2f} at the A10G rate (unverified per region)")
