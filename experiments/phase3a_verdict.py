@@ -39,6 +39,11 @@ FAMILY = {"tilt_k0": "tilt_removal", "tilt_k05": "tilt_scaling",
 TRACK_A_FLIGHTS = {"flight-13a-trackRATM", "flight-13p-trackRATM", "flight-16p-trackRATM"}
 
 
+def is_trackratm(r: dict) -> bool:
+    """trackRATM by the flight's track label (the id set is a fallback for old records)."""
+    return r.get("track") == "trackRATM" or r.get("flight") in TRACK_A_FLIGHTS
+
+
 def git_hash() -> str:
     try:
         return subprocess.check_output(["git", "rev-parse", "--short", "HEAD"], cwd=ROOT,
@@ -166,7 +171,7 @@ def thresholds_for(records: list[dict], prereg: dict, holdout: str | None,
     min_n = 25
     fit = [r for r in records if r["condition"] == "identity" and r["testable"]
            and (holdout is None or r["flight"] != holdout)
-           and (policy == "all_flights" or r["flight"] not in TRACK_A_FLIGHTS)]
+           and (policy == "all_flights" or not is_trackratm(r))]
     groups = _bin_groups(fit, bins, min_n, alpha) if fit else []
     per_bin = {g["label"]: {"n": g["n"], "bins": g["bins"], "threshold": g["threshold"]}
                for g in groups}
@@ -281,14 +286,23 @@ def evaluation(records: list[dict], prereg: dict,
     res["family_auroc_pooled"] = auroc_detect(np.array(pos), np.array(neg_scores)) if pos else None
 
     # separate report for trackRATM flights
-    for label, sel in (("trackratm", lambda f: f in TRACK_A_FLIGHTS),
-                       ("other", lambda f: f not in TRACK_A_FLIGHTS)):
+    for label, sel in (("trackratm", is_trackratm),
+                       ("other", lambda r: not is_trackratm(r))):
         acc = [r["score"] <= per_clip_threshold.get((r["flight"], r["clip_id"]), np.nan)
                for r in records if r["condition"] == "identity" and r["testable"]
-               and sel(r["flight"]) and np.isfinite(
+               and sel(r) and np.isfinite(
                    per_clip_threshold.get((r["flight"], r["clip_id"]), np.nan))]
         res[f"heldout_acceptance_{label}"] = float(np.mean(acc)) if acc else None
         res[f"n_{label}"] = len(acc)
+    res["gate3"] = {
+        "real_acceptance_at_least_0.95": res.get("heldout_acceptance") is not None
+        and res["heldout_acceptance"] >= 0.95,
+        "auroc_above_0.9_tilt_families": all(
+            (res["families"].get(c, {}).get("auroc") or 0.0) > 0.9
+            for c in ("tilt_k0", "tilt_k05", "tilt_k15")),
+        "control_accepted": (res["families"].get("yaw_control", {}).get("rejection_rate")
+                             or 0.0) <= 0.10,
+    }
     mdv = res["mdv"]
     if mdv:
         pts = sorted((v["violation_median_deg"], v["rejection_rate"]) for v in mdv.values())
@@ -564,9 +578,8 @@ def main() -> int:
     ident = [r for r in records if r["condition"] == "identity"]
     ev["abstention_rate"] = {
         "overall": float(np.mean([not r["testable"] for r in ident])) if ident else None,
-        "trackratm": float(np.mean([not r["testable"] for r in ident
-                                    if r["flight"] in TRACK_A_FLIGHTS]))
-        if any(r["flight"] in TRACK_A_FLIGHTS for r in ident) else None,
+        "trackratm": float(np.mean([not r["testable"] for r in ident if is_trackratm(r)]))
+        if any(is_trackratm(r) for r in ident) else None,
         "autonomous": float(np.mean([not r["testable"] for r in ident if r["control"] == "autonomous"]))
         if any(r["control"] == "autonomous" for r in ident) else None,
         "piloted": float(np.mean([not r["testable"] for r in ident if r["control"] == "piloted"]))
@@ -574,16 +587,6 @@ def main() -> int:
         "per_flight": {f: float(np.mean([not r["testable"] for r in ident if r["flight"] == f]))
                        for f in sorted({r["flight"] for r in ident})},
     }
-    ev["gate3"] = {
-        "real_acceptance_at_least_0.95": ev.get("heldout_acceptance") is not None
-        and ev["heldout_acceptance"] >= 0.95,
-        "auroc_above_0.9_tilt_families": all(
-            (ev["families"].get(c, {}).get("auroc") or 0.0) > 0.9
-            for c in ("tilt_k0", "tilt_k05", "tilt_k15")),
-        "null_edit_accepted": (ev["families"].get("identity", {}).get("rejection_rate") is None),
-        "control_accepted": (ev["families"].get("yaw_control", {}).get("rejection_rate") or 0.0) <= 0.10,
-    }
-
     (out / "metrics.json").write_text(json.dumps(
         {"run_id": out.name, "git": git_hash(), "prereg": {k: info[k] for k in
                                                            ("path", "sha256", "git_hash")},
