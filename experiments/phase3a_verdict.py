@@ -640,6 +640,7 @@ def main() -> int:
          "config": vars(args), "n_records": len(records),
          "evaluation": ev, "records": records}, indent=1, default=float))
     (out / "config.yaml").write_text(json.dumps(vars(args), indent=1))
+    (out / "git.txt").write_text(git_hash() + "\n")
     plots(out, records, ev)
     print(json.dumps({k: ev[k] for k in ("heldout_acceptance", "pooled_acceptance",
                                         "family_auroc_pooled", "abstention_rate", "gate3")},

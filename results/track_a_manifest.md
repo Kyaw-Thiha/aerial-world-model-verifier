@@ -21,3 +21,6 @@
 | ANWM sampled frames | `data/raw/anwm_frames` (gitignored), Modal Volume `:/anwm_frames` | 68 MB | 12 test trajectories x 13-16 frames from the shard index via HTTP Range |
 | Verdict runs | `results/phase3a_verdict/<run_id>/` | - | `metrics.json`, `config.yaml`, plots, git hash, prereg hash |
 | Edit preview | `results/phase3a_verdict/<run_id>_edit_preview/` | - | contact sheets proving the warps are geometric |
+| Verdict run (final) | `results/phase3a_verdict/20261109T090638Z_c0845a5/`, R2 `track-a/phase3a/verdict/<run>/` | < 1 MB | `metrics.json` (580 clip-condition records), `roc.png`, `mdv_curve.png`, `score_cdf.png`, config, git hash, prereg sha256 |
+| Anomaly/ablation run | `results/phase3a_verdict/<run>_ablations/ablations.json` | < 1 MB | four nuisance fits, absorption table |
+| ANWM clip scoring | `results/anwm_scoring/<run>/not_available.json` | - | Track B had not delivered clips; recorded rather than substituted |
