@@ -46,7 +46,7 @@ image = (
                   "pip install --no-cache-dir huggingface_hub boto3",
                   # recent diffusers calls torch.accelerator (torch >= 2.6); keep a version that
                   # matches the torch 2.4.1 pin above
-                  "pip install --no-cache-dir 'diffusers==0.31.0'",
+                  "pip install --no-cache-dir 'diffusers==0.33.1'",
                   "python -c \"import diffusers, torch; print('diffusers', diffusers.__version__, "
                   "'torch', torch.__version__)\"")
 )
@@ -282,6 +282,13 @@ def validate_native(names: list[str], sampling_steps: int = 250, lpips_net: str 
             print("fallback start time", name, ct)
         traj = pickle.load(open(f"/n/airvln_16/{name}/traj_data.pkl", "rb"))
         traj = {k: v.astype("float") if hasattr(v, "astype") else v for k, v in traj.items()}
+        # convention check: poses rebuilt from (point, yaw) must equal the recorded poses
+        R_ec, spread = _camera_axis_change(traj)
+        p17 = np.asarray(traj["point"], float)[ct:ct + 17]
+        y17 = np.asarray(traj["yaw"], float).ravel()[ct:ct + 17]
+        rebuilt = _pose_from_position_yaw(p17, y17, R_ec)
+        conv_err = float(np.abs(rebuilt - np.asarray(traj["pose"], float)[ct:ct + 17]).max())
+        print("pose convention max abs err", conv_err, "R_ec spread", spread)
         ds.index_to_data = [(name, ct, -64, 64)]
         idxs, obs, gt, delta, proj = ds[0]
         delta = delta.unsqueeze(0)
@@ -329,6 +336,7 @@ def validate_native(names: list[str], sampling_steps: int = 250, lpips_net: str 
             sheet.paste(im, (0, r * rows[0].height))
         sheet.save(f"{folder}/contact_sheet.png")
         out[name] = {"curr_time": int(ct), "n_frames": int(gt.shape[1]), "lpips": d_lpips,
+                     "pose_convention_max_err": conv_err, "R_ec_spread": spread,
                      "lpips_mean": float(np.mean(d_lpips)), **collapse}
         print(name, "lpips", np.round(d_lpips, 3).tolist())
         vol_results.commit()

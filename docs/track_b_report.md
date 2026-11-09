@@ -77,6 +77,26 @@ Cross-application moves the other group's median residual by 0.02 deg, so a sing
 valid; the drag *effect* differs by regime because the residuals differ, not the coefficient
 (`results/anwm_excitation/kd_split.json`).
 
+## Task 1: slim checkpoint, image
+
+- Source `EmbodiedCity/ANWM/0200000.pth.tar`, **18,146,420,481 bytes**, sha256
+  `bdd149cac6ec002ba7dc4ad99ec6f9eb02cd6d4f05320195cf174737b13b0bc2`. Checkpoint keys:
+  `args, ema, epoch, model, opt, scaler, train_steps` (so the file holds model + EMA + optimizer,
+  as inferred earlier).
+- Slim EMA-only checkpoint `/w/slim/0200000_ema.pth.tar`, **4,536,552,948 bytes**, sha256
+  `59def562a12275640e4d04d1af3b38281caa4f656eb104e96678fc49c6ae3f8b`. Extracted once on Modal
+  (`torch.load(..., mmap=True)`), Volume `awmv-b-weights`, mirrored to R2
+  `track-b/weights/0200000_ema.pth.tar` and size-verified there.
+- Image: `nvidia/cuda:12.1.1-devel-ubuntu22.04` + python 3.10, `torch 2.4.1+cu121`,
+  `torchvision 0.19.1`, `numpy<2`, `pip install -e ".[metrics]"` of the pinned clone at
+  `657a80268505fa9149c4df502e35aa0f5bce11e5`, then **`diffusers==0.33.1`**. Both pins are forced by
+  measurements, not taste: the latest diffusers calls `torch.accelerator`, which does not exist
+  before torch 2.6 (`AttributeError: module 'torch' has no attribute 'accelerator'`), and
+  `diffusers==0.31.0` fails its own `loaders.unet` import against this torch
+  (`name 'nn' is not defined`). VAE `stabilityai/sd-vae-ft-ema` is cached on `awmv-b-hf-cache`.
+- The image upload had to ignore `third_party/anwm/.git` (1.7 GB of the 1.7 GB clone); before
+  that, the build stalled for over an hour on the upload alone.
+
 ## Task 3 and Task 6: path library and path-only audit
 
 `src/generation/paths.py` has one `PathSpec` (time, world position, yaw, metadata) with three
