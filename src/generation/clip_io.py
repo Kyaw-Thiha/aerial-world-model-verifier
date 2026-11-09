@@ -39,7 +39,9 @@ def load_anwm_clip(clip_dir: str | Path, dt: float = 1.0) -> Clip:
     if len(frames) != len(pos) - 1:
         raise ValueError(f"{d.name}: {len(frames)} frames for {len(pos) - 1} commanded steps")
     # frame i depicts the pose after applying action i, i.e. commanded row i+1
-    quat = Rotation.from_euler("z", yaw[1:len(frames) + 1]).as_quat()  # xyzw, level camera
+    yaw_frames = yaw[1:len(frames) + 1]
+    rotvec = np.column_stack([np.zeros_like(yaw_frames), np.zeros_like(yaw_frames), yaw_frames])
+    quat = Rotation.from_rotvec(rotvec).as_quat()  # xyzw, level camera
     return Clip(name=m["id"], t=np.arange(len(frames), dtype=np.float64) * dt,
                 pos=pos[1:len(frames) + 1], quat=quat, quat_order="xyzw", fps=1.0 / dt,
                 cam_uptilt_deg=0.0,
