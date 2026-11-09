@@ -1,0 +1,100 @@
+{
+ "window": 101,
+ "bounds": [
+  0.0,
+  3.0
+ ],
+ "groups": {
+  "piloted": [
+   "flight-01p-ellipse",
+   "flight-07p-lemniscate",
+   "flight-13p-trackRATM",
+   "flight-16p-trackRATM"
+  ],
+  "autonomous": [
+   "flight-01a-ellipse",
+   "flight-04a-ellipse",
+   "flight-07a-lemniscate",
+   "flight-13a-trackRATM"
+  ],
+  "all": [
+   "flight-01a-ellipse",
+   "flight-04a-ellipse",
+   "flight-07a-lemniscate",
+   "flight-13a-trackRATM",
+   "flight-01p-ellipse",
+   "flight-07p-lemniscate",
+   "flight-13p-trackRATM",
+   "flight-16p-trackRATM"
+  ]
+ },
+ "fit": {
+  "piloted": 0.29618056051919595,
+  "autonomous": 0.30636918867041263,
+  "all": 0.29842170242332366
+ },
+ "cross": {
+  "piloted": {
+   "drag_free": 6.811248467349134,
+   "kd_piloted=0.296": 1.1630226698247728,
+   "kd_autonomous=0.306": 1.1835163092962597,
+   "kd_all=0.298": 1.1641459861272672
+  },
+  "autonomous": {
+   "drag_free": 2.3482930817652696,
+   "kd_piloted=0.296": 1.3217705777027806,
+   "kd_autonomous=0.306": 1.3185546552698952,
+   "kd_all=0.298": 1.3204854146069958
+  },
+  "all": {
+   "drag_free": 5.460733122445616,
+   "kd_piloted=0.296": 1.227201684782411,
+   "kd_autonomous=0.306": 1.2389664258334465,
+   "kd_all=0.298": 1.2264526466521577
+  }
+ },
+ "per_flight_fit": {
+  "flight-01a-ellipse": 0.2970413879097842,
+  "flight-04a-ellipse": 0.2701846056609828,
+  "flight-07a-lemniscate": 0.23338807874244935,
+  "flight-13a-trackRATM": 0.38240255388086547,
+  "flight-01p-ellipse": 0.2896449300018382,
+  "flight-07p-lemniscate": 0.3068640196931654,
+  "flight-13p-trackRATM": 0.3940512714945002,
+  "flight-16p-trackRATM": 0.39014307667071624
+ },
+ "per_flight_median_at_k": {
+  "flight-01a-ellipse": {
+   "drag_free": 1.2916242209400055,
+   "k=0.295": 1.2581942447312962
+  },
+  "flight-04a-ellipse": {
+   "drag_free": 1.1938888552320805,
+   "k=0.295": 1.1943411943692297
+  },
+  "flight-07a-lemniscate": {
+   "drag_free": 2.94350439698309,
+   "k=0.295": 2.9338711776102295
+  },
+  "flight-13a-trackRATM": {
+   "drag_free": 2.0971701100528506,
+   "k=0.295": 0.9624430013835039
+  },
+  "flight-01p-ellipse": {
+   "drag_free": 6.565356308687589,
+   "k=0.295": 0.8835879432968103
+  },
+  "flight-07p-lemniscate": {
+   "drag_free": 6.667648983248032,
+   "k=0.295": 0.9362731361058125
+  },
+  "flight-13p-trackRATM": {
+   "drag_free": 7.169215850982969,
+   "k=0.295": 3.2772530022473343
+  },
+  "flight-16p-trackRATM": {
+   "drag_free": 7.494963588644656,
+   "k=0.295": 3.8883245855313406
+  }
+ }
+}

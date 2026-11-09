@@ -259,43 +259,72 @@ What the released frames depict (**verified**):
 | roll, pitch in every frame | **exactly 0.0** (max |roll| = max |pitch| = 0.0 over all 33 trajectories) |
 | camera matrix | `[[256,0,256],[0,256,256],[0,0,1]]`, i.e. 512x512 at 90 deg FOV |
 | yaw | only 17 distinct values per trajectory, multiples of 15 deg (AerialVLN `TURN_ANGLE`) |
-| heading change between consecutive frames | median 0 deg, p90 **107 deg**, p99 165 deg, max 180 deg; **39% of transitions exceed 30 deg** |
-| metric step | 2.86-3.96 m per trajectory (mean 3.43 m), matching the config's 3.30 m normaliser |
+| heading change between consecutive frames | **Superseded (Task 0).** Two different quantities, recomputed on the same 33 trajectories: |yaw change| per frame: median 0, p90 15, max 15 deg (frac above 30 deg = 0). |Change of horizontal travel direction| between successive translating steps: median 0, p90 90, p99 105, max 180 deg, 14.4% above 30 deg. The earlier "p90 107, p99 165, 39% above 30 deg" is **not reproducible** under either definition and its code was not kept; it is withdrawn. Only the travel-direction change implies acceleration; yaw is unconstrained by flatness. |
+| metric step | 2.86-3.96 m per trajectory when averaged over all steps, but that mean includes pure-yaw steps (11.6% of steps in the first trajectory, zero translation); translating steps are **5.0 m** (median 5.0 m, max 5.0 m in the first trajectory). 3.30 m is the normaliser, not the step length (**verified** from `results/anwm_excitation/inspection.json`) |
 | `timestamps` | frame indices 11..629, no time unit |
 
-So the released data is a sequence of straight ~3.4 m segments with **instantaneous**
-heading jumps up to 180 deg, rendered with a perfectly level camera.
+So the released data is a sequence of straight 5 m segments separated by in-place yaw steps
+and sideways moves, i.e. **instantaneous** changes of travel direction up to 180 deg (90 deg for
+a strafe with constant yaw), rendered with a perfectly level camera.
 
 Implied tilt under each candidate step duration (**verified** computation, `k_d` from the
 real-flight floor):
 
-| dt | SG-smoothed median | SG >10 deg | per-step median | per-step p90 | per-step >10 deg | discrepancy vs depicted (SG, with k_d) |
+| dt | estimator | k_d | median | p90 | >10 deg | notes |
 | --- | --- | --- | --- | --- | --- | --- |
-| 1.0 s | 1.1 deg | 2.2% | **8.3 deg** | **32.6 deg** | **45.9%** | 5.0 deg |
-| 0.667 s | 2.6 deg | 29.6% | 14.0 deg | 64.9 deg | 45.9% | 7.6 deg |
-| 0.25 s | 17.2 deg | 80.2% | 24.6 deg | 104.2 deg | 48.3% | 24.3 deg |
+| 1.0 s | per-step | 0 | 0.0 deg | 32.6 deg | 47.2% | 47.2% of steps are transitions (median 27.0 deg among them) |
+| 1.0 s | per-step | 0.295 | 8.6 deg | 36.1 deg | 47.2% | cruise alone needs 8.6 deg of drag tilt at 5 m/s |
+| 1.0 s | SG-11 | 0 | 1.1 deg | 2.5 deg | 0.0% | |
+| 1.0 s | SG-11 | 0.295 | 4.9 deg | 8.4 deg | 1.8% | |
+| 0.667 s | per-step | 0 | 0.0 deg | 64.7 deg | 47.2% | |
+| 0.667 s | per-step | 0.295 | 12.7 deg | 62.3 deg | 76.6% | |
+| 0.667 s | SG-11 | 0 | 2.4 deg | 5.5 deg | 0.7% | |
+| 0.667 s | SG-11 | 0.295 | 7.4 deg | 12.7 deg | 28.0% | |
+| 0.25 s | per-step | 0 | 0.0 deg | 105.5 deg | 49.6% | |
+| 0.25 s | per-step | 0.295 | 31.0 deg | 106.1 deg | 79.0% | |
+| 0.25 s | SG-11 | 0 | 16.9 deg | 35.3 deg | 68.6% | |
+| 0.25 s | SG-11 | 0.295 | 23.9 deg | 42.7 deg | 82.0% | |
+
+**Table corrected in Task 0** (`experiments/anwm_audit_corrected.py`, output
+`results/anwm_excitation/audit_corrected.json`, 33 trajectories, ~11,880 boundaries per cell).
+The previous table was internally inconsistent for two reasons, both aggregation, not data:
+(1) the "median" columns were the **mean of 33 per-trajectory medians**, while the ">10 deg"
+columns were the **mean of per-trajectory fractions**. Per-trajectory medians are bimodal (0 deg
+for the 21 trajectories where fewer than half the boundaries are transitions, 20+ deg for the 12
+where more are), so their mean (8.3, 13.9, 24.6 deg) is not the median of any step population,
+and a mean of medians above 10 deg does not force more than 50% above 10 deg. (2) the SG ">10 deg"
+column used `k_d = 0.297` while the SG median column used drag-free, so those two were not on
+the same estimator either. In the corrected table every row's median, p90 and fraction come from
+one pooled array. Per-step drag-free median is **0 deg** at every dt, because about 53% of
+boundaries are constant-velocity cruise; the honest summary is "47% of boundaries are transition
+events, and each demands 27 deg (1 s) to 83 deg (0.25 s) median". The old 45.9% (1 s and 0.667 s)
+and 48.3% (0.25 s) are the per-trajectory means; the pooled values are 47.2, 47.2 and 49.6%.
+The "discrepancy vs depicted" column was a mean of per-trajectory medians of |SG tilt - 0| and is
+dropped: depicted tilt is 0 everywhere, so it equals the SG tilt itself (rows above).
 
 Reading it:
 
 - **Every candidate dt produces a large violation.** At the most favourable assumption
-  (1 s per step) the commanded velocity changes still demand a median 8.4 deg of tilt and
-  more than 10 deg at 46% of transitions, against 0 deg depicted.
-- **The two estimators differ by design.** Savitzky-Golay over an 11-frame window smears a
-  teleport across ten steps and understates it (1.1 deg). The per-step estimator is the
-  honest reading of what the data commands, because the underlying trajectory is not a
-  smooth curve at all.
-- **0.25 s is the least plausible dt**: it implies a 25 deg median / 104 deg p90 velocity
-  change against a level camera, and ~13 m/s cruise from 3.4 m steps. **1 s is the smallest
-  dt that keeps the cruise discrepancy near 1 deg** (drag-free), which agrees with the
-  paper's "5 m/s" wording and disagrees with the code's `--input_fps 4`.
+  (1 s per step) 47.2% of step boundaries are acceleration events and they demand a median
+  27.0 deg of tilt (drag-free), against 0 deg depicted. With drag, even the constant-velocity
+  cruise needs 8.6 deg at 5 m/s, so the smoothed drag-free median (1.1 deg) is not evidence
+  that the data is level.
+- **The two estimators answer different questions.** Savitzky-Golay over an 11-frame window
+  smears a teleport across ten steps and reads the *sustained* tilt (drag-free median 1.1 deg
+  at 1 s); the per-step estimator reads what each boundary *commands*. Neither is wrong, but a
+  table must not mix them (the superseded table did).
+- **0.25 s is the least plausible dt**: per-step drag-free p90 105.5 deg and SG drag-free
+  median 16.9 deg against a level camera, and ~13 m/s cruise from a 5 m step. **1 s is the
+  smallest dt that keeps the SG cruise discrepancy near 1 deg** (drag-free 1.06 deg), which
+  agrees with the paper's "5 m/s" wording and disagrees with the code's `--input_fps 4`.
 - **The attitude-agreement fit is degenerate**, and this document says so rather than
   quoting a number: because depicted tilt is identically zero, the objective decreases
   monotonically with dt and runs to the grid edge (2 s). It can exclude 0.25 s; it cannot
   pin 1 s versus 2 s.
-- **Testable fraction for the verifier**: ~46% of *transitions* exceed 10 deg at any dt,
-  but the sustained-tilt fraction is near zero, because the motion is straight-line cruise
-  between jumps. ANWM clips must be scored on transition events, and clips without turns
-  must be reported as not testable.
+- **Testable fraction for the verifier**: 47% of boundaries are transitions, and their
+  commanded tilt is far above 10 deg at every dt, but the sustained tilt is near zero, because
+  the motion is straight-line cruise between jumps. ANWM clips must be scored on transition
+  events, and clips without turns must be reported as not testable.
 
 ## 12. Blockers and risks
 
