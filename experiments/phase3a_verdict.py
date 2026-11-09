@@ -561,12 +561,18 @@ def main() -> int:
         spec_paths, ident_rows,
         {f: (load_jsonl(geo / f"{f}__yaw_control.jsonl")
              if (geo / f"{f}__yaw_control.jsonl").exists() else None) for f in spec_paths})
+    ident = [r for r in records if r["condition"] == "identity"]
     ev["abstention_rate"] = {
-        "overall": float(np.mean([not r["testable"] for r in records if r["condition"] == "identity"]))
-        if records else None,
-        "trackratm": float(np.mean([not r["testable"] for r in records
-                                    if r["condition"] == "identity" and r["flight"] in TRACK_A_FLIGHTS]))
-        if records else None,
+        "overall": float(np.mean([not r["testable"] for r in ident])) if ident else None,
+        "trackratm": float(np.mean([not r["testable"] for r in ident
+                                    if r["flight"] in TRACK_A_FLIGHTS]))
+        if any(r["flight"] in TRACK_A_FLIGHTS for r in ident) else None,
+        "autonomous": float(np.mean([not r["testable"] for r in ident if r["control"] == "autonomous"]))
+        if any(r["control"] == "autonomous" for r in ident) else None,
+        "piloted": float(np.mean([not r["testable"] for r in ident if r["control"] == "piloted"]))
+        if any(r["control"] == "piloted" for r in ident) else None,
+        "per_flight": {f: float(np.mean([not r["testable"] for r in ident if r["flight"] == f]))
+                       for f in sorted({r["flight"] for r in ident})},
     }
     ev["gate3"] = {
         "real_acceptance_at_least_0.95": ev.get("heldout_acceptance") is not None
