@@ -117,7 +117,8 @@ def score_flight(spec_path: Path, cond_rows: dict[str, dict[str, dict]], clips: 
     return out
 
 
-def _bin_groups(fit: list[dict], bins: list[list[float]], min_n: int) -> list[dict]:
+def _bin_groups(fit: list[dict], bins: list[list[float]], min_n: int,
+                alpha: float = 0.05) -> list[dict]:
     """Merge bins by the pre-registered rule: a bin under ``min_n`` joins the one below.
 
     Bins are ordered low speed first; the lowest bin has no neighbour below, so it joins
@@ -145,7 +146,7 @@ def _bin_groups(fit: list[dict], bins: list[list[float]], min_n: int) -> list[di
         i = max(0, i - 1)
     for g in groups:
         vals = [r["score"] for r in fit if r["bin"] in g["bins"]]
-        g["threshold"] = conformal_quantile(vals, 0.05) if vals else float("nan")
+        g["threshold"] = conformal_quantile(vals, alpha) if vals else float("nan")
     return groups
 
 
@@ -164,7 +165,7 @@ def thresholds_for(records: list[dict], prereg: dict, holdout: str | None,
     fit = [r for r in records if r["condition"] == "identity" and r["testable"]
            and (holdout is None or r["flight"] != holdout)
            and (policy == "all_flights" or r["flight"] not in TRACK_A_FLIGHTS)]
-    groups = _bin_groups(fit, bins, min_n) if fit else []
+    groups = _bin_groups(fit, bins, min_n, alpha) if fit else []
     per_bin = {g["label"]: {"n": g["n"], "bins": g["bins"], "threshold": g["threshold"]}
                for g in groups}
     pooled = {"n": len(fit),
@@ -180,7 +181,10 @@ def threshold_lookup(th: dict, bin_key: str) -> float:
     """Threshold for a clip's speed bin, via the merged groups."""
     for info in th["per_bin"].values():
         if bin_key in info["bins"]:
-            return info["threshold"]
+            t = info["threshold"]
+            if t is not None and np.isfinite(t):
+                return t
+            break
     return th["pooled"]["threshold"]
 
 
