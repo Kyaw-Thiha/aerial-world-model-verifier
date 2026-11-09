@@ -294,3 +294,30 @@ has a measurement attached; none is left as a caveat in prose.
    one group at this sample size (reported with the merge chain). Intervals on AUROC and
    rejection rates resample whole **flights**, not clips, because clips inside a flight
    share scene, light and estimator state.
+
+## 9. Nuisance ablations
+
+Same per-frame estimates, four fits, from `experiments/phase3a_ablations.py`
+(`results/phase3a_verdict/<run>_ablations/ablations.json`). Score medians in degrees:
+
+| condition | both nuisances | no uptilt | no lag | neither | absorbed by the nuisances |
+| --- | --- | --- | --- | --- | --- |
+| identity (real) | 2.9 | 4.0 | 4.1 | 4.4 | 1.5 |
+| tilt x 0 | 18.9 | 20.7 | 21.6 | 23.0 | 4.1 |
+| tilt x 0.5 | 8.6 | 10.3 | 11.0 | 12.6 | 4.0 |
+| tilt x 1.5 | 5.0 | 6.4 | 7.3 | 11.3 | **6.2** |
+| mirrored roll | 26.4 | 26.7 | 28.4 | 28.5 | 2.1 |
+| yaw control | 3.8 | 5.0 | 5.4 | 6.2 | 2.4 |
+
+Reading:
+
+- The nuisances are **needed**: they take the real-clip median from 4.4 to 2.9 deg, and
+  the uptilt term is the one that does it (the lag term alone leaves 4.1).
+- They do **not** absorb the large violations: 4.1 deg of a 27.2 deg tilt removal, and
+  2.1 of the mirrored roll.
+- They **do** absorb most of the smallest one: 6.2 of the 13.6 deg change at k = 1.5,
+  i.e. 46%. That is the expected cost of a +/-7 deg mount bound and it is why the
+  half-tilt frontier stops where it does.
+- At the verdict level the ablations barely move: acceptance 0.711 with both nuisances
+  against 0.723 with neither, AUROC 0.822 against 0.833. The ranking is robust to the
+  nuisance choice even though the per-clip score is not.
