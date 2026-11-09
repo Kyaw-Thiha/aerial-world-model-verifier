@@ -273,6 +273,63 @@ half-tilt or a mirrored-roll-scale violation at 80%. The binding limits are the
 threshold's sample size (60 real clips from 5 flights) and the estimator's
 view-dependence, not the residual's formulation.
 
+## 6. Task 3: Track B's generated clips
+
+Status: the scoring path is built and exercised end to end on a fixture; Track B had not
+delivered clips into `track-b/clips/` when this was written (their R2 prefix held only
+weights). The script writes `not_available.json` rather than a placeholder number.
+
+**Hypothesis, stated before the data.** ANWM's released frames are level by construction,
+so a 4-DoF generator should depict tilt at its false-alarm floor (0.57 deg median, section
+2) while the commanded path requires a tilt that grows with speed and turn rate. If that
+holds, the depicted-versus-required dose-response is flat and every arguably testable clip
+will be flagged; if the generated frames do depict tilt, the two curves track.
+
+Reported per regime (A native, B real-flight replay, C factorial sweep), per dt in
+{0.25, 0.667, 1.0} s, always as **curves over dt**: the release states no dt, so no result
+here is assigned to one.
+
+For each clip: depicted tilt per frame (Task 1 setup, 224x224, f = 112, pinhole), a
+coherence statistic (median frame-to-frame movement of the estimated up direction — a
+collapsed rollout jumps, and is marked not testable rather than failed), the implied tilt
+from the commanded path at each dt (Savitzky-Golay 11 frames, `k_d` = 0.295), the residual
+against the pre-registered thresholds, the Regime C dose-response against the control set,
+and the spread of the clip score across seeds for the repeated paths.
+
+Interface: `experiments/phase3a_anwm_specs.py` reads Track B's manifests and writes one
+spec per clip; `remote/a_geocalib_p3.py --job anwm` runs the estimator on the 224x224
+frames; `experiments/phase3a_anwm_scoring.py` scores the result. The required tilt I
+compute at 1 s is cross-checked against the `required_tilt_1s_kd_deg` column of their index
+rather than assumed equal.
+
+The machinery is checked on synthetic clips (8 paths x 3 seeds, two model families) where
+the answer is known: a banking model gives Spearman 0.99 between depicted and required
+tilt, a level-camera model gives 0.05, and the seed spread for one path is 0.13 deg.
+
+## 7. Task 4: why DPVO's translation failed — not answered, two attempts used
+
+Attempt 1 (disk): the plan was one UZH-FPV sequence. The release is tens of GB and the
+workstation has ~4 GB free, so the 128 px HF derivative was considered and rejected — it
+carries no trustworthy calibration, which is the one property the test exists to isolate.
+
+Attempt 2 (the actual download): one sequence fits and was fetched —
+`indoor_forward_3_davis_with_gt.zip`, 417,718,727 bytes, 2,091 frames, from
+`download.ifi.uzh.ch/rpg/web/datasets/uzh-fpv/` (the `uzh_fpv/` sub-path 404s for this
+name, and the `*_snapdragon*` names 404 everywhere I probed). **The `with_gt` zip ships
+`images.txt`, `imu.txt`, `events.txt` and `groundtruth.txt` and no calibration anywhere**,
+and the calibration bundle is not at `calib.zip`, `uzh_fpv/calib.zip` or
+`calib/<sequence>.yaml`. Without a calibration the experiment cannot separate "DPVO fails
+because the TII intrinsics are wrong" from "DPVO fails because my UZH intrinsics are
+wrong", so it was not run rather than run uninformatively.
+
+Ready for the next attempt, committed and unit-tested: `scripts/uzh_prepare.py` (parse,
+undistort with `cv2.fisheye`, emit frames + `meta.json`), `remote/a_dpvo.py --uzh` (same
+DPVO build and settings as TII), `experiments/phase3a_uzh_dpvo.py` (oracle scale without
+rotation, per-axis correlation, path ratio, implied-tilt RMSE with `k_d` 0.295). Two
+details found while probing so the next person does not rediscover them: `groundtruth.txt`
+is `id timestamp tx ty tz qx qy qz qw` (nine columns, id first, unlike TUM) and
+`images.txt` is `id timestamp image_name`.
+
 ## 8. Threats to validity, measured where possible
 
 These are the mechanisms that could make the verdict look better than it is. Each one
