@@ -159,15 +159,15 @@ one pooled population per cell, all with `k_d = 0.295`:
 
 | regime | dt | per-step median | per-step p90 | per-step >10 | SG median | SG >10 |
 | --- | --- | --- | --- | --- | --- | --- |
-| A native (33 traj) | 1.0 | 8.6 | 29.6 | 38.2% | 6.1 | 4.8% |
-| A native | 0.667 | 12.7 | 62.4 | 77.4% | 9.2 | 40.7% |
-| A native | 0.25 | 31.0 | 106.1 | 79.8% | 25.6 | 78.8% |
-| B rescaled (25 windows) | 1.0 | 3.6 | 7.2 | 0.0% | 3.6 | 0.0% |
-| B rescaled | 0.667 | 5.6 | 10.9 | 16.3% | 5.6 | 16.3% |
-| B rescaled | 0.25 | 16.0 | 27.4 | 70.8% | 16.1 | 70.2% |
-| C designed (22 designs) | 1.0 | 9.8 | 14.6 | 47.0% | 9.3 | 31.8% |
-| C designed | 0.667 | 16.6 | 26.6 | 96.4% | 15.3 | 97.4% |
-| C designed | 0.25 | 56.7 | 72.1 | 100% | 52.8 | 99.4% |
+| A native (33 traj) | 1.00 | 8.6 | 29.6 | 38.2% | 6.1 | 4.8% |
+| A native (33 traj) | 0.67 | 12.7 | 62.4 | 77.4% | 9.2 | 40.7% |
+| A native (33 traj) | 0.25 | 31.0 | 106.1 | 79.8% | 25.6 | 78.8% |
+| B rescaled (25 windows) | 1.00 | 3.6 | 7.2 | 0.0% | 3.6 | 0.0% |
+| B rescaled (25 windows) | 0.67 | 5.6 | 10.9 | 16.3% | 5.6 | 16.3% |
+| B rescaled (25 windows) | 0.25 | 18.0 | 30.3 | 69.3% | 17.9 | 69.7% |
+| C designed (22 designs) | 1.00 | 9.8 | 14.6 | 47.0% | 9.3 | 31.8% |
+| C designed (22 designs) | 0.67 | 16.6 | 26.6 | 96.4% | 15.2 | 97.4% |
+| C designed (22 designs) | 0.25 | 56.7 | 72.1 | 100.0% | 52.8 | 99.4% |
 
 - **Smallest dt at which Regime A is consistent with level frames** (criterion: at most 5% of
   steps above 10 deg): **1.00 s** for the smoothed estimator with drag (4.3% above 10 deg, median
