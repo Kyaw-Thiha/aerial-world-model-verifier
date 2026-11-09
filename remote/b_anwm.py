@@ -416,6 +416,12 @@ def generate(specs_json: str, sampling_steps: int = 250, sync_r2_prefix: str | N
         os.makedirs(f"{folder}/frames", exist_ok=True)
         for i, t in enumerate(preds):
             Image.fromarray(t[0].permute(1, 2, 0).numpy()).save(f"{folder}/frames/{i:02d}.png")
+        if sp["regime"] == "A":  # ground-truth frames are only meaningful for native commands
+            os.makedirs(f"{folder}/gt", exist_ok=True)
+            for i, t in enumerate(range(ct + 1, ct + n)):
+                im = ds.transform(Image.open(f"/n/airvln_16/{name}/{t}.jpg"))
+                Image.fromarray(((im.clamp(-1, 1) + 1) / 2 * 255).byte()
+                                .permute(1, 2, 0).numpy()).save(f"{folder}/gt/{i:02d}.png")
         manifest = {
             "id": sp["id"], "regime": sp["regime"], "start_state": {"traj": name, "time": ct},
             "commanded_path": {"positions": pos.tolist(), "yaw": yaw.tolist(),
