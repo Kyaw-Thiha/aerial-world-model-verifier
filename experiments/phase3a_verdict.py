@@ -171,7 +171,9 @@ def thresholds_for(records: list[dict], prereg: dict, holdout: str | None,
     min_n = 25
     fit = [r for r in records if r["condition"] == "identity" and r["testable"]
            and (holdout is None or r["flight"] != holdout)
-           and (policy == "all_flights" or not is_trackratm(r))]
+           and (policy == "all_flights"
+                or (policy == "all_but_13a" and r["flight"] != "flight-13a-trackRATM")
+                or (policy not in ("all_flights", "all_but_13a") and not is_trackratm(r)))]
     groups = _bin_groups(fit, bins, min_n, alpha) if fit else []
     per_bin = {g["label"]: {"n": g["n"], "bins": g["bins"], "threshold": g["threshold"]}
                for g in groups}
@@ -385,7 +387,12 @@ def artifact_floor(spec_paths: dict, ident_rows: dict, yaw_rows: dict) -> dict:
 def diagnostics(records: list[dict]) -> dict:
     """Gate 3's diagnosis block: where a failure would come from, computed in one pass."""
     real = [r for r in records if r["condition"] == "identity" and r["testable"]]
-    out: dict = {"real_by_speed_bin": {}, "per_condition": {}}
+    out: dict = {"real_by_speed_bin": {}, "per_condition": {}, "real_by_flight": {}}
+    for f in sorted({r["flight"] for r in real}):
+        vals = [r["score"] for r in real if r["flight"] == f]
+        out["real_by_flight"][f] = {"n": len(vals), "median": float(np.median(vals)),
+                                    "p90": float(np.percentile(vals, 90)),
+                                    "max": float(np.max(vals))}
     for b in sorted({r["bin"] for r in real}):
         vals = [r["score"] for r in real if r["bin"] == b]
         out["real_by_speed_bin"][b] = {"n": len(vals), "median": float(np.median(vals)),
@@ -561,10 +568,12 @@ def main() -> int:
 
     ev = evaluation(records, prereg)
     ev["threshold_policy"] = prereg["thresholds"].get("threshold_fit_flights", "all_flights")
-    ev_alt = evaluation(records, prereg, policy="all_flights")
-    ev["alt_threshold_policy_all_flights"] = {
-        k: ev_alt[k] for k in ("heldout_acceptance", "pooled_acceptance", "family_auroc_pooled",
-                               "families") if k in ev_alt}
+    for alt in ("all_flights", "all_but_13a"):
+        e_alt = evaluation(records, prereg, policy=alt)
+        ev[f"alt_threshold_policy_{alt}"] = {
+            k: e_alt[k] for k in ("heldout_acceptance", "heldout_uncertified_alt",
+                                  "pooled_acceptance", "family_auroc_pooled", "families",
+                                  "mdv", "mdv_smallest_rejected80_deg") if k in e_alt}
     ident_rows = {f: load_jsonl(geo / f"{f}__identity.jsonl")
                   for f in spec_paths if (geo / f"{f}__identity.jsonl").exists()}
     if ident_rows:

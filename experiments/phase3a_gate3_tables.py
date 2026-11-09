@@ -95,6 +95,15 @@ def main() -> int:
             lines.append(f"| {k} | {v['n']} | {fmt(v['score_median'])} |")
         lines.append("")
     d = ev.get("diagnostics", {})
+    if d and d.get("real_by_flight"):
+        lines.append("### Real clip score by flight (the applicability boundary)\n")
+        lines.append("| flight | n testable | median | p90 | max | abstain |")
+        lines.append("| --- | --- | --- | --- | --- | --- |")
+        abst = ev["abstention_rate"].get("per_flight", {})
+        for k, v in d["real_by_flight"].items():
+            lines.append(f"| {k} | {v['n']} | {fmt(v['median'])} | {fmt(v['p90'])} | "
+                         f"{fmt(v['max'])} | {fmt(abst.get(k), 3)} |")
+        lines.append("")
     if d:
         lines.append("### Diagnostics\n")
         lines.append("| speed bin | n | real median | real p90 |")

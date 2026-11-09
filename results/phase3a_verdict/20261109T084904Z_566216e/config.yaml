@@ -1,0 +1,9 @@
+{
+ "tag": "p3a_v1",
+ "specs": "data/processed/p3a",
+ "geocalib": "results/phase3a_verdict/geocalib_p3a_v1",
+ "real_tag": "identity",
+ "conditions": "tilt_k0",
+ "out": "results/phase3a_verdict",
+ "ablate": "both"
+}
