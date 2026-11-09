@@ -18,6 +18,7 @@ from src.generation.paths import K_D, design, from_mocap
 
 ROOT = Path(__file__).resolve().parents[1]
 STARTS = ROOT / "results/anwm_starts/starts.json"
+COVERAGE = ROOT / "results/anwm_starts/starts_coverage.json"
 OUT = ROOT / "results/anwm_clips/specs.json"
 MANEUVERS = ("cruise", "turn", "slalom", "accel_brake", "climb_turn")
 TILTS = (5.0, 10.0, 20.0)
@@ -25,15 +26,26 @@ SEEDS = (0, 1, 2)
 
 
 def usable_starts() -> list[dict]:
+    """Starts whose projected prior is measured non-empty (coverage), not depth-heuristic ones."""
     if not STARTS.exists():
         raise SystemExit(f"{STARTS} missing; run remote/b_anwm.py::list_starts first")
     data = json.loads(STARTS.read_text())
+    cov = {}
+    if COVERAGE.exists():
+        for traj, v in json.loads(COVERAGE.read_text()).items():
+            for r in v["candidates"]:
+                cov[(traj, r["ct"])] = r
     out = []
     for traj, v in data.items():
         for r in v["candidates"]:
+            c = cov.get((traj, r["ct"]))
+            if c is not None and not c["usable"]:
+                continue
             if r["usable"] and r["positions"]:
                 out.append({"traj": traj, "ct": r["ct"], "positions": r["positions"],
-                            "yaw": r["yaw"], "forward_depth_p90_m": r["forward_depth_p90_m"]})
+                            "yaw": r["yaw"],
+                            "prior_coverage_min": (c or {}).get("coverage_min"),
+                            "depth_p50_m": (c or {}).get("depth_p50_m")})
     return out
 
 
@@ -64,7 +76,7 @@ def main() -> int:
     for i, s in enumerate(chosen):
         specs.append(spec(f"A{i:02d}", "A", s["positions"], s["yaw"], s,
                           meta={"source": "released trajectory, recorded commands",
-                               "forward_depth_p90_m": s["forward_depth_p90_m"]}))
+                               "prior_coverage_min": s.get("prior_coverage_min")}))
 
     # Regime C: factorial designs, three starts each
     for m in MANEUVERS:
