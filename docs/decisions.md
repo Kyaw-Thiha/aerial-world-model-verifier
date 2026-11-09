@@ -207,3 +207,7 @@ One line per structural choice, with the reason. Newest at the bottom.
 - [A] Measured estimator view-dependence: a rotation about world up moves the estimated tilt by 4.75 deg median on the frames it rotates by more than 10 deg (0.50 rank correlation with the rotation angle). That number, not the clip-score noise, is the floor under the minimum detectable violation.
 - [A] Nuisance ablation: both terms needed on real clips (4.4 -> 2.9 deg) and they absorb 4.1 deg of a 27.2 deg tilt removal but **6.2 of the 13.6 deg** half-tilt change — 46% of the smallest violation. Verdict-level AUC moves only 0.822 -> 0.833 without them, so the ranking is robust even though the per-clip score is not.
 - [A] The identity edit reproduces the Phase 1 GeoCalib run to 0.13-0.16 deg median per flight, so the edit pipeline changes the input by less than the estimator's own run-to-run variation.
+
+### Task 4 (DPVO on a well-calibrated sequence)
+
+- [A] Not completed, two attempts used. One UZH-FPV DAVIS sequence (417 MB) was fetched and unpacked: it ships images, IMU, events and ground truth but **no calibration**, and the calibration bundle is not at the documented paths. Without it the experiment cannot distinguish a calibration cause from a parsing cause, so it was not run. The scaffolding (prepare, remote DPVO entry point, oracle-scale analysis) is committed and unit-tested, and the two format quirks (ground truth is `id timestamp tx ty tz qx qy qz qw`; `images.txt` is `id timestamp image_name`) are recorded in `docs/track_a_verdict.md` section 7.
