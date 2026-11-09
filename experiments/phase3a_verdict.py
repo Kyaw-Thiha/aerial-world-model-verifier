@@ -529,7 +529,7 @@ def main() -> int:
     for flight, path in spec_paths.items():
         rows_by_cond = {}
         for c in conds:
-            f = geo / (f"{flight}.jsonl" if c == "identity_real" else f"{flight}__{c}.jsonl")
+            f = geo / f"{flight}__{c}.jsonl"
             if f.exists():
                 rows_by_cond[c] = load_jsonl(f)
         if not rows_by_cond:
