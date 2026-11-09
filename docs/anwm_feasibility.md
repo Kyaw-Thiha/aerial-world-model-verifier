@@ -137,7 +137,10 @@ end-to-end TII run is **unverified** until executed.)
 ## 6. Hardware and time
 
 - Training: 6 GPUs (README), 300k steps, 4x A800 40 GB per the paper. (**verified**)
-- Inference: no memory or timing figure is reported anywhere. (**verified** absence)
+- Inference: no memory or timing figure is reported anywhere. (**verified** absence) — measured
+  in this repo (`remote/b_anwm.py::smoke`, A10G, batch 1, 16-frame context):
+  **66.5 ms** per CDiT forward pass, **17.6 s** per generated frame at 250 sampling steps,
+  **281 s** for a 16-frame rollout, **7.3 GB** peak GPU memory.
 - Budget arithmetic: 250 passes/frame x 48 frames = **12,000 CDiT-XL passes per 48-frame
   rollout**, each over 784 latent tokens (28x28) at hidden 1152. Inference weights ~4.4 GB
   fp32 (EMA only) + VAE (~0.3 GB) + activations for batch 1.
