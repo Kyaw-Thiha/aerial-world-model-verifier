@@ -248,9 +248,10 @@ The pose convention was verified inside the same run: rebuilding the recorded po
 | B real-flight replay | 8 | 2 shapes (`01a-ellipse` autonomous, `01p-ellipse` piloted) x 4 starts |
 | C designed | 49 | cruise control 7, turn 12, slalom 9, accelerate-then-brake 9, climb-and-turn 12 |
 
-The C counts are lower than 5x3x3+control because unreachable cells are not generated (12 of the
-22 designs): a course-aligned turn or climb cannot exceed 7.4 deg inside ANWM's 15 deg/s yaw step,
-and a constant-speed slalom tops out at 11.0 deg. Both policies are kept where they are reachable
+The C counts are lower than 5x3x3+control because unreachable cells are not generated: **7 of the
+22 designs are unreachable** at 5 m/s within ANWM's caps (21 clips not generated), because a
+course-aligned turn or climb cannot exceed 7.4 deg inside the 15 deg/s yaw step and a
+constant-speed slalom tops out at 11.0 deg. Both policies are kept where they are reachable
 because the yaw-fixed variant is a 45 deg strafe step, which the training data contains.
 
 Every clip directory holds `frames/` (16 PNGs), `manifest.json` (commanded positions and yaw, step
@@ -312,8 +313,9 @@ commit, visual-integrity statistics) and, for Regime A, `gt/` with the recorded 
 
 ## Recommendations for handoff 04
 
-- Score **transition events**, not clip means: 47% of native boundaries are acceleration events
-  with a commanded median of 27 deg at 1 s, while the sustained (SG) tilt is ~5 deg. A clip-level
+- Score **transition events**, not clip means: 47% of native boundaries command a drag-free tilt
+  change above 1 deg, with a median of 27 deg among them at 1 s, while the sustained (SG) tilt is
+  about 5 deg with drag and 1 deg drag-free. A clip-level
   average hides the signal the verifier is meant to catch (the feasibility doc already says this;
   this handoff supplies the corrected numbers).
 - Always report the commanded required tilt of the clip being scored, at the dt used, from
