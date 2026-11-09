@@ -164,7 +164,9 @@ def test_frozen_gate_config_is_well_formed_if_present():
     assert SINGLE_FRAME[doc["signal"]] is True
     assert np.isfinite(float(doc["tau"]))
     assert doc["prereg_amendment"] == 2
-    assert doc["commit"], "the freezing commit must be recorded"
+    # provenance comes from the fit run id (it embeds the git hash) and from git history;
+    # a "commit" field written into the file would be circular, so it is not required
+    assert doc["fit_run"], "the run that fitted the gate must be recorded"
 
 
 def test_gate_module_cannot_reach_the_path_or_mocap():

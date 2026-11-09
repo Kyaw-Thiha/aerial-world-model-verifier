@@ -227,9 +227,14 @@ def bootstrap_auroc_ci(values: np.ndarray, labels: np.ndarray, flights: np.ndarr
         if np.isfinite(a):
             out.append(a)
     if not out:
-        return {"auroc": float("nan"), "lo": float("nan"), "hi": float("nan"), "n_boot": 0}
+        return {"auroc": float("nan"), "lo": float("nan"), "hi": float("nan"),
+                "n_boot": 0, "frac_usable": 0.0}
     return {"auroc": auroc_pred(v, y), "lo": float(np.percentile(out, 2.5)),
-            "hi": float(np.percentile(out, 97.5)), "n_boot": len(out)}
+            "hi": float(np.percentile(out, 97.5)), "n_boot": len(out),
+            # a draw is usable only when it contains a label-1 clip. If positives live in
+            # one flight, most draws are unusable and the interval is narrower than the
+            # evidence; the fraction is reported so that can be said out loud.
+            "frac_usable": float(len(out) / n_boot)}
 
 
 def lofo_tau(values: np.ndarray, labels: np.ndarray, flights: np.ndarray,

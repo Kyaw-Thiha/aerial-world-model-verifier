@@ -154,10 +154,11 @@ def main() -> int:
                         val = clip_signal(sig, arrs, dt_s=dt)
                     elif sig == "S5_vo_agreement":
                         if dp is not None and dp["coverage"] >= 0.5:
-                            pair_idx = np.zeros(len(names) - 1, dtype=bool)
-                            pair_idx[idx[:-1]] = dp["pair_ok"][idx[:-1]]
-                            R = dp["R_rel"][idx[:-1]]
-                            R = np.where(pair_idx[:, None, None], R, np.nan)
+                            # pair t runs from clip frame t to t+1, both in global indices
+                            gpair = idx[:-1]
+                            ok_pair = dp["pair_ok"][gpair]
+                            R = np.where(ok_pair[:, None, None],
+                                         dp["R_rel"][gpair], np.nan)
                             val = clip_signal(sig, arrs, R_rel=R)
                     rec[f"{cond}::{sig}"] = float(val) if np.isfinite(val) else None
             if dp is not None:
@@ -214,17 +215,29 @@ def main() -> int:
     # ---- 3. selection (amendment 2)
     eligible = [s for s in RESULTS if SINGLE_FRAME[s] and np.isfinite(
         validation["signals"][s]["auroc"]["auroc"])]
-    best = max(eligible, key=lambda s: validation["signals"][s]["auroc"]["auroc"])
-    bi = validation["signals"][best]["auroc"]
-    validated = bool(n_pos >= 5 and np.isfinite(bi["lo"]) and bi["lo"] > 0.5)
-    tau_all = pick_tau(sig_vals[best], labels)
-    validation["selection"] = {
-        "rule": "highest AUROC among single-frame signals (amendment_2.selection_criterion)",
-        "best_signal": best, "best_auroc": bi, "validated": validated,
-        "tau_all_flights": float(tau_all),
-        "kept_fraction_all": float(np.mean([kept(vv, tau_all) for vv in sig_vals[best]])),
-        "eligible": eligible,
-    }
+    if not eligible:
+        validation["selection"] = {
+            "rule": "highest AUROC among single-frame signals (amendment_2.selection_criterion)",
+            "best_signal": None, "validated": False, "eligible": [],
+            "reason": f"no single-frame signal has a finite AUROC (n_positive={n_pos})",
+        }
+        best, bi, validated, tau_all = None, None, False, float("nan")
+    else:
+        best = max(eligible, key=lambda s: validation["signals"][s]["auroc"]["auroc"])
+        bi = validation["signals"][best]["auroc"]
+        tau_all = pick_tau(sig_vals[best], labels)
+        validated = bool(n_pos >= 5 and np.isfinite(bi["lo"]) and bi["lo"] > 0.5)
+        validation["selection"] = {
+            "rule": "highest AUROC among single-frame signals (amendment_2.selection_criterion)",
+            "best_signal": best, "best_auroc": bi, "validated": validated,
+            "tau_all_flights": float(tau_all),
+            "kept_fraction_all": float(np.mean([kept(vv, tau_all) for vv in sig_vals[best]])),
+            "eligible": eligible,
+        }
+        if bi["frac_usable"] < 0.5:
+            validation["selection"]["warning"] = (
+                "fewer than half the flight-bootstrap draws contain a label-1 clip: the "
+                "interval is narrower than the evidence; report it as weak, not decisive")
     (out / "gate_validation.json").write_text(json.dumps(
         {"run_id": run, "git": git_hash(), "gate_rows": args.gate_rows,
          "validation": validation, "clips": table}, indent=1, default=float))

@@ -26,35 +26,15 @@ from __future__ import annotations
 
 import modal
 
-from remote.a_geocalib_p3 import (FLIGHTS, GEOCALIB_COMMIT, VOLUME_MOUNT, _ensure_weights,
-                                  image, volume)
+from src.remote_common import (FLIGHTS, GEOCALIB_COMMIT, VOLUME_MOUNT, ensure_weights,
+                               gate_row as _gate_row, make_image)
 
 app = modal.App("awmv-a-gate")
+image = make_image()
+volume = modal.Volume.from_name("awmv-a-data", create_if_missing=True)
 
 UNC_KEYS = ("gravity_uncertainty", "roll_uncertainty", "pitch_uncertainty")
 CONF_KEYS = ("up_confidence", "latitude_confidence")
-
-
-def _gate_row(res, extra: dict) -> dict:
-    """Gravity direction plus whatever self-assessment GeoCalib returned for this frame."""
-    import numpy as np
-
-    g = res["gravity"].vec3d.detach().cpu().numpy().ravel()
-    row = dict(extra)
-    row["gravity_up_cam"] = [float(v) for v in g]
-    for k in UNC_KEYS:
-        if k in res and res[k] is not None:
-            v = res[k]
-            v = v.detach().cpu().numpy() if hasattr(v, "detach") else np.asarray(v)
-            row[f"{k}_raw"] = float(np.asarray(v).ravel()[0])
-    for k in CONF_KEYS:
-        if k in res and res[k] is not None:
-            v = res[k]
-            v = v.detach().cpu().numpy() if hasattr(v, "detach") else np.asarray(v)
-            a = np.asarray(v, dtype=np.float64).ravel()
-            row[f"{k}_mean"] = float(a.mean())
-            row[f"{k}_p10"] = float(np.percentile(a, 10.0))
-    return row
 
 
 @app.function(image=image, gpu="A10G", volumes={VOLUME_MOUNT: volume}, timeout=4 * 3600)
@@ -76,7 +56,7 @@ def tii_conditions(tag: str = "p3a_v1", conditions: list[str] | None = None,
     from src.negatives import equidistant_f, remap_arrays, warp_with_remap
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    _ensure_weights()
+    ensure_weights()
     model = GeoCalib(weights="distorted").to(device)
     out_dir = Path(VOLUME_MOUNT) / "geocalib" / out_tag
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -153,14 +133,16 @@ def anwm_clips(tag: str = "clips_v1", limit: int = 0, size: int = 224,
     from geocalib import GeoCalib
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    _ensure_weights()
+    ensure_weights()
     model = GeoCalib(weights="pinhole").to(device)
-    specs = json.loads((Path(VOLUME_MOUNT) / "anwm_specs" / tag / "specs.json").read_text())
+    spec_doc = json.loads((Path(VOLUME_MOUNT) / "anwm_specs" / tag / "specs.json").read_text())
+    # the file is {"clips": [...], ...}; a bare list is accepted for older tags
+    clip_list = spec_doc["clips"] if isinstance(spec_doc, dict) else spec_doc
     root = Path(VOLUME_MOUNT) / "anwm_clips"
     out_dir = Path(VOLUME_MOUNT) / "geocalib" / out_tag
     out_dir.mkdir(parents=True, exist_ok=True)
     f = (size / 2.0) / np.tan(np.deg2rad(fov_deg / 2.0))
-    clips = specs["clips"][:limit] if limit else specs["clips"]
+    clips = clip_list[:limit] if limit else clip_list
     t0 = time.time()
     n_rows = 0
     with (out_dir / "depicted.jsonl").open("w") as fh:
@@ -202,7 +184,7 @@ def anwm_floor(size: int = 224, fov_deg: float = 90.0,
     from geocalib import GeoCalib
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    _ensure_weights()
+    ensure_weights()
     model = GeoCalib(weights="pinhole").to(device)
     src = Path(VOLUME_MOUNT) / "anwm_frames"
     out_dir = Path(VOLUME_MOUNT) / "geocalib" / out_tag
@@ -233,7 +215,7 @@ def anwm_floor(size: int = 224, fov_deg: float = 90.0,
 
 
 @app.local_entrypoint()
-def main(job: str = "tii", tag: str = "p3a_v1", conditions: str = "", flights: str = "",
+def main(job: str = "tii", tag: str = "clips_v1", conditions: str = "", flights: str = "",
          limit: int = 0, size: int = 224, parallel: bool = True):
     import json
 
@@ -245,10 +227,12 @@ def main(job: str = "tii", tag: str = "p3a_v1", conditions: str = "", flights: s
         return
     conds = [c for c in conditions.split(",") if c] or None
     fl = [f for f in flights.split(",") if f] or None
+    # the TII edit spec is always p3a_v1; `tag` names the ANWM spec set instead
+    tii_tag = "p3a_v1"
     if not parallel:
-        print(json.dumps(tii_conditions.remote(tag, conds, fl), indent=2))
+        print(json.dumps(tii_conditions.remote(tii_tag, conds, fl), indent=2))
         return
-    handles = [tii_conditions.spawn(tag, conds, [f]) for f in (fl or FLIGHTS)]
+    handles = [tii_conditions.spawn(tii_tag, conds, [f]) for f in (fl or FLIGHTS)]
     for f, h in zip((fl or FLIGHTS), handles):
         info = h.get()
         print(f"{f}: {info['flights'][f]['seconds']:.0f}s", flush=True)
