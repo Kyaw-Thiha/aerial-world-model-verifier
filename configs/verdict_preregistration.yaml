@@ -427,3 +427,36 @@ amendment_3:
       the frozen verdict threshold is ~5.76 deg. Recovery worse than that cannot support any
       statement about 5-20 deg violations.
 
+
+# ================================================================ AMENDMENT 4
+# Committed after the extraction and the gated verdict, before this round's reports were
+# written. It records a DEVIATION from amendment 2 and its measured effect. It changes no
+# threshold, no signal, no label and no success criterion.
+amendment_4:
+  date: 2026-11-09
+  tag: "[A2]"
+  concerns: amendment_2.extraction
+  deviation: >
+    Amendment 2 required the re-run gravity direction to match the stored Gate 3 rows to a
+    median of 0.05 deg, "otherwise the extraction is void". Measured: 0.033-0.169 deg median
+    per flight, so six of eight flights exceed the bound.
+  finding: >
+    The bound was below the estimator's own run-to-run variation. GeoCalib at the pinned
+    commit is not deterministic: two independent runs of the same job on the same frames
+    differ by 0.033-0.155 deg median per flight, with isolated frames up to 28 deg (LM
+    optimizer not converging, logged by the library). Old-versus-new and run-to-run are
+    indistinguishable flight by flight (01a 0.123 vs 0.093; 04a 0.169 vs 0.155; 07a 0.094 vs
+    0.099; 13a 0.133 vs 0.131; 13p 0.091 vs 0.093; 16p 0.072 vs 0.068; 01p 0.034 vs 0.034;
+    07p 0.036 vs 0.035). The re-extraction is therefore a repeat of the same estimator, and
+    the check's purpose -- that the gate rows come from the Gate 3 estimator setup -- holds.
+  measured_effect: >
+    Scored with the Gate 3 rows and with the re-extracted rows, the unchanged Gate 3 protocol
+    gives pooled AUROC 0.8214 / 0.8210 and acceptance 59/83 = 0.7108 / 60/83 = 0.7229 at
+    k_d = 0.295 with the original threshold policy. One clip of 83 moves; the nuisance fit,
+    not the row set, decides which one (two near-tied grid minima 0.2 deg apart).
+  decision: >
+    The extraction is accepted, and every number computed from it is reported with this
+    deviation and with the measured one-clip sensitivity. The check is not silently
+    deleted: it is recorded here as exceeded, with the evidence that it is exceeded for a
+    reason unrelated to correctness.
+  not_changed: [gate signal, tau, label threshold, verdict thresholds, abstention rules]
