@@ -1,10 +1,10 @@
 {
- "run_id": "20261109T090835Z_c272ebc",
- "git": "c272ebc",
+ "run_id": "20261109T090957Z_bc3a398",
+ "git": "bc3a398",
  "prereg": {
   "path": "configs/verdict_preregistration.yaml",
   "sha256": "b8fd70130f176ef5f6549e74e12367054a0202515c2caf6cf742afd45881ffb7",
-  "git_hash": "c272ebc"
+  "git_hash": "bc3a398"
  },
  "config": {
   "tag": "p3a_v1",
@@ -15,7 +15,7 @@
   "out": "results/phase3a_verdict",
   "ablate": "both"
  },
- "n_records": 580,
+ "n_records": 600,
  "evaluation": {
   "heldout_acceptance": 0.7108433734939759,
   "heldout_acceptance_wilson95": [
@@ -322,102 +322,102 @@
    },
    "tilt_k05": {
     "family": "tilt_scaling",
-    "n": 81,
-    "rejection_rate": 0.35802469135802467,
-    "auroc": 0.8041457094955037,
-    "score_median_real": 2.912677320135524,
-    "score_median_negative": 8.613359102184518,
-    "spearman_vs_tilt": 0.7302168021680217,
-    "negative_p20_deg": 4.466563992488368,
-    "real_p95_deg": 48.77040372394518,
+    "n": 83,
+    "rejection_rate": 0.37349397590361444,
+    "auroc": 0.8027289882421251,
+    "score_median_real": 2.9137614323714005,
+    "score_median_negative": 8.799956552013779,
+    "spearman_vs_tilt": 0.7447420343394484,
+    "negative_p20_deg": 4.491069420076899,
+    "real_p95_deg": 44.85412534216878,
     "separable_at_80pct": false,
     "auroc_ci95": [
-     0.6670135275754423,
-     0.9226261069983357
+     0.6922375853283694,
+     0.9248395194005194
     ],
     "rejection_ci95": [
-     0.7271760154738879,
-     0.9902981315259205
+     0.75,
+     1.0
     ],
-    "n_flights": 7,
+    "n_flights": 8,
     "rejection_wilson95": [
-     0.26223516972228395,
-     0.4666714044111599
+     0.27719527504576813,
+     0.4809851361857155
     ]
    },
    "tilt_k15": {
     "family": "tilt_scaling",
-    "n": 81,
-    "rejection_rate": 0.3333333333333333,
-    "auroc": 0.7459228776101204,
-    "score_median_real": 2.912677320135524,
-    "score_median_negative": 5.044396120963194,
-    "spearman_vs_tilt": 0.7700542005420055,
-    "negative_p20_deg": 3.7266458819369577,
-    "real_p95_deg": 48.77040372394518,
+    "n": 83,
+    "rejection_rate": 0.3493975903614458,
+    "auroc": 0.7432138191319495,
+    "score_median_real": 2.9137614323714005,
+    "score_median_negative": 5.055504997087308,
+    "spearman_vs_tilt": 0.7766886360774107,
+    "negative_p20_deg": 3.74549995371925,
+    "real_p95_deg": 44.85412534216878,
     "separable_at_80pct": false,
     "auroc_ci95": [
-     0.6381373569198752,
-     0.8887097229792774
+     0.6466666666666666,
+     0.8810803431299783
     ],
     "rejection_ci95": [
-     0.7297297297297297,
+     0.7599814814814815,
      1.0
     ],
-    "n_flights": 7,
+    "n_flights": 8,
     "rejection_wilson95": [
-     0.24028620252704974,
-     0.44147368884699306
+     0.25555971692976304,
+     0.45655982025057457
     ]
    },
    "mirror_roll": {
     "family": "mirrored_roll",
-    "n": 81,
-    "rejection_rate": 0.37037037037037035,
-    "auroc": 0.9247065996037189,
-    "score_median_real": 2.912677320135524,
-    "score_median_negative": 26.393682444666897,
-    "spearman_vs_tilt": 0.7036811201445348,
-    "negative_p20_deg": 14.499885589011743,
-    "real_p95_deg": 48.77040372394518,
+    "n": 83,
+    "rejection_rate": 0.3855421686746988,
+    "auroc": 0.9261140949339527,
+    "score_median_real": 2.9137614323714005,
+    "score_median_negative": 26.287394826565755,
+    "spearman_vs_tilt": 0.6867469879518072,
+    "negative_p20_deg": 14.660344763757843,
+    "real_p95_deg": 44.85412534216878,
     "separable_at_80pct": false,
     "auroc_ci95": [
-     0.7630536330828478,
-     0.9820498614958448
+     0.7774242348476564,
+     0.9832230623818525
     ],
     "rejection_ci95": [
-     0.8181818181818182,
+     0.8392495173745174,
      1.0
     ],
-    "n_flights": 7,
+    "n_flights": 8,
     "rejection_wilson95": [
-     0.27331523697645854,
-     0.4791646785366859
+     0.2881099453171214,
+     0.49310090293993525
     ]
    },
    "yaw_control": {
     "family": "control",
-    "n": 81,
-    "rejection_rate": 0.3333333333333333,
-    "auroc": 0.6172839506172839,
-    "score_median_real": 2.912677320135524,
-    "score_median_negative": 3.7862849965009646,
-    "spearman_vs_tilt": 0.735546522131888,
-    "negative_p20_deg": 2.4359716708486463,
-    "real_p95_deg": 48.77040372394518,
+    "n": 83,
+    "rejection_rate": 0.3493975903614458,
+    "auroc": 0.6173610103062854,
+    "score_median_real": 2.9137614323714005,
+    "score_median_negative": 3.8126692511266427,
+    "spearman_vs_tilt": 0.7463372654380589,
+    "negative_p20_deg": 2.4398115776331952,
+    "real_p95_deg": 44.85412534216878,
     "separable_at_80pct": false,
     "auroc_ci95": [
-     0.5486222222222222,
-     0.8298040401756269
+     0.551399678604224,
+     0.8288082312925169
     ],
     "rejection_ci95": [
-     0.6619718309859155,
-     0.9722222222222222
+     0.6734508348794063,
+     0.969708276797829
     ],
-    "n_flights": 7,
+    "n_flights": 8,
     "rejection_wilson95": [
-     0.24028620252704974,
-     0.44147368884699306
+     0.25555971692976304,
+     0.45655982025057457
     ]
    }
   },
@@ -430,20 +430,20 @@
    },
    "tilt_k05": {
     "k": 0.5,
-    "n": 81,
-    "violation_median_deg": 13.586417744043548,
-    "rejection_rate": 0.35802469135802467
+    "n": 83,
+    "violation_median_deg": 13.587090866871195,
+    "rejection_rate": 0.37349397590361444
    },
    "tilt_k15": {
     "k": 1.5,
-    "n": 81,
-    "violation_median_deg": 13.586417744043548,
-    "rejection_rate": 0.3333333333333333
+    "n": 83,
+    "violation_median_deg": 13.587090866871195,
+    "rejection_rate": 0.3493975903614458
    }
   },
   "ablations": {},
-  "family_auroc_pooled": 0.8220907955018742,
-  "spearman_score_vs_injected_deg": 0.8201642677326146,
+  "family_auroc_pooled": 0.8214061063531234,
+  "spearman_score_vs_injected_deg": 0.8218371964705434,
   "heldout_acceptance_trackratm": 0.043478260869565216,
   "n_trackratm": 23,
   "heldout_acceptance_other": 0.9666666666666667,
@@ -493,43 +493,43 @@
      "score_vs_valid_frac_spearman": -0.7666562702729288
     },
     "tilt_k05": {
-     "n": 81,
-     "score_median": 8.613359102184518,
+     "n": 83,
+     "score_median": 8.799956552013779,
      "uptilt_offset_median_deg": 7.0,
-     "uptilt_offset_at_bound_frac": 0.6172839506172839,
+     "uptilt_offset_at_bound_frac": 0.6144578313253012,
      "lag_median_ms": -125.0,
-     "lag_at_bound_frac": 0.35802469135802467,
-     "abstain_frac": 0.14736842105263157,
+     "lag_at_bound_frac": 0.3493975903614458,
+     "abstain_frac": 0.17,
      "score_vs_valid_frac_spearman": NaN
     },
     "tilt_k15": {
-     "n": 81,
-     "score_median": 5.044396120963194,
+     "n": 83,
+     "score_median": 5.055504997087308,
      "uptilt_offset_median_deg": -7.0,
-     "uptilt_offset_at_bound_frac": 0.9012345679012346,
+     "uptilt_offset_at_bound_frac": 0.9036144578313253,
      "lag_median_ms": -25.0,
-     "lag_at_bound_frac": 0.09876543209876543,
-     "abstain_frac": 0.14736842105263157,
+     "lag_at_bound_frac": 0.10843373493975904,
+     "abstain_frac": 0.17,
      "score_vs_valid_frac_spearman": NaN
     },
     "mirror_roll": {
-     "n": 81,
-     "score_median": 26.393682444666897,
+     "n": 83,
+     "score_median": 26.287394826565755,
      "uptilt_offset_median_deg": -3.0,
-     "uptilt_offset_at_bound_frac": 0.14814814814814814,
+     "uptilt_offset_at_bound_frac": 0.1566265060240964,
      "lag_median_ms": -150.0,
-     "lag_at_bound_frac": 0.8148148148148148,
-     "abstain_frac": 0.14736842105263157,
-     "score_vs_valid_frac_spearman": -0.7010760557943803
+     "lag_at_bound_frac": 0.7951807228915663,
+     "abstain_frac": 0.17,
+     "score_vs_valid_frac_spearman": -0.6729789567038402
     },
     "yaw_control": {
-     "n": 81,
-     "score_median": 3.7862849965009646,
+     "n": 83,
+     "score_median": 3.8126692511266427,
      "uptilt_offset_median_deg": -3.0,
-     "uptilt_offset_at_bound_frac": 0.16049382716049382,
+     "uptilt_offset_at_bound_frac": 0.1566265060240964,
      "lag_median_ms": -50.0,
-     "lag_at_bound_frac": 0.08641975308641975,
-     "abstain_frac": 0.14736842105263157,
+     "lag_at_bound_frac": 0.08433734939759036,
+     "abstain_frac": 0.17,
      "score_vs_valid_frac_spearman": NaN
     }
    },
@@ -594,7 +594,7 @@
   "alt_threshold_policy_all_flights": {
    "heldout_acceptance": 0.9518072289156626,
    "pooled_acceptance": 0.963855421686747,
-   "family_auroc_pooled": 0.8220907955018742,
+   "family_auroc_pooled": 0.8214061063531234,
    "families": {
     "tilt_k0": {
      "family": "tilt_removal",
@@ -623,102 +623,102 @@
     },
     "tilt_k05": {
      "family": "tilt_scaling",
-     "n": 81,
-     "rejection_rate": 0.06172839506172839,
-     "auroc": 0.8041457094955037,
-     "score_median_real": 2.912677320135524,
-     "score_median_negative": 8.613359102184518,
-     "spearman_vs_tilt": 0.7302168021680217,
-     "negative_p20_deg": 4.466563992488368,
-     "real_p95_deg": 48.77040372394518,
+     "n": 83,
+     "rejection_rate": 0.060240963855421686,
+     "auroc": 0.8027289882421251,
+     "score_median_real": 2.9137614323714005,
+     "score_median_negative": 8.799956552013779,
+     "spearman_vs_tilt": 0.7447420343394484,
+     "negative_p20_deg": 4.491069420076899,
+     "real_p95_deg": 44.85412534216878,
      "separable_at_80pct": false,
      "auroc_ci95": [
-      0.6670135275754423,
-      0.9226261069983357
+      0.6922375853283694,
+      0.9248395194005194
      ],
      "rejection_ci95": [
-      0.7271760154738879,
-      0.9902981315259205
+      0.75,
+      1.0
      ],
-     "n_flights": 7,
+     "n_flights": 8,
      "rejection_wilson95": [
-      0.026652119089554074,
-      0.13649426193107733
+      0.026003017602439858,
+      0.13338603096414572
      ]
     },
     "tilt_k15": {
      "family": "tilt_scaling",
-     "n": 81,
-     "rejection_rate": 0.06172839506172839,
-     "auroc": 0.7459228776101204,
-     "score_median_real": 2.912677320135524,
-     "score_median_negative": 5.044396120963194,
-     "spearman_vs_tilt": 0.7700542005420055,
-     "negative_p20_deg": 3.7266458819369577,
-     "real_p95_deg": 48.77040372394518,
+     "n": 83,
+     "rejection_rate": 0.060240963855421686,
+     "auroc": 0.7432138191319495,
+     "score_median_real": 2.9137614323714005,
+     "score_median_negative": 5.055504997087308,
+     "spearman_vs_tilt": 0.7766886360774107,
+     "negative_p20_deg": 3.74549995371925,
+     "real_p95_deg": 44.85412534216878,
      "separable_at_80pct": false,
      "auroc_ci95": [
-      0.6381373569198752,
-      0.8887097229792774
+      0.6466666666666666,
+      0.8810803431299783
      ],
      "rejection_ci95": [
-      0.7297297297297297,
+      0.7599814814814815,
       1.0
      ],
-     "n_flights": 7,
+     "n_flights": 8,
      "rejection_wilson95": [
-      0.026652119089554074,
-      0.13649426193107733
+      0.026003017602439858,
+      0.13338603096414572
      ]
     },
     "mirror_roll": {
      "family": "mirrored_roll",
-     "n": 81,
-     "rejection_rate": 0.1111111111111111,
-     "auroc": 0.9247065996037189,
-     "score_median_real": 2.912677320135524,
-     "score_median_negative": 26.393682444666897,
-     "spearman_vs_tilt": 0.7036811201445348,
-     "negative_p20_deg": 14.499885589011743,
-     "real_p95_deg": 48.77040372394518,
+     "n": 83,
+     "rejection_rate": 0.10843373493975904,
+     "auroc": 0.9261140949339527,
+     "score_median_real": 2.9137614323714005,
+     "score_median_negative": 26.287394826565755,
+     "spearman_vs_tilt": 0.6867469879518072,
+     "negative_p20_deg": 14.660344763757843,
+     "real_p95_deg": 44.85412534216878,
      "separable_at_80pct": false,
      "auroc_ci95": [
-      0.7630536330828478,
-      0.9820498614958448
+      0.7774242348476564,
+      0.9832230623818525
      ],
      "rejection_ci95": [
-      0.8181818181818182,
+      0.8392495173745174,
       1.0
      ],
-     "n_flights": 7,
+     "n_flights": 8,
      "rejection_wilson95": [
-      0.059566890075051324,
-      0.19787285646438213
+      0.058104257602346984,
+      0.1934065390665306
      ]
     },
     "yaw_control": {
      "family": "control",
-     "n": 81,
-     "rejection_rate": 0.06172839506172839,
-     "auroc": 0.6172839506172839,
-     "score_median_real": 2.912677320135524,
-     "score_median_negative": 3.7862849965009646,
-     "spearman_vs_tilt": 0.735546522131888,
-     "negative_p20_deg": 2.4359716708486463,
-     "real_p95_deg": 48.77040372394518,
+     "n": 83,
+     "rejection_rate": 0.060240963855421686,
+     "auroc": 0.6173610103062854,
+     "score_median_real": 2.9137614323714005,
+     "score_median_negative": 3.8126692511266427,
+     "spearman_vs_tilt": 0.7463372654380589,
+     "negative_p20_deg": 2.4398115776331952,
+     "real_p95_deg": 44.85412534216878,
      "separable_at_80pct": false,
      "auroc_ci95": [
-      0.5486222222222222,
-      0.8298040401756269
+      0.551399678604224,
+      0.8288082312925169
      ],
      "rejection_ci95": [
-      0.6619718309859155,
-      0.9722222222222222
+      0.6734508348794063,
+      0.969708276797829
      ],
-     "n_flights": 7,
+     "n_flights": 8,
      "rejection_wilson95": [
-      0.026652119089554074,
-      0.13649426193107733
+      0.026003017602439858,
+      0.13338603096414572
      ]
     }
    },
@@ -731,15 +731,15 @@
     },
     "tilt_k05": {
      "k": 0.5,
-     "n": 81,
-     "violation_median_deg": 13.586417744043548,
-     "rejection_rate": 0.06172839506172839
+     "n": 83,
+     "violation_median_deg": 13.587090866871195,
+     "rejection_rate": 0.060240963855421686
     },
     "tilt_k15": {
      "k": 1.5,
-     "n": 81,
-     "violation_median_deg": 13.586417744043548,
-     "rejection_rate": 0.06172839506172839
+     "n": 83,
+     "violation_median_deg": 13.587090866871195,
+     "rejection_rate": 0.060240963855421686
     }
    },
    "mdv_smallest_rejected80_deg": null
@@ -747,7 +747,7 @@
   "alt_threshold_policy_all_but_13a": {
    "heldout_acceptance": 0.9036144578313253,
    "pooled_acceptance": 0.927710843373494,
-   "family_auroc_pooled": 0.8220907955018742,
+   "family_auroc_pooled": 0.8214061063531234,
    "families": {
     "tilt_k0": {
      "family": "tilt_removal",
@@ -776,102 +776,102 @@
     },
     "tilt_k05": {
      "family": "tilt_scaling",
-     "n": 81,
-     "rejection_rate": 0.43209876543209874,
-     "auroc": 0.8041457094955037,
-     "score_median_real": 2.912677320135524,
-     "score_median_negative": 8.613359102184518,
-     "spearman_vs_tilt": 0.7302168021680217,
-     "negative_p20_deg": 4.466563992488368,
-     "real_p95_deg": 48.77040372394518,
+     "n": 83,
+     "rejection_rate": 0.4457831325301205,
+     "auroc": 0.8027289882421251,
+     "score_median_real": 2.9137614323714005,
+     "score_median_negative": 8.799956552013779,
+     "spearman_vs_tilt": 0.7447420343394484,
+     "negative_p20_deg": 4.491069420076899,
+     "real_p95_deg": 44.85412534216878,
      "separable_at_80pct": false,
      "auroc_ci95": [
-      0.6670135275754423,
-      0.9226261069983357
+      0.6922375853283694,
+      0.9248395194005194
      ],
      "rejection_ci95": [
-      0.7271760154738879,
-      0.9902981315259205
+      0.75,
+      1.0
      ],
-     "n_flights": 7,
+     "n_flights": 8,
      "rejection_wilson95": [
-      0.329719027705932,
-      0.540627594705715
+      0.3436112760405485,
+      0.5527517573443731
      ]
     },
     "tilt_k15": {
      "family": "tilt_scaling",
-     "n": 81,
-     "rejection_rate": 0.30864197530864196,
-     "auroc": 0.7459228776101204,
-     "score_median_real": 2.912677320135524,
-     "score_median_negative": 5.044396120963194,
-     "spearman_vs_tilt": 0.7700542005420055,
-     "negative_p20_deg": 3.7266458819369577,
-     "real_p95_deg": 48.77040372394518,
+     "n": 83,
+     "rejection_rate": 0.3253012048192771,
+     "auroc": 0.7432138191319495,
+     "score_median_real": 2.9137614323714005,
+     "score_median_negative": 5.055504997087308,
+     "spearman_vs_tilt": 0.7766886360774107,
+     "negative_p20_deg": 3.74549995371925,
+     "real_p95_deg": 44.85412534216878,
      "separable_at_80pct": false,
      "auroc_ci95": [
-      0.6381373569198752,
-      0.8887097229792774
+      0.6466666666666666,
+      0.8810803431299783
      ],
      "rejection_ci95": [
-      0.7297297297297297,
+      0.7599814814814815,
       1.0
      ],
-     "n_flights": 7,
+     "n_flights": 8,
      "rejection_wilson95": [
-      0.2186306293369854,
-      0.41598257927765636
+      0.23419186209445625,
+      0.43186680103473535
      ]
     },
     "mirror_roll": {
      "family": "mirrored_roll",
-     "n": 81,
-     "rejection_rate": 0.9629629629629629,
-     "auroc": 0.9247065996037189,
-     "score_median_real": 2.912677320135524,
-     "score_median_negative": 26.393682444666897,
-     "spearman_vs_tilt": 0.7036811201445348,
-     "negative_p20_deg": 14.499885589011743,
-     "real_p95_deg": 48.77040372394518,
+     "n": 83,
+     "rejection_rate": 0.963855421686747,
+     "auroc": 0.9261140949339527,
+     "score_median_real": 2.9137614323714005,
+     "score_median_negative": 26.287394826565755,
+     "spearman_vs_tilt": 0.6867469879518072,
+     "negative_p20_deg": 14.660344763757843,
+     "real_p95_deg": 44.85412534216878,
      "separable_at_80pct": false,
      "auroc_ci95": [
-      0.7630536330828478,
-      0.9820498614958448
+      0.7774242348476564,
+      0.9832230623818525
      ],
      "rejection_ci95": [
-      0.8181818181818182,
+      0.8392495173745174,
       1.0
      ],
-     "n_flights": 7,
+     "n_flights": 8,
      "rejection_wilson95": [
-      0.896675186197318,
-      0.9873251155414514
+      0.8990394046094535,
+      0.9876324208751069
      ]
     },
     "yaw_control": {
      "family": "control",
-     "n": 81,
-     "rejection_rate": 0.30864197530864196,
-     "auroc": 0.6172839506172839,
-     "score_median_real": 2.912677320135524,
-     "score_median_negative": 3.7862849965009646,
-     "spearman_vs_tilt": 0.735546522131888,
-     "negative_p20_deg": 2.4359716708486463,
-     "real_p95_deg": 48.77040372394518,
+     "n": 83,
+     "rejection_rate": 0.3132530120481928,
+     "auroc": 0.6173610103062854,
+     "score_median_real": 2.9137614323714005,
+     "score_median_negative": 3.8126692511266427,
+     "spearman_vs_tilt": 0.7463372654380589,
+     "negative_p20_deg": 2.4398115776331952,
+     "real_p95_deg": 44.85412534216878,
      "separable_at_80pct": false,
      "auroc_ci95": [
-      0.5486222222222222,
-      0.8298040401756269
+      0.551399678604224,
+      0.8288082312925169
      ],
      "rejection_ci95": [
-      0.6619718309859155,
-      0.9722222222222222
+      0.6734508348794063,
+      0.969708276797829
      ],
-     "n_flights": 7,
+     "n_flights": 8,
      "rejection_wilson95": [
-      0.2186306293369854,
-      0.41598257927765636
+      0.2236124995825663,
+      0.41941572652105236
      ]
     }
    },
@@ -884,15 +884,15 @@
     },
     "tilt_k05": {
      "k": 0.5,
-     "n": 81,
-     "violation_median_deg": 13.586417744043548,
-     "rejection_rate": 0.43209876543209874
+     "n": 83,
+     "violation_median_deg": 13.587090866871195,
+     "rejection_rate": 0.4457831325301205
     },
     "tilt_k15": {
      "k": 1.5,
-     "n": 81,
-     "violation_median_deg": 13.586417744043548,
-     "rejection_rate": 0.30864197530864196
+     "n": 83,
+     "violation_median_deg": 13.587090866871195,
+     "rejection_rate": 0.3253012048192771
     }
    },
    "mdv_smallest_rejected80_deg": 27.17418173374239
@@ -972,6 +972,14 @@
    }
   },
   "artifact_floor": {
+   "flight-01a-ellipse": {
+    "n": 270,
+    "median_abs_tilt_change_deg": 1.197545054136627,
+    "p90_abs_tilt_change_deg": 7.082356212256552,
+    "n_rotated": 106,
+    "median_abs_tilt_change_rotated_deg": 4.345495020386413,
+    "corr_with_rotation": 0.41435464236311975
+   },
    "flight-01p-ellipse": {
     "n": 1267,
     "median_abs_tilt_change_deg": 1.8893162286426026,
@@ -1100,6 +1108,110 @@
    "edit_angle_deg": 1.053310513496399
   },
   {
+   "n_frames": 49,
+   "n_signal": 0,
+   "frac_signal": 0.0,
+   "frac_usable": 0.9387755102040817,
+   "testable": false,
+   "abstain_reasons": [
+    "signal_frames 0 < 12",
+    "testable_fraction 0.00 < 0.20",
+    "nuisance fit failed"
+   ],
+   "nuisances": {
+    "ok": false,
+    "reason": "no testable frames"
+   },
+   "clip_id": "flight-01a-ellipse#00",
+   "flight": "flight-01a-ellipse",
+   "track": "ellipse",
+   "control": "autonomous",
+   "condition": "tilt_k05",
+   "speed": 0.23564280661965392,
+   "bin": "0-2",
+   "tilt_implied_median": 0.14970230603875226,
+   "valid_frac_mean": 1.0,
+   "edit_angle_deg": 0.5266552567481995
+  },
+  {
+   "n_frames": 49,
+   "n_signal": 0,
+   "frac_signal": 0.0,
+   "frac_usable": 0.9387755102040817,
+   "testable": false,
+   "abstain_reasons": [
+    "signal_frames 0 < 12",
+    "testable_fraction 0.00 < 0.20",
+    "nuisance fit failed"
+   ],
+   "nuisances": {
+    "ok": false,
+    "reason": "no testable frames"
+   },
+   "clip_id": "flight-01a-ellipse#00",
+   "flight": "flight-01a-ellipse",
+   "track": "ellipse",
+   "control": "autonomous",
+   "condition": "tilt_k15",
+   "speed": 0.23564280661965392,
+   "bin": "0-2",
+   "tilt_implied_median": 0.14970230603875226,
+   "valid_frac_mean": 1.0,
+   "edit_angle_deg": 0.5266552567481995
+  },
+  {
+   "n_frames": 49,
+   "n_signal": 0,
+   "frac_signal": 0.0,
+   "frac_usable": 0.9387755102040817,
+   "testable": false,
+   "abstain_reasons": [
+    "signal_frames 0 < 12",
+    "testable_fraction 0.00 < 0.20",
+    "nuisance fit failed"
+   ],
+   "nuisances": {
+    "ok": false,
+    "reason": "no testable frames"
+   },
+   "clip_id": "flight-01a-ellipse#00",
+   "flight": "flight-01a-ellipse",
+   "track": "ellipse",
+   "control": "autonomous",
+   "condition": "mirror_roll",
+   "speed": 0.23564280661965392,
+   "bin": "0-2",
+   "tilt_implied_median": 0.14970230603875226,
+   "valid_frac_mean": 1.0,
+   "edit_angle_deg": 1.967309832572937
+  },
+  {
+   "n_frames": 49,
+   "n_signal": 0,
+   "frac_signal": 0.0,
+   "frac_usable": 0.9387755102040817,
+   "testable": false,
+   "abstain_reasons": [
+    "signal_frames 0 < 12",
+    "testable_fraction 0.00 < 0.20",
+    "nuisance fit failed"
+   ],
+   "nuisances": {
+    "ok": false,
+    "reason": "no testable frames"
+   },
+   "clip_id": "flight-01a-ellipse#00",
+   "flight": "flight-01a-ellipse",
+   "track": "ellipse",
+   "control": "autonomous",
+   "condition": "yaw_control",
+   "speed": 0.23564280661965392,
+   "bin": "0-2",
+   "tilt_implied_median": 0.14970230603875226,
+   "valid_frac_mean": 1.0,
+   "edit_angle_deg": 1.053310513496399
+  },
+  {
    "n_frames": 48,
    "n_signal": 6,
    "frac_signal": 0.125,
@@ -1161,6 +1273,142 @@
    "track": "ellipse",
    "control": "autonomous",
    "condition": "tilt_k0",
+   "speed": 0.006039293558908754,
+   "bin": "0-2",
+   "tilt_implied_median": 0.09180359943718258,
+   "valid_frac_mean": 1.0,
+   "edit_angle_deg": 1.3358198404312134
+  },
+  {
+   "n_frames": 48,
+   "n_signal": 6,
+   "frac_signal": 0.125,
+   "frac_usable": 1.0,
+   "testable": false,
+   "abstain_reasons": [
+    "signal_frames 6 < 12",
+    "testable_fraction 0.12 < 0.20"
+   ],
+   "nuisances": {
+    "ok": true,
+    "loss": 1.4688308928837654,
+    "uptilt_offset_deg": 6.0,
+    "lag_ms": 125.0
+   },
+   "score": 1.4688308928837654,
+   "score_p75": 2.618325346835081,
+   "score_median_tilt": 0.5778348704779042,
+   "n_scored": 6,
+   "tilt_dep_median": 18.805008761165254,
+   "tilt_imp_median": 18.528213828500867,
+   "nuisance_loss": 1.4688308928837654,
+   "clip_id": "flight-01a-ellipse#01",
+   "flight": "flight-01a-ellipse",
+   "track": "ellipse",
+   "control": "autonomous",
+   "condition": "tilt_k05",
+   "speed": 0.006039293558908754,
+   "bin": "0-2",
+   "tilt_implied_median": 0.09180359943718258,
+   "valid_frac_mean": 1.0,
+   "edit_angle_deg": 0.6679099202156067
+  },
+  {
+   "n_frames": 48,
+   "n_signal": 6,
+   "frac_signal": 0.125,
+   "frac_usable": 1.0,
+   "testable": false,
+   "abstain_reasons": [
+    "signal_frames 6 < 12",
+    "testable_fraction 0.12 < 0.20"
+   ],
+   "nuisances": {
+    "ok": true,
+    "loss": 1.6462597802735237,
+    "uptilt_offset_deg": -5.0,
+    "lag_ms": 0.0
+   },
+   "score": 1.6462597802735237,
+   "score_p75": 2.2378498050062303,
+   "score_median_tilt": 0.2680347763077515,
+   "n_scored": 6,
+   "tilt_dep_median": 15.925149681930357,
+   "tilt_imp_median": 15.739117546412542,
+   "nuisance_loss": 1.6462597802735237,
+   "clip_id": "flight-01a-ellipse#01",
+   "flight": "flight-01a-ellipse",
+   "track": "ellipse",
+   "control": "autonomous",
+   "condition": "tilt_k15",
+   "speed": 0.006039293558908754,
+   "bin": "0-2",
+   "tilt_implied_median": 0.09180359943718258,
+   "valid_frac_mean": 1.0,
+   "edit_angle_deg": 0.6679099202156067
+  },
+  {
+   "n_frames": 48,
+   "n_signal": 6,
+   "frac_signal": 0.125,
+   "frac_usable": 1.0,
+   "testable": false,
+   "abstain_reasons": [
+    "signal_frames 6 < 12",
+    "testable_fraction 0.12 < 0.20"
+   ],
+   "nuisances": {
+    "ok": true,
+    "loss": 5.450226476754124,
+    "uptilt_offset_deg": -6.0,
+    "lag_ms": -150.0
+   },
+   "score": 5.450226476754124,
+   "score_p75": 5.9792292144075665,
+   "score_median_tilt": 0.3469250578431362,
+   "n_scored": 6,
+   "tilt_dep_median": 12.45628514437767,
+   "tilt_imp_median": 12.158265417220923,
+   "nuisance_loss": 5.450226476754124,
+   "clip_id": "flight-01a-ellipse#01",
+   "flight": "flight-01a-ellipse",
+   "track": "ellipse",
+   "control": "autonomous",
+   "condition": "mirror_roll",
+   "speed": 0.006039293558908754,
+   "bin": "0-2",
+   "tilt_implied_median": 0.09180359943718258,
+   "valid_frac_mean": 1.0,
+   "edit_angle_deg": 2.5319628715515137
+  },
+  {
+   "n_frames": 48,
+   "n_signal": 6,
+   "frac_signal": 0.125,
+   "frac_usable": 1.0,
+   "testable": false,
+   "abstain_reasons": [
+    "signal_frames 6 < 12",
+    "testable_fraction 0.12 < 0.20"
+   ],
+   "nuisances": {
+    "ok": true,
+    "loss": 1.9760847517130695,
+    "uptilt_offset_deg": -6.0,
+    "lag_ms": 50.0
+   },
+   "score": 1.9760847517130695,
+   "score_p75": 2.123296292670142,
+   "score_median_tilt": 0.11598954509161175,
+   "n_scored": 6,
+   "tilt_dep_median": 16.662367979259642,
+   "tilt_imp_median": 16.86682062538849,
+   "nuisance_loss": 1.9760847517130695,
+   "clip_id": "flight-01a-ellipse#01",
+   "flight": "flight-01a-ellipse",
+   "track": "ellipse",
+   "control": "autonomous",
+   "condition": "yaw_control",
    "speed": 0.006039293558908754,
    "bin": "0-2",
    "tilt_implied_median": 0.09180359943718258,
@@ -1231,6 +1479,130 @@
   },
   {
    "n_frames": 48,
+   "n_signal": 48,
+   "frac_signal": 1.0,
+   "frac_usable": 1.0,
+   "testable": true,
+   "abstain_reasons": [],
+   "nuisances": {
+    "ok": true,
+    "loss": 17.021970577251324,
+    "uptilt_offset_deg": 7.0,
+    "lag_ms": 50.0
+   },
+   "score": 17.021970577251324,
+   "score_p75": 21.20058273573895,
+   "score_median_tilt": 11.804631658441707,
+   "n_scored": 48,
+   "tilt_dep_median": 45.89037812883243,
+   "tilt_imp_median": 56.77810442009122,
+   "nuisance_loss": 17.021970577251324,
+   "clip_id": "flight-01a-ellipse#02",
+   "flight": "flight-01a-ellipse",
+   "track": "ellipse",
+   "control": "autonomous",
+   "condition": "tilt_k05",
+   "speed": 6.604861846038059,
+   "bin": "5-10",
+   "tilt_implied_median": 55.978134023467504,
+   "valid_frac_mean": 1.0,
+   "edit_angle_deg": 28.093215942382812
+  },
+  {
+   "n_frames": 48,
+   "n_signal": 48,
+   "frac_signal": 1.0,
+   "frac_usable": 1.0,
+   "testable": true,
+   "abstain_reasons": [],
+   "nuisances": {
+    "ok": true,
+    "loss": 11.435909026581879,
+    "uptilt_offset_deg": -7.0,
+    "lag_ms": 0.0
+   },
+   "score": 11.435909026581879,
+   "score_p75": 21.266049456886165,
+   "score_median_tilt": 8.15396766630639,
+   "n_scored": 48,
+   "tilt_dep_median": 56.41594080159827,
+   "tilt_imp_median": 55.978134023467504,
+   "nuisance_loss": 11.435909026581879,
+   "clip_id": "flight-01a-ellipse#02",
+   "flight": "flight-01a-ellipse",
+   "track": "ellipse",
+   "control": "autonomous",
+   "condition": "tilt_k15",
+   "speed": 6.604861846038059,
+   "bin": "5-10",
+   "tilt_implied_median": 55.978134023467504,
+   "valid_frac_mean": 1.0,
+   "edit_angle_deg": 28.093215942382812
+  },
+  {
+   "n_frames": 48,
+   "n_signal": 48,
+   "frac_signal": 1.0,
+   "frac_usable": 0.9375,
+   "testable": true,
+   "abstain_reasons": [],
+   "nuisances": {
+    "ok": true,
+    "loss": 16.477340882455447,
+    "uptilt_offset_deg": 4.0,
+    "lag_ms": 0.0
+   },
+   "score": 15.570133580216147,
+   "score_p75": 33.18517462993194,
+   "score_median_tilt": 4.506287713777567,
+   "n_scored": 45,
+   "tilt_dep_median": 51.911105934638506,
+   "tilt_imp_median": 52.21514130352676,
+   "nuisance_loss": 16.477340882455447,
+   "clip_id": "flight-01a-ellipse#02",
+   "flight": "flight-01a-ellipse",
+   "track": "ellipse",
+   "control": "autonomous",
+   "condition": "mirror_roll",
+   "speed": 6.604861846038059,
+   "bin": "5-10",
+   "tilt_implied_median": 55.978134023467504,
+   "valid_frac_mean": 0.9375,
+   "edit_angle_deg": 16.830541610717773
+  },
+  {
+   "n_frames": 48,
+   "n_signal": 48,
+   "frac_signal": 1.0,
+   "frac_usable": 1.0,
+   "testable": true,
+   "abstain_reasons": [],
+   "nuisances": {
+    "ok": true,
+    "loss": 7.744468132119058,
+    "uptilt_offset_deg": 0.0,
+    "lag_ms": 25.0
+   },
+   "score": 7.744468132119058,
+   "score_p75": 11.130792032526042,
+   "score_median_tilt": 3.2540250373379322,
+   "n_scored": 48,
+   "tilt_dep_median": 55.12260345949818,
+   "tilt_imp_median": 58.24056896526976,
+   "nuisance_loss": 7.744468132119058,
+   "clip_id": "flight-01a-ellipse#02",
+   "flight": "flight-01a-ellipse",
+   "track": "ellipse",
+   "control": "autonomous",
+   "condition": "yaw_control",
+   "speed": 6.604861846038059,
+   "bin": "5-10",
+   "tilt_implied_median": 55.978134023467504,
+   "valid_frac_mean": 1.0,
+   "edit_angle_deg": 56.186431884765625
+  },
+  {
+   "n_frames": 48,
    "n_signal": 46,
    "frac_signal": 0.9583333333333334,
    "frac_usable": 1.0,
@@ -1289,6 +1661,130 @@
    "bin": "5-10",
    "tilt_implied_median": 49.55425484717471,
    "valid_frac_mean": 0.8958333333333334,
+   "edit_angle_deg": 47.68870544433594
+  },
+  {
+   "n_frames": 48,
+   "n_signal": 46,
+   "frac_signal": 0.9583333333333334,
+   "frac_usable": 1.0,
+   "testable": true,
+   "abstain_reasons": [],
+   "nuisances": {
+    "ok": true,
+    "loss": 24.11602263841611,
+    "uptilt_offset_deg": -3.0,
+    "lag_ms": 75.0
+   },
+   "score": 24.11602263841611,
+   "score_p75": 33.8713026657919,
+   "score_median_tilt": 16.1204261826416,
+   "n_scored": 46,
+   "tilt_dep_median": 32.63115591363366,
+   "tilt_imp_median": 54.1321165219011,
+   "nuisance_loss": 24.11602263841611,
+   "clip_id": "flight-01a-ellipse#03",
+   "flight": "flight-01a-ellipse",
+   "track": "ellipse",
+   "control": "autonomous",
+   "condition": "tilt_k05",
+   "speed": 6.531590171862725,
+   "bin": "5-10",
+   "tilt_implied_median": 49.55425484717471,
+   "valid_frac_mean": 1.0,
+   "edit_angle_deg": 23.84435272216797
+  },
+  {
+   "n_frames": 48,
+   "n_signal": 46,
+   "frac_signal": 0.9583333333333334,
+   "frac_usable": 1.0,
+   "testable": true,
+   "abstain_reasons": [],
+   "nuisances": {
+    "ok": true,
+    "loss": 20.405496809469707,
+    "uptilt_offset_deg": -7.0,
+    "lag_ms": -150.0
+   },
+   "score": 20.405496809469707,
+   "score_p75": 39.7781373183353,
+   "score_median_tilt": 8.041201948197898,
+   "n_scored": 46,
+   "tilt_dep_median": 55.405548844466374,
+   "tilt_imp_median": 51.15380882429695,
+   "nuisance_loss": 20.405496809469707,
+   "clip_id": "flight-01a-ellipse#03",
+   "flight": "flight-01a-ellipse",
+   "track": "ellipse",
+   "control": "autonomous",
+   "condition": "tilt_k15",
+   "speed": 6.531590171862725,
+   "bin": "5-10",
+   "tilt_implied_median": 49.55425484717471,
+   "valid_frac_mean": 1.0,
+   "edit_angle_deg": 23.84435272216797
+  },
+  {
+   "n_frames": 48,
+   "n_signal": 46,
+   "frac_signal": 0.9583333333333334,
+   "frac_usable": 0.875,
+   "testable": true,
+   "abstain_reasons": [],
+   "nuisances": {
+    "ok": true,
+    "loss": 23.94632100450295,
+    "uptilt_offset_deg": -7.0,
+    "lag_ms": 50.0
+   },
+   "score": 21.738191793743802,
+   "score_p75": 40.918123519085185,
+   "score_median_tilt": 10.72433302939595,
+   "n_scored": 40,
+   "tilt_dep_median": 38.62671044597806,
+   "tilt_imp_median": 42.80805073908304,
+   "nuisance_loss": 23.94632100450295,
+   "clip_id": "flight-01a-ellipse#03",
+   "flight": "flight-01a-ellipse",
+   "track": "ellipse",
+   "control": "autonomous",
+   "condition": "mirror_roll",
+   "speed": 6.531590171862725,
+   "bin": "5-10",
+   "tilt_implied_median": 49.55425484717471,
+   "valid_frac_mean": 0.875,
+   "edit_angle_deg": 19.784021377563477
+  },
+  {
+   "n_frames": 48,
+   "n_signal": 46,
+   "frac_signal": 0.9583333333333334,
+   "frac_usable": 1.0,
+   "testable": true,
+   "abstain_reasons": [],
+   "nuisances": {
+    "ok": true,
+    "loss": 15.092282473619203,
+    "uptilt_offset_deg": -4.0,
+    "lag_ms": -25.0
+   },
+   "score": 15.092282473619203,
+   "score_p75": 37.04787922502793,
+   "score_median_tilt": 9.414799377768137,
+   "n_scored": 46,
+   "tilt_dep_median": 43.02231867705767,
+   "tilt_imp_median": 54.30210710301343,
+   "nuisance_loss": 15.092282473619203,
+   "clip_id": "flight-01a-ellipse#03",
+   "flight": "flight-01a-ellipse",
+   "track": "ellipse",
+   "control": "autonomous",
+   "condition": "yaw_control",
+   "speed": 6.531590171862725,
+   "bin": "5-10",
+   "tilt_implied_median": 49.55425484717471,
+   "valid_frac_mean": 1.0,
    "edit_angle_deg": 47.68870544433594
   },
   {
@@ -1353,6 +1849,142 @@
    "track": "ellipse",
    "control": "autonomous",
    "condition": "tilt_k0",
+   "speed": 0.19972139884103543,
+   "bin": "0-2",
+   "tilt_implied_median": 0.18197537435511457,
+   "valid_frac_mean": 1.0,
+   "edit_angle_deg": 1.2598687410354614
+  },
+  {
+   "n_frames": 48,
+   "n_signal": 6,
+   "frac_signal": 0.125,
+   "frac_usable": 1.0,
+   "testable": false,
+   "abstain_reasons": [
+    "signal_frames 6 < 12",
+    "testable_fraction 0.12 < 0.20"
+   ],
+   "nuisances": {
+    "ok": true,
+    "loss": 9.892897628862608,
+    "uptilt_offset_deg": -7.0,
+    "lag_ms": 150.0
+   },
+   "score": 9.892897628862608,
+   "score_p75": 11.90288380343546,
+   "score_median_tilt": 8.357400631155752,
+   "n_scored": 6,
+   "tilt_dep_median": 3.1582402025204215,
+   "tilt_imp_median": 11.269090408221453,
+   "nuisance_loss": 9.892897628862608,
+   "clip_id": "flight-01a-ellipse#04",
+   "flight": "flight-01a-ellipse",
+   "track": "ellipse",
+   "control": "autonomous",
+   "condition": "tilt_k05",
+   "speed": 0.19972139884103543,
+   "bin": "0-2",
+   "tilt_implied_median": 0.18197537435511457,
+   "valid_frac_mean": 1.0,
+   "edit_angle_deg": 0.6299343705177307
+  },
+  {
+   "n_frames": 48,
+   "n_signal": 6,
+   "frac_signal": 0.125,
+   "frac_usable": 1.0,
+   "testable": false,
+   "abstain_reasons": [
+    "signal_frames 6 < 12",
+    "testable_fraction 0.12 < 0.20"
+   ],
+   "nuisances": {
+    "ok": true,
+    "loss": 7.483772922730699,
+    "uptilt_offset_deg": -7.0,
+    "lag_ms": 150.0
+   },
+   "score": 7.483772922730699,
+   "score_p75": 11.89462271238028,
+   "score_median_tilt": 6.270794906493654,
+   "n_scored": 6,
+   "tilt_dep_median": 4.272687138450339,
+   "tilt_imp_median": 11.269090408221453,
+   "nuisance_loss": 7.483772922730699,
+   "clip_id": "flight-01a-ellipse#04",
+   "flight": "flight-01a-ellipse",
+   "track": "ellipse",
+   "control": "autonomous",
+   "condition": "tilt_k15",
+   "speed": 0.19972139884103543,
+   "bin": "0-2",
+   "tilt_implied_median": 0.18197537435511457,
+   "valid_frac_mean": 1.0,
+   "edit_angle_deg": 0.6299343705177307
+  },
+  {
+   "n_frames": 48,
+   "n_signal": 6,
+   "frac_signal": 0.125,
+   "frac_usable": 1.0,
+   "testable": false,
+   "abstain_reasons": [
+    "signal_frames 6 < 12",
+    "testable_fraction 0.12 < 0.20"
+   ],
+   "nuisances": {
+    "ok": true,
+    "loss": 7.2833760472104965,
+    "uptilt_offset_deg": -7.0,
+    "lag_ms": 150.0
+   },
+   "score": 7.2833760472104965,
+   "score_p75": 9.339012690986692,
+   "score_median_tilt": 5.7584725379789266,
+   "n_scored": 6,
+   "tilt_dep_median": 5.625841771901131,
+   "tilt_imp_median": 11.269090408221453,
+   "nuisance_loss": 7.2833760472104965,
+   "clip_id": "flight-01a-ellipse#04",
+   "flight": "flight-01a-ellipse",
+   "track": "ellipse",
+   "control": "autonomous",
+   "condition": "mirror_roll",
+   "speed": 0.19972139884103543,
+   "bin": "0-2",
+   "tilt_implied_median": 0.18197537435511457,
+   "valid_frac_mean": 1.0,
+   "edit_angle_deg": 2.2321112155914307
+  },
+  {
+   "n_frames": 48,
+   "n_signal": 6,
+   "frac_signal": 0.125,
+   "frac_usable": 1.0,
+   "testable": false,
+   "abstain_reasons": [
+    "signal_frames 6 < 12",
+    "testable_fraction 0.12 < 0.20"
+   ],
+   "nuisances": {
+    "ok": true,
+    "loss": 7.0165008760707215,
+    "uptilt_offset_deg": -7.0,
+    "lag_ms": 150.0
+   },
+   "score": 7.0165008760707215,
+   "score_p75": 8.541034109255435,
+   "score_median_tilt": 4.220713809880934,
+   "n_scored": 6,
+   "tilt_dep_median": 6.435769703790954,
+   "tilt_imp_median": 11.269090408221453,
+   "nuisance_loss": 7.0165008760707215,
+   "clip_id": "flight-01a-ellipse#04",
+   "flight": "flight-01a-ellipse",
+   "track": "ellipse",
+   "control": "autonomous",
+   "condition": "yaw_control",
    "speed": 0.19972139884103543,
    "bin": "0-2",
    "tilt_implied_median": 0.18197537435511457,

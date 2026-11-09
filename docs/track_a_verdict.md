@@ -94,7 +94,7 @@ Rendered from `results/phase3a_verdict/<run>/metrics.json` by
 here is regenerated rather than typed.
 
 <!-- GATE3:BEGIN -->
-run `20261109T090835Z_c272ebc` · git `c272ebc` · prereg `b8fd70130f17` (c272ebc) · 580 clip-condition records
+run `20261109T090957Z_bc3a398` · git `bc3a398` · prereg `b8fd70130f17` (bc3a398) · 600 clip-condition records
 
 ### Real clips
 
@@ -117,20 +117,20 @@ Unmerged per-bin counts: 0-2 n=4, 2-5 n=37, 5-10 n=18, 10-20 n=1, 20-99 n=0
 | condition | family | n | rejection | AUROC | real score | negative score |
 | --- | --- | --- | --- | --- | --- | --- |
 | tilt_k0 | tilt_removal | 83 | 0.373 | 0.918 | 2.91 | 18.90 |
-| tilt_k05 | tilt_scaling | 81 | 0.358 | 0.804 | 2.91 | 8.61 |
-| tilt_k15 | tilt_scaling | 81 | 0.333 | 0.746 | 2.91 | 5.04 |
-| mirror_roll | mirrored_roll | 81 | 0.370 | 0.925 | 2.91 | 26.39 |
-| yaw_control | control | 81 | 0.333 | 0.617 | 2.91 | 3.79 |
+| tilt_k05 | tilt_scaling | 83 | 0.373 | 0.803 | 2.91 | 8.80 |
+| tilt_k15 | tilt_scaling | 83 | 0.349 | 0.743 | 2.91 | 5.06 |
+| mirror_roll | mirrored_roll | 83 | 0.386 | 0.926 | 2.91 | 26.29 |
+| yaw_control | control | 83 | 0.349 | 0.617 | 2.91 | 3.81 |
 
-Pooled AUROC over the three tilt families: **0.822**
+Pooled AUROC over the three tilt families: **0.821**
 
 ### Minimum detectable violation
 
 | edit | k | injected tilt change (deg) | rejection |
 | --- | --- | --- | --- |
 | tilt_k0 | 0.0 | 27.2 | 0.373 |
-| tilt_k05 | 0.5 | 13.6 | 0.358 |
-| tilt_k15 | 1.5 | 13.6 | 0.333 |
+| tilt_k05 | 0.5 | 13.6 | 0.373 |
+| tilt_k15 | 1.5 | 13.6 | 0.349 |
 
 Smallest violation rejected 80% of the time: **- deg**
 
@@ -175,16 +175,16 @@ Smallest violation rejected 80% of the time: **- deg**
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | identity | 83 | 2.91 | -1.00 | 0.133 | -50.0 | 0.096 | 0.170 |
 | tilt_k0 | 83 | 18.90 | 7.00 | 0.867 | -150.0 | 0.699 | 0.170 |
-| tilt_k05 | 81 | 8.61 | 7.00 | 0.617 | -125.0 | 0.358 | 0.147 |
-| tilt_k15 | 81 | 5.04 | -7.00 | 0.901 | -25.0 | 0.099 | 0.147 |
-| mirror_roll | 81 | 26.39 | -3.00 | 0.148 | -150.0 | 0.815 | 0.147 |
-| yaw_control | 81 | 3.79 | -3.00 | 0.160 | -50.0 | 0.086 | 0.147 |
+| tilt_k05 | 83 | 8.80 | 7.00 | 0.614 | -125.0 | 0.349 | 0.170 |
+| tilt_k15 | 83 | 5.06 | -7.00 | 0.904 | -25.0 | 0.108 | 0.170 |
+| mirror_roll | 83 | 26.29 | -3.00 | 0.157 | -150.0 | 0.795 | 0.170 |
+| yaw_control | 83 | 3.81 | -3.00 | 0.157 | -50.0 | 0.084 | 0.170 |
 
 ### Score by flight and condition (median over testable clips, deg)
 
 | flight | testable/total | identity | tilt_k0 | tilt_k05 | tilt_k15 | mirror_roll | yaw_control |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| flight-01a-ellipse | 2/5 | 7.07 | 35.46 | - | - | - | - |
+| flight-01a-ellipse | 2/5 | 7.07 | 35.46 | 20.57 | 15.92 | 18.65 | 11.42 |
 | flight-01p-ellipse | 26/26 | 2.09 | 11.61 | 4.54 | 4.22 | 17.03 | 2.59 |
 | flight-04a-ellipse | 3/7 | 2.85 | 23.09 | 18.80 | 17.02 | 12.12 | 9.77 |
 | flight-07a-lemniscate | 3/7 | 5.33 | 30.29 | 16.82 | 8.99 | 44.17 | 5.81 |
@@ -206,10 +206,10 @@ Smallest violation rejected 80% of the time: **- deg**
 | --- | --- | --- | --- |
 | real-clip acceptance, held out | >= 0.95 | 0.711 (primary policy); **0.967 on the five non-trackRATM flights**, 0.043 on trackRATM | **fail** |
 | AUROC, tilt removal | > 0.9 | **0.918** (95% CI 0.76-0.98) | pass |
-| AUROC, tilt scaling | > 0.9 | 0.804 (k=0.5), 0.746 (k=1.5) | **fail** |
+| AUROC, tilt scaling | > 0.9 | 0.803 (k=0.5), 0.743 (k=1.5) | **fail** |
 | minimum detectable violation (80% rejection) | a curve | none of 27.2 / 13.6 / 13.6 deg reaches 80% under the primary policy | **fail** |
 | Spearman, score vs injected tilt change | > 0.8 | **0.82** | pass |
-| null edit / control accepted at the real rate | within 5 pp | identity is exact (it *is* the real condition); the yaw control is rejected 33% vs 10% | **fail** |
+| null edit / control accepted at the real rate | within 5 pp | identity is exact (it *is* the real condition); the yaw control is rejected 35% vs 10% | **fail** |
 
 **The score separates; the threshold is what fails.** The diagnosis, in the order the
 numbers point at:
@@ -229,25 +229,25 @@ numbers point at:
 
    | policy (fit set) | threshold | acceptance | tilt removal | half tilt | x1.5 | mirror | yaw control |
    | --- | --- | --- | --- | --- | --- | --- | --- |
-   | `non_trackratm` (primary) | 5.76 | 0.711 | 0.37 | 0.36 | 0.33 | 0.37 | 0.33 |
+   | `non_trackratm` (primary) | 5.76 | 0.711 | 0.37 | 0.37 | 0.35 | 0.39 | 0.35 |
    | `all_flights` | 67.16 | 0.952 | 0.06 | 0.06 | 0.06 | 0.11 | 0.06 |
-   | `all_but_13a` (sensitivity) | 9.37 | 0.904 | **0.89** | 0.43 | 0.31 | **0.96** | 0.31 |
+   | `all_but_13a` (sensitivity) | 9.37 | 0.904 | **0.89** | 0.45 | 0.33 | **0.96** | 0.31 |
 
    The `all_flights` policy meets the 95% acceptance target only because the same five
    clips become the threshold, which makes the test vacuous. The policy the data support is `all_but_13a`: 90% acceptance
-   and 89% rejection of full tilt removal, 96% of mirrored roll, 43% of half tilt.
+   and 89% rejection of full tilt removal, 96% of mirrored roll, 45% of half tilt.
    It is reported as a sensitivity analysis, not swapped in for the pre-registered
    primary.
 3. **The control is flagged above the real rate, and the mechanism is measured.** A
    rotation about world up cannot change the tilt, yet the yaw control's median score is
-   3.8 deg against 2.9 for the real clips and 33% of controls are rejected. Per frame,
+   3.8 deg against 2.9 for the real clips and 35% of controls are rejected. Per frame,
    the same rotation moves the estimated tilt by 4.75 deg (median) on the frames it
    rotates more than 10 deg, correlated 0.50 with the rotation angle (section 8). This
    is the estimator's view dependence, and it is the floor under the detectable
    violation: nothing below ~5 deg can be separated from it.
 4. **Half-tilt is where it stops.** The scaling edits remove 13.6 deg of tilt, and the
    nuisances absorb 4-6 deg of that (section 9) while the artifact floor is another
-   ~5 deg. 0.43 rejection for half tilt is the honest consequence; the 80%-rejection
+   ~5 deg. 0.45 rejection for half tilt is the honest consequence; the 80%-rejection
    frontier sits at the full-removal magnitude, not below it.
 5. **Delays are absorbed inside the bound, as designed.** The pre-registration bounds
    the lag at +/-150 ms, and a 100 ms delay is absorbed (median score 5.5 deg against
