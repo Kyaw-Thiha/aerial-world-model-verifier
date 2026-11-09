@@ -331,3 +331,6 @@ The pose convention was verified inside the same run: rebuilding the recorded po
 | climb_turn | fixed | 10.0 | True | 10.0 | 13.0 | 5.20 | 0.0 | 20.1 |
 | climb_turn | course | 20.0 | False | 7.4 | 11.2 | 5.21 | 14.8 | 14.8 |
 | climb_turn | fixed | 20.0 | True | 19.9 | 21.2 | 5.11 | 0.0 | 42.7 |
+
+Peak speed is the 3-D speed; the caps are per axis (horizontal 5 m/s, vertical 2 m/s), so a
+climb at 5 m/s horizontal plus 1.5 m/s vertical reads 5.2 here and is legal.
