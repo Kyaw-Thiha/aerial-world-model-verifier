@@ -123,10 +123,12 @@ one pooled population per cell, all with `k_d = 0.295`:
 | C designed | 0.25 | 56.7 | 72.1 | 100% | 52.8 | 99.4% |
 
 - **Smallest dt at which Regime A is consistent with level frames** (criterion: at most 5% of
-  steps above 10 deg): **1.00 s** for the smoothed estimator (4.3% above 10 deg, median 6.1 deg).
+  steps above 10 deg): **1.00 s** for the smoothed estimator with drag (4.3% above 10 deg, median
+  6.1 deg), and **0.585 s** drag-free (3.0% above 10 deg, median 2.9 deg). The physically
+  meaningful reading is the drag one, because a real airframe at 5 m/s must balance about 8.6 deg
+  of drag tilt regardless of what the path does; it confirms 1 s as the smallest defensible dt.
   The per-step estimator never reaches the criterion on a 0.1-2.0 s grid, because the teleport
-  transitions are permanent: 47% of boundaries are jumps at any dt. This is the sharpest version
-  of the earlier finding and it confirms 1 s as the smallest defensible dt.
+  transitions are permanent: 47% of boundaries are jumps at any dt.
 - **Regime B rescaling destroys most of the tilt signal.** A TII autonomous ellipse yaws at up to
   490 deg/s, so the 15 deg/s yaw cap forces a time stretch of about 33x (and the speed cap a
   length scale of 0.2-0.6). Median required tilt at 1 s falls from 66.8 deg (raw path at 1 s) to
