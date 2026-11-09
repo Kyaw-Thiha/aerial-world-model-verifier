@@ -112,6 +112,7 @@ def score_flight(spec_path: Path, cond_rows: dict[str, dict[str, dict]], clips: 
                       "condition": cond, "speed": clip["speed_median"],
                       "bin": speed_bin(clip["speed_median"], prereg["thresholds"]["speed_bins_mps"]),
                       "tilt_implied_median": float(np.nanmedian(sub["tilt_implied"])),
+                      "valid_frac_mean": float(np.mean(valid)),
                       "edit_angle_deg": float(np.median(spec[f"angle_{cond}"][idx]))
                       if f"angle_{cond}" in spec.files else 0.0})
             out.append(r)
@@ -357,6 +358,8 @@ def diagnostics(records: list[dict]) -> dict:
             if lags else None,
             "abstain_frac": float(np.mean([not r["testable"] for r in records
                                            if r["condition"] == cond])),
+            "score_vs_valid_frac_spearman": spearman(
+                [r["score"] for r in sel], [r.get("valid_frac_mean", 1.0) for r in sel]),
         }
     return out
 
