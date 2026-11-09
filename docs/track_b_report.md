@@ -191,3 +191,18 @@ one pooled population per cell, all with `k_d = 0.295`:
 - `src/generation/audit.py`, `paths.py`, `anwm_env.py`, `experiments/anwm_{audit_corrected,kd_split,path_audit,build_clips}.py`
 - `remote/b_anwm.py` (image, slim extraction, smoke, native validation, generation), `remote/b_native.py`
 - `tests/test_anwm_audit.py`, `tests/test_generation_paths.py` (18 tests; full suite 53 passed, 1 skipped on the CPU env)
+
+## Blockers found
+
+1. **Native data transfer is the bottleneck, and it is a property of the shard layout.**
+   Walking one ANWM tar shard over HTTP Range takes about 5.5 minutes (7 members/s, 0.2 MB
+   transferred) because `tarfile` requests every 512-byte header through the range reader; each
+   shard holds a few trajectories and ~600 JPEGs each, so an index scan is ~5 min per shard. From
+   a Modal container the same walk did not finish a single shard in ~25 minutes (two attempts,
+   16 and 32 workers, 90 s socket timeout, nothing written to the Volume), while a 1 MB read from
+   this workstation takes 0.46 s. Consequence: the native fetch runs locally and is pushed to the
+   Volume with `modal volume put`, and it is the slowest step in this handoff.
+2. Only 4 of the 29 trajectories in `rollout_16.pkl` were covered by the 39-shard index inherited
+   from Phase 0, so the scan has to find at least one more before a 5-trajectory Gate 2 run.
+3. `config/anwm.yaml` does not describe the released weights (context 4 vs 16), so any pipeline
+   written against the config silently fails on `pos_embed`.
