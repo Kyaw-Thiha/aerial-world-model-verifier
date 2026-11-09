@@ -290,6 +290,33 @@ def evaluation(records: list[dict], prereg: dict,
     return res
 
 
+def identity_vs_phase1(ident_rows: dict, phase1_dir: Path) -> dict:
+    """The identity warp must reproduce the Phase 1 run, which never saw a warp.
+
+    Same frames, same estimator, same stride; the only difference is a resample that is
+    mathematically the identity. A large disagreement here would mean the edit pipeline
+    changed the input, not the physics.
+    """
+    out = {}
+    for flight, rows in ident_rows.items():
+        ref_path = phase1_dir / f"{flight}.jsonl"
+        if rows is None or not ref_path.exists():
+            continue
+        ref = load_jsonl(ref_path)
+        common = [n for n in rows if n in ref]
+        if not common:
+            continue
+        a = np.array([rows[n]["gravity_up_cam"] for n in common])
+        b = np.array([ref[n]["gravity_up_cam"] for n in common])
+        ang = np.degrees(np.arccos(np.clip(np.sum(a * b, axis=1)
+                                           / (np.linalg.norm(a, axis=1) * np.linalg.norm(b, axis=1)),
+                                           -1.0, 1.0)))
+        out[flight] = {"n": len(common), "median_deg": float(np.median(ang)),
+                       "p90_deg": float(np.percentile(ang, 90)),
+                       "frac_gt_1deg": float(np.mean(ang > 1.0))}
+    return out
+
+
 def artifact_floor(spec_paths: dict, ident_rows: dict, yaw_rows: dict) -> dict:
     """How much a pure rotation about world up moves the depicted tilt, per frame.
 
@@ -522,6 +549,7 @@ def main() -> int:
         ev["delay_negatives"] = quick_delays(spec_paths, ident_rows, clips, prereg)
         ev["retime_negatives"] = quick_retime(spec_paths, ident_rows, clips, prereg)
     ev["diagnostics"] = diagnostics(records)
+    ev["identity_vs_phase1"] = identity_vs_phase1(ident_rows, ROOT / "data/raw/geocalib/div10")
     ev["artifact_floor"] = artifact_floor(
         spec_paths, ident_rows,
         {f: (load_jsonl(geo / f"{f}__yaw_control.jsonl")
