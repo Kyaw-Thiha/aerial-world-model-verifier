@@ -350,3 +350,38 @@ Reading it:
 - **AirScape** (weights on HF, MIT, CogVideoX-5b-I2V base): easy to run, text/intent
   conditioned.
 - **AeroAct** (arXiv:2607.14997): no code or weights link found; skip for now.
+
+## 14. Input regimes for generation (Track B)
+
+What the field does, and what it implies for ANWM inputs:
+
+| work | input | lesson for us |
+| --- | --- | --- |
+| VehDyn (arXiv 2609.33264) | simulator maneuvers with a validated dynamics model, factorial over maneuver/speed/conditions | a controlled factorial is defensible **only** if every input is feasible by construction, so failures can be blamed on the generator |
+| Aero-World / AeroBench (arXiv 2605.19728) | real recorded IMU from UZH-FPV and TII, resampled to 30 Hz | the standard input is recorded flight; it was trained on those datasets, so TII is not clean held-out data for it |
+| WorldEcho (arXiv 2608.24885) | real actions plus off-expert perturbations, feasibility-filtered | off-distribution inputs are where models fail (visual collapse, plausible-but-wrong motion); filter for feasibility before replay |
+| WorldOracle (arXiv 2610.18826) | replay of recorded real action sequences, including messy rollouts | replay is the default; synthetic paths alone would be the odd one out |
+
+So three regimes, in priority order: **A** native (in-distribution, but the commands are
+teleports), **B** real-flight replay rescaled into ANWM's envelope (feasible by construction),
+**C** designed factorial maneuvers (the controlled dose-response). Nobody in the field uses
+synthetic paths as the only input, and neither do we.
+
+Two consequences found by measurement here (section 13 audit and `results/anwm_path_audit`):
+
+1. **Regime B is nearly tilt-blind at 1 s.** Rescaling a TII autonomous ellipse into the 5 m/s /
+   2 m/s / 15 deg/s envelope needs a ~33x time stretch (its yaw rate reaches 490 deg/s), which
+   leaves a median required tilt of 3.6 deg and 0% of steps above 10 deg. A documented
+   off-envelope variant (60 deg/s yaw cap) reaches 4.6 deg median and 1.6% above 10 deg. Regime B
+   can therefore carry depiction and integrity information, not a tilt verdict; the tilt
+   dose-response must come from Regime C.
+2. **The yaw cap and the tilt target fight each other.** A coordinated turn at speed `v` yaws at
+   `g tan(theta) / v`, so 20 deg of bank at 5 m/s needs 41 deg/s of yaw. Within ANWM's trained
+   15 deg/s, a course-aligned turn tops out at 7.4 deg of required tilt; 10 and 20 deg are only
+   reachable with the yaw held fixed (a strafe geometry that AerialVLN's own action set contains)
+   or with longitudinal/vertical acceleration. Designs report `reachable: false` instead of
+   silently missing the target.
+
+dt stays an analysis parameter, not a generation parameter: a path is generated once and its
+required tilt is evaluated at 0.25 / 0.667 / 1.0 s afterwards, because ANWM consumes relative
+displacements and yaw changes and never a duration.

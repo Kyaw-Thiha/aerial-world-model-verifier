@@ -40,7 +40,8 @@ image = (
     .run_commands(
         "python -c \"import torch;print('torch', torch.__version__, torch.cuda.is_available())\""
     )
-    .add_local_dir(str(ANWM_LOCAL), "/anwm", copy=True)
+    .add_local_dir(str(ANWM_LOCAL), "/anwm", copy=True,
+                   ignore=[".git", "**/.git", "**/__pycache__", "**/*.pyc"])
     .run_commands("cd /anwm && pip install --no-cache-dir -e '.[metrics]'",
                   "pip install --no-cache-dir huggingface_hub")
 )
@@ -271,6 +272,9 @@ def validate_native(names: list[str], sampling_steps: int = 250, lpips_net: str 
     out = {}
     for name in names:
         ct = manifest[name]["curr_time"]
+        if not Path(f"/n/airvln_16/{name}/{ct}.jpg").exists():
+            ct = manifest[name]["start_candidates"][0]
+            print("fallback start time", name, ct)
         traj = pickle.load(open(f"/n/airvln_16/{name}/traj_data.pkl", "rb"))
         traj = {k: v.astype("float") if hasattr(v, "astype") else v for k, v in traj.items()}
         ds.index_to_data = [(name, ct, -64, 64)]

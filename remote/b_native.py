@@ -79,7 +79,7 @@ def fetch(names_wanted: int = 5, max_shards: int = 120, workers: int = 16) -> di
     for name in found:
         shard, off, size = index[name]
         ct = first_entry[name][0]
-        need = set()
+        need = set(range(max(0, ct - 3), ct + 17))  # the rollout's own first entry
         for c in CAND:
             need |= set(range(max(0, c - 3), c + 17))
         f = RangeFile(shard_url(shard))
