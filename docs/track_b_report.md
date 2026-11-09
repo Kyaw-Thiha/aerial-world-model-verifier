@@ -94,6 +94,12 @@ valid; the drag *effect* differs by regime because the residuals differ, not the
   before torch 2.6 (`AttributeError: module 'torch' has no attribute 'accelerator'`), and
   `diffusers==0.31.0` fails its own `loaders.unet` import against this torch
   (`name 'nn' is not defined`). VAE `stabilityai/sd-vae-ft-ema` is cached on `awmv-b-hf-cache`.
+- **The checkpoint needs 16 context frames, not the 4 in the shipped configs.** `ema.pos_embed`
+  is `[17, 196, 1152]` and the model builds `pos_embed` as `context_size + 1`; loading with 4
+  fails on `pos_embed`, loading with 16 matches every key. The checkpoint's own `args` say
+  `config/nwm_cdit_airvln_16.yaml`, epoch 3, 200,000 train steps, bf16. Every Track B path is
+  therefore built for a 16-frame context (FFP reprojects 16 context frames per target pose), and
+  the clip set is 4x more expensive per frame than the "4 context" reading would have predicted.
 - The image upload had to ignore `third_party/anwm/.git` (1.7 GB of the 1.7 GB clone); before
   that, the build stalled for over an hour on the upload alone.
 
