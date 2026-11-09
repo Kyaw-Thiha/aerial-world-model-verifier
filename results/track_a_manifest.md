@@ -10,3 +10,14 @@
 | Camera check + solve | `results/phase1_camera/`, `results/phase1_camera_solve/` | - | overlays PNG, `metrics.json` |
 | Phase 1b metrics | `results/phase1b_fusion/<run>/` | - | `metrics.json`, `gain_sweep.png` |
 | Phase 2 metrics | `results/phase2_implied/<run>/` | - | `metrics.json`, `window_sweep.png` |
+
+## Phase 3a (verdict test, handoff 04)
+
+| artifact | where | size | notes |
+| --- | --- | --- | --- |
+| Edit/clip specs `p3a_v1` | `data/processed/p3a/p3a_v1/*.npz` (gitignored), R2 `track-a/phase3a/specs/`, Modal Volume `:/edits/p3a_v1` | ~1 MB | per-frame rotation matrices for 6 conditions, frame names, clip table; built by `experiments/phase3a_make_specs.py` |
+| GeoCalib on edited frames | Modal Volume `:/geocalib/geocalib_p3a_v1/<flight>__<condition>.jsonl`, R2 `track-a/phase3a/geocalib/` | ~1 MB/clip | 8 flights x 6 conditions; local copy in `results/phase3a_verdict/geocalib_p3a_v1` |
+| ANWM noise floor | `results/anwm_scoring/anwm_floor_v1/floor_{512,224}.jsonl`, R2 `track-a/phase3a/anwm_floor/` | 1 MB | 186 released level frames, two sizes |
+| ANWM sampled frames | `data/raw/anwm_frames` (gitignored), Modal Volume `:/anwm_frames` | 68 MB | 12 test trajectories x 13-16 frames from the shard index via HTTP Range |
+| Verdict runs | `results/phase3a_verdict/<run_id>/` | - | `metrics.json`, `config.yaml`, plots, git hash, prereg hash |
+| Edit preview | `results/phase3a_verdict/<run_id>_edit_preview/` | - | contact sheets proving the warps are geometric |
