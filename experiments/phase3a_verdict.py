@@ -202,7 +202,9 @@ def evaluation(records: list[dict], prereg: dict,
     """Held-out acceptance, rejection, AUROC, MDV, Spearman, controls."""
     policy = policy or prereg["thresholds"].get("threshold_fit_flights", "all_flights")
     flights = sorted({r["flight"] for r in records})
-    real = {(r["flight"], r["condition"]): r for r in records if r["condition"] == "identity"}
+    # keyed by clip, not by flight: keying by (flight, condition) keeps only the last
+    # clip of each flight and makes every positive the same number
+    real = {(r["flight"], r["clip_id"]): r for r in records if r["condition"] == "identity"}
     per_clip_threshold = {}
     heldout_accept = []
     folded = []
@@ -237,9 +239,9 @@ def evaluation(records: list[dict], prereg: dict,
     # per-family rejection and AUROC against the paired real clip
     for cond in NEGATIVES:
         neg = [r for r in records if r["condition"] == cond and r["testable"]]
-        pairs = [(real[(r["flight"], "identity")], r) for r in neg
-                 if (r["flight"], "identity") in real
-                 and real[(r["flight"], "identity")]["testable"]]
+        pairs = [(real[(r["flight"], r["clip_id"])], r) for r in neg
+                 if (r["flight"], r["clip_id"]) in real
+                 and real[(r["flight"], r["clip_id"])]["testable"]]
         if not pairs:
             res["families"][cond] = {"n": 0}
             continue
@@ -254,8 +256,8 @@ def evaluation(records: list[dict], prereg: dict,
             "auroc": auroc_detect(pos[ok], sco[ok]) if ok.any() else None,
             "score_median_real": float(np.median(pos[ok])) if ok.any() else None,
             "score_median_negative": float(np.median(sco[ok])) if ok.any() else None,
-            "spearman_vs_magnitude": spearman(sco[ok], [p[1]["tilt_implied_median"]
-                                                        for p, k in zip(pairs, ok) if k]),
+            "spearman_vs_tilt": spearman(sco[ok], [p[1]["tilt_implied_median"]
+                                                   for p, k in zip(pairs, ok) if k]),
         }
         grp = np.array([p[1]["flight"] for p, k in zip(pairs, ok) if k])
         boots = bootstrap_paired(pos[ok], sco[ok], grp)
@@ -280,12 +282,23 @@ def evaluation(records: list[dict], prereg: dict,
     for cond in ("tilt_k0", "tilt_k05", "tilt_k15"):
         for r in records:
             if r["condition"] == cond and r["testable"]:
-                p = real.get((r["flight"], "identity"))
+                p = real.get((r["flight"], r["clip_id"]))
                 if p is not None and p["testable"]:
                     pos.append(p["score"])
                     neg_scores.append(r["score"])
                     names.append(cond)
     res["family_auroc_pooled"] = auroc_detect(np.array(pos), np.array(neg_scores)) if pos else None
+    if pos:
+        # monotonicity: score against the injected tilt change, pooled over the three k
+        viol = []
+        for cond in ("tilt_k0", "tilt_k05", "tilt_k15"):
+            k = {"tilt_k0": 0.0, "tilt_k05": 0.5, "tilt_k15": 1.5}[cond]
+            for r in records:
+                if r["condition"] == cond and r["testable"]:
+                    p = real.get((r["flight"], r["clip_id"]))
+                    if p is not None and p["testable"]:
+                        viol.append(abs(1.0 - k) * r["tilt_implied_median"])
+        res["spearman_score_vs_injected_deg"] = spearman(np.array(neg_scores), np.array(viol))
 
     # separate report for trackRATM flights
     for label, sel in (("trackratm", is_trackratm),
