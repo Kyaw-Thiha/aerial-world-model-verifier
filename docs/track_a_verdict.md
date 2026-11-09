@@ -94,7 +94,7 @@ Rendered from `results/phase3a_verdict/<run>/metrics.json` by
 here is regenerated rather than typed.
 
 <!-- GATE3:BEGIN -->
-run `20261109T090401Z_79b279a` · git `79b279a` · prereg `b8fd70130f17` (79b279a) · 580 clip-condition records
+run `20261109T090835Z_c272ebc` · git `c272ebc` · prereg `b8fd70130f17` (c272ebc) · 580 clip-condition records
 
 ### Real clips
 
