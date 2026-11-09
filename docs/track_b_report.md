@@ -261,9 +261,11 @@ commit, visual-integrity statistics) and, for Regime A, `gt/` with the recorded 
 
 ## Files
 
-- `src/generation/audit.py`, `paths.py`, `anwm_env.py`, `experiments/anwm_{audit_corrected,kd_split,path_audit,build_clips}.py`
+- `src/generation/audit.py`, `paths.py`, `poses.py`, `anwm_env.py`, `clip_io.py` (loads a clip
+  directory as the shared `Clip`, level-camera attitude with the commanded heading, intrinsics
+  scaled from the released 512x512 matrix), `experiments/anwm_{audit_corrected,kd_split,path_audit,build_clips}.py`
 - `remote/b_anwm.py` (image, slim extraction, smoke, native validation, generation), `remote/b_native.py`
-- `tests/test_anwm_audit.py` (5), `tests/test_generation_paths.py` (18), `tests/test_generation_poses.py` (4): full suite **57 passed, 1 skipped** on the CPU env (the skip is the ANWM action-construction test, which needs torch; it runs in the GPU env and passes there)
+- `tests/test_anwm_audit.py` (5), `tests/test_generation_paths.py` (18), `tests/test_generation_poses.py` (4): `tests/test_generation_clip_io.py` (3): full suite **61 passed, 1 skipped** on the CPU env (the skip is the ANWM action-construction test, which needs torch; it runs in the GPU env and passes there)
 
 ## Blockers found
 
