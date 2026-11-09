@@ -385,3 +385,29 @@ climb at 5 m/s horizontal plus 1.5 m/s vertical reads 5.2 here and is legal.
   path** and were deleted rather than shipped. The B set was rebuilt to pick moving windows
   (smoothed speed >= 5 m/s, rescaled path extent >= 20 m) and switched the autonomous shape from
   `01a-ellipse` to `13a-trackRATM`, which has sustained motion.
+
+## Qualitative note on visual integrity (no tilt claim)
+
+Per-clip `visual_integrity` statistics, pooled by regime and maneuver (frame std of generated
+pixels; mean absolute frame-to-frame difference):
+
+| group | clips | mean frame std | temporal delta |
+| --- | --- | --- | --- |
+| A native | 10 | 0.284 | 0.092 |
+| C cruise control | 7 | 0.301 | 0.161 |
+| C turn | 12 | 0.304 | 0.137 |
+| C slalom | 9 | 0.302 | 0.160 |
+| C accelerate-brake | 9 | 0.299 | 0.144 |
+| C climb-and-turn | 12 | 0.291 | 0.190 |
+
+Nothing is collapsed: pixel spread matches the recorded frames (about 0.30) in every group, and
+frames change substantially frame to frame. The one thing worth flagging to handoff 04 is that the
+**straight-cruise control moves as much as the turning maneuvers** (0.161 against 0.137-0.190).
+That is the kind of "plausible but unrelated motion" WorldEcho reports, and it is exactly what a
+tilt verifier should catch; the cruise control is therefore the cleanest negative in the set. This
+is a statement about pixels, not about depicted tilt, which is Track A's measurement.
+
+Seed variability is not small: for the cruise control, pairwise per-frame MAE across three seeds
+is **0.196 and 0.097** against a within-clip temporal delta of 0.217 and 0.108. Sampling noise is
+therefore comparable to the motion signal on this control, so any per-clip score needs its seed
+spread reported next to it.
