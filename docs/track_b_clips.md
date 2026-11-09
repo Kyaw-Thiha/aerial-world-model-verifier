@@ -44,6 +44,8 @@ maneuvers). `clip_id` is unique across the set.
 
 Notes that matter for scoring:
 
+- **Context is 16 frames.** The released checkpoint was trained with `context_size = 16`
+  (its `pos_embed` has 17 rows), not the 4 in the shipped config; every clip here uses 16.
 - **One frame per commanded step.** `frames/i.png` is the model's depiction *after* applying
   the action that ends at `positions[i+1]`. There is no fps in the release; the working
   assumption is 1 s per step (unverified). The commanded path is in the manifest so the

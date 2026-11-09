@@ -478,7 +478,7 @@ def generate(specs_json: str, sampling_steps: int = 250, sync_r2_prefix: str | N
 def list_starts(min_forward_m: float = 25.0, min_valid_frac: float = 0.5) -> dict:
     """Which native start states have enough forward depth for the projected prior to be non-empty.
 
-    FFP reprojects the 4 context frames to the target poses, so no future depth is needed; the
+    FFP reprojects the context frames to the target poses, so no future depth is needed; the
     check is that the *scene* ahead of the start has depth out to the path extent. We measure the
     forward depth (90th percentile of valid depth in the central 60% column band) and require it
     to exceed `min_forward_m`, the largest commanded displacement over 16 steps at 5 m/s.

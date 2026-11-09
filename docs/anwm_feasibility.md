@@ -105,7 +105,8 @@ The VAE is `stabilityai/sd-vae-ft-ema`, fetched by Diffusers on first use
 
 ## 5. Inputs, and what FFP needs
 
-Per generated frame the model consumes: the 4 context frames, the action, and one
+Per generated frame the model consumes: the 16 context frames the checkpoint was trained with
+(the config's 4 is wrong, section 3), the action, and one
 **Future-Frame-Projection** image. FFP is not a learned model: it reprojects the context
 frames' depth into the target viewpoint (`anwm/projection.py:182-240`) and needs, per
 context frame, a **depth map (H, W)**, a **camera matrix K (3x3)** and a **4x4 pose**, plus
