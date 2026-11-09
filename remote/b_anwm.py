@@ -46,7 +46,8 @@ image = (
                   "pip install --no-cache-dir huggingface_hub boto3",
                   # recent diffusers calls torch.accelerator (torch >= 2.6); keep a version that
                   # matches the torch 2.4.1 pin above
-                  "pip install --no-cache-dir 'diffusers==0.33.1'",
+                  "pip install --no-cache-dir 'diffusers==0.33.1' "
+                  "'transformers==4.44.2' 'peft==0.13.2'",
                   "python -c \"import diffusers, torch; print('diffusers', diffusers.__version__, "
                   "'torch', torch.__version__)\"")
 )
@@ -108,7 +109,7 @@ def _load_models(device: str = "cuda"):
     return model, diffusion, vae
 
 
-@app.function(gpu="L4", timeout=1800, volumes={"/w": vol_weights, "/hf": vol_hf},
+@app.function(gpu="A10G", timeout=1800, volumes={"/w": vol_weights, "/hf": vol_hf},
               env={"HF_HOME": "/hf"})
 def smoke(steps: int = 250, reps: int = 3) -> dict:
     """One 224x224-equivalent forward pass and one full 250-step frame, timed and measured."""
@@ -254,7 +255,7 @@ def _context_inputs(ds, traj, ctx_times, target_poses, data_dir="/n/airvln_16"):
 
 
 # --------------------------------------------------------------------- Task 2
-@app.function(gpu="L4", timeout=3 * 3600, volumes={"/w": vol_weights, "/hf": vol_hf,
+@app.function(gpu="A10G", timeout=3 * 3600, volumes={"/w": vol_weights, "/hf": vol_hf,
                                                     "/n": vol_native, "/r": vol_results},
               env={"HF_HOME": "/hf"})
 def validate_native(names: list[str], sampling_steps: int = 250, lpips_net: str = "alex") -> dict:
@@ -347,7 +348,7 @@ def validate_native(names: list[str], sampling_steps: int = 250, lpips_net: str 
 
 
 # --------------------------------------------------------------------- Task 5
-@app.function(gpu="L4", timeout=4 * 3600, volumes={"/w": vol_weights, "/hf": vol_hf,
+@app.function(gpu="A10G", timeout=4 * 3600, volumes={"/w": vol_weights, "/hf": vol_hf,
                                                     "/n": vol_native, "/r": vol_results},
               env={"HF_HOME": "/hf"})
 def generate(specs_json: str, sampling_steps: int = 250, sync_r2_prefix: str | None = None) -> dict:
