@@ -10,7 +10,7 @@ Local results (committed unless noted), with the remote copy where one exists.
 | path-only audit, three regimes, dt sweep | `results/anwm_path_audit/audit.json` | local + R2 `track-b/clips/audit.json` |
 | native start states (depth/pose + recorded path) | `results/anwm_starts/starts.json` | local + R2 |
 | start prior coverage (FFP non-empty test) | `results/anwm_starts/starts_coverage.json` | local + R2 |
-| clip specs (82 requested, commanded paths) | `results/anwm_clips/specs.json` | local + R2 |
+| clip specs (82 requested, commanded paths; sha256 d656de52cca15f20…, builder is deterministic) | `results/anwm_clips/specs.json` | local + R2 |
 | Gate 2 native rollouts, LPIPS, contact sheets | `results/anwm_native/` | local (24 MB) |
 | slim EMA checkpoint | Modal `awmv-b-weights:/slim/0200000_ema.pth.tar` | R2 `track-b/weights/` |
 | checkpoint manifest (both sha256) | `awmv-b-weights:/slim/manifest.json` | R2 `track-b/weights/manifest.json` |
