@@ -238,6 +238,26 @@ The pose convention was verified inside the same run: rebuilding the recorded po
 `point`/`yaw` reproduces `pose` to 1e-16-2e-16 on every trajectory, so the FFP prior for a
 *commanded* path is not rotated by a guessed convention.
 
+## Task 5: generation set
+
+82 clips, all from the 20 native start states, 16 frames each, 250 sampling steps, seeds recorded:
+
+| regime | clips | composition |
+| --- | --- | --- |
+| A native | 25 | 20 recorded-path clips + 5 extra seeds (variance on 3 of them) |
+| B real-flight replay | 8 | 2 shapes (`01a-ellipse` autonomous, `01p-ellipse` piloted) x 4 starts |
+| C designed | 49 | cruise control 7, turn 12, slalom 9, accelerate-then-brake 9, climb-and-turn 12 |
+
+The C counts are lower than 5x3x3+control because unreachable cells are not generated (12 of the
+22 designs): a course-aligned turn or climb cannot exceed 7.4 deg inside ANWM's 15 deg/s yaw step,
+and a constant-speed slalom tops out at 11.0 deg. Both policies are kept where they are reachable
+because the yaw-fixed variant is a 45 deg strafe step, which the training data contains.
+
+Every clip directory holds `frames/` (16 PNGs), `manifest.json` (commanded positions and yaw, step
+spacing, start state, regime, designed tilt, seed, slim-checkpoint hash, sampling steps, code
+commit, visual-integrity statistics) and, for Regime A, `gt/` with the recorded frames. The index
+`clips_index.csv` is derived from the manifests, so it cannot drift from the frames.
+
 ## Files
 
 - `src/generation/audit.py`, `paths.py`, `anwm_env.py`, `experiments/anwm_{audit_corrected,kd_split,path_audit,build_clips}.py`
