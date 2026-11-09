@@ -92,6 +92,9 @@ def extract_slim() -> dict:
 
 
 # --------------------------------------------------------------------- Task 1.3
+CTX = 16  # from the checkpoint: pos_embed has 17 rows = 16 context + 1 predicted frame
+
+
 def _load_models(device: str = "cuda"):
     import torch
     from diffusers.models import AutoencoderKL
@@ -99,7 +102,7 @@ def _load_models(device: str = "cuda"):
     from anwm.diffusion import create_diffusion
     from anwm.model import CDiT_models
 
-    model = CDiT_models["CDiT-XL/2"](context_size=4, input_size=28, in_channels=4)
+    model = CDiT_models["CDiT-XL/2"](context_size=CTX, input_size=28, in_channels=4)
     ckp = torch.load("/w/slim/0200000_ema.pth.tar", map_location="cpu", weights_only=False)
     msg = model.load_state_dict(ckp["ema"], strict=True)
     print("load_state_dict:", msg)
@@ -127,9 +130,9 @@ def smoke(steps: int = 250, reps: int = 3) -> dict:
 
     B, T = 1, 16
     y = torch.randn(B, 4, device=device)
-    x_cond = torch.randn(B, 4, 4, 28, 28, device=device)
+    x_cond = torch.randn(B, CTX, 4, 28, 28, device=device)
     rel_t = torch.full((B,), T / 128.0, device=device)
-    x_sup = torch.randn(B, 1, 4, 28, 28, device=device)
+    x_sup = torch.randn(B, 4, 28, 28, device=device)  # already flattened, as the wrapper does
 
     torch.cuda.reset_peak_memory_stats()
     times = []
@@ -147,12 +150,12 @@ def smoke(steps: int = 250, reps: int = 3) -> dict:
 
     # one complete generated frame: 250 passes through the sampler + VAE round trip
     torch.cuda.reset_peak_memory_stats()
-    obs = torch.randn(B, 4, 3, 224, 224, device=device)
+    obs = torch.randn(B, CTX, 3, 224, 224, device=device)
     fsup = torch.randn(B, 1, 3, 224, 224, device=device)
     torch.cuda.synchronize()
     s = time.time()
     out = model_forward_wrapper((model, diffusion, vae), obs, y, 1, 28, device=device,
-                                num_cond=4, num_goals=1, x_supervised=fsup)
+                                num_cond=CTX, num_goals=1, x_supervised=fsup)
     torch.cuda.synchronize()
     frame_s = time.time() - s
     peak_frame = torch.cuda.max_memory_allocated() / 1e9
@@ -188,7 +191,7 @@ def _eval_shim(data_folder: str = "/n/airvln_16"):
     ds.dataset_name = "airvln_16"
     ds.image_size = (224, 224)
     ds.min_dist_cat, ds.max_dist_cat = -64, 64
-    ds.len_traj_pred, ds.traj_stride, ds.context_size = 16, 80, 4
+    ds.len_traj_pred, ds.traj_stride, ds.context_size = 16, 80, CTX
     ds.normalize = True
     ds.transform = transform
     ds.goals_per_obs = 1
@@ -300,7 +303,7 @@ def validate_native(names: list[str], sampling_steps: int = 250, lpips_net: str 
         for i in range(gt.shape[1]):
             x_pred = model_forward_wrapper(
                 (model, diffusion, vae), curr, delta[:, i:i + 1].to(device), 1, 28,
-                device=device, num_cond=4, num_goals=1, x_supervised=proj[:, i:i + 1].to(device))
+                device=device, num_cond=CTX, num_goals=1, x_supervised=proj[:, i:i + 1].to(device))
             curr = torch.cat((curr, x_pred.unsqueeze(1)), dim=1)[:, 1:]
             preds.append(x_pred.clamp(-1, 1))
         pred = torch.stack(preds, 1)
@@ -388,7 +391,7 @@ def generate(specs_json: str, sampling_steps: int = 250, sync_r2_prefix: str | N
         pos = np.asarray(sp["positions"], float)
         yaw = np.asarray(sp["yaw"], float)
         n = len(pos)
-        ctx_times = list(range(ct - 3, ct + 1))
+        ctx_times = list(range(ct - CTX + 1, ct + 1))
         target_poses = _pose_from_position_yaw(pos[1:n], yaw[1:n], R_ec)
         obs, sup = _context_inputs(ds, traj, ctx_times, target_poses)
 
@@ -406,7 +409,7 @@ def generate(specs_json: str, sampling_steps: int = 250, sync_r2_prefix: str | N
         for i in range(n - 1):
             x_pred = model_forward_wrapper(
                 (model, diffusion, vae), curr, delta[:, i:i + 1].to(device), 1, 28,
-                device=device, num_cond=4, num_goals=1, x_supervised=sup[:, i:i + 1].to(device))
+                device=device, num_cond=CTX, num_goals=1, x_supervised=sup[:, i:i + 1].to(device))
             curr = torch.cat((curr, x_pred.unsqueeze(1)), dim=1)[:, 1:]
             preds.append(((x_pred.clamp(-1, 1) + 1) / 2 * 255).byte().cpu())
         folder = f"/r/clips/{sp['regime']}/{sp['id']}"
@@ -535,3 +538,21 @@ def run_generate(specs_path: str = "results/anwm_clips/specs.json", regimes: str
     print(f"{len(specs)} specs:", {r: sum(s['regime'] == r for s in specs) for r in keep})
     out = generate.remote(json.dumps(specs))
     print(json.dumps(out, indent=1)[:3000])
+
+
+@app.function(cpu=2, memory=32768, timeout=1800, volumes={"/hf": vol_hf})
+def inspect_args() -> dict:
+    """What the released checkpoint says about itself (context size, step, run name)."""
+    import torch
+    from huggingface_hub import hf_hub_download
+
+    p = hf_hub_download(CKPT_REPO, CKPT_FILE, cache_dir="/hf/hub")
+    ckp = torch.load(p, map_location="cpu", weights_only=False, mmap=True)
+    ns = ckp["args"]
+    args = {k: v for k, v in vars(ns).items() if isinstance(v, (int, float, str, bool))} \
+        if hasattr(ns, "__dict__") else ns
+    info = {"args": args, "epoch": ckp.get("epoch"), "train_steps": ckp.get("train_steps"),
+            "ema_pos_embed_shape": list(ckp["ema"]["pos_embed"].shape),
+            "model_pos_embed_shape": list(ckp["model"]["pos_embed"].shape)}
+    print(json.dumps(info, indent=1))
+    return info

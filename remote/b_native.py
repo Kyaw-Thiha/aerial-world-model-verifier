@@ -34,7 +34,10 @@ app = modal.App("awmv-b-native", image=image)
 
 
 @app.function(cpu=8, memory=16384, timeout=3 * 3600, volumes={"/n": vol_native})
-def fetch(names_wanted: int = 5, max_shards: int = 120, workers: int = 16) -> dict:
+def fetch(names_wanted: int = 5, max_shards: int = 140, workers: int = 32) -> dict:
+    import socket
+
+    socket.setdefaulttimeout(90)  # a hung range read must not stall the whole scan
     sys.path.insert(0, "/")
     from fetch_anwm import N_SHARDS, RangeFile, index_shard, shard_url
 
@@ -55,20 +58,33 @@ def fetch(names_wanted: int = 5, max_shards: int = 120, workers: int = 16) -> di
     missing_names = [n for n in test_names if n not in index]
     print(f"{len(test_names)} rollout trajectories, {len(test_names)-len(missing_names)} indexed")
 
-    from concurrent.futures import ThreadPoolExecutor, as_completed
-    todo = [i for i in range(N_SHARDS) if not any(v[0] == i for v in index.values())]
+    from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, wait
+    todo = [i for i in range(N_SHARDS) if not any(v[0] == i for v in index.values())][:max_shards]
     t0 = time.time()
-    with ThreadPoolExecutor(max_workers=workers) as ex:
-        futs = {ex.submit(index_shard, i): i for i in todo[:max_shards]}
-        for fut in as_completed(futs):
-            try:
-                index.update(fut.result())
-            except Exception as e:
-                print("shard failed", futs[fut], type(e).__name__, e)
+    ex = ThreadPoolExecutor(max_workers=workers)
+    pending = {ex.submit(index_shard, i): i for i in todo}
+    done = 0
+    try:
+        while pending:
+            finished, pending = wait(pending, return_when=FIRST_COMPLETED)
+            for fut in finished:
+                try:
+                    index.update(fut.result())
+                except Exception as e:
+                    print("shard failed", type(e).__name__, e)
+                done += 1
+            Path("/n/shard_index.json").write_text(json.dumps(index))
+            vol_native.commit()
             found = [n for n in test_names if n in index]
+            if done % 5 == 0 or len(found) >= names_wanted:
+                print(f"{done} shards scanned, {len(found)}/{names_wanted} wanted found, "
+                      f"{time.time()-t0:.0f}s", flush=True)
             if len(found) >= names_wanted:
                 break
+    finally:
+        ex.shutdown(wait=False, cancel_futures=True)
     Path("/n/shard_index.json").write_text(json.dumps(index))
+    vol_native.commit()
     found = [n for n in test_names if n in index][:names_wanted]
     print(f"index now {len(index)} trajectories, rollout hits {len(found)} in {time.time()-t0:.0f}s")
     if len(found) < names_wanted:
@@ -79,9 +95,11 @@ def fetch(names_wanted: int = 5, max_shards: int = 120, workers: int = 16) -> di
     for name in found:
         shard, off, size = index[name]
         ct = first_entry[name][0]
-        need = set(range(max(0, ct - 3), ct + 17))  # the rollout's own first entry
+        # 16 context frames + 16 future frames: the released checkpoint's pos_embed has 17 rows
+        # (16 context + 1 predicted), whatever config/anwm.yaml says
+        need = set(range(max(0, ct - 15), ct + 17))
         for c in CAND:
-            need |= set(range(max(0, c - 3), c + 17))
+            need |= set(range(max(0, c - 15), c + 17))
         f = RangeFile(shard_url(shard))
         outd = Path(base, name)
         outd.mkdir(parents=True, exist_ok=True)

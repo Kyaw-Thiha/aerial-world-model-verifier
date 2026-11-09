@@ -68,7 +68,11 @@ The VAE is `stabilityai/sd-vae-ft-ema`, fetched by Diffusers on first use
 - **One frame per action.** README: 48 frames, 47 actions per segment. `len_traj_pred: 16`
   in the config limits a single forward rollout to 16 steps; `infer.py` rolls out over the
   eval horizon and re-feeds predictions (`generate_rollout`, `infer.py:88-108`). (**verified**)
-- Context: last **4** frames (`context_size: 4`), plus the FFP-projected frame. (**verified**)
+- Context: the shipped configs say **4** frames (`context_size: 4`, `eval_context_size: 4`), but
+  the released checkpoint was trained with **16**: `ckp["ema"]["pos_embed"]` is
+  `[17, 196, 1152]` and the model builds `pos_embed` as `context_size + 1`. Loading with 4 raises
+  a `pos_embed` size mismatch; loading with 16 matches every key. (**verified** in Task B; the
+  config/weights disagreement is a release bug, not a reading error.)
 - Chaining: autoregressive, one frame at a time, appending the prediction and dropping the
   oldest (`infer.py:105-108`). README limitation: "generation may drift or collapse as
   trajectories approach 200 m". (**verified**)
