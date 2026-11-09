@@ -289,6 +289,49 @@ def evaluation(records: list[dict], prereg: dict,
     return res
 
 
+def artifact_floor(spec_paths: dict, ident_rows: dict, yaw_rows: dict) -> dict:
+    """How much a pure rotation about world up moves the depicted tilt, per frame.
+
+    A rotation about up cannot change the tilt, so any movement here is the estimator's
+    view dependence (plus resampling). It sets the floor under the minimum detectable
+    violation, and it is the number that explains a flagged yaw control: the control is
+    flagged when this floor is comparable to the threshold.
+    """
+    from src.perception.frames import camera_to_body_pitched
+
+    out = {}
+    for flight, rows in ident_rows.items():
+        if rows is None or flight not in yaw_rows or yaw_rows[flight] is None:
+            continue
+        spec = np.load(spec_paths[flight], allow_pickle=False)
+        theta = float(spec["uptilt_deg"])
+        z_body_cam = camera_to_body_pitched(np.deg2rad(theta)).T @ np.array([0.0, 0.0, 1.0])
+        names = [str(n) for n in spec["names"]]
+        diffs, angles = [], []
+        for n in names:
+            a, b = rows.get(n), yaw_rows[flight].get(n)
+            if a is None or b is None:
+                continue
+            ua = np.asarray(a["gravity_up_cam"], float)
+            ub = np.asarray(b["gravity_up_cam"], float)
+            ta = np.degrees(np.arccos(np.clip(ua @ z_body_cam / np.linalg.norm(ua), -1, 1)))
+            tb = np.degrees(np.arccos(np.clip(ub @ z_body_cam / np.linalg.norm(ub), -1, 1)))
+            diffs.append(abs(tb - ta))
+            angles.append(float(b.get("angle_deg", 0.0)))
+        diffs = np.asarray(diffs)
+        angles = np.asarray(angles)
+        m = angles > 10.0
+        out[flight] = {"n": int(len(diffs)),
+                       "median_abs_tilt_change_deg": float(np.median(diffs)) if len(diffs) else None,
+                       "p90_abs_tilt_change_deg": float(np.percentile(diffs, 90)) if len(diffs) else None,
+                       "n_rotated": int(m.sum()),
+                       "median_abs_tilt_change_rotated_deg":
+                           float(np.median(diffs[m])) if m.any() else None,
+                       "corr_with_rotation": float(np.corrcoef(diffs, angles)[0, 1])
+                       if len(diffs) > 3 else None}
+    return out
+
+
 def diagnostics(records: list[dict]) -> dict:
     """Gate 3's diagnosis block: where a failure would come from, computed in one pass."""
     real = [r for r in records if r["condition"] == "identity" and r["testable"]]
@@ -476,6 +519,10 @@ def main() -> int:
         ev["delay_negatives"] = quick_delays(spec_paths, ident_rows, clips, prereg)
         ev["retime_negatives"] = quick_retime(spec_paths, ident_rows, clips, prereg)
     ev["diagnostics"] = diagnostics(records)
+    ev["artifact_floor"] = artifact_floor(
+        spec_paths, ident_rows,
+        {f: (load_jsonl(geo / f"{f}__yaw_control.jsonl")
+             if (geo / f"{f}__yaw_control.jsonl").exists() else None) for f in spec_paths})
     ev["abstention_rate"] = {
         "overall": float(np.mean([not r["testable"] for r in records if r["condition"] == "identity"]))
         if records else None,
