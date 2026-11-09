@@ -128,8 +128,11 @@ def main() -> int:
     for s in specs:
         by_regime[s["regime"]] = by_regime.get(s["regime"], 0) + 1
     print("specs", len(specs), by_regime, "->", OUT)
-    print("projected cost: passes", len(specs) * 16 * 250,
-          "at 25 ms/pass =", round(len(specs) * 16 * 250 * 0.025 / 3600, 2), "GPU-hours")
+    # measured on A10G: 17.57 s per generated frame at 250 sampling steps (remote/b_anwm.py::smoke)
+    per_clip_s = 17.57 * 16
+    hours = len(specs) * per_clip_s / 3600
+    print(f"projected: {len(specs)} clips x 16 frames x 17.57 s = {hours:.1f} GPU-hours "
+          f"= US${hours * 1.10:.2f} at the A10G rate (unverified per region)")
     return 0
 
 

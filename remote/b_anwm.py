@@ -10,7 +10,6 @@ Usage:
   modal run remote/b_anwm.py::extract_slim
   modal run remote/b_anwm.py::smoke
 """
-from __future__ import annotations
 
 import json
 import os
@@ -261,8 +260,12 @@ def _context_inputs(ds, traj, ctx_times, target_poses, data_dir="/n/airvln_16"):
 @app.function(gpu="A10G", timeout=3 * 3600, volumes={"/w": vol_weights, "/hf": vol_hf,
                                                     "/n": vol_native, "/r": vol_results},
               env={"HF_HOME": "/hf"})
-def validate_native(names: list[str], sampling_steps: int = 250, lpips_net: str = "alex") -> dict:
-    """Roll out the released model on native context and compare with the recorded frames."""
+def validate_native(names="", sampling_steps: int = 250, lpips_net: str = "alex") -> dict:
+    """Roll out the released model on native context and compare with the recorded frames.
+
+    `names` is a comma-separated string: this Modal version cannot parse `list[str]` annotations.
+    """
+    names = [n for n in names.split(",") if n]
     import pickle
 
     import numpy as np
@@ -274,7 +277,7 @@ def validate_native(names: list[str], sampling_steps: int = 250, lpips_net: str 
     device = "cuda"
     model, diffusion, vae = _load_models(device)
     ds = _eval_shim()
-    manifest = json.load(open("/n/manifest.json"))
+    manifest = json.load(open("/n/airvln_16/manifest.json"))
     import lpips as lpips_lib
     lp = lpips_lib.LPIPS(net=lpips_net).to(device).eval()
 
@@ -461,7 +464,7 @@ def list_starts(min_forward_m: float = 25.0, min_valid_frac: float = 0.5) -> dic
 
     import numpy as np
 
-    man = json.load(open("/n/manifest.json"))
+    man = json.load(open("/n/airvln_16/manifest.json"))
     out = {}
     for name, m in man.items():
         traj = pickle.load(open(f"/n/airvln_16/{name}/traj_data.pkl", "rb"))

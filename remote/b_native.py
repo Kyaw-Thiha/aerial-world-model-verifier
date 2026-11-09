@@ -8,7 +8,6 @@ JPEGs of its first rollout entry onto `awmv-b-native` at `/n/airvln_16/<traj>/`.
 Shard indexing is header-only over HTTP Range (see scripts/fetch_anwm.py); one shard costs
 about two minutes of range requests, so the scan is threaded and stops as soon as it has enough.
 """
-from __future__ import annotations
 
 import json
 import os
