@@ -99,7 +99,37 @@ here is regenerated rather than typed.
 
 ## 6. Task 3: Track B's generated clips
 
-(filled from `results/anwm_scoring/<run>/` when the clips land)
+Status: the scoring path is built and exercised end to end on a fixture; Track B had
+not delivered clips into `track-b/clips/` when this was written (their R2 prefix held
+weights only). The script writes `not_available.json` rather than a placeholder number.
+
+**Hypothesis, stated before the data.** ANWM's released frames are level by
+construction, so a 4-DoF generator should depict tilt at its false-alarm floor
+(0.57 deg median, section 2) while the commanded path requires a tilt that grows with
+speed and turn rate. If that holds, the depicted-versus-required dose-response is flat
+and every arguably testable clip will be flagged; if the generated frames do depict
+tilt, the two curves track.
+
+Reported per regime (A native, B real-flight replay, C factorial sweep), per dt in
+{0.25, 0.667, 1.0} s, always as **curves over dt**: the release states no dt, so no
+result here is assigned to one.
+
+For each clip: depicted tilt per frame (Task 1 setup, 224x224, f = 112, pinhole), a
+coherence statistic (median frame-to-frame movement of the estimated up direction — a
+collapsed rollout jumps, and is marked not testable rather than failed), the implied
+tilt from the commanded path at each dt (Savitzky-Golay 11 frames, `k_d` = 0.295), the
+residual against the pre-registered thresholds, the Regime C dose-response against the
+control set, and the spread of the clip score across seeds for the repeated paths.
+
+Interface: `experiments/phase3a_anwm_specs.py` reads Track B's manifests and writes one
+spec per clip; `remote/a_geocalib_p3.py --job anwm` runs the estimator on the 224x224
+frames; `experiments/phase3a_anwm_scoring.py` scores the result. The required tilt I
+compute at 1 s is cross-checked against the `required_tilt_1s_kd_deg` column of their
+index rather than assumed equal.
+
+<!-- ANWM:BEGIN -->
+(pending)
+<!-- ANWM:END -->
 
 ## 7. Task 4: why DPVO's translation failed
 
