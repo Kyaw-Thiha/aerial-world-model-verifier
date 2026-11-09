@@ -372,3 +372,16 @@ climb at 5 m/s horizontal plus 1.5 m/s vertical reads 5.2 here and is legal.
   `results/anwm_clips/specs.json`, `results/anwm_starts/`.
 - Read `docs/track_b_clips.md` first: it defines the clip layout, the manifest fields and the
   snippet that recomputes a clip's commanded tilt at any dt.
+
+## Delivery status at the end of this handoff
+
+- Regime C: **49 clips** generated and pulled.
+- Regime A: generated from the 20 native starts; the run was interrupted and resumed twice (client
+  disconnects), so the delivered count is whatever the volume holds at the moment of the final
+  pull — the resume path means a rerun of `run_generate --regimes A` fills any gap without
+  duplicating work.
+- Regime B: the first four windows per flight were picked at 15% of each flight, which on
+  `flight-01a-ellipse` is still the stationary lineup: those clips had a **zero-extent commanded
+  path** and were deleted rather than shipped. The B set was rebuilt to pick moving windows
+  (smoothed speed >= 5 m/s, rescaled path extent >= 20 m) and switched the autonomous shape from
+  `01a-ellipse` to `13a-trackRATM`, which has sustained motion.

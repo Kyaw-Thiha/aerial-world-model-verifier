@@ -102,7 +102,7 @@ def main() -> int:
                                             "achieved_1s_k_d": d.peak_tilt(1.0, K_D)}))
 
     # Regime B: two real flights (one autonomous, one piloted), four starts each
-    for flight in ("flight-01a-ellipse", "flight-01p-ellipse"):
+    for flight in ("flight-13a-trackRATM", "flight-01p-ellipse"):
         hits = glob.glob(str(ROOT / f"data/raw/tii/*/mocap_{flight}.csv"))
         if not hits:
             print("missing mocap", flight)
@@ -111,19 +111,34 @@ def main() -> int:
         from scipy.spatial.transform import Rotation
         R = Rotation.from_quat(c.quat).as_matrix()
         yaw = np.arctan2(R[:, 1, 0], R[:, 0, 0])
-        t0 = float(c.t[0] + 0.15 * (c.t[-1] - c.t[0]))
-        for k, s in enumerate(chosen[:4]):
-            try:
-                b = from_mocap(c.pos, yaw, c.t, t0, 40.0, name=f"B_{flight}_{k}")
-            except Exception as e:
-                print("skip B", flight, k, e)
+        # pick windows with actual motion: 15% of the way in, these racing flights are still
+        # stationary (median speed 0.2 m/s on 01a), which produced degenerate zero-extent paths
+        dur = float(c.t[-1] - c.t[0])
+        windows = []
+        for frac in np.linspace(0.02, 0.95, 28):
+            t0 = float(c.t[0] + frac * dur)
+            if t0 + 12.0 > c.t[-1]:
                 continue
+            try:
+                cand = from_mocap(c.pos, yaw, c.t, t0, 12.0, name=f"B_{flight}_{frac:.2f}")
+            except Exception as e:
+                print("skip window", flight, frac, e)
+                continue
+            ext = np.linalg.norm(cand.pos[:17] - cand.pos[0], axis=1).max()
+            if cand.meta["raw_peak_h_ms"] >= 5.0 and ext >= 20.0:
+                windows.append((t0, cand))
+        print(flight, "valid windows", len(windows))
+        for k, s in enumerate(chosen[:4]):
+            if k >= len(windows):
+                break
+            t0, b = windows[k * max(1, len(windows) // 4) if k * max(1, len(windows) // 4) < len(windows) else 0]
             if len(b.pos) < 17:
                 continue
             pos, yw = place(b.pos[:17], b.yaw[:17], s)
             specs.append(spec(f"B_{flight}_{k}", "B", pos, yw, s,
-                              meta={"flight": flight, **{kk: vv for kk, vv in b.meta.items()
-                                                         if isinstance(vv, (int, float, str))}}))
+                              meta={"flight": flight, "t0_s": t0,
+                                    **{kk: vv for kk, vv in b.meta.items()
+                                       if isinstance(vv, (int, float, str))}}))
 
     # Variance: five paths x three seeds (seed 0 already exists)
     for base in ([x for x in specs if x["regime"] == "A"][:3] +
