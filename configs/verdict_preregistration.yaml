@@ -144,6 +144,8 @@ thresholds:
   # scores show the three trackRATM flights carry the estimator failure (one of them
   # scores a median of 68 deg on real clips), so a threshold fitted over them would be
   # set by that failure and would hide everything else. Both variants are reported:
+  # SUPERSEDED by amendment_2 (below): this key is kept as a record only and is not used
+  # by any run that cites amendment 2.
   threshold_fit_flights: non_trackratm
   threshold_fit_flights_alt: all_flights
   amendment_1_reason: >
@@ -179,3 +181,130 @@ provenance:
   git_hash: recorded per run
   prereg_sha256: recorded per run
   seeds: [0]
+
+# ================================================================ AMENDMENT 2
+# Track A2 (handoff 05). Committed BEFORE any gate signal is extracted or evaluated and
+# before any generated clip is scored. It SUPERSEDES amendment 1.
+#
+# Why. Amendment 1 removed the three trackRATM flights from the threshold fit. It was
+# written after seeing real-clip scores, and a later sensitivity row (`all_but_13a`) was
+# picked because it looked better. Choosing which clips count by looking at their scores
+# inflates every number downstream, and it is unavailable on generated video where no
+# mocap exists. Amendment 2 withdraws that rule and replaces it with a gate that reads
+# only pixels and estimator outputs. Amendment 1 stays above as a record of what was
+# done; no run that cites amendment 2 uses `threshold_fit_flights: non_trackratm`.
+amendment_2:
+  date: 2026-11-09
+  tag: "[A2]"
+  supersedes: amendment_1
+  no_flight_level_exclusion: true
+  threshold_fit_flights: all_flights     # conformal quantile over all 8 flights, after the gate
+  abstentions_allowed: [excitation_rule, confidence_gate]
+
+  # ---------------------------------------------------------------- what the gate sees
+  gate_inputs: >
+    pixels and GeoCalib outputs only: per-frame gravity direction, GeoCalib's gravity /
+    roll / pitch uncertainty, and its up / latitude confidence maps. Not mocap, not the
+    commanded path, not the implied tilt, not any verdict score or outcome.
+  extraction: >
+    GeoCalib is re-run with exactly the Gate 3 setup (remote/a_geocalib_p3.py, commit
+    1dedb29f94fc11b896c5f572005978aeebccd67f, simple_divisional, distorted weights, raw
+    fisheye) and the per-frame extras are stored: gravity_uncertainty,
+    roll_uncertainty, pitch_uncertainty, and mean and 10th percentile of up_confidence
+    and latitude_confidence over the image. The Gate 3 rows did not store them; the
+    pinned source returns them (lm_optimizer.estimate_uncertainty, extractor.calibrate).
+    Consistency check: the re-run gravity direction must match the stored rows (median
+    disagreement < 0.05 deg), otherwise the extraction is void and nothing is scored.
+
+  # ---------------------------------------------------------------- what it must predict
+  label:
+    definition: >
+      Per-frame depicted-gravity error = angle between the estimated up direction in the
+      camera frame and the up direction implied by mocap attitude through the recorded
+      mount, R_cb = camera_to_body_pitched(recorded uptilt), with no fitted nuisances.
+      Clip label = 1 when the median of that error over frames with a finite estimate
+      exceeds 10 deg, else 0. Computed on the identity (real) condition for every clip of
+      the Gate 3 clip set, including clips the excitation rule abstains on, because this
+      is a property of the estimator and not of the verdict.
+    threshold_deg: 10.0
+    sensitivity_reported: [5.0, 20.0]
+    never_an_input_to_the_gate: true
+
+  # ---------------------------------------------------------------- candidate signals
+  # Clip level, oriented so that larger = less trustworthy. This list is fixed; no
+  # candidates are added after looking at the labels.
+  candidates:
+    S1_gravity_uncertainty:
+      definition: median over frames of GeoCalib gravity_uncertainty, degrees
+      single_frame: true
+    S2_up_confidence:
+      definition: negative median over frames of the image-mean up_confidence
+      single_frame: true
+    S3_latitude_confidence:
+      definition: negative median over frames of the image-mean latitude_confidence
+      single_frame: true
+    S4_temporal_jitter:
+      definition: >
+        slow component = running median of the unit gravity vector (component-wise, then
+        renormalised) over a 0.5 s window (6 samples at the clip's ~12 Hz stride);
+        signal = median over frames of the angle between the frame's gravity and that
+        slow component, degrees.
+      single_frame: false      # undefined at 1 s spacing (a 16-frame ANWM clip is 15 s)
+    S5_vo_agreement:
+      definition: >
+        median over consecutive frame pairs of the angle between the measured gravity at
+        t+1 and the gravity at t carried forward by the DPVO relative rotation, degrees.
+        A clip whose DPVO rows do not cover the clip's stride-10 frames is dropped by
+        this signal (counts as not testable). Evaluated only if stored DPVO rows cover
+        those frames; otherwise reported as "not evaluated" with the reason.
+      single_frame: false
+    S6_uncertainty_instability:
+      definition: >
+        fraction of frames whose gravity_uncertainty exceeds twice the clip's own median
+        gravity_uncertainty. Within-clip, so it needs no floor fitted on other clips.
+      single_frame: true
+  combinations: none     # 100 clips over 8 flights do not support a search over mixtures
+
+  # ---------------------------------------------------------------- eligibility, selection
+  eligibility: >
+    The frozen gate must also run on a 16-frame, 224x224 generated clip with 1 s between
+    frames and no mocap. Only single-frame signals can be frozen. S4 and S5 are evaluated
+    and reported, but cannot be selected.
+  selection_criterion: >
+    Highest AUROC for label = 1, pooled over the identity-condition clips, among eligible
+    signals. Report a flight-level bootstrap interval (flights resampled, 2000 draws,
+    seed 0). If that interval's lower bound is <= 0.5 for the best eligible signal, the
+    gate is declared NOT VALIDATED: the gated verdict is not run and that is the reported
+    outcome. Same outcome if fewer than 5 clips carry label = 1.
+  validation: leave_one_flight_out
+
+  # ---------------------------------------------------------------- threshold rule
+  threshold_rule: >
+    Drop a clip whose signal exceeds tau. tau maximises (TPR - FPR) over candidate values
+    equal to the observed signal values of the fit clips, subject to the fit clips' kept
+    fraction being at least 0.60. Ties go to the larger tau. Leave-one-flight-out: tau is
+    refitted on the other seven flights and used only on the held-out flight; coverage,
+    kept-versus-dropped error and all gated numbers are reported from those held-out
+    decisions. The FROZEN tau is fitted on all eight flights, committed in
+    configs/gate_frozen.yaml together with the commit hash, and never changed afterwards.
+  application: >
+    The gate is applied per condition: the real clip and each edit are gated on their own
+    pixels. A gated clip is "not testable", exactly like an excitation abstention. Paired
+    comparisons keep the matched-set rule of the original protocol (a clip dropped in any
+    condition of a family is dropped from that family's pairing, and the dropout is
+    reported); unmatched pooled numbers are reported alongside.
+
+  # ---------------------------------------------------------------- reporting, transfer
+  report: >
+    Per-signal AUROC with a flight-level interval; coverage per flight; median label error
+    of kept versus dropped clips; flight 13a and the 07a clip that scored 48.8 deg; the
+    LOFO tau spread; label sensitivity at 5 and 20 deg.
+  transfer_check: >
+    Before any generated clip is scored, the frozen gate is applied to the 186 ANWM
+    ground-truth (level) frames of the Gate 3 noise-floor run, grouped into 16-frame
+    clips. The dropped fraction is reported. The gate is not altered whatever it shows;
+    if more than half are dropped, generated-video results are reported as "gate not
+    transferable to 224 px frames" and are not interpreted as verdicts.
+  generated_clips: >
+    Scoring of generated clips and the minimum-consistent-dt analysis are covered by a
+    separate amendment 3, committed before any generated clip is scored.
