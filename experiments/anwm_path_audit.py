@@ -63,7 +63,7 @@ def main() -> int:
     A = [from_native(f, 0, 17) for f in files]
     res["A_native"] = {"n_traj": len(A), "cells": regime_cells(A),
                        "smallest_consistent_dt": {
-                           est: smallest_consistent_dt(A, est, k) for est, k in
+                           f"{est}_k{k:.3f}": smallest_consistent_dt(A, est, k) for est, k in
                            (("per_step", 0.0), ("smoothed", 0.0), ("per_step", K_D),
                             ("smoothed", K_D))}}
     res["A_native"]["per_trajectory_peak_deg"] = [s.peak_tilt(1.0, K_D) for s in A]

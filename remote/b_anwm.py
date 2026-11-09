@@ -241,7 +241,7 @@ def _context_inputs(ds, traj, ctx_times, target_poses, data_dir="/n/airvln_16"):
         img = cv2.imread(f"{data_dir}/{traj['name']}/{int(t)}.jpg")
         rgb.append(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
     rgb = np.stack(rgb, 0)
-    proj = ds._compute_projected_images(traj["data"], list(ctx_times), rgb,
+    proj = ds._compute_projected_images(traj, list(ctx_times), rgb,
                                         np.asarray(target_poses))
     obs = torch.stack([ds.transform(Image.fromarray(rgb[i])) for i in range(len(ctx_times))])
     sup = torch.stack([ds.transform(Image.fromarray(proj[i])) for i in range(len(proj))])

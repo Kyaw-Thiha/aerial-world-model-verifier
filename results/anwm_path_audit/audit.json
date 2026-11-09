@@ -179,14 +179,29 @@
    }
   },
   "smallest_consistent_dt": {
-   "per_step": {
+   "per_step_k0.000": {
+    "dt_s": null,
+    "estimator": "per_step",
+    "k_d": 0.0,
+    "criterion": "frac>10deg <= 0.05",
+    "note": "not reached on 0.1-2.0 s grid"
+   },
+   "smoothed_k0.000": {
+    "dt_s": 0.5851592842296025,
+    "frac_gt": 0.030303030303030304,
+    "median": 2.9186702901189685,
+    "estimator": "smoothed",
+    "k_d": 0.0,
+    "criterion": "frac>10deg <= 0.05"
+   },
+   "per_step_k0.295": {
     "dt_s": null,
     "estimator": "per_step",
     "k_d": 0.295,
     "criterion": "frac>10deg <= 0.05",
     "note": "not reached on 0.1-2.0 s grid"
    },
-   "smoothed": {
+   "smoothed_k0.295": {
     "dt_s": 1.0018260133369539,
     "frac_gt": 0.04329004329004329,
     "median": 6.095918525187196,
