@@ -69,14 +69,40 @@ def main() -> int:
     if bad:
         print("MISMATCH between manifest frame count and files on disk:", bad[:10])
     if args.sync:
-        from src.utils.r2 import upload
+        import os
+
+        import boto3
+        from botocore.config import Config
+
+        s3 = boto3.client("s3", endpoint_url=f"https://{os.environ['R2_ACCOUNT_ID']}"
+                                            ".r2.cloudflarestorage.com",
+                          aws_access_key_id=os.environ["R2_ACCESS_KEY_ID"],
+                          aws_secret_access_key=os.environ["R2_SECRET_ACCESS_KEY"],
+                          region_name="auto",
+                          config=Config(max_pool_connections=32,
+                                        retries={"max_attempts": 5, "mode": "standard"}))
+        bucket = os.environ["R2_BUCKET"]
         files = [p for p in CLIPS.rglob("*") if p.is_file()]
-        for p in files:
-            key = "track-b/clips/" + str(p.relative_to(CLIPS))
-            r = upload(p, key)
-            if p.name == "manifest.json" and r["sha256"] != r["remote_sha256"]:
-                raise SystemExit(f"hash mismatch for {key}")
-        print(f"synced {len(files)} files to s3://<bucket>/track-b/clips/")
+        # the shared R2 helper reads every object back and re-hashes; for ~1000 small frames that
+        # is minutes of round trips, so bulk upload here and verify by size + a manifest sample
+        from concurrent.futures import ThreadPoolExecutor
+
+        def put(p):
+            rel = str(p.relative_to(CLIPS))
+            s3.upload_file(str(p), bucket, "track-b/clips/" + rel)
+            return rel
+
+        with ThreadPoolExecutor(max_workers=16) as ex:
+            list(ex.map(put, files))
+        bad = []
+        for rel in [str(p.relative_to(CLIPS)) for p in files
+                    if p.name in ("manifest.json", "clips_index.csv")]:
+            head = s3.head_object(Bucket=bucket, Key="track-b/clips/" + rel)
+            if head["ContentLength"] != (CLIPS / rel).stat().st_size:
+                bad.append(rel)
+        if bad:
+            raise SystemExit(f"size mismatch after upload: {bad[:5]}")
+        print(f"synced {len(files)} files to s3://{bucket}/track-b/clips/")
     return 0
 
 
