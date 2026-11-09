@@ -68,7 +68,10 @@ Notes that matter for scoring:
 
 Columns: `clip_id, regime, maneuver, policy, designed_tilt_deg, reachable, n_frames,
 peak_speed_ms, peak_yaw_rate_deg_s, step_spacing_m, required_tilt_1s_drag_free_deg,
-required_tilt_1s_kd_deg, start_traj, start_time, seed, capsule_sha256`.
+required_tilt_1s_kd_deg, start_traj, start_time, seed, checkpoint_sha256`.
+
+`variance.json` in the same directory holds pairwise frame differences for the clips that were
+generated with three seeds.
 
 `required_tilt_*` is the peak per-step required tilt of the commanded path at 1 s, from
 `src/generation/paths.py`; the full dt sweep is in `results/anwm_path_audit/audit.json`.
