@@ -214,12 +214,15 @@ Smallest violation rejected 80% of the time: **- deg**
 **The score separates; the threshold is what fails.** The diagnosis, in the order the
 numbers point at:
 
-1. **Threshold estimation, not discrimination, is binding.** Tilt removal has AUROC
-   0.918 and its median score is 18.9 deg against a real median of 2.9, yet only 37% of
-   clips are rejected: the per-fold 95th percentile is set by one or two tail clips in
-   the fit set. One autonomous flight contributes real clips at 40 and 49 deg, so the
-   fold that holds out `01p` gets a threshold of 48.8 deg. A pooled threshold of 5.76
-   rejects 97% of tilt removals but is not the thing the pre-registration asked for.
+1. **A five-clip tail, not discrimination, is binding.** The real clips are tight —
+   median 2.9 deg, p90 8.9 — and then there are **5 of 83 clips above 40 deg** (49-80),
+   four of them on `flight-13a-trackRATM` and one on `flight-07a-lemniscate`. Those five
+   push the 95th percentile from about 9 to 44.9, and this is threshold-free: the 20th
+   percentile of *any* negative family (11.2 deg at best) does not clear the real p95,
+   so **an 80%-rejection operating point does not exist for any family**, whatever the
+   threshold rule. Tilt removal still has AUROC 0.918 with a median of 18.9 against 2.9;
+   only 37% of its clips clear the per-fold thresholds because the folds inherit the
+   tail.
 2. **One broken flight moves the threshold by an order of magnitude.** The three
    threshold policies span acceptance 0.711 / 0.952 / 0.904 with thresholds 5.76 /
    67.16 / 9.37 deg:
@@ -230,9 +233,8 @@ numbers point at:
    | `all_flights` | 67.16 | 0.952 | 0.06 | 0.06 | 0.06 | 0.11 | 0.06 |
    | `all_but_13a` (sensitivity) | 9.37 | 0.904 | **0.89** | 0.43 | 0.31 | **0.96** | 0.31 |
 
-   The `all_flights` policy meets the 95% acceptance target only because
-   `flight-13a-trackRATM`'s own real clips (median 68 deg) become the threshold, which
-   makes the test vacuous. The policy the data support is `all_but_13a`: 90% acceptance
+   The `all_flights` policy meets the 95% acceptance target only because the same five
+   clips become the threshold, which makes the test vacuous. The policy the data support is `all_but_13a`: 90% acceptance
    and 89% rejection of full tilt removal, 96% of mirrored roll, 43% of half tilt.
    It is reported as a sensitivity analysis, not swapped in for the pre-registered
    primary.
@@ -253,6 +255,14 @@ numbers point at:
    principle, but below the levels the unstable thresholds can resolve. Retiming (0.5x,
    2x) scores 18.1 and 19.2 deg: heavier than the delays, light against a full tilt
    removal, which is what a 0.5-s window over a smooth trajectory would predict.
+
+**Where the fix is.** The tail is the target: 5 clips, and every one of them is a clip
+where more than half the frames carry a wrong estimate. A depicted-consistency
+abstention (a clip whose estimated tilt disagrees with its own temporal median for most
+frames is not testable) would remove them without touching a negative, and the
+`all_but_13a` row shows what that buys: threshold 9.4, 90% acceptance, 89% rejection of
+full tilt removal. That rule was not in this pre-registration, so it is the first item of
+the next handoff rather than something applied here.
 
 **What this means for the claim.** On the five flights where the depicted estimator
 works, the verifier ranks a real clip below the same clip with its tilt removed 92% of

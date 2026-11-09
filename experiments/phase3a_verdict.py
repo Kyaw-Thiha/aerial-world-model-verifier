@@ -259,6 +259,13 @@ def evaluation(records: list[dict], prereg: dict,
             "spearman_vs_tilt": spearman(sco[ok], [p[1]["tilt_implied_median"]
                                                    for p, k in zip(pairs, ok) if k]),
         }
+        # threshold-free separability: does an 80%-rejection threshold exist at all?
+        neg_p20 = float(np.percentile(sco[ok], 20)) if ok.any() else None
+        real_p95 = float(np.percentile(pos[ok], 95)) if ok.any() else None
+        res["families"][cond].update({
+            "negative_p20_deg": neg_p20, "real_p95_deg": real_p95,
+            "separable_at_80pct": bool(neg_p20 is not None and real_p95 is not None
+                                       and neg_p20 > real_p95)})
         grp = np.array([p[1]["flight"] for p, k in zip(pairs, ok) if k])
         boots = bootstrap_paired(pos[ok], sco[ok], grp)
         k_ok = int(np.sum(sco[ok] > thr[ok]))
