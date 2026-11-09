@@ -194,3 +194,7 @@ One line per structural choice, with the reason. Newest at the bottom.
 ### Task 4
 
 - [A] Not run. The workstation has 4.1 GB free, UZH-FPV's release is tens of GB and the small HF derivative (128x128) does not carry the calibration the test exists to isolate. Recorded with the concrete next step rather than substituted with a weaker proxy.
+
+### Compute (recorded because the estimate exceeds US$5)
+
+- [A] Phase 3a GPU estimate: 5,007 frames x 6 conditions = 30,042 GeoCalib estimates at the measured ~1.5 estimates/s per container = ~5.6 A10G-hours, plus 95 s for the ANWM floor. At ~US$1.10/h that is **US$6-8**, above the US$5 threshold, so it is recorded here before the run. The first two batches ran serially at ~25 min/flight and would have taken four hours; the remainder runs one container per flight (`--parallel`, Modal `.spawn`), which is the same GPU-seconds spread over more containers. Waste from the two restarts: about 25 minutes of one container (01p, killed before its commit).

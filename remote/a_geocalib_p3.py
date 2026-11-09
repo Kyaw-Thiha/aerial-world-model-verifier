@@ -272,7 +272,8 @@ def run_anwm(tag: str = "clips_v1", limit: int = 0, size: int = 224,
 
 @app.local_entrypoint()
 def main(job: str = "floor", tag: str = "p3a_v1", conditions: str = "",
-         flights: str = "", out_tag: str = "", sizes: str = "512,224", limit: int = 0):
+         flights: str = "", out_tag: str = "", sizes: str = "512,224", limit: int = 0,
+         parallel: bool = False):
     import json
 
     if job == "anwm":
@@ -282,8 +283,15 @@ def main(job: str = "floor", tag: str = "p3a_v1", conditions: str = "",
         print(json.dumps(anwm_floor.remote([int(s) for s in sizes.split(",")], tag, 90.0, limit),
                          indent=2))
         return
-    print(json.dumps(run_conditions.remote(
-        tag,
-        [c for c in conditions.split(",") if c] or None,
-        [f for f in flights.split(",") if f] or None,
-        out_tag or None), indent=2))
+    conds = [c for c in conditions.split(",") if c] or None
+    fl = [f for f in flights.split(",") if f]
+    if not parallel:
+        print(json.dumps(run_conditions.remote(tag, conds, fl or None, out_tag or None),
+                         indent=2))
+        return
+    # one container per flight: the per-flight commit already makes the work idempotent,
+    # and the serial run was the wall-clock bottleneck
+    handles = [run_conditions.spawn(tag, conds, [f], out_tag or None) for f in fl]
+    for f, h in zip(fl, handles):
+        info = h.get()
+        print(f"{f}: {info['flights'][f]['seconds']:.0f}s", flush=True)
