@@ -398,6 +398,21 @@ climb at 5 m/s horizontal plus 1.5 m/s vertical reads 5.2 here and is legal.
   (smoothed speed >= 5 m/s, rescaled path extent >= 20 m) and switched the autonomous shape from
   `01a-ellipse` to `13a-trackRATM`, which has sustained motion.
 
+## Per-clip testability from `clips_index.csv`
+
+Peak commanded required tilt at 1 s with `k_d` (the clips where a tilt verdict can carry signal):
+
+| regime | clips | peak tilt min / median / max (deg) | clips with peak > 10 deg |
+| --- | --- | --- | --- |
+| A native | 14 | 25.9 / 36.1 / 36.3 | **14 / 14** |
+| B rescaled | 3 | 2.2 / 2.5 / 8.6 | **0 / 3** |
+| C designed | 49 | 8.6 / 9.8 / 22.5 | 24 / 49 |
+
+The A rows are the testable set; the B rows are quantitatively "not testable" for tilt, which is
+the per-clip version of the audit conclusion (the rescaled flights command at most 8.6 deg). For C,
+the 5 deg designs land at 9.8 deg once drag is included and the 10/20 deg designs are above the
+threshold, so the cell structure is intact per clip, not washed out by averaging.
+
 ## Qualitative note on visual integrity (no tilt claim)
 
 Per-clip `visual_integrity` statistics, pooled by regime and maneuver (frame std of generated
