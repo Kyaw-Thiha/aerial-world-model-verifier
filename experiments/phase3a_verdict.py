@@ -273,6 +273,35 @@ def evaluation(records: list[dict], prereg: dict,
     return res
 
 
+def diagnostics(records: list[dict]) -> dict:
+    """Gate 3's diagnosis block: where a failure would come from, computed in one pass."""
+    real = [r for r in records if r["condition"] == "identity" and r["testable"]]
+    out: dict = {"real_by_speed_bin": {}, "per_condition": {}}
+    for b in sorted({r["bin"] for r in real}):
+        vals = [r["score"] for r in real if r["bin"] == b]
+        out["real_by_speed_bin"][b] = {"n": len(vals), "median": float(np.median(vals)),
+                                       "p90": float(np.percentile(vals, 90))}
+    for cond in ["identity"] + NEGATIVES:
+        sel = [r for r in records if r["condition"] == cond and r["testable"]]
+        if not sel:
+            continue
+        ups = [r["nuisances"]["uptilt_offset_deg"] for r in sel if r.get("nuisances", {}).get("ok")]
+        lags = [r["nuisances"]["lag_ms"] for r in sel if r.get("nuisances", {}).get("ok")]
+        out["per_condition"][cond] = {
+            "n": len(sel),
+            "score_median": float(np.median([r["score"] for r in sel])),
+            "uptilt_offset_median_deg": float(np.median(ups)) if ups else None,
+            "uptilt_offset_at_bound_frac": float(np.mean([abs(u) >= 6.999 for u in ups]))
+            if ups else None,
+            "lag_median_ms": float(np.median(lags)) if lags else None,
+            "lag_at_bound_frac": float(np.mean([abs(x) >= 149.0 for x in lags]))
+            if lags else None,
+            "abstain_frac": float(np.mean([not r["testable"] for r in records
+                                           if r["condition"] == cond])),
+        }
+    return out
+
+
 def quick_delays(spec_paths: dict, ident_rows: dict, clips: list[dict], prereg: dict,
                  delays_ms=(100, 200, 300)) -> dict:
     """Delay negatives scored directly (no pixel edit: the same estimates shifted)."""
@@ -430,6 +459,7 @@ def main() -> int:
     if ident_rows:
         ev["delay_negatives"] = quick_delays(spec_paths, ident_rows, clips, prereg)
         ev["retime_negatives"] = quick_retime(spec_paths, ident_rows, clips, prereg)
+    ev["diagnostics"] = diagnostics(records)
     ev["abstention_rate"] = {
         "overall": float(np.mean([not r["testable"] for r in records if r["condition"] == "identity"]))
         if records else None,
