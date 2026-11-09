@@ -77,3 +77,22 @@ generated with three seeds.
 
 `required_tilt_*` is the peak per-step required tilt of the commanded path at 1 s, from
 `src/generation/paths.py`; the full dt sweep is in `results/anwm_path_audit/audit.json`.
+
+## Recomputing the commanded tilt for a clip
+
+```python
+import json, numpy as np
+from src.generation.paths import PathSpec, K_D
+
+m = json.load(open("data/processed/anwm_clips/A/A00/manifest.json"))
+cp = m["commanded_path"]
+spec = PathSpec(name=m["id"], regime=m["regime"],
+                pos=np.array(cp["positions"]), yaw=np.array(cp["yaw"]))
+for dt in (0.25, 2 / 3, 1.0):
+    print(dt, spec.peak_tilt(dt, 0.0), spec.peak_tilt(dt, K_D))   # peak per-step, deg
+print(spec.audit())   # median / p90 / fraction above 10 deg per dt and estimator
+```
+
+`PathSpec.audit()` returns one pooled population per cell and asserts the
+`median > 10 deg => fraction >= 0.5` invariant, which is the fixed version of the audit that
+started this handoff.
