@@ -354,3 +354,24 @@ Ranked by what the numbers say is binding:
 4. MoGe-2 metric scale to replace the fitted scale in the verifier's own operating point —
    and, more importantly, per-frame depth would supply the metric scale that a
    drifting VO trajectory cannot.
+
+## 10. Phase 3a: the verdict test (handoff 04)
+
+Full detail in `docs/track_a_verdict.md`. Headline: in commanded-path mode (mocap
+position + pixel attitude, heading from the path) the residual **ranks** real clips below
+their tilt-removed twins (AUROC 0.92, 95% CI 0.76-0.98) and below their mirrored-roll
+twins (0.93), and a 90%-acceptance operating point rejects 89% of full tilt removals and
+96% of mirrored rolls. It does **not** meet the RQ2 criteria as written: acceptance
+reaches 0.967 on the five flights where the depicted estimator works but 0.043 on the
+three trackRATM flights, AUROC on half-tilt is 0.80, and none of the tested violations is
+rejected 80% of the time under the pre-registered threshold policy.
+
+The binding limits are the threshold's sample size (60 real clips from 5 flights; one
+tail clip moves a fold's 95th percentile from 5.8 to 48.8 deg) and the estimator's
+view-dependence (a pure yaw rotation moves the estimated tilt by 4.75 deg on the frames
+it rotates, which is the floor under the detectable violation). The residual's own
+formulation is not what fails.
+
+Noise floor, for scale: on ANWM's released (exactly level) frames the same estimator
+reads 0.57 deg median and 1.5-1.6 deg p90, so a level-camera violation is far outside
+what the estimator can invent.
