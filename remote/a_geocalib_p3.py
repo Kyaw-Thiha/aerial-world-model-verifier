@@ -33,11 +33,27 @@ image = (
                  "torch==2.4.1", "torchvision==0.19.1", "matplotlib")
     .pip_install("kornia", "gdown", "huggingface_hub", "omegaconf", "poselib")
     .run_commands(f"pip install git+https://github.com/cvg/GeoCalib@{GEOCALIB_COMMIT}")
-    # bake the weights in: a run-time download failed with a gateway timeout once
-    .run_commands("python -c \"from geocalib import GeoCalib; "
-                  "GeoCalib(weights='pinhole'); GeoCalib(weights='distorted')\"")
     .add_local_python_source("src")
 )
+
+def _ensure_weights() -> None:
+    """Put the two checkpoints where ``torch.hub`` looks for them.
+
+    geocalib fetches them from a GitHub release at model construction, which returned
+    HTTP 504 twice in a row. They are downloaded once locally and mirrored on the
+    Volume, so a run never depends on that host.
+    """
+    import shutil
+    from pathlib import Path
+
+    cache = Path("/root/.cache/torch/hub/geocalib")
+    cache.mkdir(parents=True, exist_ok=True)
+    src = Path(VOLUME_MOUNT) / "geocalib_weights"
+    for name in ("pinhole.tar", "distorted.tar"):
+        dst = cache / name
+        if not dst.exists():
+            shutil.copyfile(src / f"geocalib-{name}", dst)
+
 
 FLIGHTS = ["flight-01a-ellipse", "flight-04a-ellipse", "flight-07a-lemniscate",
            "flight-13a-trackRATM", "flight-01p-ellipse", "flight-07p-lemniscate",
@@ -74,6 +90,7 @@ def anwm_floor(sizes: list[int] = [512, 224], tag: str = "anwm_floor_v1",
     from geocalib import GeoCalib
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
+    _ensure_weights()
     model = GeoCalib(weights="pinhole").to(device)
     src = Path(VOLUME_MOUNT) / "anwm_frames"
     out_dir = Path(VOLUME_MOUNT) / "geocalib" / tag
@@ -131,6 +148,7 @@ def run_conditions(tag: str = "p3a_v1", conditions: list[str] | None = None,
     from src.negatives import equidistant_f, remap_arrays, warp_with_remap
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
+    _ensure_weights()
     model = GeoCalib(weights="distorted").to(device)
     out_tag = out_tag or tag
     out_dir = Path(VOLUME_MOUNT) / "geocalib" / out_tag
