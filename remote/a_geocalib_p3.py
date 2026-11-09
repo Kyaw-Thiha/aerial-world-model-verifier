@@ -214,11 +214,70 @@ def run_conditions(tag: str = "p3a_v1", conditions: list[str] | None = None,
     return info
 
 
+@app.function(image=image, gpu="A10G", volumes={VOLUME_MOUNT: volume}, timeout=2 * 3600)
+def run_anwm(tag: str = "clips_v1", limit: int = 0, size: int = 224,
+             fov_deg: float = 90.0) -> dict:
+    """GeoCalib pinhole on Track B's generated 224x224 frames.
+
+    Frames are generated, off-distribution and may be collapsed; the estimator's output is
+    still recorded frame by frame, and the coherence check that turns a collapsed rollout
+    into "not testable" runs locally from these rows.
+    """
+    import json
+    import time
+    from pathlib import Path
+
+    import cv2
+    import numpy as np
+    import torch
+    from geocalib import GeoCalib
+
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    _ensure_weights()
+    model = GeoCalib(weights="pinhole").to(device)
+    specs = json.loads((Path(VOLUME_MOUNT) / "anwm_specs" / tag / "specs.json").read_text())
+    root = Path(VOLUME_MOUNT) / "anwm_clips"
+    out_dir = Path(VOLUME_MOUNT) / "geocalib" / f"anwm_{tag}"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    f = (size / 2.0) / np.tan(np.deg2rad(fov_deg / 2.0))
+    clips = specs["clips"][:limit] if limit else specs["clips"]
+    t0 = time.time()
+    rows_out: dict[str, list] = {}
+    for c in clips:
+        rows = []
+        for name in c["frames"]:
+            p = root / c["dir"] / "frames" / name
+            img = cv2.imread(str(p))
+            if img is None:
+                continue
+            if img.shape[0] != size:
+                img = cv2.resize(img, (size, size), interpolation=cv2.INTER_AREA)
+            feed = torch.from_numpy(cv2.cvtColor(img, cv2.COLOR_BGR2RGB)).permute(2, 0, 1)
+            feed = feed.float().to(device) / 255.0
+            with torch.no_grad():
+                res = model.calibrate(feed, camera_model="pinhole",
+                                      priors={"focal": torch.tensor(float(f), device=device)})
+            rows.append(_geo_row(res, {"frame": name, "clip_id": c["clip_id"],
+                                       "frame_std": float(img.std())}))
+        rows_out[c["clip_id"]] = rows
+    (out_dir / "depicted.jsonl").write_text(
+        "\n".join(json.dumps(r) for rows in rows_out.values() for r in rows))
+    volume.commit()
+    info = {"tag": tag, "n_clips": len(rows_out), "size": size, "f_px": float(f),
+            "seconds": time.time() - t0}
+    (out_dir / "summary.json").write_text(json.dumps(info, indent=2))
+    volume.commit()
+    return info
+
+
 @app.local_entrypoint()
 def main(job: str = "floor", tag: str = "p3a_v1", conditions: str = "",
          flights: str = "", out_tag: str = "", sizes: str = "512,224", limit: int = 0):
     import json
 
+    if job == "anwm":
+        print(json.dumps(run_anwm.remote(tag, limit, int(sizes.split(",")[0])), indent=2))
+        return
     if job == "floor":
         print(json.dumps(anwm_floor.remote([int(s) for s in sizes.split(",")], tag, 90.0, limit),
                          indent=2))
