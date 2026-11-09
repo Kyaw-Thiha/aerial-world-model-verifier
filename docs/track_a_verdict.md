@@ -97,6 +97,22 @@ here is regenerated rather than typed.
 (pending)
 <!-- GATE3:END -->
 
+How to read it, beyond the tables:
+
+- **The applicability boundary is per flight, not per dataset.** One flight
+  (`flight-13a-trackRATM`) has a real-clip median near 68 deg: the estimator is wrong
+  on that scene, and a tilt removal *lowers* its score because a systematic tilt partly
+  cancels the random error. That is not a nuisance to fit; it is a flight where the
+  verdict does not apply, and it is the reason the score is reported per flight before
+  any pooled number.
+- **A control flagged above the real rate is the honest limit of the method, not a
+  bug to hide.** The yaw control rotates the frame by as much as the tilt edit without
+  changing the tilt, so everything it scores above the real clips is the estimator's
+  own response to content motion (section 8, item 1).
+- **The nuisance fit is visible in the rows it moves.** On real clips the mount offset
+  lands near zero with a modest fraction at the +/-7 deg bound; on the negatives it
+  walks to the bound, which is the absorption the ablation table quantifies.
+
 ## 6. Task 3: Track B's generated clips
 
 Status: the scoring path is built and exercised end to end on a fixture; Track B had
