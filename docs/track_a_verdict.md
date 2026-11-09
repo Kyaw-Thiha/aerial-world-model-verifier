@@ -110,3 +110,37 @@ sequence of UZH-FPV (or a Blackbird replay) with its shipped intrinsics, DPVO's
 oracle-scale translation correlation against truth. If it correlates there, the TII
 calibration is the suspect (fx/fy = 0.749 is a pinhole fit of a 175 deg fisheye and its
 polynomial is only invertible to 56 deg); if it does not, the method is.
+
+## 8. Threats to validity, measured where possible
+
+These are the mechanisms that could make the verdict look better than it is. Each one
+has a measurement attached; none is left as a caveat in prose.
+
+1. **The estimator is view-dependent, so the edits themselves move the reading.** A
+   rotation about world up cannot change the tilt, so every degree the depicted tilt
+   moves under the yaw control is an artifact. On 04a the per-frame tilt change is
+   median 0.74 deg over all frames but **4.75 deg on the frames whose content was
+   rotated by more than 10 deg**, and it correlates 0.50 with the rotation magnitude
+   (`evaluation.artifact_floor`). This sets a floor of roughly 5 deg under the minimum
+   detectable violation: a violation smaller than that cannot be separated from the
+   pipeline's own response to content motion.
+2. **Nuisances absorb part of a violation, by construction.** The mount-uptilt term is
+   bounded at +/-7 deg, so dropping it must remove up to 7 deg of any tilt violation. The
+   ablation measures it: on the same clips, tilt x 0.5 scores 26.1 deg with no nuisance,
+   19.3 with the lag only, 18.8 with both. The cost is real and bounded; the abstention
+   and the reported MDV are what remain.
+3. **Excitation and estimator reliability are anti-correlated on the gate-dense track.**
+   The clips that survive abstention are the ones with the most acceleration, which on
+   trackRATM is exactly when the view tips away from the informative structure. That is
+   why that flight's real clips score 68 deg and why it is reported separately.
+4. **Heading is given.** The residual uses the path's yaw. A verifier on real footage
+   without a heading reference would have to drop the lean term and keep the scalar
+   tilt, which cannot see a mirrored roll. Stated as the limit of the claim, not a
+   fitted parameter.
+5. **The equidistant model is an approximation.** The identity warp is exact and the
+   yaw control carries the same model error as the treatments, so a model-induced bias
+   common to both is measured by the control rather than assumed absent.
+6. **Small n.** Five threshold-fitting flights, and the per-speed-bin thresholds merge to
+   one group at this sample size (reported with the merge chain). Intervals on AUROC and
+   rejection rates resample whole **flights**, not clips, because clips inside a flight
+   share scene, light and estimator state.
