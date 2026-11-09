@@ -269,6 +269,43 @@ def quick_delays(spec_paths: dict, ident_rows: dict, clips: list[dict], prereg: 
             for k, v in per_delay.items()}
 
 
+def quick_retime(spec_paths: dict, ident_rows: dict, clips: list[dict], prereg: dict,
+                 rates=(0.5, 2.0)) -> dict:
+    """Analysis-level negative: the frames played at 0.5x / 2x against the path.
+
+    Frame i keeps its pixels but the path it is compared with is re-indexed as
+    ``t0 + (t_i - t0) / rate``, which is what retiming the video does to the
+    depicted-vs-implied alignment. No pixel edit, so the estimator is unchanged.
+    """
+    out: dict[str, list[float]] = {str(r): [] for r in rates}
+    for flight, rows in ident_rows.items():
+        if rows is None:
+            continue
+        spec = np.load(spec_paths[flight], allow_pickle=False)
+        fa = flight_arrays(spec)
+        up_all, valid_all = align(spec, rows)
+        for clip in clips:
+            if clip["flight"] != flight:
+                continue
+            idx = clip_index(clip)
+            up, valid = up_all[idx], valid_all[idx]
+            t, yaw = fa["t"][idx], fa["yaw"][idx]
+            imp, tilt = fa["implied"][idx], fa["tilt_implied"][idx]
+            base = score_clip(up, imp, yaw, t, fa["uptilt"], tilt, valid, prereg)
+            if not base["testable"]:
+                continue
+            t0 = t[0]
+            for rate in rates:
+                tq = t0 + (t - t0) / rate
+                imp_r = np.column_stack([np.interp(tq, t, imp[:, k]) for k in range(3)])
+                tilt_r = np.degrees(np.arccos(np.clip(imp_r[:, 2], -1, 1)))
+                r = score_clip(up, imp_r, yaw, t, fa["uptilt"], tilt_r, valid, prereg)
+                if r["testable"]:
+                    out[str(rate)].append(r["score"])
+    return {k: {"n": len(v), "score_median": float(np.median(v)) if v else None}
+            for k, v in out.items()}
+
+
 def plots(out: Path, records: list[dict], ev: dict) -> None:
     real = np.array([r["score"] for r in records if r["condition"] == "identity" and r["testable"]])
     fig, ax = plt.subplots(figsize=(8, 4.5))
@@ -355,8 +392,9 @@ def main() -> int:
                                "families") if k in ev_alt}
     ident_rows = {f: load_jsonl(geo / f"{f}__identity.jsonl")
                   for f in spec_paths if (geo / f"{f}__identity.jsonl").exists()}
-    dl = quick_delays(spec_paths, ident_rows, clips, prereg) if ident_rows else {}
-    ev["delay_negatives"] = dl
+    if ident_rows:
+        ev["delay_negatives"] = quick_delays(spec_paths, ident_rows, clips, prereg)
+        ev["retime_negatives"] = quick_retime(spec_paths, ident_rows, clips, prereg)
     ev["abstention_rate"] = {
         "overall": float(np.mean([not r["testable"] for r in records if r["condition"] == "identity"]))
         if records else None,

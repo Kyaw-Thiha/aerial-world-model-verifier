@@ -141,9 +141,13 @@ def remap_arrays(M: np.ndarray, width: int, height: int, f: float | None = None,
     xs, ys, _ = pixels_from_rays(x_old, f)
     xi = (xs + (width - 1) / 2.0).astype(np.float32)
     yi = (ys + (height - 1) / 2.0).astype(np.float32)
-    bad = (xi < 0) | (xi > width - 1) | (yi < 0) | (yi > height - 1)
-    xi[bad] = -1.0
-    yi[bad] = -1.0
+    # half-pixel tolerance: bilinear sampling is defined over [-0.5, size - 0.5], and
+    # the identity map lands on -1e-15 for the first pixel, which must stay valid
+    bad = ((xi < -0.5) | (xi > width - 0.5) | (yi < -0.5) | (yi > height - 0.5))
+    # invalid samples get -1 (cv2.remap then writes the border value); valid ones are
+    # clipped into the image so a tiny negative round-off never looks invalid
+    xi = np.where(bad, -1.0, np.clip(xi, 0.0, width - 1.0)).astype(np.float32)
+    yi = np.where(bad, -1.0, np.clip(yi, 0.0, height - 1.0)).astype(np.float32)
     return xi, yi
 
 

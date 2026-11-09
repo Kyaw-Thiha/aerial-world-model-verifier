@@ -108,12 +108,14 @@ def test_remap_arrays_match_numpy_warp():
     """The cv2 fast path must produce the same geometry as the numpy reference."""
     from src.negatives import equidistant_f, remap_arrays
     f = equidistant_f(W, H)
+    ident, _ = remap_arrays(np.eye(3), W, H, f), None
+    assert np.all(ident[0] >= 0) and np.all(ident[1] >= 0), "identity must keep every pixel"
     M = Rotation.from_euler("y", 8, degrees=True).as_matrix()
     mx, my = remap_arrays(M, W, H, f)
     ref, ref_valid = warp_fisheye(_img(), M)
     # the two validity definitions differ only on the one-pixel boundary ring: the numpy
     # reference needs all four neighbours inside, cv2.remap interpolates at the edge
-    remap_valid = (mx >= 0) & (my >= 0)
+    remap_valid = mx >= 0  # remap_arrays writes -1 for out-of-image samples
     diff = np.logical_xor(remap_valid, ref_valid)
     # on this 64x48 test frame the ring is ~3% of the pixels; on the 640x480 frames it
     # is under 1%
