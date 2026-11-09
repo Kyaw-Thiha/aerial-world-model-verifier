@@ -376,12 +376,13 @@ climb at 5 m/s horizontal plus 1.5 m/s vertical reads 5.2 here and is legal.
 ## Delivery status at the end of this handoff
 
 - Regime C: **49 clips**, generated, pulled, indexed and synced to R2.
-- Total delivered at the time of writing: **65 clips** (A 14, B 2, C 49), indexed by
-  `clips_index.csv` and mirrored to R2 `track-b/clips/`. Visual integrity, by regime: A frame std
-  0.287 / temporal delta 0.097; B 0.284 / 0.140; C 0.299 / 0.159; nothing collapsed.
-- Regime A: **14 of 25** at the time of writing; Regime B: **2 of 8** (the rebuilt moving-window
-  set, extents 20-80 m, verified non-degenerate). Both runs are resumable and were still
-  generating when this report was written; to finish and publish:
+- **All 82 clips delivered** (A 25, B 8, C 49): 82 index rows for 82 clip directories, every one
+  with 16 frames and a complete manifest, mirrored to R2 `track-b/clips/`. Visual integrity, by
+  regime: A frame std 0.287 / temporal delta 0.097; B 0.284 / 0.140; C 0.299 / 0.159; nothing
+  collapsed.
+- Regime A: **25 of 25**; Regime B: **8 of 8** (the rebuilt moving-window set; the first four
+  windows per flight were replaced because they sat in the stationary lineup and produced
+  zero-extent paths). If a future rerun needs the same commands:
 
   ```
   # repeat until A has 25 and B has 8 directories; each run resumes and skips finished clips
@@ -408,8 +409,8 @@ Peak commanded required tilt at 1 s with `k_d` (the clips where a tilt verdict c
 
 | regime | clips | peak tilt min / median / max (deg) | clips with peak > 10 deg |
 | --- | --- | --- | --- |
-| A native | 14 | 25.9 / 36.1 / 36.3 | **14 / 14** |
-| B rescaled | 3 | 2.2 / 2.5 / 8.6 | **0 / 3** |
+| A native | 25 | 0.0 / 30.3 / 36.3 | **24 / 25** (A15 is a 2 m-step hover window) |
+| B rescaled | 8 | 2.2 / 5.4 / 8.7 | **0 / 8** |
 | C designed | 49 | 8.6 / 9.8 / 22.5 | 24 / 49 |
 
 The A rows are the testable set; the B rows are quantitatively "not testable" for tilt, which is
