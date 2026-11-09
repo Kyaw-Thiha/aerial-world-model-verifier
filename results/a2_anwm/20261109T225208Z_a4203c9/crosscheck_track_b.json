@@ -1,0 +1,20 @@
+{
+  "k_d_0": {
+    "n": 82,
+    "statistic": "max over steps",
+    "median_abs_diff_deg": 0.0026393140691958195,
+    "p90_abs_diff_deg": 0.004139402930173475,
+    "max_abs_diff_deg": 0.004919602900861797,
+    "median_abs_diff_if_median_were_used_deg": 0.3133316979704382,
+    "n_clips_where_median_differs_by_gt_10deg": 22
+  },
+  "k_d_0.295": {
+    "n": 82,
+    "statistic": "max over steps",
+    "median_abs_diff_deg": 0.0028889809964063318,
+    "p90_abs_diff_deg": 0.5753838544556586,
+    "max_abs_diff_deg": 1.005461842190151,
+    "median_abs_diff_if_median_were_used_deg": 0.9014139355367838,
+    "n_clips_where_median_differs_by_gt_10deg": 24
+  }
+}

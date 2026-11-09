@@ -59,9 +59,15 @@ was trained on. The generated video is the picture of a drone flying the command
 | C_cruise_ctl_course_1_s2 | 2.18° | 4.18° |
 | C_cruise_ctl_course_2 | 0.73° | 1.53° |
 
-Median of medians 0.73°; seed repeats 0.79°; released-level reference 0.57°. One path
-(`course_1` and its seeds) sits systematically at 2.2–2.3°, i.e. the generator's own bias
-depends on the path — that is why the cruise band, not a single number, is the comparison.
+Pooled over the 112 cruise frames: **median 0.89°, p99 6.70°, max 6.75°**. Median of the
+per-clip medians 0.73°; seed repeats 0.79°; the released-level frames give median 0.58° and
+**p99 4.17°**. Two things follow. One path (`course_1` and its seeds) sits systematically at
+2.2–2.3°, so the generator's own bias depends on the path — that is why the cruise band, not
+a single number, is the comparison. And the generated-frame tail is heavier than the
+ground-truth floor: its p99 (6.70°) is above the 6.46° verdict threshold, where the
+ground-truth p99 (4.17°) is not. A single generated frame at the 99th percentile is therefore
+*not* distinguishable from a 6-degree error by this estimator, which is why every clipping
+claim below is a clip-level median and why 12 excitation frames are required.
 
 ### b. Edit recovery — can the estimator see tilt in these frames?
 
@@ -165,6 +171,50 @@ The 5° family is below the excitation floor and is reported as not testable, no
 consistent. Depicted tilt is flat across a **4× change in designed tilt** — 0.79 / 0.78 /
 0.77 — with a seed-repeat band of 0.50–2.66°, so the flatness is not seed noise. All 11
 testable Regime C clips are infeasible, with a median residual of 9.6–12.6°.
+
+## 3b. Rigorous peak bounds (interpolator-free, attitude-free)
+
+Everything above depends on an interpolation choice and on the depicted tilt. This check
+depends on neither. For any **continuous** trajectory through the sampled positions, with
+step dt and mean step velocities v_i,
+
+    v_{i+1} - v_i = (1/dt) ∫ [v(s+dt) - v(s)] ds = (1/dt) ∫∫ a ,
+
+so the peak acceleration over the two-step window obeys **|a|_peak ≥ |v_{i+1} − v_i| / dt**
+(the form |Δv|/(2dt) is the same statement, a factor two weaker). Projecting onto the
+horizontal plane gives the same bound for |a_h|, and since u = a + g e₃ + k_d v with
+u_h = a_h + k_d v_h,
+
+    |u|_peak / g  ≥  max( |Δv_h|/dt − k_d |v_h| ) / g
+
+which is a **thrust-to-weight lower bound** that needs no assumption about attitude, no
+cap on the airframe and no depicted tilt. `src/physics/peaks.py`, tested in
+`tests/test_peaks.py`.
+
+| dt | `k_d` | regime | peak \|a\| (median of per-clip maxima) | thrust/weight lower bound | clips above T/W 1 / 2 / 3 |
+| --- | --- | --- | --- | --- | --- |
+| 0.25 s | 0.295 | A | 86.2 m/s² | **7.85** | 0.96 / 0.96 / **0.96** |
+| 0.25 s | 0.295 | B | 2.9 | 0.05 | 0 / 0 / 0 |
+| 0.25 s | 0.295 | C | 18.2 | 0.80 | 0.49 / 0.43 / 0.18 |
+| 0.667 s | 0.295 | A | 12.1 | 1.03 | 0.96 / 0 / 0 |
+| 0.667 s | 0.295 | C | 2.6 | 0.00 | 0 / 0 / 0 |
+| **1.0 s** | 0.295 | A | 5.4 | 0.43 | 0 / 0 / 0 |
+| **1.0 s** | 0.295 | C | 1.1 | 0.00 | 0 / 0 / 0 |
+
+Drag-free values are within 4 % of these (the drag term only lowers the bound).
+
+Read as a physical statement: **at dt = 0.25 s, 24 of 25 Regime A commanded paths require a
+thrust-to-weight ratio above 3 somewhere in a two-step window** — beyond any racing
+quadrotor — without reference to a single pixel. At dt = 1 s the same bound is satisfied
+everywhere (≤ 0.51 drag-free), so this check does not add a violation at the nominal time
+base; it rules out the fine time bases outright and independently corroborates that the time
+base is the axis that matters.
+
+A tilt version is available but needs an explicit cap on vertical acceleration, because a
+large acceleration pointing straight up produces little tilt:
+`tilt_lower_bound_deg(|a_h|, a_z_max)`. With a_z ≤ 2 g (an assumption, not a measurement) the
+dt = 0.25 s Regime A bound is a median peak tilt of 69.8°; that number inherits the cap and is
+reported as a conditional, not as a headline.
 
 ## 4. Minimum consistent dt
 

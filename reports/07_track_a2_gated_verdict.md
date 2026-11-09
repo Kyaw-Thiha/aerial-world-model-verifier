@@ -39,16 +39,18 @@ even in a straight line, which on these clips happens to sit closer to what the 
 Before anything was added, the extended code re-scored the original artifacts. This is the
 baseline the gated numbers are measured against.
 
-| run | rows | threshold policy | pooled AUROC | acceptance |
-| --- | --- | --- | --- | --- |
-| Gate 3, original code | Gate 3 | `non_trackratm` | 0.8214 | 0.7108 (59/83) |
-| extended code, Gate 3 rows | Gate 3 | `non_trackratm` | **0.8210** | **0.7108 (59/83)** |
-| extended code, re-extracted rows | A2 | `non_trackratm` | 0.8210 | 0.7229 (60/83) |
+| run | rows | threshold policy | pooled AUROC | acceptance | records differing |
+| --- | --- | --- | --- | --- | --- |
+| Gate 3, original code | Gate 3 | `non_trackratm` | 0.8214 | 0.7108 (59/83) | — |
+| extended code, Gate 3 rows | Gate 3 | `non_trackratm` | **0.8214** | **0.7108 (59/83)** | **0 of 600** |
+| extended code, re-extracted rows | A2 | `non_trackratm` | 0.8210 | 0.7229 (60/83) | 516 of 600 |
 
-The extended code reproduces the original operating point on the original rows to
-1 clip of 83 and 4×10⁻⁴ AUROC; on the re-extracted rows one further clip moves, and the
-cause is a near-tied nuisance fit (two grid minima 0.2° apart), not the physics. Amendment 4
-records this with the same numbers.
+On Gate 3's own rows the extended code reproduces the operating point **exactly**: identical
+AUROC to ten decimal places, identical acceptance, zero of 600 clip-condition scores
+differing. The 0.8210 / 0.7229 row is the same code on the **re-extracted** rows: 516 of 600
+scores move (max 6.04°, a nuisance grid tie), which moves one clip across the threshold.
+Amendment 4 records that with the same numbers. Run directories:
+`results/a2_verdict_baseline_origrows/` and `results/a2_verdict_gated_baseline/`.
 
 The Gate 3 report's "first run" and "after the pairing fix" numbers are **not in the
 repository** — only the final run (`090957`) is. They are not reconstructed here or quoted

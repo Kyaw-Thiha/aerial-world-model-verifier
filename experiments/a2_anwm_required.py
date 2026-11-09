@@ -31,6 +31,7 @@ import pandas as pd
 from scipy.interpolate import CubicSpline
 
 from src.physics.flatness import G0, implied_thrust_axis, tilt_deg
+from src.physics.peaks import summarise_bounds
 
 ROOT = Path(__file__).resolve().parents[1]
 K_DS = (0.0, 0.295)
@@ -69,7 +70,8 @@ def required_tilt(v: np.ndarray, a: np.ndarray, k_d: float) -> np.ndarray:
     return tilt_deg(axis)
 
 
-def frame_required(pos: np.ndarray, dt: float, k_d: float, kind: str) -> np.ndarray:
+def frame_required(pos: np.ndarray, dt: float, k_d: float, kind: str,
+                   bc: str = "natural") -> np.ndarray:
     """Required tilt at each generated frame, on the frame's own time base.
 
     Frame i is the depiction after the action that ends at waypoint i+1 (Track B's
@@ -96,7 +98,11 @@ def frame_required(pos: np.ndarray, dt: float, k_d: float, kind: str) -> np.ndar
             vm = 0.5 * (v[i] + v[i - 1])
             out[i] = tilt_deg(implied_thrust_axis(a[None, :], vm[None, :], k_d, G0))[0]
         return out
-    cs = CubicSpline(t, p, bc_type="natural", axis=0)
+    if bc == "clamped":
+        v_end = np.gradient(p, t, axis=0)[[0, -1]]
+        cs = CubicSpline(t, p, bc_type=((1, v_end[0]), (1, v_end[1])), axis=0)
+    else:
+        cs = CubicSpline(t, p, bc_type=bc, axis=0)
     tt = t[1:]
     return tilt_deg(implied_thrust_axis(cs(tt, 2), cs(tt, 1), k_d, G0))
 
@@ -149,6 +155,14 @@ def main() -> int:
                 rec["lower"] = summarise(required_tilt(v_lo, a_lo, k_d))
                 rec["upper"] = summarise(required_tilt(v_hi, a_hi, k_d))
                 rows.append(rec)
+        # rigorous peak bounds: valid for every continuous flight through the waypoints,
+        # independent of any interpolator and of the depicted tilt
+        for dt in DTS:
+            for k_d in K_DS:
+                rows.append(dict(base, dt_s=dt, k_d=k_d, peak=True,
+                                 peaks={str(cap): summarise_bounds(pos, dt, k_d,
+                                                                   max_vertical_accel=cap)
+                                        for cap in (2.0 * G0, 3.0 * G0)}))
         # per-frame required tilt at the nominal dts, both interpolators (the protocol's
         # framing: a per-frame residual, then a clip median)
         for dt in DTS:
@@ -174,7 +188,7 @@ def main() -> int:
     # a flat CSV for the three nominal dts
     flat = []
     for r in rows:
-        if r.get("dt_s") is None or r.get("frame_statistic"):
+        if r.get("dt_s") is None or r.get("frame_statistic") or r.get("peak"):
             continue
         flat.append({**{k: v for k, v in r.items() if k not in ("lower", "upper")},
                      **{f"lower_{k}": v for k, v in r["lower"].items()},
@@ -188,7 +202,8 @@ def main() -> int:
     for k_d, col in ((0.0, "track_b_required_tilt_1s_drag_free_deg"),
                      (0.295, "track_b_required_tilt_1s_kd_deg")):
         chk = [r for r in rows if r.get("dt_s") == 1.0 and r["k_d"] == k_d
-               and r.get(col) is not None and not r.get("frame_statistic")]
+               and r.get(col) is not None and not r.get("frame_statistic")
+               and not r.get("peak")]
         if not chk:
             continue
         mine_max = np.array([r["upper"]["max_deg"] for r in chk], dtype=np.float64)
