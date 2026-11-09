@@ -384,6 +384,10 @@ climb at 5 m/s horizontal plus 1.5 m/s vertical reads 5.2 here and is legal.
   generating when this report was written; to finish and publish:
 
   ```
+  # repeat until A has 25 and B has 8 directories; each run resumes and skips finished clips
+  modal run remote/b_anwm.py::run_generate --specs-path results/anwm_clips/specs.json --regimes A
+  modal run remote/b_anwm.py::run_generate --specs-path results/anwm_clips/specs.json --regimes B
+  # then publish
   python scripts/pull_volume.py awmv-b-results clips/A data/processed/anwm_clips/A
   python scripts/pull_volume.py awmv-b-results clips/B data/processed/anwm_clips/B
   python -m experiments.anwm_finalize --sync
