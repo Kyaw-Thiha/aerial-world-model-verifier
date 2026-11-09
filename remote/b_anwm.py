@@ -18,6 +18,8 @@ from pathlib import Path
 
 import modal
 
+ROOT_DIR = Path(__file__).resolve().parents[1]
+
 APP = "awmv-b-anwm"
 CKPT_REPO, CKPT_FILE = "EmbodiedCity/ANWM", "0200000.pth.tar"
 
@@ -49,6 +51,8 @@ image = (
                   "'transformers==4.44.2' 'peft==0.13.2'",
                   "python -c \"import diffusers, torch; print('diffusers', diffusers.__version__, "
                   "'torch', torch.__version__)\"")
+    .add_local_dir(str(ROOT_DIR / "src"), "/app/src", copy=True,
+                   ignore=["**/__pycache__", "**/*.pyc"])
 )
 
 app = modal.App(APP, image=image)
@@ -237,6 +241,26 @@ def _pose_from_position_yaw(pos, yaw, R_ec):
     return poses
 
 
+def _ffp(traj, ctx_times, rgb, target_poses):
+    """Future Frame Projection to *our* target poses, through ANWM's own projection functions.
+
+    `EvalDataset._compute_projected_images` indexes the recorded poses with goal *times*
+    (`poses_dst_seq = traj_data["pose"][goal_times_np]`), so it cannot take new poses. These are
+    the same two functions it calls, with the target poses passed directly.
+    """
+    import numpy as np
+    from anwm.projection import project_to_2d_image_seq2seq, reproject_depth_to_other_pose_seq2seq
+
+    depth_seq = np.asarray(traj["depth"])[ctx_times]          # (T, H, W)
+    poses_src = np.asarray(traj["pose"])[ctx_times]           # (T, 4, 4)
+    H, W = depth_seq.shape[-2:]
+    pts, cols = reproject_depth_to_other_pose_seq2seq(
+        K=traj["K"], depth_maps=depth_seq, rgb_imgs=rgb,
+        poses_src=poses_src, poses_dst=np.asarray(target_poses))
+    return project_to_2d_image_seq2seq(K=traj["K"], points_3d=pts, colors=cols,
+                                       image_size=(H, W))
+
+
 def _context_inputs(ds, traj, ctx_times, target_poses, data_dir="/n/airvln_16"):
     """(obs_image tensor, x_supervised tensor) through ANWM's own FFP code."""
     import cv2
@@ -249,8 +273,7 @@ def _context_inputs(ds, traj, ctx_times, target_poses, data_dir="/n/airvln_16"):
         img = cv2.imread(f"{data_dir}/{traj['name']}/{int(t)}.jpg")
         rgb.append(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
     rgb = np.stack(rgb, 0)
-    proj = ds._compute_projected_images(traj, list(ctx_times), rgb,
-                                        np.asarray(target_poses))
+    proj = _ffp(traj, list(ctx_times), rgb, np.asarray(target_poses))
     obs = torch.stack([ds.transform(Image.fromarray(rgb[i])) for i in range(len(ctx_times))])
     sup = torch.stack([ds.transform(Image.fromarray(proj[i])) for i in range(len(proj))])
     return obs.unsqueeze(0), sup.unsqueeze(0)
@@ -565,3 +588,85 @@ def inspect_args() -> dict:
             "model_pos_embed_shape": list(ckp["model"]["pos_embed"].shape)}
     print(json.dumps(info, indent=1))
     return info
+
+
+@app.function(cpu=4, memory=32768, timeout=1800, volumes={"/n": vol_native})
+def inspect_depth() -> dict:
+    """Depth units and distribution, because the start filter compares depth with metres."""
+    import pickle
+
+    import numpy as np
+
+    man = json.load(open("/n/airvln_16/manifest.json"))
+    out = {}
+    for name, m in man.items():
+        traj = pickle.load(open(f"/n/airvln_16/{name}/traj_data.pkl", "rb"))
+        d = np.asarray(traj["depth"], np.float32)
+        ct = m["start_candidates"][0]
+        frame = d[ct]
+        vals = frame[frame > 0]
+        pos = np.asarray(traj["point"], np.float32)
+        steps = np.linalg.norm(np.diff(pos, axis=0), axis=1)
+        out[name] = {
+            "shape": list(d.shape), "dtype": str(d.dtype),
+            "frac_zero": float((frame == 0).mean()),
+            "p50": float(np.percentile(vals, 50)), "p90": float(np.percentile(vals, 90)),
+            "p99": float(np.percentile(vals, 99)), "max": float(vals.max()),
+            "n_unique_sample": int(len(np.unique(vals[:200000]))),
+            "point_step_m_median": float(np.median(steps)),
+            "point_range_m": [float(pos.min()), float(pos.max())],
+        }
+    print(json.dumps(out, indent=1))
+    return out
+
+
+@app.function(cpu=8, memory=32768, timeout=3600, volumes={"/n": vol_native})
+def measure_starts(min_coverage: float = 0.02) -> dict:
+    """Direct test of Task 4's filter: does the projected prior actually contain pixels?
+
+    The depth heuristic is not enough (depth is metres with a 500 m far clip, so a 90th-percentile
+    test is vacuous). Here FFP is run on the four context frames for all 16 target poses of the
+    recorded path, and the fraction of non-zero pixels in each projected image is measured.
+    """
+    import pickle
+
+    import cv2
+    import numpy as np
+
+    import sys
+
+    sys.path.insert(0, "/app")
+    from src.generation.poses import camera_axis_change, pose_from_position_yaw
+
+    ds = _eval_shim()
+    man = json.load(open("/n/airvln_16/manifest.json"))
+    out = {}
+    for name, m in man.items():
+        traj = pickle.load(open(f"/n/airvln_16/{name}/traj_data.pkl", "rb"))
+        traj = {k: (v.astype("float") if hasattr(v, "astype") else v) for k, v in traj.items()}
+        traj["name"] = name
+        R_ec, spread = camera_axis_change(np.asarray(traj["pose"]), traj["yaw"])
+        rows = []
+        for ct in m["start_candidates"]:
+            pos = np.asarray(traj["point"], float)[ct:ct + 17]
+            yaw = np.asarray(traj["yaw"], float).ravel()[ct:ct + 17]
+            targets = pose_from_position_yaw(pos[1:], yaw[1:], R_ec)
+            ctx = list(range(ct - CTX + 1, ct + 1))
+            rgb = np.stack([cv2.cvtColor(cv2.imread(f"/n/airvln_16/{name}/{int(t)}.jpg"),
+                                         cv2.COLOR_BGR2RGB) for t in ctx])
+            proj = _ffp(traj, ctx, rgb, targets)
+            cov = [float((proj[i] > 0).any(axis=-1).mean()) for i in range(len(proj))]
+            depth_p50 = float(np.median(np.asarray(traj["depth"], np.float32)[ct]))
+            rows.append({"ct": int(ct), "coverage_min": min(cov), "coverage_mean": float(np.mean(cov)),
+                         "coverage_per_step": cov, "depth_p50_m": depth_p50,
+                         "path_extent_m": float(np.linalg.norm(pos - pos[0], axis=1).max()),
+                         "usable": bool(min(cov) >= min_coverage)})
+        out[name] = {"n_frames": int(len(traj["point"])), "candidates": rows,
+                     "rot_spread": spread}
+        print(name, [(r["ct"], round(r["coverage_min"], 3), round(r["depth_p50_m"], 1))
+                     for r in rows], flush=True)
+    Path("/n/starts_coverage.json").write_text(json.dumps(out, indent=1))
+    vol_native.commit()
+    n = sum(r["usable"] for v in out.values() for r in v["candidates"])
+    print("usable starts:", n, "of", sum(len(v["candidates"]) for v in out.values()))
+    return out
