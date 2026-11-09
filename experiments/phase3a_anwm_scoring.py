@@ -156,6 +156,56 @@ def seed_variability(rows: list[dict]) -> dict:
             for dt, v in out.items()}
 
 
+def score_delivered(clips_dir: Path, args, prereg: dict, info: dict) -> dict:
+    """Score a delivered clip set: specs (``phase3a_anwm_specs.py``) + depicted rows.
+
+    ``--specs`` points at the spec directory, ``--depicted`` at the JSONL the GPU worker
+    wrote. A clip is not testable when the path carries too little excitation, when the
+    depicted series is temporally incoherent (a collapsed rollout), or when frames are
+    missing.
+    """
+    import yaml  # noqa: F401  (documented dependency of the prereg only)
+
+    specs = json.loads((Path(args.specs) / "specs.json").read_text())
+    rows_by_clip: dict = {}
+    for line in Path(args.depicted).read_text().splitlines():
+        if line.strip():
+            r = json.loads(line)
+            rows_by_clip.setdefault(r["clip_id"], []).append(r)
+    rows = []
+    for c in specs["clips"]:
+        dep_rows = rows_by_clip.get(c["clip_id"], [])
+        if len(dep_rows) != c["n_frames"]:
+            rows.append({"clip_id": c["clip_id"], "regime": c["regime"],
+                         "seed": c.get("seed"), "path_id": c.get("dir"),
+                         "testable": False,
+                         "reason": f"frame/estimate mismatch {len(dep_rows)}/{c['n_frames']}"})
+            continue
+        up = np.array([r["gravity_up_cam"] for r in dep_rows], dtype=float)
+        coh = coherence(up)
+        dep_tilt = np.degrees(np.arccos(np.clip(
+            (up / np.maximum(np.linalg.norm(up, axis=1, keepdims=True), 1e-12))[:, 1] * -1.0,
+            -1.0, 1.0)))          # level camera: up is (0, -1, 0)
+        for dt in DTS:
+            spec = np.load(Path(args.specs) / f"{c['clip_id']}.npz", allow_pickle=False)
+            imp = spec[f"tilt_{dt}"]
+            s = score_clip(dep_tilt, imp, prereg)
+            testable = s.get("testable", False) and coh["median_jump_deg"] <= args.jump_deg
+            rows.append({"clip_id": c["clip_id"], "regime": c["regime"], "dt": dt,
+                         "seed": c.get("seed"), "path_id": c.get("dir"),
+                         "model": c["regime"],
+                         "required_tilt_deg": float(np.nanmedian(imp)),
+                         "depicted_median_raw_deg": float(np.nanmedian(dep_tilt)),
+                         "median_jump_deg": coh["median_jump_deg"], **s,
+                         "testable": bool(testable),
+                         "reason": None if testable else
+                         (s.get("reason") or f"incoherent: jump {coh['median_jump_deg']:.1f} deg/frame")})
+    return {"clips_available": True, "n_clips": len(specs["clips"]), "rows": rows,
+            "dose_response": dose_response(rows), "seed_variability": seed_variability(rows),
+            "abstention": float(np.mean([not r["testable"] for r in rows])) if rows else None,
+            "specs": str(args.specs), "depicted": str(args.depicted)}
+
+
 def synthetic_rows(prereg: dict) -> dict:
     """Machinery check with no generated clips: a level-camera model vs a banking model.
 
@@ -213,6 +263,8 @@ def main() -> int:
     ap.add_argument("--verdict-run", default="")
     ap.add_argument("--out", default="results/anwm_scoring")
     ap.add_argument("--synthetic", action="store_true")
+    ap.add_argument("--specs", default="data/processed/anwm_specs/clips_v1")
+    ap.add_argument("--depicted", default="")
     ap.add_argument("--jump-deg", type=float, default=20.0)
     args = ap.parse_args()
 
@@ -241,7 +293,9 @@ def main() -> int:
             (out / "not_available.json").write_text(json.dumps(result, indent=1))
             print(json.dumps(result, indent=2))
             return 0
-        raise SystemExit("clip loading lands with the first delivered clips: see the docstring")
+        result = score_delivered(clips_dir, args, prereg, info)
+        rows = result["rows"]
+        plots(out, rows, result["dose_response"])
     (out / "metrics.json").write_text(json.dumps(
         {"run_id": out.name, "git": git_hash(),
          "prereg": {k: info[k] for k in ("path", "sha256", "git_hash")}, **result},
