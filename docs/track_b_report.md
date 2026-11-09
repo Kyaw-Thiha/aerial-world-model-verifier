@@ -103,6 +103,27 @@ valid; the drag *effect* differs by regime because the residuals differ, not the
 - The image upload had to ignore `third_party/anwm/.git` (1.7 GB of the 1.7 GB clone); before
   that, the build stalled for over an hour on the upload alone.
 
+### Smoke test (Task 1.3), A10G, 224x224, batch 1
+
+| quantity | value |
+| --- | --- |
+| GPU / params | A10G, 1.134 B |
+| one CDiT forward pass (784 latent tokens, 17 token groups) | **66.5 ms** (warm, min of 3; first call 1.40 s) |
+| one generated frame (250 sampler steps + VAE + FFP) | **17.57 s** |
+| 16-frame rollout | **281 s** (4.7 min) |
+| peak GPU memory | **7.3 GB** (forward 7.06) |
+
+Cost arithmetic at the published A10G rate (about US$1.10/h, unverified per-region):
+
+- Task 2 (5 native rollouts, 16 frames each): 5 x 281 s = 23 min, about **US$0.45**.
+- Task 5 (about 90 clips x 16 frames): 7.0 h, about **US$7.7**.
+- Extraction, smoke and the image builds so far: about **US$0.30** (20 min of CPU/GPU).
+
+Total for Tasks 1, 2 and 5 is about **US$8.5, below the US$10 approval threshold**, so the runs
+proceed. The per-frame number is measured on synthetic tensors; real 16-frame context plus FFP
+adds VAE encodes, so the generation budget carries a 20% margin and the clip set is split by
+regime so one long run cannot be lost.
+
 ## Task 3 and Task 6: path library and path-only audit
 
 `src/generation/paths.py` has one `PathSpec` (time, world position, yaw, metadata) with three
