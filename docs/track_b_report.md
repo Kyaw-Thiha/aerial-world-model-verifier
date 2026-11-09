@@ -110,7 +110,7 @@ valid; the drag *effect* differs by regime because the residuals differ, not the
 | GPU / params | A10G, 1.134 B |
 | one CDiT forward pass (784 latent tokens, 17 token groups) | **66.5 ms** (warm, min of 3; first call 1.40 s) |
 | one generated frame (250 sampler steps + VAE + FFP) | **17.57 s** |
-| 16-frame rollout | **281 s** (4.7 min) |
+| 16-frame rollout | **281 s** (4.7 min) estimated, **235 s** measured end to end in the generation run |
 | peak GPU memory | **7.3 GB** (forward 7.06) |
 
 Cost arithmetic at the published A10G rate (about US$1.10/h, unverified per-region):
