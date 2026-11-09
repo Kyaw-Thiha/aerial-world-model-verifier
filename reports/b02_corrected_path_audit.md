@@ -46,7 +46,7 @@ Setup:
 
 ### 1. Released paths, one pooled population per cell
 
-Per-step, drag-free / with `k_d`, n = 11,883 boundaries:
+Per-step, drag-free / with `k_d`, n = 11,878-11,883 boundaries per cell:
 
 | dt | median | p90 | fraction > 10 deg | transition fraction | median among transitions |
 | --- | --- | --- | --- | --- | --- |
