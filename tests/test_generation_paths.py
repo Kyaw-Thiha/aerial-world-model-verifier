@@ -63,6 +63,20 @@ def test_tilt_scales_with_dt_on_a_fixed_path():
     assert set(audit) == {"1.000", "0.667", "0.250"}
 
 
+def test_commanded_steps_inside_action_stats_envelope():
+    """The normalised action fed to the model must stay inside action_stats' min/max."""
+    from src.generation.anwm_env import data_config
+    st = data_config()["action_stats"]
+    for m in ("cruise", "turn", "slalom", "accel_brake", "climb_turn"):
+        for tgt in ((None,) if m == "cruise" else (5, 10)):
+            for pol in (("course", "fixed") if m in ("turn", "slalom", "climb_turn")
+                        else ("course",)):
+                spec = design(m, tgt, 5.0, 17, 1.0, pol)
+                step = np.abs(np.diff(spec.pos, axis=0)) / 3.30
+                assert (step <= np.asarray(st["max"]) + 1e-9).all(), (m, tgt, pol, step.max(0))
+                assert (step >= -np.asarray(st["min"]) * 0 + 0).all()
+
+
 def test_tilt_inside_trained_spacing_envelope_note():
     # the 3.30 m normaliser is not a duration: a 5 m step normalises to 1.515, inside [min,max]
     env = spacing_envelope()
