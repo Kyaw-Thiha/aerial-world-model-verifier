@@ -1,6 +1,6 @@
 # Track A2 artifact manifest
 
-105 objects, 105 present.
+108 objects, 108 present.
 
 | local | R2 key | size | sha256 (first 16) | note |
 | --- | --- | --- | --- | --- |
@@ -73,6 +73,9 @@
 | `results/a2_anwm` | `track-a/a2/anwm_required/20261109T202930Z_46a8a54/crosscheck_track_b.json` | 0.00 MB | `d9384ed4d60fa96d` | required tilt from the commanded paths (both interpolators, dt sweep) |
 | `results/a2_anwm` | `track-a/a2/anwm_required/20261109T202930Z_46a8a54/required_tilt.csv` | 0.10 MB | `fe30d796dbde476d` | required tilt from the commanded paths (both interpolators, dt sweep) |
 | `results/a2_anwm` | `track-a/a2/anwm_required/20261109T202930Z_46a8a54/required_tilt.json` | 3.56 MB | `a239382e50f8d300` | required tilt from the commanded paths (both interpolators, dt sweep) |
+| `results/a2_anwm` | `track-a/a2/anwm_required/20261109T225208Z_a4203c9/crosscheck_track_b.json` | 0.00 MB | `d9384ed4d60fa96d` | required tilt from the commanded paths (both interpolators, dt sweep) |
+| `results/a2_anwm` | `track-a/a2/anwm_required/20261109T225208Z_a4203c9/required_tilt.csv` | 0.10 MB | `fe30d796dbde476d` | required tilt from the commanded paths (both interpolators, dt sweep) |
+| `results/a2_anwm` | `track-a/a2/anwm_required/20261109T225208Z_a4203c9/required_tilt.json` | 4.13 MB | `56afe048da4e61f7` | required tilt from the commanded paths (both interpolators, dt sweep) |
 | `results/a2_anwm_score` | `track-a/a2/anwm_scored/20261109T202033Z_9e1656d/anwm_scored.csv` | 0.09 MB | `bf24c15cada2d410` | ANWM scoring tables, controls and minimum consistent dt |
 | `results/a2_anwm_score` | `track-a/a2/anwm_scored/20261109T202033Z_9e1656d/controls.json` | 0.00 MB | `67c08250dd29438e` | ANWM scoring tables, controls and minimum consistent dt |
 | `results/a2_anwm_score` | `track-a/a2/anwm_scored/20261109T202033Z_9e1656d/dt_min_kd0.0.csv` | 0.00 MB | `83863cf77f85d2aa` | ANWM scoring tables, controls and minimum consistent dt |
