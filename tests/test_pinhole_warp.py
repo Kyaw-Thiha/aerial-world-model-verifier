@@ -53,3 +53,23 @@ def test_applied_tilt_change_matches_the_rotation_angle_for_pure_tilt():
     for ang in (5.0, 10.0, 20.0):
         M = Rotation.from_euler("y", ang, degrees=True).as_matrix()
         assert applied_tilt_change_deg(M) == pytest.approx(ang, abs=1e-9)
+
+
+def test_body_roll_and_pitch_map_to_the_right_camera_axes():
+    """Roll is about the optical axis; pitch is about camera x; camera y is yaw (no tilt)."""
+    from src.perception.frames import camera_to_body_pitched
+    from src.physics.flatness import tilt_deg
+    from src.score.verdict import depicted_axis_world
+
+    R_cb = camera_to_body_pitched(0.0)
+    level = np.array([[0.0, -1.0, 0.0]])       # world up in a level camera
+    for axis, euler in (("roll", "z"), ("pitch", "x")):
+        for ang in (5.0, 10.0, 20.0):
+            M = Rotation.from_euler(euler, ang, degrees=True).as_matrix()
+            up_after = level @ M.T              # rotate the up direction into the new camera
+            z = depicted_axis_world(up_after, R_cb, np.zeros(1))
+            assert tilt_deg(z)[0] == pytest.approx(ang, abs=1e-6), (axis, ang)
+    yaw = Rotation.from_euler("y", 20.0, degrees=True).as_matrix()
+    up_after = level @ yaw.T
+    assert tilt_deg(depicted_axis_world(up_after, R_cb, np.zeros(1)))[0] == pytest.approx(
+        0.0, abs=1e-6)

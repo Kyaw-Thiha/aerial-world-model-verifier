@@ -25,7 +25,10 @@ volume = modal.Volume.from_name("awmv-a-data", create_if_missing=True)
 SIZE = 224
 F_PX = SIZE / 2.0          # 90 deg horizontal field, the Gate 3 224 px setting
 ANGLES = (5.0, 10.0, 20.0)
-AXES = ("roll", "pitch")
+# Body roll is a rotation about the body x axis, which is the camera's OPTICAL axis (z);
+# body pitch is about body y, which is the camera's -x. Rotating about camera y would be a
+# yaw (it leaves tilt unchanged) and was the first version's mistake.
+AXIS_EULER = {"roll": "z", "pitch": "x"}
 
 
 @app.function(image=image, gpu="A10G", volumes={VOLUME_MOUNT: volume}, timeout=3 * 3600)
@@ -54,7 +57,7 @@ def edit_recovery(clip_ids: list[str], tag: str = "clips_v1",
     out_dir.mkdir(parents=True, exist_ok=True)
 
     conds = [("identity", None, 0.0)]
-    for axis in AXES:
+    for axis in AXIS_EULER:
         for ang in ANGLES:
             conds.append((f"{axis}_{int(ang)}", axis, ang))
 
@@ -63,7 +66,7 @@ def edit_recovery(clip_ids: list[str], tag: str = "clips_v1",
         if axis is None:
             M = np.eye(3)
         else:
-            M = Rotation.from_euler("x" if axis == "roll" else "y", ang, degrees=True).as_matrix()
+            M = Rotation.from_euler(AXIS_EULER[axis], ang, degrees=True).as_matrix()
         mx, my = pinhole_remap(M, SIZE, SIZE, F_PX)
         maps[(axis or "none", ang)] = (mx, my)
 
@@ -95,7 +98,7 @@ def edit_recovery(clip_ids: list[str], tag: str = "clips_v1",
                         "axis": axis or "none", "applied_deg": float(ang),
                         "applied_tilt_change_deg": float(applied_tilt_change_deg(
                             np.eye(3) if axis is None else
-                            Rotation.from_euler("x" if axis == "roll" else "y", ang,
+                            Rotation.from_euler(AXIS_EULER[axis], ang,
                                                 degrees=True).as_matrix())),
                         "valid_frac": valid, "f_prior": float(F_PX)})
                     fh.write(json.dumps(row) + "\n")

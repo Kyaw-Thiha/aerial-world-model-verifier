@@ -35,7 +35,7 @@ from src.physics.flatness import G0, implied_thrust_axis, tilt_deg
 from src.score.prereg import verify_prereg
 from src.score.verdict import (auroc_detect, clip_index, depicted_axis_world, fit_nuisances,
                                score_clip, shift_series, speed_bin)
-from experiments.phase3a_verdict import evaluation, is_trackratm
+from experiments.phase3a_verdict import evaluation, is_trackratm, threshold_lookup
 
 ROOT = Path(__file__).resolve().parents[1]
 FLIGHTS = ["flight-01a-ellipse", "flight-04a-ellipse", "flight-07a-lemniscate",
@@ -105,7 +105,7 @@ def gate_value(cfg: dict, arrs: dict, dt_s: float) -> float:
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--gate-rows", default="results/a2_gate/tii")
+    ap.add_argument("--gate-rows", default="results/gate_a2/tii")
     ap.add_argument("--specs", default="data/processed/p3a/p3a_v1")
     ap.add_argument("--mocap-root", default="data/raw/tii")
     ap.add_argument("--gate-config", default="configs/gate_frozen.yaml")
@@ -217,16 +217,20 @@ def main() -> int:
         ev["policy"] = args.policy
         ev["max_axis_reproduction_deg"] = max_axis_diff if abs(k_d - 0.295) < 1e-12 else None
         results[f"kd_{k_d:g}"] = ev
-        print(f"k_d={k_d}: pooled {ev['family_auroc_pooled']:.3f} "
-              f"acceptance {ev['heldout_acceptance']} (n={ev.get('heldout_n')}) "
-              f"abstain {ev['abstention_with_gate']['overall']:.3f}", flush=True)
+        def f(x, nd=3):
+            return "n/a" if x is None else f"{x:.{nd}f}"
+        n_test = sum(1 for r in records if r["testable"])
+        print(f"k_d={k_d}: records {len(records)} testable {n_test} "
+              f"pooled {f(ev['family_auroc_pooled'])} "
+              f"acceptance {f(ev['heldout_acceptance'])} (n={ev.get('heldout_n')}) "
+              f"abstain {f(ev['abstention_with_gate']['overall'])}", flush=True)
 
     (out / "metrics.json").write_text(json.dumps(
         {"run_id": run, "git": git_hash(),
          "prereg": {k: info[k] for k in ("path", "sha256", "git_hash")},
          "gate_config": cfg, "config": vars(args), "results": results},
         indent=1, default=float))
-    print(json.dumps({k: {"pooled": v["family_auroc_pooled"],
+    print(json.dumps({k: {"records": len(v.get("_records", [])), "pooled": v["family_auroc_pooled"],
                           "acceptance": v["heldout_acceptance"],
                           "yaw_auroc": (v["families"].get("yaw_control") or {}).get("auroc"),
                           "mdv80": v.get("mdv_smallest_rejected80_deg")}
@@ -291,7 +295,6 @@ def acceptance_per_flight(records: list[dict], ev: dict) -> dict:
     """Acceptance per flight at the held-out thresholds of the primary policy."""
     out = {}
     fold = {f["flight"]: f["thresholds"] for f in ev.get("fold_thresholds", [])}
-    from src.score.verdict import threshold_lookup
     for r in records:
         if r["condition"] != "identity":
             continue
