@@ -49,6 +49,18 @@ def main() -> int:
     out = ROOT / args.out / args.tag
     out.mkdir(parents=True, exist_ok=True)
 
+    # Track B's own index carries a peak required tilt at 1 s; keep it so the two
+    # computations can be cross-checked rather than assumed equal
+    their_peaks = {}
+    idx_path = clips_dir / "clips_index.csv"
+    if idx_path.exists():
+        import csv
+        with idx_path.open(newline="") as fh:
+            for row in csv.DictReader(fh):
+                for k in ("required_tilt_1s_kd_deg", "required_tilt_1s_drag_free_deg"):
+                    if row.get(k):
+                        their_peaks.setdefault(row["clip_id"], {})[k] = float(row[k])
+
     index = []
     for man in sorted(clips_dir.glob("*/*/manifest.json")):
         m = json.loads(man.read_text())
@@ -68,9 +80,13 @@ def main() -> int:
                             frames=np.array(frames), positions=pos,
                             **{f"tilt_{dt}": np.asarray(row["tilt_implied_deg"][str(dt)])
                                for dt in DTS})
+        mine = {str(dt): float(np.nanmax(np.asarray(row["tilt_implied_deg"][str(dt)])))
+                for dt in DTS}
+        theirs = their_peaks.get(row["clip_id"], {})
+        cross = {k: {"mine": mine["1.0"], "theirs": v, "delta": mine["1.0"] - v}
+                 for k, v in theirs.items()}
         index.append({k: v for k, v in row.items() if k != "tilt_implied_deg"} |
-                     {"tilt_peak_deg": {str(dt): float(np.nanmax(np.asarray(row["tilt_implied_deg"][str(dt)])))
-                                        for dt in DTS}})
+                     {"tilt_peak_deg": mine, "cross_check_1s": cross})
     (out / "specs.json").write_text(json.dumps(
         {"clips_dir": str(clips_dir), "dts": DTS, "sg_window": SG_WINDOW, "k_d": K_D,
          "clips": index}, indent=1))
