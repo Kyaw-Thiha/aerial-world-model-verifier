@@ -179,9 +179,14 @@ Smallest violation rejected 80 % of the time: **none** (`-`), i.e. the frontier 
 
 The nuisances are needed on real clips (4.4 → 2.9), do not absorb the large violations
 (4.1° of 27.2°), and absorb **6.2° of the 13.6° half-tilt** — 46 % of the smallest
-violation, which is the expected cost of a ±7° mount bound. Verdict-level AUROC moves only
-0.821 → 0.835 with both nuisances off, so the ranking is robust even though the per-clip
-score is not.
+violation, which is the expected cost of a ±7° mount bound.
+
+Verdict-level pooled AUROC under each fit (thresholds refitted inside each mode, so these
+are not directly comparable to the reported operating point): **0.821** with both
+nuisances, **0.880** with the uptilt term off, **0.788** with the lag off, **0.835** with
+neither; acceptance 0.711 / 0.819 / 0.723 / 0.723. The uptilt term is therefore the one
+that costs separation — it buys real-clip accuracy (4.4° → 2.9°) at the price of absorbing
+part of a violation, which is exactly the trade-off the ablation was meant to expose.
 
 ### Two checks that the pipeline is not fooling itself
 
