@@ -376,10 +376,18 @@ climb at 5 m/s horizontal plus 1.5 m/s vertical reads 5.2 here and is legal.
 ## Delivery status at the end of this handoff
 
 - Regime C: **49 clips**, generated, pulled, indexed and synced to R2.
-- Total delivered at the time of writing: **64 clips** (A 13, B 2, C 49), indexed by
-  `clips_index.csv` and mirrored to R2 `track-b/clips/`.
-- Regime A: **13 of 25** at the time of writing; Regime B: **2 of 8** (the rebuilt moving-window
-  set, extents 20-80 m, verified non-degenerate). The run was interrupted three times, each time by
+- Total delivered at the time of writing: **65 clips** (A 14, B 2, C 49), indexed by
+  `clips_index.csv` and mirrored to R2 `track-b/clips/`. Visual integrity, by regime: A frame std
+  0.287 / temporal delta 0.097; B 0.284 / 0.140; C 0.299 / 0.159; nothing collapsed.
+- Regime A: **14 of 25** at the time of writing; Regime B: **2 of 8** (the rebuilt moving-window
+  set, extents 20-80 m, verified non-degenerate). Both runs are resumable and were still
+  generating when this report was written; to finish and publish:
+
+  ```
+  python scripts/pull_volume.py awmv-b-results clips/A data/processed/anwm_clips/A
+  python scripts/pull_volume.py awmv-b-results clips/B data/processed/anwm_clips/B
+  python -m experiments.anwm_finalize --sync
+  ``` The run was interrupted three times, each time by
   the local Modal client being torn down (the app then stops with "local client disconnected"),
   not by the model; each restart resumes and skips the finished clips. One more
   `modal run --detach remote/b_anwm.py::run_generate --regimes A` finishes the remaining 13 in
