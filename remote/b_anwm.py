@@ -418,3 +418,46 @@ def generate(specs_json: str, sampling_steps: int = 250, sync_r2_prefix: str | N
     Path("/r/clips/summary.json").write_text(json.dumps(out, indent=1))
     vol_results.commit()
     return {k: {"visual_integrity": v["visual_integrity"], "frames": v["frames"]} for k, v in out.items()}
+
+
+# --------------------------------------------------------------------- Task 4
+@app.function(cpu=8, memory=32768, timeout=1800, volumes={"/n": vol_native})
+def list_starts(min_forward_m: float = 25.0, min_valid_frac: float = 0.5) -> dict:
+    """Which native start states have enough forward depth for the projected prior to be non-empty.
+
+    FFP reprojects the 4 context frames to the target poses, so no future depth is needed; the
+    check is that the *scene* ahead of the start has depth out to the path extent. We measure the
+    forward depth (90th percentile of valid depth in the central 60% column band) and require it
+    to exceed `min_forward_m`, the largest commanded displacement over 16 steps at 5 m/s.
+    """
+    import pickle
+
+    import numpy as np
+
+    man = json.load(open("/n/manifest.json"))
+    out = {}
+    for name, m in man.items():
+        traj = pickle.load(open(f"/n/airvln_16/{name}/traj_data.pkl", "rb"))
+        traj = {k: (v.astype("float") if hasattr(v, "astype") else v) for k, v in traj.items()}
+        depth = np.asarray(traj["depth"], float)
+        H, W = depth.shape[-2:]
+        band = depth[:, :, int(W * 0.2):int(W * 0.8)]
+        rows = []
+        for ct in m["start_candidates"]:
+            d = float(np.percentile(band[ct][band[ct] > 0], 90)) if (band[ct] > 0).any() else 0.0
+            valid = float(np.mean(band[ct] > 0))
+            path = np.asarray(traj["point"], float)[ct:ct + 17]
+            extent = float(np.max(np.linalg.norm(path - path[0], axis=1))) if len(path) > 1 else 0.0
+            rows.append({"ct": int(ct), "forward_depth_p90_m": d, "valid_frac": valid,
+                         "recorded_path_extent_m": extent,
+                         "usable": bool(d > 0 and valid >= min_valid_frac and d > extent),
+                         # pose keys so clip specs can be built locally without the pickle
+                         "positions": path.tolist() if len(path) == 17 else None,
+                         "yaw": np.asarray(traj["yaw"], float)[ct:ct + 17].tolist()})
+        out[name] = {"n_frames": int(len(depth)), "candidates": rows}
+    Path("/n/starts.json").write_text(json.dumps(out, indent=1))
+    vol_native.commit()
+    total = sum(r["usable"] for v in out.values() for r in v["candidates"])
+    print(json.dumps({k: v["candidates"] for k, v in out.items()}, indent=1)[:3000])
+    print("usable starts:", total)
+    return out

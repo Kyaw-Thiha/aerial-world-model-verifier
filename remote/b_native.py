@@ -46,6 +46,8 @@ def fetch(names_wanted: int = 5, max_shards: int = 120, workers: int = 16) -> di
     first_entry = {}
     for t, ct, lo, hi in rollout:
         first_entry.setdefault(t, (ct, lo, hi))
+    # four candidate start times per trajectory, spaced so the windows do not overlap
+    CAND = (39, 79, 119, 159)
 
     index = {}
     if os.path.exists("/n/shard_index.json"):
@@ -77,12 +79,14 @@ def fetch(names_wanted: int = 5, max_shards: int = 120, workers: int = 16) -> di
     for name in found:
         shard, off, size = index[name]
         ct = first_entry[name][0]
-        need = set(range(max(0, ct - 3), ct + 17))
+        need = set()
+        for c in CAND:
+            need |= set(range(max(0, c - 3), c + 17))
         f = RangeFile(shard_url(shard))
         outd = Path(base, name)
         outd.mkdir(parents=True, exist_ok=True)
         got = {"shard": shard, "offset": off, "pickle_bytes": size, "curr_time": ct,
-               "frames": []}
+               "start_candidates": [c for c in CAND], "frames": []}
         with tarfile.open(fileobj=f, mode="r:") as tf:
             for m in tf:
                 if m.name == f"{name}/traj_data.pkl":
