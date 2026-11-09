@@ -327,3 +327,94 @@ def validate_native(names: list[str], sampling_steps: int = 250, lpips_net: str 
     vol_results.commit()
     print(json.dumps(out, indent=1)[:2000])
     return out
+
+
+# --------------------------------------------------------------------- Task 5
+@app.function(gpu="L4", timeout=4 * 3600, volumes={"/w": vol_weights, "/hf": vol_hf,
+                                                    "/n": vol_native, "/r": vol_results},
+              env={"HF_HOME": "/hf"})
+def generate(specs_json: str, sampling_steps: int = 250, sync_r2_prefix: str | None = None) -> dict:
+    """Roll out the released model from native start states along commanded paths.
+
+    Each spec: {id, regime, positions (17,3), yaw (17,), start_traj, start_time, seed,
+    designed_tilt_deg, meta}. Frames go to /r/clips/<regime>/<id>/frames/ + manifest.json.
+    """
+    import pickle
+
+    import numpy as np
+    import torch
+    from PIL import Image
+
+    from anwm.rollout import model_forward_wrapper
+
+    specs = json.loads(specs_json)
+    device = "cuda"
+    model, diffusion, vae = _load_models(device)
+    ds = _eval_shim()
+    cache = {}
+    out = {}
+
+    for sp in specs:
+        name, ct = sp["start_traj"], int(sp["start_time"])
+        if name not in cache:
+            traj = pickle.load(open(f"/n/airvln_16/{name}/traj_data.pkl", "rb"))
+            traj = {k: (v.astype("float") if hasattr(v, "astype") else v) for k, v in traj.items()}
+            traj["name"] = name
+            cache[name] = traj
+        traj = cache[name]
+        R_ec, spread = _camera_axis_change(traj)
+
+        pos = np.asarray(sp["positions"], float)
+        yaw = np.asarray(sp["yaw"], float)
+        n = len(pos)
+        ctx_times = list(range(ct - 3, ct + 1))
+        target_poses = _pose_from_position_yaw(pos[1:n], yaw[1:n], R_ec)
+        obs, sup = _context_inputs(ds, traj, ctx_times, target_poses)
+
+        # actions along the commanded path, straight through ANWM's own construction
+        class _Shim:
+            len_traj_pred = 16
+            normalize = True
+            data_config = ds.data_config
+
+        act, _ = ds._compute_actions({"point": pos, "yaw": yaw.reshape(-1, 1)}, 0,
+                                     np.array([n - 1]))
+        from anwm.utils import get_delta_np, normalize_data
+
+        act[:, :3] = normalize_data(act[:, :3], ds.ACTION_STATS)
+        delta = torch.as_tensor(get_delta_np(act), dtype=torch.float32).unsqueeze(0)
+
+        torch.manual_seed(int(sp.get("seed", 0)))
+        curr = obs.clone().to(device)
+        preds = []
+        for i in range(n - 1):
+            x_pred = model_forward_wrapper(
+                (model, diffusion, vae), curr, delta[:, i:i + 1].to(device), 1, 28,
+                device=device, num_cond=4, num_goals=1, x_supervised=sup[:, i:i + 1].to(device))
+            curr = torch.cat((curr, x_pred.unsqueeze(1)), dim=1)[:, 1:]
+            preds.append(((x_pred.clamp(-1, 1) + 1) / 2 * 255).byte().cpu())
+        folder = f"/r/clips/{sp['regime']}/{sp['id']}"
+        os.makedirs(f"{folder}/frames", exist_ok=True)
+        for i, t in enumerate(preds):
+            Image.fromarray(t[0].permute(1, 2, 0).numpy()).save(f"{folder}/frames/{i:02d}.png")
+        manifest = {
+            "id": sp["id"], "regime": sp["regime"], "start_state": {"traj": name, "time": ct},
+            "commanded_path": {"positions": pos.tolist(), "yaw": yaw.tolist(),
+                              "step_spacing_m": float(np.mean(np.linalg.norm(np.diff(pos, axis=0), axis=1)))},
+            "designed_required_tilt_deg": sp.get("designed_tilt_deg"),
+            "seed": int(sp.get("seed", 0)), "sampling_steps": sampling_steps,
+            "camera_axis_change_spread": spread, "meta": sp.get("meta", {}),
+            "frames": len(preds),
+        }
+        Path(f"{folder}/manifest.json").write_text(json.dumps(manifest, indent=1))
+        stats = {"frame_std": [float(v.float().std() / 255) for v in preds],
+                 "temporal_delta": float(np.mean([float((preds[i].float() - preds[i - 1].float()).abs().mean() / 255) for i in range(1, len(preds))]))}
+        manifest["visual_integrity"] = stats
+        Path(f"{folder}/manifest.json").write_text(json.dumps(manifest, indent=1))
+        out[sp["id"]] = manifest
+        print(sp["id"], "frames", len(preds), "std", round(np.mean(stats["frame_std"]), 4),
+              "dt_delta", round(stats["temporal_delta"], 4))
+        vol_results.commit()
+    Path("/r/clips/summary.json").write_text(json.dumps(out, indent=1))
+    vol_results.commit()
+    return {k: {"visual_integrity": v["visual_integrity"], "frames": v["frames"]} for k, v in out.items()}
