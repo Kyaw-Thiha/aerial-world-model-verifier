@@ -201,6 +201,28 @@ one pooled population per cell, all with `k_d = 0.295`:
   not a tilt verdict; the dose-response curve has to come from Regime C, with Regime B as the
   feasible-but-quiet control.
 
+## Task 2: pipeline validation (Gate 2)
+
+Rollout protocol: the release's own `EvalDataset` (constructed by setting its attributes, so every
+method is ANWM's code) with `index_to_data = [(trajectory, start_time, -64, 64)]`, 16 context
+frames, actions from `_compute_actions` + `normalize_data` + `get_delta_np`, FFP from the recorded
+depth/pose/K, 250 sampling steps, 16 frames rolled out autoregressively.
+
+Gate 2 (run on 5 native test trajectories from `rollout_16.pkl`):
+
+- **Runs end to end**: yes; frames, LPIPS, contact sheets and per-step statistics are written.
+- **Frames are not collapsed**: per-frame pixel standard deviation is reported per clip in
+  `results/anwm_native/summary.json` (`pred_frame_std` against `gt_frame_std`) and the temporal
+  delta of the prediction is compared with the ground truth's.
+- **LPIPS in a plausible range**: per-frame LPIPS (alex) rises from about 0.10-0.14 at the first
+  predicted step to 0.25-0.29 at step 16, i.e. a mean of about 0.19-0.21 depending on the
+  trajectory. The paper's Table 1 order of magnitude (0.18-0.23 at 4-8 s for 3D) is matched, with
+  the protocol difference noted (different metrics split, different horizon handling).
+
+The pose convention was verified inside the same run: rebuilding the recorded poses from
+`point`/`yaw` reproduces `pose` to 1e-16-2e-16 on every trajectory, so the FFP prior for a
+*commanded* path is not rotated by a guessed convention.
+
 ## Files
 
 - `src/generation/audit.py`, `paths.py`, `anwm_env.py`, `experiments/anwm_{audit_corrected,kd_split,path_audit,build_clips}.py`
