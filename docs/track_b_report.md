@@ -214,10 +214,25 @@ Gate 2 (run on 5 native test trajectories from `rollout_16.pkl`):
 - **Frames are not collapsed**: per-frame pixel standard deviation is reported per clip in
   `results/anwm_native/summary.json` (`pred_frame_std` against `gt_frame_std`) and the temporal
   delta of the prediction is compared with the ground truth's.
-- **LPIPS in a plausible range**: per-frame LPIPS (alex) rises from about 0.10-0.14 at the first
-  predicted step to 0.25-0.29 at step 16, i.e. a mean of about 0.19-0.21 depending on the
-  trajectory. The paper's Table 1 order of magnitude (0.18-0.23 at 4-8 s for 3D) is matched, with
-  the protocol difference noted (different metrics split, different horizon handling).
+- **LPIPS in a plausible range**: per-frame LPIPS (alex) rises from 0.05-0.16 at the first
+  predicted step to 0.09-0.35 at step 16; per-trajectory means are **0.190, 0.216, 0.121, 0.228,
+  0.093, pooled 0.170**. The paper's Table 1 order of magnitude (0.18-0.23 at 4-8 s for 3D) is
+  matched on three trajectories and undershot on two; the protocol differs (their metrics split,
+  their horizon handling), so this is a sanity check, not a reproduction.
+
+Measured per-frame statistics (`results/anwm_native/summary.json`):
+
+| trajectory | LPIPS mean | min pred std | mean pred std | mean GT std | pred temporal delta | GT temporal delta |
+| --- | --- | --- | --- | --- | --- | --- |
+| 3KA7IJSNXE | 0.190 | 0.284 | 0.310 | 0.302 | 0.0711 | 0.0566 |
+| 3E9ZFLPWP6 | 0.216 | 0.305 | 0.321 | 0.321 | 0.1155 | 0.0853 |
+| 38RHULDVA6 | 0.121 | 0.199 | 0.216 | 0.218 | 0.0304 | 0.0134 |
+| 3PA41K45WV | 0.228 | 0.305 | 0.319 | 0.318 | 0.1003 | 0.0819 |
+| 30EMX9PEWS | 0.093 | 0.274 | 0.281 | 0.280 | 0.0377 | 0.0242 |
+
+No clip is collapsed (prediction pixel spread matches the ground truth to within 2-5%), and the
+predictions move at least as much frame to frame as the ground truth, so drift or freezing is not
+masking a low LPIPS. **Gate 2 passes.**
 
 The pose convention was verified inside the same run: rebuilding the recorded poses from
 `point`/`yaw` reproduces `pose` to 1e-16-2e-16 on every trajectory, so the FFP prior for a
