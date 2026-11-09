@@ -139,6 +139,17 @@ thresholds:
   estimator: conformal_quantile
   alpha: 0.05                  # 95th percentile of held-out real scores
   pooled_threshold: reported_alongside
+  # AMENDMENT 1 (2026-11-09, committed before any edited clip was scored): the
+  # operational reading of "report separately, do not let them dominate". Real-clip
+  # scores show the three trackRATM flights carry the estimator failure (one of them
+  # scores a median of 68 deg on real clips), so a threshold fitted over them would be
+  # set by that failure and would hide everything else. Both variants are reported:
+  threshold_fit_flights: non_trackratm
+  threshold_fit_flights_alt: all_flights
+  amendment_1_reason: >
+    operationalizes the existing "report_separately / do not let them dominate" line;
+    it was written after seeing real-clip scores and before any negative was scored,
+    and both threshold variants are reported rather than only the favourable one
 
 # ---------------------------------------------------------------- success criteria (RQ2)
 success_criteria:
