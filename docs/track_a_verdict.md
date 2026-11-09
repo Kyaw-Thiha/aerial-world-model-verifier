@@ -251,7 +251,8 @@ numbers point at:
    the lag at +/-150 ms, and a 100 ms delay is absorbed (median score 5.5 deg against
    2.9 real). 200 and 300 ms leave the bound and score 7.5 and 9.7 deg — detectable in
    principle, but below the levels the unstable thresholds can resolve. Retiming (0.5x,
-   2x) scores 47-66 deg and is the easiest negative of the set.
+   2x) scores 18.1 and 19.2 deg: heavier than the delays, light against a full tilt
+   removal, which is what a 0.5-s window over a smooth trajectory would predict.
 
 **What this means for the claim.** On the five flights where the depicted estimator
 works, the verifier ranks a real clip below the same clip with its tilt removed 92% of
