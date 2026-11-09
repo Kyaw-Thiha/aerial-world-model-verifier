@@ -200,8 +200,11 @@ one pooled population per cell, all with `k_d = 0.295`:
    shard holds a few trajectories and ~600 JPEGs each, so an index scan is ~5 min per shard. From
    a Modal container the same walk did not finish a single shard in ~25 minutes (two attempts,
    16 and 32 workers, 90 s socket timeout, nothing written to the Volume), while a 1 MB read from
-   this workstation takes 0.46 s. Consequence: the native fetch runs locally and is pushed to the
-   Volume with `modal volume put`, and it is the slowest step in this handoff.
+   this workstation takes 0.46 s.
+   **Fix:** an 8 MB read-ahead wrapper around the range reader (`ReadAhead` in
+   `experiments/anwm_fetch_native.py`) turns a shard walk into 21 s instead of 330 s (16x), because
+   it stops issuing one HTTP request per tar header. The fetch still runs locally and is pushed to
+   the Volume with `modal volume put`, but it is no longer the slowest step.
 2. Only 4 of the 29 trajectories in `rollout_16.pkl` were covered by the 39-shard index inherited
    from Phase 0, so the scan has to find at least one more before a 5-trajectory Gate 2 run.
 3. `config/anwm.yaml` does not describe the released weights (context 4 vs 16), so any pipeline
