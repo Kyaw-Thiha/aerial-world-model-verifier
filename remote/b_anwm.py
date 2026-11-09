@@ -372,6 +372,9 @@ def generate(specs_json: str, sampling_steps: int = 250, sync_r2_prefix: str | N
     out = {}
 
     for sp in specs:
+        if os.path.exists(f"/r/clips/{sp['regime']}/{sp['id']}/manifest.json"):
+            print("skip (already done)", sp["id"])
+            continue
         name, ct = sp["start_traj"], int(sp["start_time"])
         if name not in cache:
             traj = pickle.load(open(f"/n/airvln_16/{name}/traj_data.pkl", "rb"))
@@ -507,3 +510,24 @@ def mirror_slim_to_r2(prefix: str = "track-b/weights/") -> dict:
     print(f"{bucket}/{key} {head['ContentLength']} bytes, size matches: {ok}")
     return {"bucket": bucket, "key": key, "bytes": head["ContentLength"],
             "size_matches": bool(ok), "sha256": man["slim_sha256"]}
+
+
+@app.local_entrypoint()
+def run_generate(specs_path: str = "results/anwm_clips/specs.json", regimes: str = "A,B,C",
+                 limit: int = 0, seed_offset: int = 0):
+    """Push the locally built clip specs through the generation function.
+
+    The specs are small (a few hundred KB); the function writes one clip at a time and commits
+    after each, so a failure keeps the finished clips and a rerun skips them.
+    """
+    specs = json.load(open(specs_path))
+    keep = set(regimes.split(","))
+    specs = [s for s in specs if s["regime"] in keep]
+    if seed_offset:
+        for s in specs:
+            s["seed"] = int(s.get("seed", 0)) + seed_offset
+    if limit:
+        specs = specs[:limit]
+    print(f"{len(specs)} specs:", {r: sum(s['regime'] == r for s in specs) for r in keep})
+    out = generate.remote(json.dumps(specs))
+    print(json.dumps(out, indent=1)[:3000])
