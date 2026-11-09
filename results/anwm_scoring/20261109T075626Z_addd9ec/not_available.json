@@ -1,0 +1,9 @@
+{
+ "clips_available": false,
+ "reason": "no clips_index.csv under /home/kevin/Documents/Projects/awmv-track-a/data/raw/track_b_clips; Track B has not delivered yet. The scoring path is built and the interface is fixed in docs/track_b_clips.md expectations.",
+ "expected": [
+  "clips_index.csv",
+  "<clip_id>/frames/*.jpg",
+  "<clip_id>/path.npz with the commanded (dx,dy,dz,dyaw) steps"
+ ]
+}

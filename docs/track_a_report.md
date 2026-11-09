@@ -268,21 +268,51 @@ needs a MoGe-2 pass, which was not started. The metrics record
 
 ## 6. Oracle ladder (attribution)
 
-Attribution table, in the plan's order:
+Each rung swaps one source of truth for an estimate. **Row 1-2 and 5-6 are
+accuracy numbers** (the rung's tilt against mocap truth). **Rows 3-4 are
+self-consistency numbers**, not accuracy: when the attitude is estimated, the frame it
+is expressed in comes from that estimate, so its "tilt" is only meaningful against the
+same estimate's up direction. Every row says which it is; no self-consistency number is
+used as evidence that the implied side is right.
 
-| rung | implied-tilt RMSE vs mocap | status |
-| --- | --- | --- |
-| mocap position + mocap attitude (Phase 0 floor) | 1.24 deg median residual | reference, from `results/phase0_floor/20261108T044153Z_f3b5d2bf` |
-| VO position (oracle scale) + mocap attitude | **28.97 deg** | measured |
-| mocap position + estimated attitude | 8.73 deg (scalar tilt) | measured as Gate 1's tilt term |
-| VO position (oracle scale) + estimated attitude | 29.59 deg (fitted scale) | measured |
-| fully estimated, depth-model scale | - | not run (no MoGe-2 pass) |
-| fully estimated, fitted scale | 29.59 deg | measured |
+| # | rung | number | definition | source |
+| --- | --- | --- | --- | --- |
+| 1 | mocap position + mocap attitude (floor) | **1.24 deg** median residual (p90 4.39, p95 6.49, n=114,059) | implied axis from mocap position (SG 0.37 s, `k_d` 0.295) vs true mocap thrust axis; the physics model's own error | `results/phase0_floor/20261108T044153Z_f3b5d2bf` |
+| 2 | VO position (oracle scale) + mocap attitude | **28.97 deg** median flight RMSE | implied axis from the DPVO trajectory scaled by the mocap-derived scale, vs true mocap thrust axis | `results/phase2_implied/20261108T132738Z_c738aa8` (`vo_position_oracle_scale`) |
+| 3 | mocap position + estimated attitude | **8.73 deg** tilt RMSE (median over flights) | pixel attitude (GeoCalib anchored, DPVO-rotation filter) tilt vs mocap tilt; the *depicted* side's error, not the residual's | `results/phase1b_fusion/20261108T133135Z_c738aa8` (Gate 1 tilt term) |
+| 4 | VO position (oracle scale) + estimated attitude | **2.75-8.30 deg** residual on the autonomous flights, **not** a ladder point | depicted axis vs VO-implied axis; both live in the same drifting VO frame, so their shared azimuth error cancels. Recorded so it is never quoted as accuracy | `results/phase2_implied/.../metrics.json` (`residual`) |
+| 5 | fully estimated, depth-model scale | - | MoGe-2 pass not run | `scale_depth: {"run": false}` |
+| 6 | fully estimated, fitted scale | **29.59 deg** median flight RMSE | VO position with a per-clip fitted scale + estimated attitude | `results/phase2_implied/20261108T132738Z_c738aa8` (`fully_estimated_fitted_scale`) |
+| 7 | **commanded-path mode (Phase 3)** | see `docs/track_a_verdict.md` | mocap position (known path) + pixel attitude, heading from the path; the operating point the verdict test uses | `results/phase3a_verdict/` |
 
 Reading: swapping the position source from mocap to VO costs ~28 deg of implied-tilt
 accuracy, while swapping the attitude source costs ~7 deg. The pixel trajectory is the
 bottleneck by a factor of four, and it is the translation half of DPVO specifically —
-its rotation is the best-behaved component in the whole pipeline.
+its rotation is the best-behaved component in the whole pipeline. Row 7 is why the
+verdict test of handoff 04 runs with the position given rather than recovered.
+
+### 6b. Lean direction re-scored with windowed azimuth alignment (Task 0.2)
+
+Gate 1's lean number (median 83.6 deg) fitted **one** azimuth offset per clip. The
+verifier compares axes inside one frame, so a slow azimuth drift should not be charged
+to the estimate. Re-scoring the same saved per-frame axes with one fitted azimuth per
+sliding window (`src/fusion/attitude.py::lean_error_windowed_deg`, one-hour-old arrays,
+nothing refitted), `results/phase3a_verdict/20261109T074134Z_492033f_lean/`:
+
+| window | 0.5 s | 1 s | 2 s | 3 s | 4 s | 5 s |
+| --- | --- | --- | --- | --- | --- | --- |
+| median flight lean error | **4.4 deg** | 10.9 | 19.3 | 84.6 | 114.6 | 89.7 |
+
+Both versions side by side, per flight, are in `lean_windows.png` and `leans.json`.
+
+The handoff expected 3-5 s to be the drift scale. It is not: the azimuth error is
+**fast** (sub-second), which is what a filter that re-kicks yaw at every gravity
+correction produces. Two consequences: (i) the 3-5 s window can be *worse* than one per
+clip, because a window that is longer than the error's correlation time fits noise and
+then removes a meaningless offset; (ii) the lean direction is usable only when the
+azimuth is re-anchored about once a second, which is exactly what commanded-path mode
+gives for free from the path's yaw. That is why the Phase 3 verdict does not need an
+azimuth nuisance at all.
 
 ## 7. Estimator comparison
 

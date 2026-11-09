@@ -117,12 +117,19 @@ def score_flight(spec_path: Path, cond_rows: dict[str, dict[str, dict]], clips: 
     return out
 
 
-def thresholds_for(records: list[dict], prereg: dict, holdout: str | None) -> dict:
-    """Conformal thresholds from the fit flights (all but ``holdout``), per speed bin."""
+def thresholds_for(records: list[dict], prereg: dict, holdout: str | None,
+                   policy: str = "non_trackratm") -> dict:
+    """Conformal thresholds from the fit flights (all but ``holdout``), per speed bin.
+
+    ``policy`` is the pre-registered ``threshold_fit_flights``: ``non_trackratm`` keeps
+    the three estimator-failure flights out of the fit (amendment 1) while still scoring
+    them; ``all_flights`` is reported as the alternative.
+    """
     th = prereg["thresholds"]
     bins = th["speed_bins_mps"]
     fit = [r for r in records if r["condition"] == "identity" and r["testable"]
-           and (holdout is None or r["flight"] != holdout)]
+           and (holdout is None or r["flight"] != holdout)
+           and (policy == "all_flights" or r["flight"] not in TRACK_A_FLIGHTS)]
     per_bin = {}
     for lo, hi in bins:
         key = f"{lo:g}-{hi:g}"
@@ -141,22 +148,24 @@ def threshold_lookup(th: dict, bin_key: str) -> float:
     return th["pooled"]["threshold"]
 
 
-def evaluation(records: list[dict], prereg: dict) -> dict:
+def evaluation(records: list[dict], prereg: dict,
+               policy: str | None = None) -> dict:
     """Held-out acceptance, rejection, AUROC, MDV, Spearman, controls."""
+    policy = policy or prereg["thresholds"].get("threshold_fit_flights", "all_flights")
     flights = sorted({r["flight"] for r in records})
     real = {(r["flight"], r["condition"]): r for r in records if r["condition"] == "identity"}
     per_clip_threshold = {}
     heldout_accept = []
     folded = []
     for f in flights:
-        th = thresholds_for(records, prereg, holdout=f)
+        th = thresholds_for(records, prereg, holdout=f, policy=policy)
         for r in records:
             if r["flight"] == f and r["condition"] == "identity" and r["testable"]:
                 t = threshold_lookup(th, r["bin"])
                 heldout_accept.append(r["score"] <= t)
                 per_clip_threshold[(f, r["clip_id"])] = t
         folded.append({"flight": f, "thresholds": th})
-    pooled_th = thresholds_for(records, prereg, holdout=None)
+    pooled_th = thresholds_for(records, prereg, holdout=None, policy=policy)
     pooled_accept = [r["score"] <= threshold_lookup(pooled_th, r["bin"])
                      for r in records if r["condition"] == "identity" and r["testable"]]
 
@@ -339,6 +348,11 @@ def main() -> int:
                       flush=True)
 
     ev = evaluation(records, prereg)
+    ev["threshold_policy"] = prereg["thresholds"].get("threshold_fit_flights", "all_flights")
+    ev_alt = evaluation(records, prereg, policy="all_flights")
+    ev["alt_threshold_policy_all_flights"] = {
+        k: ev_alt[k] for k in ("heldout_acceptance", "pooled_acceptance", "family_auroc_pooled",
+                               "families") if k in ev_alt}
     ident_rows = {f: load_jsonl(geo / f"{f}__identity.jsonl")
                   for f in spec_paths if (geo / f"{f}__identity.jsonl").exists()}
     dl = quick_delays(spec_paths, ident_rows, clips, prereg) if ident_rows else {}
