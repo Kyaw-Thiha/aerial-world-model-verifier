@@ -438,6 +438,13 @@ That is the kind of "plausible but unrelated motion" WorldEcho reports, and it i
 tilt verifier should catch; the cruise control is therefore the cleanest negative in the set. This
 is a statement about pixels, not about depicted tilt, which is Track A's measurement.
 
+Frame-to-frame pixel change does **not** scale with the commanded maneuver: across the 49 C clips
+the Spearman correlation between the commanded drag-free peak tilt and the clip's temporal delta is
+**-0.17 (p = 0.25)**, and for the 12 turn clips **-0.53 (p = 0.07)** — if anything, the harder turns
+move the pixels less. The temporal delta is a crude motion proxy (it also depends on texture and on
+the projected prior) and n = 49 with mixed starts, so this is a flag for handoff 04 rather than a
+result: it is pixel behaviour, not depicted tilt.
+
 Seed variability is not small: for the cruise control, pairwise per-frame MAE across three seeds
 is **0.196 and 0.097** against a within-clip temporal delta of 0.217 and 0.108. Sampling noise is
 therefore comparable to the motion signal on this control, so any per-clip score needs its seed
