@@ -46,6 +46,21 @@ def _ensure_tqdm_stub() -> None:
         sys.modules["tqdm"] = stub
 
 
+def data_config() -> dict:
+    """ANWM's `config/data_config.yaml`, parsed with ANWM's own `load_yaml`.
+
+    Loaded standalone (by file path) so the CPU test environment does not need torch/cv2: the
+    module has no heavy imports, only PyYAML.
+    """
+    import importlib.util
+
+    cf = REPO / "anwm" / "config.py"
+    spec = importlib.util.spec_from_file_location("_anwm_config", cf)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod.load_yaml(str(REPO / "config" / "data_config.yaml"))
+
+
 def anwm_modules():
     """(TrainingDataset, get_delta_np, normalize_data, data_config) from the pinned clone."""
     if not (REPO / "anwm").is_dir():

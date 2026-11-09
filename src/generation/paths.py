@@ -36,9 +36,8 @@ ANALYSIS_DTS = (0.25, 2.0 / 3.0, 1.0)
 
 def spacing_envelope() -> dict:
     """Per-step local displacement allowed by `action_stats` after the 3.30 m normaliser."""
-    from src.generation.anwm_env import anwm_modules
-    _, _, _, cfg = anwm_modules()
-    st = cfg["action_stats"]
+    from src.generation.anwm_env import data_config
+    st = data_config()["action_stats"]
     return {"x": (st["min"][0] * SPACING, st["max"][0] * SPACING),
             "y": (st["min"][1] * SPACING, st["max"][1] * SPACING),
             "z": (st["min"][2] * SPACING, st["max"][2] * SPACING)}

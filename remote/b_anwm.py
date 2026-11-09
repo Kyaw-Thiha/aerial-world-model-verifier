@@ -162,3 +162,168 @@ def smoke(steps: int = 250, reps: int = 3) -> dict:
     vol_weights.commit()
     print(json.dumps(info, indent=1))
     return info
+
+
+# --------------------------------------------------------------------- shared helpers
+def _eval_shim(data_folder: str = "/n/airvln_16"):
+    """An EvalDataset with attributes set directly, so every method stays ANWM's own code."""
+    import numpy as np
+
+    from anwm.data.airvln import EvalDataset
+    from anwm.utils import transform
+
+    from anwm.config import load_yaml
+
+    cfg = load_yaml("config/data_config.yaml")
+    ds = object.__new__(EvalDataset)
+    ds.data_folder = data_folder
+    ds.data_split_folder = "/anwm/data/splits/airvln_16"
+    ds.dataset_name = "airvln_16"
+    ds.image_size = (224, 224)
+    ds.min_dist_cat, ds.max_dist_cat = -64, 64
+    ds.len_traj_pred, ds.traj_stride, ds.context_size = 16, 80, 4
+    ds.normalize = True
+    ds.transform = transform
+    ds.goals_per_obs = 1
+    ds.data_config = cfg["airvln_16"]
+    ds.ACTION_STATS = {k: np.expand_dims(np.asarray(v, dtype=np.float32), 0)
+                       for k, v in cfg["action_stats"].items()}
+    return ds
+
+
+def _camera_axis_change(traj) -> "np.ndarray":
+    """R_ec: the world->camera axis change baked into every released pose.
+
+    The released pose is `[R_z(yaw) @ R_ec | xyz]` (preprocessing notebook, cell 14). Recovering
+    R_ec from the data and checking it is constant is the only way to build *new* target poses
+    in the same convention; a wrong convention would silently rotate the projected prior.
+    """
+    import numpy as np
+
+    yaw = np.asarray(traj["yaw"], float).ravel()
+    R = np.asarray(traj["pose"], float)[:, :3, :3]
+    out = []
+    for k in range(len(yaw)):
+        c, s = np.cos(yaw[k]), np.sin(yaw[k])
+        Rz = np.array([[c, -s, 0], [s, c, 0], [0, 0, 1.0]])
+        out.append(Rz.T @ R[k])
+    out = np.asarray(out)
+    spread = float(np.abs(out - out[0]).max())
+    if spread > 1e-3:
+        raise RuntimeError(f"camera axis change is not constant (spread {spread:.2e})")
+    return out[0], spread
+
+
+def _pose_from_position_yaw(pos, yaw, R_ec):
+    import numpy as np
+
+    poses = np.tile(np.eye(4), (len(pos), 1, 1))
+    c, s = np.cos(yaw), np.sin(yaw)
+    Rz = np.zeros((len(pos), 3, 3))
+    Rz[:, 0, 0], Rz[:, 0, 1] = c, -s
+    Rz[:, 1, 0], Rz[:, 1, 1] = s, c
+    Rz[:, 2, 2] = 1.0
+    poses[:, :3, :3] = Rz @ R_ec[None]
+    poses[:, :3, 3] = pos
+    return poses
+
+
+def _context_inputs(ds, traj, ctx_times, target_poses, data_dir="/n/airvln_16"):
+    """(obs_image tensor, x_supervised tensor) through ANWM's own FFP code."""
+    import cv2
+    import numpy as np
+    import torch
+    from PIL import Image
+
+    rgb = []
+    for t in ctx_times:
+        img = cv2.imread(f"{data_dir}/{traj['name']}/{int(t)}.jpg")
+        rgb.append(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+    rgb = np.stack(rgb, 0)
+    proj = ds._compute_projected_images(traj["data"], list(ctx_times), rgb,
+                                        np.asarray(target_poses))
+    obs = torch.stack([ds.transform(Image.fromarray(rgb[i])) for i in range(len(ctx_times))])
+    sup = torch.stack([ds.transform(Image.fromarray(proj[i])) for i in range(len(proj))])
+    return obs.unsqueeze(0), sup.unsqueeze(0)
+
+
+# --------------------------------------------------------------------- Task 2
+@app.function(gpu="L4", timeout=3 * 3600, volumes={"/w": vol_weights, "/hf": vol_hf,
+                                                    "/n": vol_native, "/r": vol_results},
+              env={"HF_HOME": "/hf"})
+def validate_native(names: list[str], sampling_steps: int = 250, lpips_net: str = "alex") -> dict:
+    """Roll out the released model on native context and compare with the recorded frames."""
+    import pickle
+
+    import numpy as np
+    import torch
+    from PIL import Image
+
+    from anwm.rollout import model_forward_wrapper
+
+    device = "cuda"
+    model, diffusion, vae = _load_models(device)
+    ds = _eval_shim()
+    manifest = json.load(open("/n/manifest.json"))
+    import lpips as lpips_lib
+    lp = lpips_lib.LPIPS(net=lpips_net).to(device).eval()
+
+    out = {}
+    for name in names:
+        ct = manifest[name]["curr_time"]
+        traj = pickle.load(open(f"/n/airvln_16/{name}/traj_data.pkl", "rb"))
+        traj = {k: v.astype("float") if hasattr(v, "astype") else v for k, v in traj.items()}
+        ds.index_to_data = [(name, ct, -64, 64)]
+        idxs, obs, gt, delta, proj = ds[0]
+        delta = delta.unsqueeze(0)
+        obs, gt, proj = obs.unsqueeze(0), gt.unsqueeze(0), proj.unsqueeze(0)
+
+        preds = []
+        curr = obs.clone().to(device)
+        for i in range(gt.shape[1]):
+            x_pred = model_forward_wrapper(
+                (model, diffusion, vae), curr, delta[:, i:i + 1].to(device), 1, 28,
+                device=device, num_cond=4, num_goals=1, x_supervised=proj[:, i:i + 1].to(device))
+            curr = torch.cat((curr, x_pred.unsqueeze(1)), dim=1)[:, 1:]
+            preds.append(x_pred.clamp(-1, 1))
+        pred = torch.stack(preds, 1)
+
+        g01 = ((gt.to(device) + 1) / 2).clamp(0, 1)
+        p01 = ((pred + 1) / 2).clamp(0, 1)
+        d_lpips = [float(lp(2 * p01[:, i] - 1, 2 * g01[:, i] - 1).mean()) for i in range(gt.shape[1])]
+        flat = lambda t: t.flatten(1)
+        collapse = {
+            "pred_frame_std": [float(p01[:, i].std()) for i in range(gt.shape[1])],
+            "gt_frame_std": [float(g01[:, i].std()) for i in range(gt.shape[1])],
+            "pred_temporal_delta": float((p01[:, 1:] - p01[:, :-1]).abs().mean()),
+            "gt_temporal_delta": float((g01[:, 1:] - g01[:, :-1]).abs().mean()),
+        }
+        folder = f"/r/native/{name}"
+        os.makedirs(folder, exist_ok=True)
+        tiles = []
+        for i in range(gt.shape[1]):
+            for tag, t in (("gt", g01), ("pred", p01)):
+                Image.fromarray((t[0, i].permute(1, 2, 0).cpu().numpy() * 255).astype(np.uint8)
+                                ).save(f"{folder}/{i:02d}_{tag}.png")
+        # contact sheet: 2 rows (gt, pred) x 16 frames
+        rows = []
+        for t in (g01, p01):
+            ims = [Image.fromarray((t[0, i].permute(1, 2, 0).cpu().numpy() * 255).astype(np.uint8))
+                   for i in range(gt.shape[1])]
+            w, h = ims[0].size
+            row = Image.new("RGB", (w * len(ims), h))
+            for i, im in enumerate(ims):
+                row.paste(im, (i * w, 0))
+            rows.append(row)
+        sheet = Image.new("RGB", (rows[0].width, rows[0].height * 2))
+        for r, im in enumerate(rows):
+            sheet.paste(im, (0, r * rows[0].height))
+        sheet.save(f"{folder}/contact_sheet.png")
+        out[name] = {"curr_time": int(ct), "n_frames": int(gt.shape[1]), "lpips": d_lpips,
+                     "lpips_mean": float(np.mean(d_lpips)), **collapse}
+        print(name, "lpips", np.round(d_lpips, 3).tolist())
+        vol_results.commit()
+    Path("/r/native/summary.json").write_text(json.dumps(out, indent=1))
+    vol_results.commit()
+    print(json.dumps(out, indent=1)[:2000])
+    return out
