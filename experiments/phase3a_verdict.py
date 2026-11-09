@@ -199,22 +199,29 @@ def evaluation(records: list[dict], prereg: dict,
     per_clip_threshold = {}
     heldout_accept = []
     folded = []
+    uncertified = 0
     for f in flights:
         th = thresholds_for(records, prereg, holdout=f, policy=policy)
         for r in records:
             if r["flight"] == f and r["condition"] == "identity" and r["testable"]:
                 t = threshold_lookup(th, r["bin"])
+                if not np.isfinite(t):
+                    # conformal cannot certify a 95th percentile from too few fit clips
+                    uncertified += 1
+                    continue
                 heldout_accept.append(r["score"] <= t)
                 per_clip_threshold[(f, r["clip_id"])] = t
         folded.append({"flight": f, "thresholds": th})
     pooled_th = thresholds_for(records, prereg, holdout=None, policy=policy)
     pooled_accept = [r["score"] <= threshold_lookup(pooled_th, r["bin"])
-                     for r in records if r["condition"] == "identity" and r["testable"]]
+                     for r in records if r["condition"] == "identity" and r["testable"]
+                     and np.isfinite(threshold_lookup(pooled_th, r["bin"]))]
 
     acc_ci = wilson_interval(int(np.sum(heldout_accept)), len(heldout_accept)) \
         if heldout_accept else (float("nan"), float("nan"))
     res = {"heldout_acceptance": float(np.mean(heldout_accept)) if heldout_accept else None,
            "heldout_acceptance_wilson95": acc_ci,
+           "heldout_uncertified": uncertified,
            "heldout_n": len(heldout_accept),
            "pooled_acceptance": float(np.mean(pooled_accept)) if pooled_accept else None,
            "pooled_thresholds": pooled_th, "fold_thresholds": folded,
