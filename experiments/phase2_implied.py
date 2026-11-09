@@ -42,7 +42,10 @@ from src.physics.diff import savgol_derivatives
 from src.physics.flatness import (G0, angle_between_deg, implied_thrust_axis,
                                   tilt_deg, valid_thrust_mask)
 
-WINDOWS_S = [0.05, 0.075, 0.11, 0.16, 0.24, 0.37]
+# CORRECTION (2026-11-09): the first run swept *seconds* at a 12 Hz frame rate, where
+# 0.05-0.37 s rounds to 1-4 samples and `implied_from_positions` clamps to its 5-sample
+# minimum, so every entry was the same 5-sample filter. The sweep is now in samples.
+WINDOW_SAMPLES = [5, 7, 9, 11, 15, 21, 31]
 POLYORDER = 3
 K_D = 0.295          # Phase 0 fitted value, not refitted on pixel data
 SPEED_BINS = [(0, 5), (5, 10), (10, 15), (15, 20), (20, 99)]
@@ -115,7 +118,8 @@ def main() -> int:
     run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ") + "_" + git_hash()
     out = Path("results/phase2_implied") / run_id
     out.mkdir(parents=True, exist_ok=True)
-    cfg = {"dpvo_tag": args.dpvo_tag, "geocalib_tag": args.gc_tag, "windows_s": WINDOWS_S,
+    cfg = {"dpvo_tag": args.dpvo_tag, "geocalib_tag": args.gc_tag,
+           "windows_samples": WINDOW_SAMPLES,
            "polyorder": POLYORDER, "k_d": K_D, "fps_diff": args.fps_diff,
            "depicted_gain": 0.2, "note": "window chosen on fit flights only"}
     (out / "config.yaml").write_text(yaml.safe_dump(cfg, sort_keys=False))
@@ -167,11 +171,12 @@ def main() -> int:
                "windows": {}, "scale_depth": {"run": False,
                                               "reason": "no MoGe-2 run in this handoff"}}
 
-        for w_s in WINDOWS_S:
+        for w_n in WINDOW_SAMPLES:
+            w_s = w_n * dt_native          # the helper takes seconds; this is exact w_n samples
             z_imp_o, ok = implied_from_positions(s_oracle * p_al, dt_native, w_s, K_D)
             if ok.sum() < 30:
                 continue
-            rec["windows"][str(w_s)] = row = {}
+            rec["windows"][str(w_n)] = row = {}
             for label, z_imp in (("oracle_scale", z_imp_o),):
                 m = ok & np.isfinite(z_imp).all(axis=1)
                 errt = tilt_deg(z_imp[m]) - tilt_deg(z_true[m])
@@ -190,7 +195,7 @@ def main() -> int:
                     "testable_fraction": float(np.mean(tilt_deg(z_imp[m]) > 10.0))}
             # fitted scale: minimise the depicted-vs-implied residual on this clip
             def cost(s):
-                z, okk = implied_from_positions(s * p_al, dt_native, w_s, K_D)
+                z, okk = implied_from_positions(s * p_al, dt_native, w_n * dt_native, K_D)
                 m = okk & np.isfinite(z).all(axis=1)
                 if m.sum() < 30:
                     return 1e3
@@ -238,7 +243,7 @@ def main() -> int:
     metrics = {"run_id": run_id, "git": git_hash(), "config": cfg, "flights": per_flight,
                "oracle_ladder": oracle_ladder(per_flight)}
     pooled = {}
-    for w in [str(x) for x in WINDOWS_S]:
+    for w in [str(x) for x in WINDOW_SAMPLES]:
         rows = [f["windows"][w]["oracle_scale"] for f in per_flight.values() if w in f["windows"]]
         if rows:
             pooled[w] = {
@@ -260,7 +265,7 @@ def main() -> int:
     if per_flight:
         fig, ax = plt.subplots(figsize=(7, 4))
         for f, rec in per_flight.items():
-            xs = [float(w) for w in rec["windows"]]
+            xs = [float(w) for w in rec["windows"]]   # x axis: filter window, samples
             ys = [rec["windows"][w]["oracle_scale"]["implied_tilt_rmse_deg"] for w in rec["windows"]]
             ax.plot(xs, ys, "o-", ms=4, lw=1.1, label=f.replace("flight-", ""))
         ax.axvline(0.11, color="k", ls=":", lw=1, label="0.11 s reference")

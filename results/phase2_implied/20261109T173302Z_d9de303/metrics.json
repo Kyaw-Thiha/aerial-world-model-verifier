@@ -1,0 +1,1672 @@
+{
+  "run_id": "20261109T173302Z_d9de303",
+  "git": "d9de303",
+  "config": {
+    "dpvo_tag": "stride10_fov100_s0.5",
+    "geocalib_tag": "div10",
+    "windows_samples": [
+      5,
+      7,
+      9,
+      11,
+      15,
+      21,
+      31
+    ],
+    "polyorder": 3,
+    "k_d": 0.295,
+    "fps_diff": 0.0,
+    "depicted_gain": 0.2,
+    "note": "window chosen on fit flights only"
+  },
+  "flights": {
+    "flight-01a-ellipse": {
+      "control": "autonomous",
+      "track": "ellipse",
+      "n": 68,
+      "dt_native_s": 0.33322300000000027,
+      "fps_native": 3.000993328791828,
+      "scale_oracle": 0.08731673553104076,
+      "gravity_align_spread_deg": 12.86966964728099,
+      "true_tilt_deg_median": 1.3794344876538909,
+      "windows": {
+        "5": {
+          "oracle_scale": {
+            "n": 64,
+            "implied_tilt_rmse_deg": 34.57954666217615,
+            "implied_tilt_median_abs_deg": 1.8678313469158074,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 27.908677038003965,
+            "snr": 0.8070862614439962,
+            "residual_median_deg": 7.15581753280806,
+            "residual_p90_deg": 52.55700683318655,
+            "testable_fraction": 0.0
+          },
+          "fitted_scale": {
+            "scale": -0.04505345651349484,
+            "scale_over_oracle": -0.5159773351521887,
+            "same_sign_as_oracle": false,
+            "n": 64,
+            "implied_tilt_rmse_deg": 34.65321166331119,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 27.908677038003965,
+            "snr": 0.8053705760136528,
+            "residual_median_deg": 6.83277086975427,
+            "residual_removed_fraction": 0.045144619964480937,
+            "testable_fraction": 0.0
+          }
+        },
+        "7": {
+          "oracle_scale": {
+            "n": 62,
+            "implied_tilt_rmse_deg": 35.20860923963842,
+            "implied_tilt_median_abs_deg": 1.3962732926409538,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 28.132147652670792,
+            "snr": 0.7990133169190666,
+            "residual_median_deg": 7.250082065737034,
+            "residual_p90_deg": 52.71501370195466,
+            "testable_fraction": 0.0
+          },
+          "fitted_scale": {
+            "scale": 0.01646633705737995,
+            "scale_over_oracle": 0.18858168433846487,
+            "same_sign_as_oracle": true,
+            "n": 62,
+            "implied_tilt_rmse_deg": 35.280738678807126,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 28.132147652670792,
+            "snr": 0.7973797801906444,
+            "residual_median_deg": 7.227745995457845,
+            "residual_removed_fraction": 0.0030808024070164697,
+            "testable_fraction": 0.0
+          }
+        },
+        "9": {
+          "oracle_scale": {
+            "n": 60,
+            "implied_tilt_rmse_deg": 35.81839250866427,
+            "implied_tilt_median_abs_deg": 1.6859145934240671,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 28.34328119412648,
+            "snr": 0.7913052264216045,
+            "residual_median_deg": 7.7263418506454435,
+            "residual_p90_deg": 53.00451699292614,
+            "testable_fraction": 0.0
+          },
+          "fitted_scale": {
+            "scale": 0.33592176310529126,
+            "scale_over_oracle": 3.847163559909685,
+            "same_sign_as_oracle": true,
+            "n": 60,
+            "implied_tilt_rmse_deg": 35.655705120508344,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 28.34328119412648,
+            "snr": 0.794915739243762,
+            "residual_median_deg": 7.715955561684719,
+            "residual_removed_fraction": 0.0013442699224933685,
+            "testable_fraction": 0.0
+          }
+        },
+        "11": {
+          "oracle_scale": {
+            "n": 58,
+            "implied_tilt_rmse_deg": 36.44762404049972,
+            "implied_tilt_median_abs_deg": 3.0641021059917177,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 28.55176202121432,
+            "snr": 0.7833641498685426,
+            "residual_median_deg": 8.741164803784713,
+            "residual_p90_deg": 53.374138822091886,
+            "testable_fraction": 0.0
+          },
+          "fitted_scale": {
+            "scale": -0.43658027238621283,
+            "scale_over_oracle": -4.999961000958519,
+            "same_sign_as_oracle": false,
+            "n": 58,
+            "implied_tilt_rmse_deg": 36.27772759306288,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 28.55176202121432,
+            "snr": 0.7870328136725427,
+            "residual_median_deg": 8.552912269210577,
+            "residual_removed_fraction": 0.02153632139421824,
+            "testable_fraction": 0.0
+          }
+        },
+        "15": {
+          "oracle_scale": {
+            "n": 54,
+            "implied_tilt_rmse_deg": 37.7896496256006,
+            "implied_tilt_median_abs_deg": 8.05550128704759,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 28.954618806400287,
+            "snr": 0.7662050083360651,
+            "residual_median_deg": 9.979008705850243,
+            "residual_p90_deg": 54.06327443985314,
+            "testable_fraction": 0.0
+          },
+          "fitted_scale": {
+            "scale": -0.43658027238621283,
+            "scale_over_oracle": -4.999961000958519,
+            "same_sign_as_oracle": false,
+            "n": 54,
+            "implied_tilt_rmse_deg": 37.67099178936918,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 28.954618806400287,
+            "snr": 0.7686184363898624,
+            "residual_median_deg": 9.958739989439884,
+            "residual_removed_fraction": 0.0020311352567992103,
+            "testable_fraction": 0.0
+          }
+        },
+        "21": {
+          "oracle_scale": {
+            "n": 48,
+            "implied_tilt_rmse_deg": 40.0815319953449,
+            "implied_tilt_median_abs_deg": 16.10723328336418,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 29.46328531849851,
+            "snr": 0.735083811714592,
+            "residual_median_deg": 13.96514524186193,
+            "residual_p90_deg": 55.11025357221731,
+            "testable_fraction": 0.0
+          },
+          "fitted_scale": {
+            "scale": -0.19143925830053193,
+            "scale_over_oracle": -2.1924692573106563,
+            "same_sign_as_oracle": false,
+            "n": 48,
+            "implied_tilt_rmse_deg": 40.04471075146596,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 29.46328531849851,
+            "snr": 0.7357597237088275,
+            "residual_median_deg": 13.959460007150124,
+            "residual_removed_fraction": 0.0004071017245680375,
+            "testable_fraction": 0.0
+          }
+        },
+        "31": {
+          "oracle_scale": {
+            "n": 38,
+            "implied_tilt_rmse_deg": 45.053038685356626,
+            "implied_tilt_median_abs_deg": 24.15459997100813,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 29.525042277989556,
+            "snr": 0.6553396427749931,
+            "residual_median_deg": 21.90047792294701,
+            "residual_p90_deg": 56.70590852478662,
+            "testable_fraction": 0.0
+          },
+          "fitted_scale": {
+            "scale": -0.43658027238621283,
+            "scale_over_oracle": -4.999961000958519,
+            "same_sign_as_oracle": false,
+            "n": 38,
+            "implied_tilt_rmse_deg": 44.95249857484995,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 29.525042277989556,
+            "snr": 0.6568053659759915,
+            "residual_median_deg": 21.86564440724093,
+            "residual_removed_fraction": 0.0015905367831988704,
+            "testable_fraction": 0.0
+          }
+        }
+      },
+      "scale_depth": {
+        "run": false,
+        "reason": "no MoGe-2 run in this handoff"
+      }
+    },
+    "flight-01p-ellipse": {
+      "control": "piloted",
+      "track": "ellipse",
+      "n": 317,
+      "dt_native_s": 0.33332849999999326,
+      "fps_native": 3.0000435006308197,
+      "scale_oracle": -0.003871070616523897,
+      "gravity_align_spread_deg": 15.36211581063501,
+      "true_tilt_deg_median": 24.334916886898046,
+      "windows": {
+        "5": {
+          "oracle_scale": {
+            "n": 313,
+            "implied_tilt_rmse_deg": 26.889585417132576,
+            "implied_tilt_median_abs_deg": 23.80762351860148,
+            "lean_median_deg": 93.35352948063056,
+            "std_true_tilt_deg": 9.08503839659996,
+            "snr": 0.33786457677445153,
+            "residual_median_deg": 26.585747400496228,
+            "residual_p90_deg": 33.85120907062178,
+            "testable_fraction": 0.0
+          },
+          "fitted_scale": {
+            "scale": -0.010382767004504362,
+            "scale_over_oracle": 2.68214352902396,
+            "same_sign_as_oracle": true,
+            "n": 313,
+            "implied_tilt_rmse_deg": 26.359363397240088,
+            "lean_median_deg": 83.26407970543005,
+            "std_true_tilt_deg": 9.08503839659996,
+            "snr": 0.344660766638666,
+            "residual_median_deg": 26.488890753617685,
+            "residual_removed_fraction": 0.003643179385535489,
+            "testable_fraction": 0.0
+          }
+        },
+        "7": {
+          "oracle_scale": {
+            "n": 311,
+            "implied_tilt_rmse_deg": 27.077043925715312,
+            "implied_tilt_median_abs_deg": 24.031115125417223,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 8.93976793149416,
+            "snr": 0.33016041027299814,
+            "residual_median_deg": 26.685907984594802,
+            "residual_p90_deg": 33.83485651372101,
+            "testable_fraction": 0.0
+          },
+          "fitted_scale": {
+            "scale": -0.01556054630476724,
+            "scale_over_oracle": 4.01970096808519,
+            "same_sign_as_oracle": true,
+            "n": 311,
+            "implied_tilt_rmse_deg": 26.419122605644635,
+            "lean_median_deg": 79.38550202172858,
+            "std_true_tilt_deg": 8.93976793149416,
+            "snr": 0.33838246882521805,
+            "residual_median_deg": 26.530204182856036,
+            "residual_removed_fraction": 0.0058346825533780455,
+            "testable_fraction": 0.0
+          }
+        },
+        "9": {
+          "oracle_scale": {
+            "n": 309,
+            "implied_tilt_rmse_deg": 27.22156075444339,
+            "implied_tilt_median_abs_deg": 24.100264768807076,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 8.78790201945946,
+            "snr": 0.3228287348669016,
+            "residual_median_deg": 26.70056306871261,
+            "residual_p90_deg": 33.71932794506379,
+            "testable_fraction": 0.0
+          },
+          "fitted_scale": {
+            "scale": 0.014989881884123785,
+            "scale_over_oracle": -3.8722832438495374,
+            "same_sign_as_oracle": false,
+            "n": 309,
+            "implied_tilt_rmse_deg": 26.756562337526287,
+            "lean_median_deg": 81.81863281860403,
+            "std_true_tilt_deg": 8.78790201945946,
+            "snr": 0.32843912863702823,
+            "residual_median_deg": 26.51296814321138,
+            "residual_removed_fraction": 0.00702587900556495,
+            "testable_fraction": 0.0
+          }
+        },
+        "11": {
+          "oracle_scale": {
+            "n": 307,
+            "implied_tilt_rmse_deg": 27.34833060817134,
+            "implied_tilt_median_abs_deg": 24.27041447560515,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 8.640698196016142,
+            "snr": 0.31594974917534485,
+            "residual_median_deg": 26.79962957875484,
+            "residual_p90_deg": 33.71780119087774,
+            "testable_fraction": 0.0
+          },
+          "fitted_scale": {
+            "scale": 0.019350004417687947,
+            "scale_over_oracle": -4.998618298279369,
+            "same_sign_as_oracle": false,
+            "n": 307,
+            "implied_tilt_rmse_deg": 26.86366586806362,
+            "lean_median_deg": 85.97039730702576,
+            "std_true_tilt_deg": 8.640698196016142,
+            "snr": 0.32165000258912835,
+            "residual_median_deg": 26.630331689849392,
+            "residual_removed_fraction": 0.006317172720911701,
+            "testable_fraction": 0.0
+          }
+        },
+        "15": {
+          "oracle_scale": {
+            "n": 303,
+            "implied_tilt_rmse_deg": 27.557423343138097,
+            "implied_tilt_median_abs_deg": 24.410276713178405,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 8.399380186311499,
+            "snr": 0.30479555659919766,
+            "residual_median_deg": 26.937637595493072,
+            "residual_p90_deg": 33.657398100048624,
+            "testable_fraction": 0.0
+          },
+          "fitted_scale": {
+            "scale": 0.019350004417687947,
+            "scale_over_oracle": -4.998618298279369,
+            "same_sign_as_oracle": false,
+            "n": 303,
+            "implied_tilt_rmse_deg": 27.257986112075876,
+            "lean_median_deg": 49.533760839287304,
+            "std_true_tilt_deg": 8.399380186311499,
+            "snr": 0.3081438280794483,
+            "residual_median_deg": 26.62725691851566,
+            "residual_removed_fraction": 0.011522193654774804,
+            "testable_fraction": 0.0
+          }
+        },
+        "21": {
+          "oracle_scale": {
+            "n": 297,
+            "implied_tilt_rmse_deg": 27.80797873466785,
+            "implied_tilt_median_abs_deg": 24.523155157238676,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 8.199351062846821,
+            "snr": 0.29485606059619124,
+            "residual_median_deg": 27.136714445532785,
+            "residual_p90_deg": 33.72880106222314,
+            "testable_fraction": 0.0
+          },
+          "fitted_scale": {
+            "scale": 0.01934970554320277,
+            "scale_over_oracle": -4.998541091089217,
+            "same_sign_as_oracle": false,
+            "n": 297,
+            "implied_tilt_rmse_deg": 27.593573793526392,
+            "lean_median_deg": 11.780289091219277,
+            "std_true_tilt_deg": 8.199351062846821,
+            "snr": 0.2971471228844752,
+            "residual_median_deg": 26.790375403000283,
+            "residual_removed_fraction": 0.01276274779791986,
+            "testable_fraction": 0.0
+          }
+        },
+        "31": {
+          "oracle_scale": {
+            "n": 287,
+            "implied_tilt_rmse_deg": 28.21544186080528,
+            "implied_tilt_median_abs_deg": 24.697388380738364,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 7.724908373049121,
+            "snr": 0.2737830019164069,
+            "residual_median_deg": 27.222078389042334,
+            "residual_p90_deg": 33.87057223366112,
+            "testable_fraction": 0.0
+          },
+          "fitted_scale": {
+            "scale": 0.019350004417687947,
+            "scale_over_oracle": -4.998618298279369,
+            "same_sign_as_oracle": false,
+            "n": 287,
+            "implied_tilt_rmse_deg": 28.023240129412752,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 7.724908373049121,
+            "snr": 0.27566078502611047,
+            "residual_median_deg": 27.05175287763505,
+            "residual_removed_fraction": 0.006256888580404851,
+            "testable_fraction": 0.0
+          }
+        }
+      },
+      "scale_depth": {
+        "run": false,
+        "reason": "no MoGe-2 run in this handoff"
+      }
+    },
+    "flight-04a-ellipse": {
+      "control": "autonomous",
+      "track": "ellipse",
+      "n": 88,
+      "dt_native_s": 0.33337099999999964,
+      "fps_native": 2.999661038302675,
+      "scale_oracle": 0.008597342378998452,
+      "gravity_align_spread_deg": 12.919956098142087,
+      "true_tilt_deg_median": 1.2348561367235815,
+      "windows": {
+        "5": {
+          "oracle_scale": {
+            "n": 84,
+            "implied_tilt_rmse_deg": 30.76179457353906,
+            "implied_tilt_median_abs_deg": 1.2308129791953486,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 26.27005613576903,
+            "snr": 0.8539832119666461,
+            "residual_median_deg": 3.4636861386814797,
+            "residual_p90_deg": 53.479676165100564,
+            "testable_fraction": 0.0
+          },
+          "fitted_scale": {
+            "scale": -0.0059845327483030565,
+            "scale_over_oracle": -0.6960910109759088,
+            "same_sign_as_oracle": false,
+            "n": 84,
+            "implied_tilt_rmse_deg": 30.7760518132528,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 26.27005613576903,
+            "snr": 0.8535875977586119,
+            "residual_median_deg": 3.4518782696454533,
+            "residual_removed_fraction": 0.0034090470565907305,
+            "testable_fraction": 0.0
+          }
+        },
+        "7": {
+          "oracle_scale": {
+            "n": 82,
+            "implied_tilt_rmse_deg": 31.155997536163735,
+            "implied_tilt_median_abs_deg": 1.2430569412030568,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 26.48014036517785,
+            "snr": 0.8499211214290773,
+            "residual_median_deg": 3.4879475206131216,
+            "residual_p90_deg": 53.50207126210737,
+            "testable_fraction": 0.0
+          },
+          "fitted_scale": {
+            "scale": -0.04298268054112372,
+            "scale_over_oracle": -4.999531093017955,
+            "same_sign_as_oracle": false,
+            "n": 82,
+            "implied_tilt_rmse_deg": 31.055303216785035,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 26.48014036517785,
+            "snr": 0.852676922209719,
+            "residual_median_deg": 3.45190789885153,
+            "residual_removed_fraction": 0.010332615828823166,
+            "testable_fraction": 0.0
+          }
+        },
+        "9": {
+          "oracle_scale": {
+            "n": 80,
+            "implied_tilt_rmse_deg": 31.549797372544905,
+            "implied_tilt_median_abs_deg": 1.2630796573468388,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 26.695159135015764,
+            "snr": 0.846127752257651,
+            "residual_median_deg": 3.5076180573374574,
+            "residual_p90_deg": 53.57824255403536,
+            "testable_fraction": 0.0
+          },
+          "fitted_scale": {
+            "scale": -0.04298268054112372,
+            "scale_over_oracle": -4.999531093017955,
+            "same_sign_as_oracle": false,
+            "n": 80,
+            "implied_tilt_rmse_deg": 31.475817497137932,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 26.695159135015764,
+            "snr": 0.8481164671082214,
+            "residual_median_deg": 3.486115230690891,
+            "residual_removed_fraction": 0.006130321572950459,
+            "testable_fraction": 0.0
+          }
+        },
+        "11": {
+          "oracle_scale": {
+            "n": 78,
+            "implied_tilt_rmse_deg": 31.955143536149304,
+            "implied_tilt_median_abs_deg": 1.2789677061526916,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 26.91072013633593,
+            "snr": 0.8421404868951108,
+            "residual_median_deg": 3.5547050624374066,
+            "residual_p90_deg": 53.65733339351738,
+            "testable_fraction": 0.0
+          },
+          "fitted_scale": {
+            "scale": -0.04298268054112372,
+            "scale_over_oracle": -4.999531093017955,
+            "same_sign_as_oracle": false,
+            "n": 78,
+            "implied_tilt_rmse_deg": 31.89451343466191,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 26.91072013633593,
+            "snr": 0.8437413598255505,
+            "residual_median_deg": 3.542924795975183,
+            "residual_removed_fraction": 0.003313992653485087,
+            "testable_fraction": 0.0
+          }
+        },
+        "15": {
+          "oracle_scale": {
+            "n": 74,
+            "implied_tilt_rmse_deg": 32.809617158737844,
+            "implied_tilt_median_abs_deg": 1.2852773130454342,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 27.357447519927955,
+            "snr": 0.8338240396883794,
+            "residual_median_deg": 3.8662871157266823,
+            "residual_p90_deg": 53.79273299382443,
+            "testable_fraction": 0.0
+          },
+          "fitted_scale": {
+            "scale": 0.04298268054112372,
+            "scale_over_oracle": 4.999531093017955,
+            "same_sign_as_oracle": true,
+            "n": 74,
+            "implied_tilt_rmse_deg": 32.75896811894765,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 27.357447519927955,
+            "snr": 0.8351132251966301,
+            "residual_median_deg": 3.8406538228310296,
+            "residual_removed_fraction": 0.00662995068094796,
+            "testable_fraction": 0.0
+          }
+        },
+        "21": {
+          "oracle_scale": {
+            "n": 68,
+            "implied_tilt_rmse_deg": 34.22677454801777,
+            "implied_tilt_median_abs_deg": 1.3560939719177483,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 28.04160622844229,
+            "snr": 0.8192886007736977,
+            "residual_median_deg": 5.0604019117974754,
+            "residual_p90_deg": 54.223036983093664,
+            "testable_fraction": 0.0
+          },
+          "fitted_scale": {
+            "scale": -0.04298268054112372,
+            "scale_over_oracle": -4.999531093017955,
+            "same_sign_as_oracle": false,
+            "n": 68,
+            "implied_tilt_rmse_deg": 34.18056895037548,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 28.04160622844229,
+            "snr": 0.8203961224037568,
+            "residual_median_deg": 4.799327877726862,
+            "residual_removed_fraction": 0.051591561030352895,
+            "testable_fraction": 0.0
+          }
+        },
+        "31": {
+          "oracle_scale": {
+            "n": 58,
+            "implied_tilt_rmse_deg": 37.05921655390617,
+            "implied_tilt_median_abs_deg": 3.570831373096016,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 29.190150062151428,
+            "snr": 0.7876623624703876,
+            "residual_median_deg": 7.0052132437491395,
+            "residual_p90_deg": 56.112966158797285,
+            "testable_fraction": 0.0
+          },
+          "fitted_scale": {
+            "scale": 0.04298268054112372,
+            "scale_over_oracle": 4.999531093017955,
+            "same_sign_as_oracle": true,
+            "n": 58,
+            "implied_tilt_rmse_deg": 37.01596763671444,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 29.190150062151428,
+            "snr": 0.7885826556969175,
+            "residual_median_deg": 6.957758912321546,
+            "residual_removed_fraction": 0.0067741451653791085,
+            "testable_fraction": 0.0
+          }
+        }
+      },
+      "scale_depth": {
+        "run": false,
+        "reason": "no MoGe-2 run in this handoff"
+      }
+    },
+    "flight-07a-lemniscate": {
+      "control": "autonomous",
+      "track": "lemniscate",
+      "n": 93,
+      "dt_native_s": 0.3341000000000012,
+      "fps_native": 2.993115833582749,
+      "scale_oracle": 0.06310776778317967,
+      "gravity_align_spread_deg": 7.921703800313803,
+      "true_tilt_deg_median": 3.147969480681319,
+      "windows": {
+        "5": {
+          "oracle_scale": {
+            "n": 89,
+            "implied_tilt_rmse_deg": 27.127180711591247,
+            "implied_tilt_median_abs_deg": 3.01661147700825,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 21.763680459356088,
+            "snr": 0.8022831672314781,
+            "residual_median_deg": 2.698332919464608,
+            "residual_p90_deg": 25.974143281027338,
+            "testable_fraction": 0.0
+          },
+          "fitted_scale": {
+            "scale": 0.013690946593173794,
+            "scale_over_oracle": 0.21694550566599013,
+            "same_sign_as_oracle": true,
+            "n": 89,
+            "implied_tilt_rmse_deg": 27.2055047087428,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 21.763680459356088,
+            "snr": 0.7999734131880333,
+            "residual_median_deg": 2.633585407194055,
+            "residual_removed_fraction": 0.02399537573866173,
+            "testable_fraction": 0.0
+          }
+        },
+        "7": {
+          "oracle_scale": {
+            "n": 87,
+            "implied_tilt_rmse_deg": 27.471836249801193,
+            "implied_tilt_median_abs_deg": 3.046732325365788,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 21.919379573513407,
+            "snr": 0.7978854916795753,
+            "residual_median_deg": 2.6335349373894323,
+            "residual_p90_deg": 26.044662432337773,
+            "testable_fraction": 0.0
+          },
+          "fitted_scale": {
+            "scale": 0.033789421306311865,
+            "scale_over_oracle": 0.5354241243709127,
+            "same_sign_as_oracle": true,
+            "n": 87,
+            "implied_tilt_rmse_deg": 27.500815317818134,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 21.919379573513407,
+            "snr": 0.7970447174092165,
+            "residual_median_deg": 2.6322663052384683,
+            "residual_removed_fraction": 0.00048172216474240415,
+            "testable_fraction": 0.0
+          }
+        },
+        "9": {
+          "oracle_scale": {
+            "n": 85,
+            "implied_tilt_rmse_deg": 27.800815714992375,
+            "implied_tilt_median_abs_deg": 3.078027768206066,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 22.080480857420138,
+            "snr": 0.794238596585949,
+            "residual_median_deg": 2.6719977965676436,
+            "residual_p90_deg": 26.061340900753432,
+            "testable_fraction": 0.0
+          },
+          "fitted_scale": {
+            "scale": 0.31524061727457287,
+            "scale_over_oracle": 4.995274406752112,
+            "same_sign_as_oracle": true,
+            "n": 85,
+            "implied_tilt_rmse_deg": 27.601644343183146,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 22.080480857420138,
+            "snr": 0.7999697620505503,
+            "residual_median_deg": 2.593659518584461,
+            "residual_removed_fraction": 0.029318241985009652,
+            "testable_fraction": 0.0
+          }
+        },
+        "11": {
+          "oracle_scale": {
+            "n": 83,
+            "implied_tilt_rmse_deg": 28.136183471439058,
+            "implied_tilt_median_abs_deg": 3.129119404936996,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 22.24034605555972,
+            "snr": 0.7904535481201925,
+            "residual_median_deg": 2.6575089266161522,
+            "residual_p90_deg": 26.087078068667623,
+            "testable_fraction": 0.0
+          },
+          "fitted_scale": {
+            "scale": -0.14785308370939818,
+            "scale_over_oracle": -2.3428666375489513,
+            "same_sign_as_oracle": false,
+            "n": 83,
+            "implied_tilt_rmse_deg": 28.07684361460686,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 22.24034605555972,
+            "snr": 0.792124156149421,
+            "residual_median_deg": 2.5817129388096327,
+            "residual_removed_fraction": 0.028521442410743614,
+            "testable_fraction": 0.0
+          }
+        },
+        "15": {
+          "oracle_scale": {
+            "n": 79,
+            "implied_tilt_rmse_deg": 28.843672130158723,
+            "implied_tilt_median_abs_deg": 3.147969480681319,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 22.55791853547396,
+            "snr": 0.782075126692609,
+            "residual_median_deg": 2.966584255867854,
+            "residual_p90_deg": 26.321789701185626,
+            "testable_fraction": 0.0
+          },
+          "fitted_scale": {
+            "scale": -0.04581287772131945,
+            "scale_over_oracle": -0.7259467309748534,
+            "same_sign_as_oracle": false,
+            "n": 79,
+            "implied_tilt_rmse_deg": 28.852802591993076,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 22.55791853547396,
+            "snr": 0.7818276392233036,
+            "residual_median_deg": 2.8990014176703327,
+            "residual_removed_fraction": 0.022781364818424965,
+            "testable_fraction": 0.0
+          }
+        },
+        "21": {
+          "oracle_scale": {
+            "n": 73,
+            "implied_tilt_rmse_deg": 30.000567853914447,
+            "implied_tilt_median_abs_deg": 4.55672069111355,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 23.033000372975543,
+            "snr": 0.7677521467304566,
+            "residual_median_deg": 3.29921638760122,
+            "residual_p90_deg": 26.932288605889678,
+            "testable_fraction": 0.0
+          },
+          "fitted_scale": {
+            "scale": -0.3155342890559003,
+            "scale_over_oracle": -4.999927903328578,
+            "same_sign_as_oracle": false,
+            "n": 73,
+            "implied_tilt_rmse_deg": 29.89059217892621,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 23.033000372975543,
+            "snr": 0.7705769171483501,
+            "residual_median_deg": 3.2523476289361386,
+            "residual_removed_fraction": 0.014206027480106687,
+            "testable_fraction": 0.0
+          }
+        },
+        "31": {
+          "oracle_scale": {
+            "n": 63,
+            "implied_tilt_rmse_deg": 32.27735830419662,
+            "implied_tilt_median_abs_deg": 10.478413990391696,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 23.789943281262055,
+            "snr": 0.7370474081879541,
+            "residual_median_deg": 4.205463383551839,
+            "residual_p90_deg": 28.558507978072274,
+            "testable_fraction": 0.0
+          },
+          "fitted_scale": {
+            "scale": 0.3155342890559003,
+            "scale_over_oracle": 4.999927903328578,
+            "same_sign_as_oracle": true,
+            "n": 63,
+            "implied_tilt_rmse_deg": 32.18015410533385,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 23.789943281262055,
+            "snr": 0.739273752493276,
+            "residual_median_deg": 4.167294866591026,
+            "residual_removed_fraction": 0.009075936104947613,
+            "testable_fraction": 0.0
+          }
+        }
+      },
+      "scale_depth": {
+        "run": false,
+        "reason": "no MoGe-2 run in this handoff"
+      }
+    },
+    "flight-07p-lemniscate": {
+      "control": "piloted",
+      "track": "lemniscate",
+      "n": 321,
+      "dt_native_s": 0.33334400000001096,
+      "fps_native": 2.999904003071803,
+      "scale_oracle": -0.007697526938382114,
+      "gravity_align_spread_deg": 19.631041174502673,
+      "true_tilt_deg_median": 22.979303113225278,
+      "windows": {
+        "5": {
+          "oracle_scale": {
+            "n": 317,
+            "implied_tilt_rmse_deg": 24.86328842184037,
+            "implied_tilt_median_abs_deg": 22.57808237286106,
+            "lean_median_deg": 56.76891355207113,
+            "std_true_tilt_deg": 9.055343244154411,
+            "snr": 0.36420537342116144,
+            "residual_median_deg": 24.229434861509482,
+            "residual_p90_deg": 31.65629780131465,
+            "testable_fraction": 0.0
+          },
+          "fitted_scale": {
+            "scale": 0.014203537420753741,
+            "scale_over_oracle": -1.8452078874749709,
+            "same_sign_as_oracle": false,
+            "n": 317,
+            "implied_tilt_rmse_deg": 24.54559853060227,
+            "lean_median_deg": 51.65275354991183,
+            "std_true_tilt_deg": 9.055343244154411,
+            "snr": 0.3689192273256097,
+            "residual_median_deg": 24.08034622629563,
+            "residual_removed_fraction": 0.006153203162434839,
+            "testable_fraction": 0.0
+          }
+        },
+        "7": {
+          "oracle_scale": {
+            "n": 315,
+            "implied_tilt_rmse_deg": 25.066394776748602,
+            "implied_tilt_median_abs_deg": 22.93680044231409,
+            "lean_median_deg": 62.73122872532968,
+            "std_true_tilt_deg": 8.900697770190323,
+            "snr": 0.35508487955541745,
+            "residual_median_deg": 24.216685318678724,
+            "residual_p90_deg": 31.706880341457467,
+            "testable_fraction": 0.0
+          },
+          "fitted_scale": {
+            "scale": 0.023446755710240103,
+            "scale_over_oracle": -3.046011517456047,
+            "same_sign_as_oracle": false,
+            "n": 315,
+            "implied_tilt_rmse_deg": 24.536905842445865,
+            "lean_median_deg": 47.10147119477913,
+            "std_true_tilt_deg": 8.900697770190323,
+            "snr": 0.3627473580957057,
+            "residual_median_deg": 24.04558809117844,
+            "residual_removed_fraction": 0.007065262039322673,
+            "testable_fraction": 0.0
+          }
+        },
+        "9": {
+          "oracle_scale": {
+            "n": 313,
+            "implied_tilt_rmse_deg": 25.215610670328672,
+            "implied_tilt_median_abs_deg": 23.10925133871441,
+            "lean_median_deg": 18.515812278083477,
+            "std_true_tilt_deg": 8.747004379430992,
+            "snr": 0.3468884610327377,
+            "residual_median_deg": 24.296585333099042,
+            "residual_p90_deg": 31.741432683368206,
+            "testable_fraction": 0.0
+          },
+          "fitted_scale": {
+            "scale": 0.03360163023086928,
+            "scale_over_oracle": -4.365250099135316,
+            "same_sign_as_oracle": false,
+            "n": 313,
+            "implied_tilt_rmse_deg": 24.568612288891956,
+            "lean_median_deg": 46.761247707591316,
+            "std_true_tilt_deg": 8.747004379430992,
+            "snr": 0.35602354241984263,
+            "residual_median_deg": 24.042919207874387,
+            "residual_removed_fraction": 0.010440402293036888,
+            "testable_fraction": 0.0
+          }
+        },
+        "11": {
+          "oracle_scale": {
+            "n": 311,
+            "implied_tilt_rmse_deg": 25.333797237359377,
+            "implied_tilt_median_abs_deg": 23.120605427027822,
+            "lean_median_deg": 11.946560708426018,
+            "std_true_tilt_deg": 8.612763850264823,
+            "snr": 0.3399712948504896,
+            "residual_median_deg": 24.253268075978557,
+            "residual_p90_deg": 31.791885634932687,
+            "testable_fraction": 0.0
+          },
+          "fitted_scale": {
+            "scale": 0.009454829303845945,
+            "scale_over_oracle": -1.2282944092993568,
+            "same_sign_as_oracle": false,
+            "n": 311,
+            "implied_tilt_rmse_deg": 25.296963778495282,
+            "lean_median_deg": 22.707559229767586,
+            "std_true_tilt_deg": 8.612763850264823,
+            "snr": 0.34046630756480173,
+            "residual_median_deg": 24.213827990905305,
+            "residual_removed_fraction": 0.0016261761074712888,
+            "testable_fraction": 0.0
+          }
+        },
+        "15": {
+          "oracle_scale": {
+            "n": 307,
+            "implied_tilt_rmse_deg": 25.53011614964396,
+            "implied_tilt_median_abs_deg": 23.142002928426226,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 8.362851721344882,
+            "snr": 0.3275681031894369,
+            "residual_median_deg": 24.378966716580752,
+            "residual_p90_deg": 31.80042681387458,
+            "testable_fraction": 0.0
+          },
+          "fitted_scale": {
+            "scale": 0.017411476413636714,
+            "scale_over_oracle": -2.2619571913179044,
+            "same_sign_as_oracle": false,
+            "n": 307,
+            "implied_tilt_rmse_deg": 25.37603123364428,
+            "lean_median_deg": 46.625914698696555,
+            "std_true_tilt_deg": 8.362851721344882,
+            "snr": 0.32955711806727167,
+            "residual_median_deg": 24.27584403679266,
+            "residual_removed_fraction": 0.004229985667028147,
+            "testable_fraction": 0.0
+          }
+        },
+        "21": {
+          "oracle_scale": {
+            "n": 301,
+            "implied_tilt_rmse_deg": 25.78604803303324,
+            "implied_tilt_median_abs_deg": 23.449184101334012,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 8.022272910178536,
+            "snr": 0.3111090501305821,
+            "residual_median_deg": 24.50643543500326,
+            "residual_p90_deg": 31.8131751452488,
+            "testable_fraction": 0.0
+          },
+          "fitted_scale": {
+            "scale": 0.021481829372406846,
+            "scale_over_oracle": -2.7907442928575126,
+            "same_sign_as_oracle": false,
+            "n": 301,
+            "implied_tilt_rmse_deg": 25.615347861135046,
+            "lean_median_deg": 53.30983445867018,
+            "std_true_tilt_deg": 8.022272910178536,
+            "snr": 0.3131822746920549,
+            "residual_median_deg": 24.305082851530713,
+            "residual_removed_fraction": 0.00821631460873129,
+            "testable_fraction": 0.0
+          }
+        },
+        "31": {
+          "oracle_scale": {
+            "n": 291,
+            "implied_tilt_rmse_deg": 26.139320296595674,
+            "implied_tilt_median_abs_deg": 23.75415249268621,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 7.722390288645373,
+            "snr": 0.2954319470063313,
+            "residual_median_deg": 24.714303534954187,
+            "residual_p90_deg": 31.99280149685203,
+            "testable_fraction": 0.0
+          },
+          "fitted_scale": {
+            "scale": 0.03044623250072671,
+            "scale_over_oracle": -3.955326528175292,
+            "same_sign_as_oracle": false,
+            "n": 291,
+            "implied_tilt_rmse_deg": 25.932513701421076,
+            "lean_median_deg": 65.25046519763889,
+            "std_true_tilt_deg": 7.722390288645373,
+            "snr": 0.29778795752539,
+            "residual_median_deg": 24.437225016616804,
+            "residual_removed_fraction": 0.011211261444025844,
+            "testable_fraction": 0.0
+          }
+        }
+      },
+      "scale_depth": {
+        "run": false,
+        "reason": "no MoGe-2 run in this handoff"
+      }
+    },
+    "flight-13a-trackRATM": {
+      "control": "autonomous",
+      "track": "trackRATM",
+      "n": 140,
+      "dt_native_s": 0.33339999999999925,
+      "fps_native": 2.9994001199760114,
+      "scale_oracle": -0.017904286556128364,
+      "gravity_align_spread_deg": 12.285914612032185,
+      "true_tilt_deg_median": 2.255020373456928,
+      "windows": {
+        "5": {
+          "oracle_scale": {
+            "n": 136,
+            "implied_tilt_rmse_deg": 41.40018065345255,
+            "implied_tilt_median_abs_deg": 2.2832316076376973,
+            "lean_median_deg": 54.62425105386028,
+            "std_true_tilt_deg": 34.07653543676865,
+            "snr": 0.8231011290026062,
+            "residual_median_deg": 8.724985285976965,
+            "residual_p90_deg": 39.82884417928132,
+            "testable_fraction": 0.0
+          },
+          "fitted_scale": {
+            "scale": -0.05553717277889426,
+            "scale_over_oracle": 3.1018925330975966,
+            "same_sign_as_oracle": true,
+            "n": 136,
+            "implied_tilt_rmse_deg": 39.75908066697353,
+            "lean_median_deg": 48.02916412531048,
+            "std_true_tilt_deg": 34.07653543676865,
+            "snr": 0.8570755375909592,
+            "residual_median_deg": 8.262503801492183,
+            "residual_removed_fraction": 0.05300656325783082,
+            "testable_fraction": 0.029411764705882353
+          }
+        },
+        "7": {
+          "oracle_scale": {
+            "n": 134,
+            "implied_tilt_rmse_deg": 42.0208199789752,
+            "implied_tilt_median_abs_deg": 2.324907934017163,
+            "lean_median_deg": 47.802220454498475,
+            "std_true_tilt_deg": 34.197009623652235,
+            "snr": 0.8138110974693605,
+            "residual_median_deg": 9.113368561656095,
+            "residual_p90_deg": 39.735979071206124,
+            "testable_fraction": 0.0
+          },
+          "fitted_scale": {
+            "scale": -0.0825841871724566,
+            "scale_over_oracle": 4.612537166089385,
+            "same_sign_as_oracle": true,
+            "n": 134,
+            "implied_tilt_rmse_deg": 40.273874709230185,
+            "lean_median_deg": 44.73328742164161,
+            "std_true_tilt_deg": 34.197009623652235,
+            "snr": 0.8491114865542048,
+            "residual_median_deg": 8.995902802834593,
+            "residual_removed_fraction": 0.012889389694578202,
+            "testable_fraction": 0.007462686567164179
+          }
+        },
+        "9": {
+          "oracle_scale": {
+            "n": 132,
+            "implied_tilt_rmse_deg": 42.46736399415269,
+            "implied_tilt_median_abs_deg": 2.3408150643423054,
+            "lean_median_deg": 33.36445603825303,
+            "std_true_tilt_deg": 34.32006385050831,
+            "snr": 0.8081514985303496,
+            "residual_median_deg": 9.251871359250302,
+            "residual_p90_deg": 39.98055338068454,
+            "testable_fraction": 0.0
+          },
+          "fitted_scale": {
+            "scale": -0.08951557397064377,
+            "scale_over_oracle": 4.999672770541307,
+            "same_sign_as_oracle": true,
+            "n": 132,
+            "implied_tilt_rmse_deg": 41.02879613613772,
+            "lean_median_deg": 52.73425027983408,
+            "std_true_tilt_deg": 34.32006385050831,
+            "snr": 0.8364872256215086,
+            "residual_median_deg": 9.148915092989498,
+            "residual_removed_fraction": 0.01112815583604776,
+            "testable_fraction": 0.0
+          }
+        },
+        "11": {
+          "oracle_scale": {
+            "n": 130,
+            "implied_tilt_rmse_deg": 42.86129079737002,
+            "implied_tilt_median_abs_deg": 2.387985053267277,
+            "lean_median_deg": 31.498483180688794,
+            "std_true_tilt_deg": 34.441368859717876,
+            "snr": 0.803554167851408,
+            "residual_median_deg": 9.281937899498551,
+            "residual_p90_deg": 40.041802061378014,
+            "testable_fraction": 0.0
+          },
+          "fitted_scale": {
+            "scale": -0.08951557397064377,
+            "scale_over_oracle": 4.999672770541307,
+            "same_sign_as_oracle": true,
+            "n": 130,
+            "implied_tilt_rmse_deg": 41.67441833585188,
+            "lean_median_deg": 69.83455467308104,
+            "std_true_tilt_deg": 34.441368859717876,
+            "snr": 0.826439101852766,
+            "residual_median_deg": 9.18179380048593,
+            "residual_removed_fraction": 0.010789136934220456,
+            "testable_fraction": 0.0
+          }
+        },
+        "15": {
+          "oracle_scale": {
+            "n": 126,
+            "implied_tilt_rmse_deg": 43.61018947174215,
+            "implied_tilt_median_abs_deg": 2.567601969903345,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 34.676127746736505,
+            "snr": 0.7951382043227626,
+            "residual_median_deg": 9.862613373733295,
+            "residual_p90_deg": 40.37148539125611,
+            "testable_fraction": 0.0
+          },
+          "fitted_scale": {
+            "scale": -0.025102321511363067,
+            "scale_over_oracle": 1.4020285830809005,
+            "same_sign_as_oracle": true,
+            "n": 126,
+            "implied_tilt_rmse_deg": 43.5173932972511,
+            "lean_median_deg": 21.451135219965387,
+            "std_true_tilt_deg": 34.676127746736505,
+            "snr": 0.796833751274503,
+            "residual_median_deg": 9.858324186717162,
+            "residual_removed_fraction": 0.00043489355747794445,
+            "testable_fraction": 0.0
+          }
+        },
+        "21": {
+          "oracle_scale": {
+            "n": 120,
+            "implied_tilt_rmse_deg": 44.75850194291711,
+            "implied_tilt_median_abs_deg": 2.8819855549138707,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 35.01890413124539,
+            "snr": 0.7823966980822293,
+            "residual_median_deg": 12.440096696820293,
+            "residual_p90_deg": 40.97627067453461,
+            "testable_fraction": 0.0
+          },
+          "fitted_scale": {
+            "scale": -0.08951557397064377,
+            "scale_over_oracle": 4.999672770541307,
+            "same_sign_as_oracle": true,
+            "n": 120,
+            "implied_tilt_rmse_deg": 44.09500861612104,
+            "lean_median_deg": 44.83177119288549,
+            "std_true_tilt_deg": 35.01890413124539,
+            "snr": 0.7941693454719625,
+            "residual_median_deg": 12.39630432709374,
+            "residual_removed_fraction": 0.003520259592334707,
+            "testable_fraction": 0.0
+          }
+        },
+        "31": {
+          "oracle_scale": {
+            "n": 110,
+            "implied_tilt_rmse_deg": 46.82589259787642,
+            "implied_tilt_median_abs_deg": 5.123097182898297,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 35.534105005592906,
+            "snr": 0.758855902881484,
+            "residual_median_deg": 18.63894387666937,
+            "residual_p90_deg": 41.53340710003426,
+            "testable_fraction": 0.0
+          },
+          "fitted_scale": {
+            "scale": 0.024591490130103016,
+            "scale_over_oracle": -1.3734973495319602,
+            "same_sign_as_oracle": false,
+            "n": 110,
+            "implied_tilt_rmse_deg": 46.79126875914693,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 35.534105005592906,
+            "snr": 0.7594174286767243,
+            "residual_median_deg": 18.63617504717399,
+            "residual_removed_fraction": 0.0001485507716371126,
+            "testable_fraction": 0.0
+          }
+        }
+      },
+      "scale_depth": {
+        "run": false,
+        "reason": "no MoGe-2 run in this handoff"
+      }
+    },
+    "flight-13p-trackRATM": {
+      "control": "piloted",
+      "track": "trackRATM",
+      "n": 134,
+      "dt_native_s": 0.33380400000000066,
+      "fps_native": 2.995769972798403,
+      "scale_oracle": -0.001676172199755753,
+      "gravity_align_spread_deg": 27.53912122415197,
+      "true_tilt_deg_median": 62.05414369727977,
+      "windows": {
+        "5": {
+          "oracle_scale": {
+            "n": 130,
+            "implied_tilt_rmse_deg": 67.14536816546382,
+            "implied_tilt_median_abs_deg": 63.06958242454974,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 23.12550772257485,
+            "snr": 0.3444095751413191,
+            "residual_median_deg": 52.43226735389932,
+            "residual_p90_deg": 57.98613965831559,
+            "testable_fraction": 0.0
+          },
+          "fitted_scale": {
+            "scale": -0.0006453064562048082,
+            "scale_over_oracle": 0.3849881630889955,
+            "same_sign_as_oracle": true,
+            "n": 130,
+            "implied_tilt_rmse_deg": 67.23519027580741,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 23.12550772257485,
+            "snr": 0.3439494649708142,
+            "residual_median_deg": 52.354416071567954,
+            "residual_removed_fraction": 0.0014847971728153553,
+            "testable_fraction": 0.0
+          }
+        },
+        "7": {
+          "oracle_scale": {
+            "n": 128,
+            "implied_tilt_rmse_deg": 67.71294502218156,
+            "implied_tilt_median_abs_deg": 63.869016490208864,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 22.204320551781688,
+            "snr": 0.3279183994213802,
+            "residual_median_deg": 52.535392669358984,
+            "residual_p90_deg": 58.16098089373436,
+            "testable_fraction": 0.0
+          },
+          "fitted_scale": {
+            "scale": 0.0018549023601993867,
+            "scale_over_oracle": -1.106629951546552,
+            "same_sign_as_oracle": false,
+            "n": 128,
+            "implied_tilt_rmse_deg": 67.70275138525027,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 22.204320551781688,
+            "snr": 0.32796777232038943,
+            "residual_median_deg": 52.52433991610325,
+            "residual_removed_fraction": 0.0002103868020040256,
+            "testable_fraction": 0.0
+          }
+        },
+        "9": {
+          "oracle_scale": {
+            "n": 126,
+            "implied_tilt_rmse_deg": 68.26093044256082,
+            "implied_tilt_median_abs_deg": 64.26404048462001,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 21.19839420425397,
+            "snr": 0.3105494470529035,
+            "residual_median_deg": 52.71053915774762,
+            "residual_p90_deg": 58.189363695280335,
+            "testable_fraction": 0.0
+          },
+          "fitted_scale": {
+            "scale": -0.0016547592318351635,
+            "scale_over_oracle": 0.9872250787098665,
+            "same_sign_as_oracle": true,
+            "n": 126,
+            "implied_tilt_rmse_deg": 68.26189288860415,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 21.19839420425397,
+            "snr": 0.31054506851791236,
+            "residual_median_deg": 52.710339683917724,
+            "residual_removed_fraction": 3.784325356637197e-06,
+            "testable_fraction": 0.0
+          }
+        },
+        "11": {
+          "oracle_scale": {
+            "n": 124,
+            "implied_tilt_rmse_deg": 68.79511512171618,
+            "implied_tilt_median_abs_deg": 65.03945768984892,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 20.38368340901534,
+            "snr": 0.29629550547232,
+            "residual_median_deg": 52.94921556356975,
+            "residual_p90_deg": 58.19864756822086,
+            "testable_fraction": 0.0
+          },
+          "fitted_scale": {
+            "scale": -0.008374778119065273,
+            "scale_over_oracle": 4.996370969692506,
+            "same_sign_as_oracle": true,
+            "n": 124,
+            "implied_tilt_rmse_deg": 68.5425615123074,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 20.38368340901534,
+            "snr": 0.2973872431854662,
+            "residual_median_deg": 52.92859254785991,
+            "residual_removed_fraction": 0.0003894867089218046,
+            "testable_fraction": 0.0
+          }
+        },
+        "15": {
+          "oracle_scale": {
+            "n": 120,
+            "implied_tilt_rmse_deg": 69.82064240930987,
+            "implied_tilt_median_abs_deg": 65.7732682516361,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 19.078645998913313,
+            "snr": 0.2732522265703097,
+            "residual_median_deg": 53.101104071363935,
+            "residual_p90_deg": 58.21386441781783,
+            "testable_fraction": 0.0
+          },
+          "fitted_scale": {
+            "scale": 0.008374778119065273,
+            "scale_over_oracle": -4.996370969692506,
+            "same_sign_as_oracle": false,
+            "n": 120,
+            "implied_tilt_rmse_deg": 69.64198731474758,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 19.078645998913313,
+            "snr": 0.27395321033397857,
+            "residual_median_deg": 53.03585153079216,
+            "residual_removed_fraction": 0.0012288358540357702,
+            "testable_fraction": 0.0
+          }
+        },
+        "21": {
+          "oracle_scale": {
+            "n": 114,
+            "implied_tilt_rmse_deg": 70.83426179665867,
+            "implied_tilt_median_abs_deg": 66.17029993337465,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 17.884901414846734,
+            "snr": 0.2524894162967106,
+            "residual_median_deg": 53.249585379813105,
+            "residual_p90_deg": 58.33348734892804,
+            "testable_fraction": 0.0
+          },
+          "fitted_scale": {
+            "scale": 0.008374778119065273,
+            "scale_over_oracle": -4.996370969692506,
+            "same_sign_as_oracle": false,
+            "n": 114,
+            "implied_tilt_rmse_deg": 70.7288488037499,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 17.884901414846734,
+            "snr": 0.2528657219414338,
+            "residual_median_deg": 53.17456643753707,
+            "residual_removed_fraction": 0.001408817397186346,
+            "testable_fraction": 0.0
+          }
+        },
+        "31": {
+          "oracle_scale": {
+            "n": 104,
+            "implied_tilt_rmse_deg": 71.31943902775997,
+            "implied_tilt_median_abs_deg": 66.44078941623914,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 18.29272969406175,
+            "snr": 0.25649009503484166,
+            "residual_median_deg": 53.513752877561885,
+            "residual_p90_deg": 58.46914075028398,
+            "testable_fraction": 0.0
+          },
+          "fitted_scale": {
+            "scale": 0.008374778119065273,
+            "scale_over_oracle": -4.996370969692506,
+            "same_sign_as_oracle": false,
+            "n": 104,
+            "implied_tilt_rmse_deg": 71.24131839348183,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 18.29272969406175,
+            "snr": 0.25677135272857937,
+            "residual_median_deg": 53.45201571730938,
+            "residual_removed_fraction": 0.0011536690464180044,
+            "testable_fraction": 0.0
+          }
+        }
+      },
+      "scale_depth": {
+        "run": false,
+        "reason": "no MoGe-2 run in this handoff"
+      }
+    },
+    "flight-16p-trackRATM": {
+      "control": "piloted",
+      "track": "trackRATM",
+      "n": 94,
+      "dt_native_s": 0.3340019999999999,
+      "fps_native": 2.9939940479398337,
+      "scale_oracle": -0.0018776275818466312,
+      "gravity_align_spread_deg": 25.747061350922102,
+      "true_tilt_deg_median": 66.03495958170626,
+      "windows": {
+        "5": {
+          "oracle_scale": {
+            "n": 90,
+            "implied_tilt_rmse_deg": 70.96069723613249,
+            "implied_tilt_median_abs_deg": 66.80875584778954,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 20.296673054266503,
+            "snr": 0.2860269676709382,
+            "residual_median_deg": 57.87987491551135,
+            "residual_p90_deg": 64.58915182041343,
+            "testable_fraction": 0.0
+          },
+          "fitted_scale": {
+            "scale": -0.005925534113300428,
+            "scale_over_oracle": 3.1558623076215753,
+            "same_sign_as_oracle": true,
+            "n": 90,
+            "implied_tilt_rmse_deg": 70.6150224327195,
+            "lean_median_deg": 10.357285211444415,
+            "std_true_tilt_deg": 20.296673054266503,
+            "snr": 0.2874271274728369,
+            "residual_median_deg": 57.70453092936761,
+            "residual_removed_fraction": 0.0030294465286888617,
+            "testable_fraction": 0.0
+          }
+        },
+        "7": {
+          "oracle_scale": {
+            "n": 88,
+            "implied_tilt_rmse_deg": 71.6027657252962,
+            "implied_tilt_median_abs_deg": 67.10062732645603,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 19.434561108102834,
+            "snr": 0.2714219333742424,
+            "residual_median_deg": 58.289689571804715,
+            "residual_p90_deg": 64.48272406125952,
+            "testable_fraction": 0.0
+          },
+          "fitted_scale": {
+            "scale": 0.009384657414313302,
+            "scale_over_oracle": -4.998146333727996,
+            "same_sign_as_oracle": false,
+            "n": 88,
+            "implied_tilt_rmse_deg": 71.15075396823173,
+            "lean_median_deg": 32.100912384382426,
+            "std_true_tilt_deg": 19.434561108102834,
+            "snr": 0.27314624264951876,
+            "residual_median_deg": 57.973692393450236,
+            "residual_removed_fraction": 0.005421150475766634,
+            "testable_fraction": 0.0
+          }
+        },
+        "9": {
+          "oracle_scale": {
+            "n": 86,
+            "implied_tilt_rmse_deg": 72.24192816682279,
+            "implied_tilt_median_abs_deg": 67.42294854684565,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 18.82471454855473,
+            "snr": 0.26057879442370707,
+            "residual_median_deg": 58.405254661557706,
+            "residual_p90_deg": 64.48730194771707,
+            "testable_fraction": 0.0
+          },
+          "fitted_scale": {
+            "scale": 0.009384657414313302,
+            "scale_over_oracle": -4.998146333727996,
+            "same_sign_as_oracle": false,
+            "n": 86,
+            "implied_tilt_rmse_deg": 71.88868652331632,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 18.82471454855473,
+            "snr": 0.2618592084367703,
+            "residual_median_deg": 58.33423395013044,
+            "residual_removed_fraction": 0.0012159986603741402,
+            "testable_fraction": 0.0
+          }
+        },
+        "11": {
+          "oracle_scale": {
+            "n": 84,
+            "implied_tilt_rmse_deg": 72.71621776869735,
+            "implied_tilt_median_abs_deg": 67.94061272148073,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 18.490358587711953,
+            "snr": 0.2542810827500385,
+            "residual_median_deg": 58.534682305944365,
+            "residual_p90_deg": 64.54264403902116,
+            "testable_fraction": 0.0
+          },
+          "fitted_scale": {
+            "scale": -0.008020491598121852,
+            "scale_over_oracle": 4.271609383919341,
+            "same_sign_as_oracle": true,
+            "n": 84,
+            "implied_tilt_rmse_deg": 72.48204232504908,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 18.490358587711953,
+            "snr": 0.25510261569053316,
+            "residual_median_deg": 58.490561327887264,
+            "residual_removed_fraction": 0.0007537578802682132,
+            "testable_fraction": 0.0
+          }
+        },
+        "15": {
+          "oracle_scale": {
+            "n": 80,
+            "implied_tilt_rmse_deg": 73.67052974054265,
+            "implied_tilt_median_abs_deg": 68.76312735699761,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 16.756825095420883,
+            "snr": 0.22745628617625105,
+            "residual_median_deg": 58.665712270757744,
+            "residual_p90_deg": 64.63769644442776,
+            "testable_fraction": 0.0
+          },
+          "fitted_scale": {
+            "scale": 0.009384657414313302,
+            "scale_over_oracle": -4.998146333727996,
+            "same_sign_as_oracle": false,
+            "n": 80,
+            "implied_tilt_rmse_deg": 73.48353296950346,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 16.756825095420883,
+            "snr": 0.22803510416919073,
+            "residual_median_deg": 58.65143155825888,
+            "residual_removed_fraction": 0.0002434251958445266,
+            "testable_fraction": 0.0
+          }
+        },
+        "21": {
+          "oracle_scale": {
+            "n": 74,
+            "implied_tilt_rmse_deg": 74.552491677222,
+            "implied_tilt_median_abs_deg": 69.61959119061441,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 16.525548727535355,
+            "snr": 0.22166326511370515,
+            "residual_median_deg": 58.85324234487857,
+            "residual_p90_deg": 64.21726459064597,
+            "testable_fraction": 0.0
+          },
+          "fitted_scale": {
+            "scale": 0.009384657414313302,
+            "scale_over_oracle": -4.998146333727996,
+            "same_sign_as_oracle": false,
+            "n": 74,
+            "implied_tilt_rmse_deg": 74.45711063178304,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 16.525548727535355,
+            "snr": 0.22194722018236895,
+            "residual_median_deg": 58.83846066580578,
+            "residual_removed_fraction": 0.00025116167748528984,
+            "testable_fraction": 0.0
+          }
+        },
+        "31": {
+          "oracle_scale": {
+            "n": 64,
+            "implied_tilt_rmse_deg": 74.68428877070184,
+            "implied_tilt_median_abs_deg": 69.69401765584769,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 15.87810497079163,
+            "snr": 0.21260301506707938,
+            "residual_median_deg": 58.855511040385565,
+            "residual_p90_deg": 64.52728455941246,
+            "testable_fraction": 0.0
+          },
+          "fitted_scale": {
+            "scale": 0.009384657414313302,
+            "scale_over_oracle": -4.998146333727996,
+            "same_sign_as_oracle": false,
+            "n": 64,
+            "implied_tilt_rmse_deg": 74.61009858965159,
+            "lean_median_deg": null,
+            "std_true_tilt_deg": 15.87810497079163,
+            "snr": 0.21281442151845545,
+            "residual_median_deg": 58.8271423229324,
+            "residual_removed_fraction": 0.0004820061359027683,
+            "testable_fraction": 0.0
+          }
+        }
+      },
+      "scale_depth": {
+        "run": false,
+        "reason": "no MoGe-2 run in this handoff"
+      }
+    }
+  },
+  "oracle_ladder": {
+    "vo_position_oracle_scale": {
+      "n_runs": 56,
+      "median_rmse_deg": 34.89407795090729
+    },
+    "fully_estimated_fitted_scale": {
+      "n_runs": 56,
+      "median_rmse_deg": 34.96697517105916
+    },
+    "mocap_position_mocap_attitude": {
+      "median_rmse_deg": 1.24,
+      "source": "Phase 0 floor (run 20261108T044153Z_f3b5d2bf), reference only"
+    },
+    "depth_scale": {
+      "run": false,
+      "reason": "no MoGe-2 run in this handoff"
+    }
+  },
+  "pooled_by_window": {
+    "5": {
+      "median_flight_rmse_deg": 32.6706706178576,
+      "median_flight_snr": 0.5832442703263198,
+      "median_testable_fraction": 0.0
+    },
+    "7": {
+      "median_flight_rmse_deg": 33.18230338790108,
+      "median_flight_snr": 0.5764851856174964,
+      "median_testable_fraction": 0.0
+    },
+    "9": {
+      "median_flight_rmse_deg": 33.68409494060459,
+      "median_flight_snr": 0.5690968437271711,
+      "median_testable_fraction": 0.0
+    },
+    "11": {
+      "median_flight_rmse_deg": 34.20138378832451,
+      "median_flight_snr": 0.5616677223595161,
+      "median_testable_fraction": 0.0
+    },
+    "15": {
+      "median_flight_rmse_deg": 35.29963339216923,
+      "median_flight_snr": 0.546886555762751,
+      "median_testable_fraction": 0.0
+    },
+    "21": {
+      "median_flight_rmse_deg": 37.15415327168134,
+      "median_flight_snr": 0.5230964309225871,
+      "median_testable_fraction": 0.0
+    },
+    "31": {
+      "median_flight_rmse_deg": 41.0561276196314,
+      "median_flight_snr": 0.47538579489066224,
+      "median_testable_fraction": 0.0
+    }
+  },
+  "gate2": {
+    "chosen_window_s": 5.0,
+    "implied_tilt_rmse_deg": 32.6706706178576,
+    "snr": 0.5832442703263198,
+    "target_rmse_deg": 8.0,
+    "target_snr": 3.0,
+    "pass_rmse": false,
+    "pass_snr": false
+  }
+}
