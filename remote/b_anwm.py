@@ -377,7 +377,7 @@ def validate_native(names="", sampling_steps: int = 250, lpips_net: str = "alex"
 
 
 # --------------------------------------------------------------------- Task 5
-@app.function(gpu="A10G", timeout=4 * 3600, volumes={"/w": vol_weights, "/hf": vol_hf,
+@app.function(gpu="A10G", timeout=10 * 3600, volumes={"/w": vol_weights, "/hf": vol_hf,
                                                     "/n": vol_native, "/r": vol_results},
               env={"HF_HOME": "/hf"})
 def generate(specs_json: str, sampling_steps: int = 250, sync_r2_prefix: str | None = None) -> dict:
