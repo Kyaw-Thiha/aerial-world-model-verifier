@@ -246,3 +246,46 @@ The pose convention was verified inside the same run: rebuilding the recorded po
    from Phase 0, so the scan has to find at least one more before a 5-trajectory Gate 2 run.
 3. `config/anwm.yaml` does not describe the released weights (context 4 vs 16), so any pipeline
    written against the config silently fails on `pos_embed`.
+
+## What changed in the plan
+
+1. **Context is 16 frames, not 4.** The released weights were trained with `context_size = 16`
+   (`pos_embed` 17 rows). That is 4x the per-frame cost of the "4 context" reading and it changes
+   what a start state is: 16 context frames, and FFP projects 16 frames per target pose. Every
+   number above (17.57 s per frame, 7.3 GB peak) already includes this.
+2. **Regime B as specified cannot carry a tilt verdict at dt = 1 s.** Rescaling a TII racing
+   flight into 5 m/s / 2 m/s / 15 deg/s needs a 25-33x time stretch, which leaves a median
+   required tilt of 3.6 deg and 0% of steps above 10 deg. Options, in order of preference:
+   (a) keep Regime B as a feasible-but-quiet control for depiction and integrity only;
+   (b) use the documented off-envelope variant (60 deg/s yaw cap) as an explicit off-expert arm,
+   which reaches 4.6 deg median and 1.6% above 10 deg at 1 s, or 8.5 deg median and 38% above
+   10 deg at 0.667 s; (c) report Regime B at dt = 0.25 s only (18.0 deg median, 69% above
+   10 deg), which is the least defensible dt for the native data.
+3. **The tilt dose-response must come from Regime C**, and the design caps bind: a course-aligned
+   turn tops out at 7.4 deg of required tilt inside ANWM's 15 deg/s yaw step, so 10 and 20 deg are
+   only reachable with the yaw held fixed (a 45 deg strafe step, which the training data contains)
+   or with longitudinal/vertical acceleration. The generator reports `reachable: false` rather than
+   missing the target silently, and the generation set skips unreachable cells (12 of the 22
+   designs), which is why the clip set has 49 C clips rather than 66.
+4. **ANWM's own `EvalDataset._compute_projected_images` takes goal times, not poses**, so
+   commanded paths go through `reproject_depth_to_other_pose_seq2seq` /
+   `project_to_2d_image_seq2seq` directly (`_ffp`). This is the same projection code; only the
+   entry point differs, because the method would otherwise read the recorded poses.
+5. **Native shard access needs a read-ahead buffer.** `tarfile` over a plain range reader issues
+   one HTTP request per header: 5.5 min per shard. An 8 MB read-ahead makes it 21 s, which turned
+   the native fetch from an apparent dead end into 4.5 minutes for 1.8 GB.
+
+## Recommendations for handoff 04
+
+- Score **transition events**, not clip means: 47% of native boundaries are acceleration events
+  with a commanded median of 27 deg at 1 s, while the sustained (SG) tilt is ~5 deg. A clip-level
+  average hides the signal the verifier is meant to catch (the feasibility doc already says this;
+  this handoff supplies the corrected numbers).
+- Always report the commanded required tilt of the clip being scored, at the dt used, from
+  `clips_index.csv`; do not recompute it from pixels.
+- Treat Regime A's recorded frames as a **level** reference, never as ground-truth attitude.
+- For Regime C, score per design cell: the 5/10/20 deg targets are per-clip peaks, so a cell
+  average will look small even when every clip in it is correctly shaped.
+- The FFP ablation (FFP-on vs FFP-off) is still the one control that separates "the model learned
+  attitude" from "the model was handed a depth-projected future". Nothing in this handoff touches
+  it.
