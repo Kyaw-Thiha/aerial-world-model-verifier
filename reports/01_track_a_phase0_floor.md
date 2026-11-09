@@ -114,8 +114,10 @@ sources are swapped for estimates.
   model is incomplete (blade flapping, thrust dynamics, mocap noise on the rigid body are
   the candidates, none tested here).
 - The 0.37 s window low-passes the trajectory. A camera-rate estimator cannot reach this
-  floor; the same sweep at a 0.11 s window gives 4.2 degrees (fold `window_sweep_on_fit_
-  flights`), which is the fairer reference for later phases.
+  floor: on the fit flights the same sweep gives 4.16° at 11 samples (0.04 s), 2.09° at 21,
+  1.59° at 31 (0.11 s) and 1.34° at 51 (`window_sweep_on_fit_flights` in every fold). The
+  11-31-sample range is the fairer reference for later phases, and it is still shorter than
+  a 12 Hz camera allows: later phases work at 0.42 s (5 samples) and see much larger error.
 
 ## Caveats and open items
 
