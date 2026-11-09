@@ -320,6 +320,31 @@
   "match": true
  },
  {
+  "key": "track-a/a2/anwm_required/20261109T202848Z_46a8a54/required_tilt.csv",
+  "bytes": 97404,
+  "match": true
+ },
+ {
+  "key": "track-a/a2/anwm_required/20261109T202848Z_46a8a54/required_tilt.json",
+  "bytes": 3557445,
+  "match": true
+ },
+ {
+  "key": "track-a/a2/anwm_required/20261109T202930Z_46a8a54/crosscheck_track_b.json",
+  "bytes": 653,
+  "match": true
+ },
+ {
+  "key": "track-a/a2/anwm_required/20261109T202930Z_46a8a54/required_tilt.csv",
+  "bytes": 97404,
+  "match": true
+ },
+ {
+  "key": "track-a/a2/anwm_required/20261109T202930Z_46a8a54/required_tilt.json",
+  "bytes": 3557445,
+  "match": true
+ },
+ {
   "key": "track-a/a2/anwm_scored/20261109T202033Z_9e1656d/anwm_scored.csv",
   "bytes": 94240,
   "match": true
@@ -347,6 +372,151 @@
  {
   "key": "track-a/a2/anwm_scored/20261109T202033Z_9e1656d/summary.json",
   "bytes": 29468,
+  "match": true
+ },
+ {
+  "key": "track-a/a2/anwm_scored/20261109T203026Z_46a8a54/anwm_frame_level.csv",
+  "bytes": 45164,
+  "match": true
+ },
+ {
+  "key": "track-a/a2/anwm_scored/20261109T203026Z_46a8a54/anwm_scored.csv",
+  "bytes": 94240,
+  "match": true
+ },
+ {
+  "key": "track-a/a2/anwm_scored/20261109T203026Z_46a8a54/controls.json",
+  "bytes": 4884,
+  "match": true
+ },
+ {
+  "key": "track-a/a2/anwm_scored/20261109T203026Z_46a8a54/dt_min_kd0.0.csv",
+  "bytes": 3234,
+  "match": true
+ },
+ {
+  "key": "track-a/a2/anwm_scored/20261109T203026Z_46a8a54/dt_min_kd0.295.csv",
+  "bytes": 3258,
+  "match": true
+ },
+ {
+  "key": "track-a/a2/anwm_scored/20261109T203026Z_46a8a54/per_clip.json",
+  "bytes": 66374,
+  "match": true
+ },
+ {
+  "key": "track-a/a2/anwm_scored/20261109T203026Z_46a8a54/summary.json",
+  "bytes": 188897,
+  "match": true
+ },
+ {
+  "key": "track-a/a2/anwm_scored/20261109T203155Z_46a8a54/anwm_frame_level.csv",
+  "bytes": 45164,
+  "match": true
+ },
+ {
+  "key": "track-a/a2/anwm_scored/20261109T203155Z_46a8a54/anwm_scored.csv",
+  "bytes": 94240,
+  "match": true
+ },
+ {
+  "key": "track-a/a2/anwm_scored/20261109T203155Z_46a8a54/controls.json",
+  "bytes": 4884,
+  "match": true
+ },
+ {
+  "key": "track-a/a2/anwm_scored/20261109T203155Z_46a8a54/dt_min_framewise_spline_kd0.0.csv",
+  "bytes": 3056,
+  "match": true
+ },
+ {
+  "key": "track-a/a2/anwm_scored/20261109T203155Z_46a8a54/dt_min_framewise_spline_kd0.295.csv",
+  "bytes": 3107,
+  "match": true
+ },
+ {
+  "key": "track-a/a2/anwm_scored/20261109T203155Z_46a8a54/dt_min_framewise_step_kd0.0.csv",
+  "bytes": 3038,
+  "match": true
+ },
+ {
+  "key": "track-a/a2/anwm_scored/20261109T203155Z_46a8a54/dt_min_framewise_step_kd0.295.csv",
+  "bytes": 3074,
+  "match": true
+ },
+ {
+  "key": "track-a/a2/anwm_scored/20261109T203155Z_46a8a54/dt_min_kd0.0.csv",
+  "bytes": 3234,
+  "match": true
+ },
+ {
+  "key": "track-a/a2/anwm_scored/20261109T203155Z_46a8a54/dt_min_kd0.295.csv",
+  "bytes": 3258,
+  "match": true
+ },
+ {
+  "key": "track-a/a2/anwm_scored/20261109T203155Z_46a8a54/per_clip.json",
+  "bytes": 66374,
+  "match": true
+ },
+ {
+  "key": "track-a/a2/anwm_scored/20261109T203155Z_46a8a54/summary.json",
+  "bytes": 231148,
+  "match": true
+ },
+ {
+  "key": "track-a/a2/anwm_scored/20261109T203212Z_46a8a54/anwm_frame_level.csv",
+  "bytes": 45164,
+  "match": true
+ },
+ {
+  "key": "track-a/a2/anwm_scored/20261109T203212Z_46a8a54/anwm_scored.csv",
+  "bytes": 94240,
+  "match": true
+ },
+ {
+  "key": "track-a/a2/anwm_scored/20261109T203212Z_46a8a54/controls.json",
+  "bytes": 4884,
+  "match": true
+ },
+ {
+  "key": "track-a/a2/anwm_scored/20261109T203212Z_46a8a54/dt_min_framewise_spline_kd0.0.csv",
+  "bytes": 770,
+  "match": true
+ },
+ {
+  "key": "track-a/a2/anwm_scored/20261109T203212Z_46a8a54/dt_min_framewise_spline_kd0.295.csv",
+  "bytes": 809,
+  "match": true
+ },
+ {
+  "key": "track-a/a2/anwm_scored/20261109T203212Z_46a8a54/dt_min_framewise_step_kd0.0.csv",
+  "bytes": 595,
+  "match": true
+ },
+ {
+  "key": "track-a/a2/anwm_scored/20261109T203212Z_46a8a54/dt_min_framewise_step_kd0.295.csv",
+  "bytes": 607,
+  "match": true
+ },
+ {
+  "key": "track-a/a2/anwm_scored/20261109T203212Z_46a8a54/dt_min_kd0.0.csv",
+  "bytes": 3234,
+  "match": true
+ },
+ {
+  "key": "track-a/a2/anwm_scored/20261109T203212Z_46a8a54/dt_min_kd0.295.csv",
+  "bytes": 3258,
+  "match": true
+ },
+ {
+  "key": "track-a/a2/anwm_scored/20261109T203212Z_46a8a54/per_clip.json",
+  "bytes": 66374,
+  "match": true
+ },
+ {
+  "key": "track-a/a2/anwm_scored/20261109T203212Z_46a8a54/summary.json",
+  "bytes": 200294,
   "match": true
  },
  {

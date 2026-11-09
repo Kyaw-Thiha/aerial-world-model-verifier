@@ -1,6 +1,6 @@
 # Track A2 artifact manifest
 
-71 objects, 71 present.
+105 objects, 105 present.
 
 | local | R2 key | size | sha256 (first 16) | note |
 | --- | --- | --- | --- | --- |
@@ -68,10 +68,44 @@
 | `results/a2_anwm` | `track-a/a2/anwm_required/20261109T193209Z_d8941e8/crosscheck_track_b.json` | 0.00 MB | `d9384ed4d60fa96d` | required tilt from the commanded paths (both interpolators, dt sweep) |
 | `results/a2_anwm` | `track-a/a2/anwm_required/20261109T193209Z_d8941e8/required_tilt.csv` | 0.10 MB | `fe30d796dbde476d` | required tilt from the commanded paths (both interpolators, dt sweep) |
 | `results/a2_anwm` | `track-a/a2/anwm_required/20261109T193209Z_d8941e8/required_tilt.json` | 3.03 MB | `57196e725b531d65` | required tilt from the commanded paths (both interpolators, dt sweep) |
+| `results/a2_anwm` | `track-a/a2/anwm_required/20261109T202848Z_46a8a54/required_tilt.csv` | 0.10 MB | `fe30d796dbde476d` | required tilt from the commanded paths (both interpolators, dt sweep) |
+| `results/a2_anwm` | `track-a/a2/anwm_required/20261109T202848Z_46a8a54/required_tilt.json` | 3.56 MB | `139200f6241f6b9b` | required tilt from the commanded paths (both interpolators, dt sweep) |
+| `results/a2_anwm` | `track-a/a2/anwm_required/20261109T202930Z_46a8a54/crosscheck_track_b.json` | 0.00 MB | `d9384ed4d60fa96d` | required tilt from the commanded paths (both interpolators, dt sweep) |
+| `results/a2_anwm` | `track-a/a2/anwm_required/20261109T202930Z_46a8a54/required_tilt.csv` | 0.10 MB | `fe30d796dbde476d` | required tilt from the commanded paths (both interpolators, dt sweep) |
+| `results/a2_anwm` | `track-a/a2/anwm_required/20261109T202930Z_46a8a54/required_tilt.json` | 3.56 MB | `a239382e50f8d300` | required tilt from the commanded paths (both interpolators, dt sweep) |
 | `results/a2_anwm_score` | `track-a/a2/anwm_scored/20261109T202033Z_9e1656d/anwm_scored.csv` | 0.09 MB | `bf24c15cada2d410` | ANWM scoring tables, controls and minimum consistent dt |
 | `results/a2_anwm_score` | `track-a/a2/anwm_scored/20261109T202033Z_9e1656d/controls.json` | 0.00 MB | `67c08250dd29438e` | ANWM scoring tables, controls and minimum consistent dt |
 | `results/a2_anwm_score` | `track-a/a2/anwm_scored/20261109T202033Z_9e1656d/dt_min_kd0.0.csv` | 0.00 MB | `83863cf77f85d2aa` | ANWM scoring tables, controls and minimum consistent dt |
 | `results/a2_anwm_score` | `track-a/a2/anwm_scored/20261109T202033Z_9e1656d/dt_min_kd0.295.csv` | 0.00 MB | `d36f6bccf0f0b063` | ANWM scoring tables, controls and minimum consistent dt |
 | `results/a2_anwm_score` | `track-a/a2/anwm_scored/20261109T202033Z_9e1656d/per_clip.json` | 0.07 MB | `46ce831db8594437` | ANWM scoring tables, controls and minimum consistent dt |
 | `results/a2_anwm_score` | `track-a/a2/anwm_scored/20261109T202033Z_9e1656d/summary.json` | 0.03 MB | `d2555b78c63d0903` | ANWM scoring tables, controls and minimum consistent dt |
+| `results/a2_anwm_score` | `track-a/a2/anwm_scored/20261109T203026Z_46a8a54/anwm_frame_level.csv` | 0.05 MB | `b37b9b25401d7053` | ANWM scoring tables, controls and minimum consistent dt |
+| `results/a2_anwm_score` | `track-a/a2/anwm_scored/20261109T203026Z_46a8a54/anwm_scored.csv` | 0.09 MB | `bf24c15cada2d410` | ANWM scoring tables, controls and minimum consistent dt |
+| `results/a2_anwm_score` | `track-a/a2/anwm_scored/20261109T203026Z_46a8a54/controls.json` | 0.00 MB | `67c08250dd29438e` | ANWM scoring tables, controls and minimum consistent dt |
+| `results/a2_anwm_score` | `track-a/a2/anwm_scored/20261109T203026Z_46a8a54/dt_min_kd0.0.csv` | 0.00 MB | `83863cf77f85d2aa` | ANWM scoring tables, controls and minimum consistent dt |
+| `results/a2_anwm_score` | `track-a/a2/anwm_scored/20261109T203026Z_46a8a54/dt_min_kd0.295.csv` | 0.00 MB | `d36f6bccf0f0b063` | ANWM scoring tables, controls and minimum consistent dt |
+| `results/a2_anwm_score` | `track-a/a2/anwm_scored/20261109T203026Z_46a8a54/per_clip.json` | 0.07 MB | `46ce831db8594437` | ANWM scoring tables, controls and minimum consistent dt |
+| `results/a2_anwm_score` | `track-a/a2/anwm_scored/20261109T203026Z_46a8a54/summary.json` | 0.19 MB | `e0cf834559e0c466` | ANWM scoring tables, controls and minimum consistent dt |
+| `results/a2_anwm_score` | `track-a/a2/anwm_scored/20261109T203155Z_46a8a54/anwm_frame_level.csv` | 0.05 MB | `b37b9b25401d7053` | ANWM scoring tables, controls and minimum consistent dt |
+| `results/a2_anwm_score` | `track-a/a2/anwm_scored/20261109T203155Z_46a8a54/anwm_scored.csv` | 0.09 MB | `bf24c15cada2d410` | ANWM scoring tables, controls and minimum consistent dt |
+| `results/a2_anwm_score` | `track-a/a2/anwm_scored/20261109T203155Z_46a8a54/controls.json` | 0.00 MB | `67c08250dd29438e` | ANWM scoring tables, controls and minimum consistent dt |
+| `results/a2_anwm_score` | `track-a/a2/anwm_scored/20261109T203155Z_46a8a54/dt_min_framewise_spline_kd0.0.csv` | 0.00 MB | `38a64e490cc629d9` | ANWM scoring tables, controls and minimum consistent dt |
+| `results/a2_anwm_score` | `track-a/a2/anwm_scored/20261109T203155Z_46a8a54/dt_min_framewise_spline_kd0.295.csv` | 0.00 MB | `4881e2a9a3f18034` | ANWM scoring tables, controls and minimum consistent dt |
+| `results/a2_anwm_score` | `track-a/a2/anwm_scored/20261109T203155Z_46a8a54/dt_min_framewise_step_kd0.0.csv` | 0.00 MB | `8e36342f9afef3a3` | ANWM scoring tables, controls and minimum consistent dt |
+| `results/a2_anwm_score` | `track-a/a2/anwm_scored/20261109T203155Z_46a8a54/dt_min_framewise_step_kd0.295.csv` | 0.00 MB | `d4f217e4799e16f6` | ANWM scoring tables, controls and minimum consistent dt |
+| `results/a2_anwm_score` | `track-a/a2/anwm_scored/20261109T203155Z_46a8a54/dt_min_kd0.0.csv` | 0.00 MB | `83863cf77f85d2aa` | ANWM scoring tables, controls and minimum consistent dt |
+| `results/a2_anwm_score` | `track-a/a2/anwm_scored/20261109T203155Z_46a8a54/dt_min_kd0.295.csv` | 0.00 MB | `d36f6bccf0f0b063` | ANWM scoring tables, controls and minimum consistent dt |
+| `results/a2_anwm_score` | `track-a/a2/anwm_scored/20261109T203155Z_46a8a54/per_clip.json` | 0.07 MB | `46ce831db8594437` | ANWM scoring tables, controls and minimum consistent dt |
+| `results/a2_anwm_score` | `track-a/a2/anwm_scored/20261109T203155Z_46a8a54/summary.json` | 0.23 MB | `80f8ee6730a9007e` | ANWM scoring tables, controls and minimum consistent dt |
+| `results/a2_anwm_score` | `track-a/a2/anwm_scored/20261109T203212Z_46a8a54/anwm_frame_level.csv` | 0.05 MB | `b37b9b25401d7053` | ANWM scoring tables, controls and minimum consistent dt |
+| `results/a2_anwm_score` | `track-a/a2/anwm_scored/20261109T203212Z_46a8a54/anwm_scored.csv` | 0.09 MB | `bf24c15cada2d410` | ANWM scoring tables, controls and minimum consistent dt |
+| `results/a2_anwm_score` | `track-a/a2/anwm_scored/20261109T203212Z_46a8a54/controls.json` | 0.00 MB | `67c08250dd29438e` | ANWM scoring tables, controls and minimum consistent dt |
+| `results/a2_anwm_score` | `track-a/a2/anwm_scored/20261109T203212Z_46a8a54/dt_min_framewise_spline_kd0.0.csv` | 0.00 MB | `227aa3d9db1c9836` | ANWM scoring tables, controls and minimum consistent dt |
+| `results/a2_anwm_score` | `track-a/a2/anwm_scored/20261109T203212Z_46a8a54/dt_min_framewise_spline_kd0.295.csv` | 0.00 MB | `db3a0b90f741d313` | ANWM scoring tables, controls and minimum consistent dt |
+| `results/a2_anwm_score` | `track-a/a2/anwm_scored/20261109T203212Z_46a8a54/dt_min_framewise_step_kd0.0.csv` | 0.00 MB | `f63e436239c12974` | ANWM scoring tables, controls and minimum consistent dt |
+| `results/a2_anwm_score` | `track-a/a2/anwm_scored/20261109T203212Z_46a8a54/dt_min_framewise_step_kd0.295.csv` | 0.00 MB | `0fe736dc69036192` | ANWM scoring tables, controls and minimum consistent dt |
+| `results/a2_anwm_score` | `track-a/a2/anwm_scored/20261109T203212Z_46a8a54/dt_min_kd0.0.csv` | 0.00 MB | `83863cf77f85d2aa` | ANWM scoring tables, controls and minimum consistent dt |
+| `results/a2_anwm_score` | `track-a/a2/anwm_scored/20261109T203212Z_46a8a54/dt_min_kd0.295.csv` | 0.00 MB | `d36f6bccf0f0b063` | ANWM scoring tables, controls and minimum consistent dt |
+| `results/a2_anwm_score` | `track-a/a2/anwm_scored/20261109T203212Z_46a8a54/per_clip.json` | 0.07 MB | `46ce831db8594437` | ANWM scoring tables, controls and minimum consistent dt |
+| `results/a2_anwm_score` | `track-a/a2/anwm_scored/20261109T203212Z_46a8a54/summary.json` | 0.20 MB | `240deef273b24e9f` | ANWM scoring tables, controls and minimum consistent dt |
 | `configs/gate_frozen.yaml` | `track-a/a2/gate_frozen.yaml` | 0.00 MB | `dc0cc4ff24e0a35d` | the frozen gate |
