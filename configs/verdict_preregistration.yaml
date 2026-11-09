@@ -308,3 +308,122 @@ amendment_2:
   generated_clips: >
     Scoring of generated clips and the minimum-consistent-dt analysis are covered by a
     separate amendment 3, committed before any generated clip is scored.
+
+# ================================================================ AMENDMENT 3
+# Track A2, Task 3. Committed BEFORE the depicted tilt of any generated clip is computed,
+# and before the positive controls are run. Nothing in it may be changed after the first
+# generated-clip score exists.
+amendment_3:
+  date: 2026-11-09
+  tag: "[A2]"
+  scope: scored_generated_clips
+  clip_set: >
+    Track B's 82 clips (regimes A 25, B 8, C 49), read-only, 16 frames each, 224x224, one
+    frame per commanded step. Commanded paths come from each clip's manifest.json. Track B's
+    code and files are not modified.
+  intrinsics: >
+    224 px frames, pinhole, f = 112 px (90 deg horizontal field), principal point at the
+    centre, camera exactly level (uptilt 0). This is the setting the Gate 3 noise-floor run
+    used at 224 px; the manifest's recorded K is [[256,0,256],[0,256,256],[0,0,1]] at
+    512x512 before resize, which gives the same field.
+
+  # ---- what decides that a clip can be read at all
+  testability:
+    gate: >
+      the frozen gate in configs/gate_frozen.yaml (file hash recorded with the run) is
+      applied to each clip's own frames. A gate drop is "not testable", never a violation.
+    collapse: >
+      a frame set whose median frame std is below 0.05 (0-1 scale) or whose median
+      frame-to-frame difference is below 0.02 is a collapsed rollout and is "not testable".
+      Track B's visual_integrity values are used to decide this; they are not a score.
+    detectability: >
+      a clip is "not testable (below detectability)" when its lower-bound required tilt
+      never reaches 10 deg at the dt under consideration: a level-camera fake there could
+      not exceed the estimator's own spread. Such clips are reported as not testable, and
+      are never reported as "consistent".
+    transfer_check: >
+      before any clip is scored, the frozen gate is applied to the 186 released ANWM
+      ground-truth (level) frames grouped into 16-frame clips. If more than half are
+      dropped, generated-video verdicts are not reported (only the controls).
+
+  # ---- the two sides being compared
+  depicted:
+    estimator: geocalib        # commit 1dedb29f94fc311b896c5f572005978aeebccd67f
+    camera_model: pinhole
+    focal_px: 112.0
+    statistic: median over frames of the frame's tilt (angle of body z from world up)
+    profile: per-frame values are kept, so frame-level dose can be reported
+  required:
+    source: commanded_path positions from the manifest, exact waypoints
+    k_d: [0.0, 0.295]          # 0 = drag-free (conservative claim), 0.295 = racing quad
+    dt_s: [0.25, 0.667, 1.0]   # 1.0 is the paper-consistent reading
+    lower_bound:
+      interpolant: natural cubic spline through the waypoints (minimum-acceleration)
+      samples_per_step: 20
+      statistic: median over samples     # matches the verifier's median clip score
+      also_reported: [p90, max]
+    upper_bound:
+      interpolant: per-step (the whole velocity change between consecutive waypoints)
+      statistic: median over steps
+      also_reported: [max]              # NB Track B's clips_index column is this max
+      note: >
+        median and max disagree by more than 10 deg on 22-24 of 82 clips, so every table
+        states which statistic it uses. The median is primary because the verifier's clip
+        score is a median; the max is given so a reader can see the peak demand.
+    declared_order: lower_bound <= upper_bound per clip, dt and k_d; a violation is a bug
+      and is reported rather than smoothed over.
+
+  # ---- the claim rule
+  violation:
+    definition: >
+      required_lower_median(dt, k_d) - depicted_median. A clip is declared INFEASIBLE only
+      when this exceeds the frozen verdict threshold. If even the least-tilt flight through
+      the commanded waypoints asks for tilt the pixels do not show, no interpolator can
+      rescue the path.
+    threshold: >
+      the Gate 3 operating threshold refit under amendment 2 (all eight flights, after the
+      gate), taken from the Task 2 run and recorded with the Task 3 results.
+    never_claimed: >
+      no statement of the form "ANWM breaks physics" without naming dt, k_d, interpolator,
+      statistic and gate. Track B's pixel-change statistic is not a depicted-tilt result and
+      is not used as evidence either way.
+
+  # ---- analyses, all pre-specified
+  analyses:
+    noise_floor: >
+      depicted tilt on the 7 straight-cruise clips and the 3-seed repeats of the same
+      paths, against the 0.57 deg floor measured on ground-truth frames. Reported as a
+      positive control, not as a verdict.
+    edit_recovery: >
+      at least 10 generated clips with pure camera rotations of 5, 10 and 20 deg roll and
+      pitch, applied with the same equidistant remap family as the TII edits, and the
+      recovered change compared with the applied change.
+    regime_C_dose_response: >
+      depicted versus designed required tilt (nominal 1 s) per maneuver family, with bands
+      from the cruise control and from the 5-path, 3-seed repeats; the seed band is
+      propagated into the comparison, not quoted separately.
+    regime_A_share: >
+      per dt and per k_d, the fraction of Regime A clips whose lower-bound required tilt
+      exceeds the threshold while the depicted tilt stays within 3x its measured noise floor.
+    minimum_consistent_dt: >
+      per clip, the smallest dt in a 0.10-5.00 s sweep (step 0.01 s) at which
+      |required_lower_median(dt) - depicted_median| <= threshold, using the lower bound.
+      Values at the sweep edge are reported as "<= 0.10" or "> 5.00", never interpolated
+      beyond the sweep. The implied speed is step_spacing_m / dt_min.
+    regimes_B_and_A15: >
+      Regime B (8 clips) and clip A15 (a 2 m/s climb, designed required tilt 0) are expected
+      to be "not testable"; if they are not, that is reported as a failure of the
+      testability rule, not as a verdict.
+
+  # ---- the stopping rule for the whole ANWM claim
+  positive_control_gate:
+    rule: >
+      if edit recovery on generated frames has a median absolute error above 3 deg for the
+      10 deg edits, or above 5 deg for the 20 deg edits, the 224 px estimator cannot see
+      tilt in generated video at the size the clips are given in. In that case the ANWM
+      scoring is reported as "not established at 224 px", the designed-tilt dose-response is
+      not interpreted, and no feasibility claim is made.
+    rationale: >
+      the frozen verdict threshold is ~5.76 deg. Recovery worse than that cannot support any
+      statement about 5-20 deg violations.
+
