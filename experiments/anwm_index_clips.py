@@ -74,6 +74,10 @@ def main() -> int:
         import boto3
         from botocore.config import Config
 
+        from src.utils.r2 import load_env
+
+        load_env()  # populate os.environ from .env (the worktree links it)
+
         s3 = boto3.client("s3", endpoint_url=f"https://{os.environ['R2_ACCOUNT_ID']}"
                                             ".r2.cloudflarestorage.com",
                           aws_access_key_id=os.environ["R2_ACCESS_KEY_ID"],
