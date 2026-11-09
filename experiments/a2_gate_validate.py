@@ -89,7 +89,7 @@ def dpvo_rotations(flight: str, dpvo_root: Path, names: list[str]) -> np.ndarray
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--gate-rows", default="results/a2_gate/tii")
+    ap.add_argument("--gate-rows", default="results/gate_a2/tii")
     ap.add_argument("--specs", default="data/processed/p3a/p3a_v1")
     ap.add_argument("--dpvo", default="data/raw/dpvo")
     ap.add_argument("--out", default="results/a2_gate")
@@ -177,11 +177,26 @@ def main() -> int:
                                  dtype=np.float64)
 
     n_pos = int(labels.sum())
+    errs = np.array([r["median_error_deg"] for r in ident_tab], dtype=np.float64)
     validation = {"n_clips": len(ident_tab), "n_positive": n_pos,
-                  "label_deg": LABEL_THR, "signals": {}}
+                  "label_deg": LABEL_THR, "signals": {},
+                  "label_sensitivity": {}}
+    # amendment 2 fixes 10 deg as the label and requires the 5 and 20 deg readings too
+    for thr in (5.0, 10.0, 20.0):
+        lab_t = (errs > thr).astype(float)
+        validation["label_sensitivity"][f"{thr:g}"] = {
+            "n_positive": int(np.nansum(lab_t)),
+            "per_flight": {str(f): int(np.nansum(lab_t[flights == f]))
+                           for f in np.unique(flights)},
+        }
     for sig in RESULTS:
         v = sig_vals[sig]
         ci = bootstrap_auroc_ci(v, labels, flights, n_boot=args.n_boot, seed=0)
+        sens = {}
+        for thr in (5.0, 20.0):
+            lab_t = (errs > thr).astype(float)
+            c = bootstrap_auroc_ci(v, lab_t, flights, n_boot=min(args.n_boot, 500), seed=0)
+            sens[f"{thr:g}"] = {"auroc": c["auroc"], "n_positive": int(np.nansum(lab_t))}
         loo = lofo_tau(v, labels, flights)
         hold = {}
         kept_err, drop_err = [], []
@@ -202,7 +217,7 @@ def main() -> int:
             "eligible_to_freeze": bool(SINGLE_FRAME[sig]),
             "single_frame": SINGLE_FRAME[sig],
             "n_finite": int(np.isfinite(v).sum()),
-            "auroc": ci, "lofo": hold,
+            "auroc": ci, "auroc_label_sensitivity": sens, "lofo": hold,
             "lofo_coverage_overall": float(np.mean([h["coverage"] for h in hold.values()])),
             "kept_median_error_deg": float(np.median(kept_err)) if kept_err else None,
             "dropped_median_error_deg": float(np.median(drop_err)) if drop_err else None,

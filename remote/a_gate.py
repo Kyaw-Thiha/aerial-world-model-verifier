@@ -216,7 +216,8 @@ def anwm_floor(size: int = 224, fov_deg: float = 90.0,
 
 @app.local_entrypoint()
 def main(job: str = "tii", tag: str = "clips_v1", conditions: str = "", flights: str = "",
-         limit: int = 0, size: int = 224, parallel: bool = True):
+         limit: int = 0, size: int = 224, parallel: bool = True,
+         out_tag: str = ""):
     import json
 
     if job == "anwm":
@@ -229,10 +230,11 @@ def main(job: str = "tii", tag: str = "clips_v1", conditions: str = "", flights:
     fl = [f for f in flights.split(",") if f] or None
     # the TII edit spec is always p3a_v1; `tag` names the ANWM spec set instead
     tii_tag = "p3a_v1"
+    ot = out_tag or "gate_a2_tii"
     if not parallel:
-        print(json.dumps(tii_conditions.remote(tii_tag, conds, fl), indent=2))
+        print(json.dumps(tii_conditions.remote(tii_tag, conds, fl, ot), indent=2))
         return
-    handles = [tii_conditions.spawn(tii_tag, conds, [f]) for f in (fl or FLIGHTS)]
+    handles = [tii_conditions.spawn(tii_tag, conds, [f], ot) for f in (fl or FLIGHTS)]
     for f, h in zip((fl or FLIGHTS), handles):
         info = h.get()
         print(f"{f}: {info['flights'][f]['seconds']:.0f}s", flush=True)
