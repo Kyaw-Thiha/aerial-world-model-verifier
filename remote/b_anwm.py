@@ -43,7 +43,12 @@ image = (
     .add_local_dir(str(ANWM_LOCAL), "/anwm", copy=True,
                    ignore=[".git", "**/.git", "**/__pycache__", "**/*.pyc"])
     .run_commands("cd /anwm && pip install --no-cache-dir -e '.[metrics]'",
-                  "pip install --no-cache-dir huggingface_hub")
+                  "pip install --no-cache-dir huggingface_hub boto3",
+                  # recent diffusers calls torch.accelerator (torch >= 2.6); keep a version that
+                  # matches the torch 2.4.1 pin above
+                  "pip install --no-cache-dir 'diffusers==0.31.0'",
+                  "python -c \"import diffusers, torch; print('diffusers', diffusers.__version__, "
+                  "'torch', torch.__version__)\"")
 )
 
 app = modal.App(APP, image=image)
@@ -465,3 +470,32 @@ def list_starts(min_forward_m: float = 25.0, min_valid_frac: float = 0.5) -> dic
     print(json.dumps({k: v["candidates"] for k, v in out.items()}, indent=1)[:3000])
     print("usable starts:", total)
     return out
+
+
+# --------------------------------------------------------------------- Task 1.1 (mirror)
+@app.function(cpu=4, memory=8192, timeout=3600, volumes={"/w": vol_weights},
+              secrets=[modal.Secret.from_name("awmv-r2")])
+def mirror_slim_to_r2(prefix: str = "track-b/weights/") -> dict:
+    """Copy the slim checkpoint to R2 from inside Modal (no local disk: 4.5 GB)."""
+    import boto3
+    from boto3.s3.transfer import TransferConfig
+
+    man = json.load(open("/w/slim/manifest.json"))
+    src = man["slim"]
+    s3 = boto3.client("s3", endpoint_url=f"https://{os.environ['R2_ACCOUNT_ID']}"
+                                        ".r2.cloudflarestorage.com",
+                      aws_access_key_id=os.environ["R2_ACCESS_KEY_ID"],
+                      aws_secret_access_key=os.environ["R2_SECRET_ACCESS_KEY"],
+                      region_name="auto")
+    bucket = os.environ["R2_BUCKET"]
+    key = prefix + Path(src).name
+    s3.upload_file(src, bucket, key,
+                   Config=TransferConfig(multipart_threshold=64 << 20,
+                                         multipart_chunksize=128 << 20, max_concurrency=8))
+    head = s3.head_object(Bucket=bucket, Key=key)
+    s3.put_object(Bucket=bucket, Key=prefix + "manifest.json",
+                  Body=json.dumps(man, indent=1).encode())
+    ok = head["ContentLength"] == man["slim_bytes"]
+    print(f"{bucket}/{key} {head['ContentLength']} bytes, size matches: {ok}")
+    return {"bucket": bucket, "key": key, "bytes": head["ContentLength"],
+            "size_matches": bool(ok), "sha256": man["slim_sha256"]}
