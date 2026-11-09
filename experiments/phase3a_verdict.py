@@ -27,6 +27,7 @@ import numpy as np
 from scipy.spatial.transform import Rotation
 
 from src.score import (auroc, auroc_detect, conformal_quantile, score_clip, spearman)
+from src.score.verdict import bootstrap_paired, wilson_interval
 from src.score.prereg import verify_prereg
 from src.score.verdict import clip_index, speed_bin
 
@@ -209,7 +210,10 @@ def evaluation(records: list[dict], prereg: dict,
     pooled_accept = [r["score"] <= threshold_lookup(pooled_th, r["bin"])
                      for r in records if r["condition"] == "identity" and r["testable"]]
 
+    acc_ci = wilson_interval(int(np.sum(heldout_accept)), len(heldout_accept)) \
+        if heldout_accept else (float("nan"), float("nan"))
     res = {"heldout_acceptance": float(np.mean(heldout_accept)) if heldout_accept else None,
+           "heldout_acceptance_wilson95": acc_ci,
            "heldout_n": len(heldout_accept),
            "pooled_acceptance": float(np.mean(pooled_accept)) if pooled_accept else None,
            "pooled_thresholds": pooled_th, "fold_thresholds": folded,
@@ -238,6 +242,14 @@ def evaluation(records: list[dict], prereg: dict,
             "spearman_vs_magnitude": spearman(sco[ok], [p[1]["tilt_implied_median"]
                                                         for p, k in zip(pairs, ok) if k]),
         }
+        grp = np.array([p[1]["flight"] for p, k in zip(pairs, ok) if k])
+        boots = bootstrap_paired(pos[ok], sco[ok], grp)
+        k_ok = int(np.sum(sco[ok] > thr[ok]))
+        res["families"][cond].update({
+            "auroc_ci95": boots["auroc_ci"], "rejection_ci95": boots["rejection_ci"],
+            "n_flights": boots.get("n_groups"),
+            "rejection_wilson95": wilson_interval(k_ok, int(ok.sum())),
+        })
         # minimum detectable violation: rejection vs the injected tilt change
         if cond.startswith("tilt_k"):
             k = {"tilt_k0": 0.0, "tilt_k05": 0.5, "tilt_k15": 1.5}[cond]

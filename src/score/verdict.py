@@ -250,6 +250,49 @@ def auroc(positive: np.ndarray, negative: np.ndarray) -> float:
     return float((rp - len(p) * (len(p) + 1) / 2.0) / (len(p) * len(q)))
 
 
+def wilson_interval(k: int, n: int, z: float = 1.96) -> tuple[float, float]:
+    """Wilson score interval for a binomial proportion (better than normal at small n)."""
+    if n == 0:
+        return (float("nan"), float("nan"))
+    p = k / n
+    den = 1.0 + z * z / n
+    centre = (p + z * z / (2 * n)) / den
+    half = z * np.sqrt(p * (1 - p) / n + z * z / (4 * n * n)) / den
+    return (float(max(0.0, centre - half)), float(min(1.0, centre + half)))
+
+
+def bootstrap_paired(real: np.ndarray, viol: np.ndarray, groups: np.ndarray | None = None,
+                     n_boot: int = 2000, seed: int = 0) -> dict:
+    """Percentile CIs for AUROC and the rejection rate, resampling **flights**.
+
+    Clips inside a flight are not independent (same scene, same light, same estimator
+    state), so resampling clips would report intervals that are too narrow — the failure
+    mode that matters here, with 5-8 flights. ``groups`` holds the flight label per
+    clip; whole flights are resampled with replacement.
+    """
+    real = np.asarray(real, dtype=np.float64)
+    viol = np.asarray(viol, dtype=np.float64)
+    n = len(real)
+    if n < 4:
+        return {"n": n, "auroc_ci": (float("nan"), float("nan")),
+                "rejection_ci": (float("nan"), float("nan"))}
+    if groups is None:
+        groups = np.arange(n)
+    groups = np.asarray(groups)
+    uniq = np.unique(groups)
+    members = {g: np.where(groups == g)[0] for g in uniq}
+    rng = np.random.default_rng(seed)
+    a, r = [], []
+    for _ in range(n_boot):
+        pick = rng.choice(uniq, size=len(uniq), replace=True)
+        idx = np.concatenate([members[g] for g in pick])
+        a.append(auroc_detect(real[idx], viol[idx]))
+        r.append(float(np.mean(viol[idx] > real[idx])))
+    return {"n": n, "n_groups": int(len(uniq)),
+            "auroc_ci": (float(np.percentile(a, 2.5)), float(np.percentile(a, 97.5))),
+            "rejection_ci": (float(np.percentile(r, 2.5)), float(np.percentile(r, 97.5)))}
+
+
 def auroc_detect(real: np.ndarray, violation: np.ndarray) -> float:
     """AUROC with the violation as the positive class (higher score = more suspicious).
 

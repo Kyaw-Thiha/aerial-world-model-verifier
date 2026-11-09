@@ -99,6 +99,22 @@ def test_auroc_detect_orientation():
     assert auroc_detect(viol, real) == 0.0
 
 
+def test_wilson_and_bootstrap_intervals():
+    from src.score.verdict import bootstrap_paired, wilson_interval
+    lo, hi = wilson_interval(19, 20)
+    assert lo < 0.95 < hi and hi <= 1.0
+    rng = np.random.default_rng(0)
+    real = rng.normal(3.0, 1.0, 40)
+    viol = rng.normal(20.0, 3.0, 40)
+    groups = np.repeat(np.arange(8), 5)          # 8 flights x 5 clips
+    out = bootstrap_paired(real, viol, groups, n_boot=300)
+    assert out["n_groups"] == 8
+    assert out["auroc_ci"][0] > 0.8
+    assert out["rejection_ci"][0] > 0.8
+    bad = bootstrap_paired(real, real + rng.normal(0, 0.1, 40), groups, n_boot=300)
+    assert bad["auroc_ci"][1] < 0.8
+
+
 def test_auroc_and_spearman_behave():
     assert auroc(np.array([5.0, 6.0]), np.array([0.0, 1.0])) == 1.0
     assert auroc(np.array([0.0, 1.0]), np.array([5.0, 6.0])) == 0.0
