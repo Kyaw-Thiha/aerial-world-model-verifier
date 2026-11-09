@@ -138,3 +138,37 @@ def fetch(names_wanted: int = 5, max_shards: int = 140, workers: int = 32) -> di
 @app.local_entrypoint()
 def main(names_wanted: int = 5):
     print(json.dumps(fetch.remote(names_wanted), indent=1)[:4000])
+
+
+@app.function(cpu=2, memory=8192, timeout=1800, volumes={"/n": vol_native})
+def probe(shard: int = 0) -> dict:
+    """One shard, timed: is the range reader working from inside Modal?"""
+    import socket
+    import time
+
+    socket.setdefaulttimeout(60)
+    sys.path.insert(0, "/")
+    from fetch_anwm import RangeFile, shard_url
+
+    t0 = time.time()
+    f = RangeFile(shard_url(shard))
+    n_bytes = 0
+    try:
+        head = f.read_range(0, 4096)
+        n_bytes += len(head)
+    except Exception as e:
+        return {"ok": False, "stage": "head", "error": f"{type(e).__name__}: {e}",
+                "s": time.time() - t0}
+    import tarfile
+
+    names = []
+    try:
+        with tarfile.open(fileobj=f, mode="r:") as tf:
+            for m in tf:
+                if m.name.endswith("traj_data.pkl"):
+                    names.append(m.name)
+    except Exception as e:
+        return {"ok": False, "stage": "walk", "error": f"{type(e).__name__}: {e}",
+                "s": time.time() - t0, "fetched_mb": f.fetched / 1e6}
+    return {"ok": True, "s": time.time() - t0, "size_gb": f.size / 1e9,
+            "fetched_mb": f.fetched / 1e6, "n_traj": len(names), "first": names[:3]}
