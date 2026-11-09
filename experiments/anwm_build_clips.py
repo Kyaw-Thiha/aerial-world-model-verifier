@@ -77,6 +77,9 @@ def main() -> int:
                 except Exception as e:
                     print("skip design", m, lvl, pol, e)
                     continue
+                if lvl is not None and not d.meta.get("reachable_deg_target"):
+                    print("skip unreachable", m, lvl, pol, round(d.peak_tilt(1.0, 0.0), 1))
+                    continue
                 for k, s in enumerate(chosen[:3]):
                     pos, yaw = place(d.pos, d.yaw, s)
                     specs.append(spec(f"C_{m}_{'ctl' if lvl is None else int(lvl)}_{pol}_{k}",
