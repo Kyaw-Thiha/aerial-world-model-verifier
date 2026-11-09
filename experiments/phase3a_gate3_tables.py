@@ -26,6 +26,9 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("run")
     ap.add_argument("--out", default="")
+    ap.add_argument("--inject", default="",
+                    help="replace the block between <!-- GATE3:BEGIN --> and "
+                         "<!-- GATE3:END --> in this markdown file")
     args = ap.parse_args()
     run = Path(args.run)
     m = json.loads((run / "metrics.json").read_text())
@@ -130,7 +133,14 @@ def main() -> int:
     for k, v in g.items():
         lines.append(f"- {k}: **{v}**")
     text = "\n".join(lines) + "\n"
-    if args.out:
+    if args.inject:
+        doc = Path(args.inject)
+        body = doc.read_text()
+        begin, end = "<!-- GATE3:BEGIN -->", "<!-- GATE3:END -->"
+        i, j = body.index(begin) + len(begin), body.index(end)
+        doc.write_text(body[:i] + "\n" + text + body[j:])
+        print(f"injected into {doc}")
+    elif args.out:
         Path(args.out).write_text(text)
         print(f"-> {args.out}")
     else:

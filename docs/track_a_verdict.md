@@ -89,7 +89,13 @@ anchoring for free from the path's yaw, which is why the verdict fits no azimuth
 
 ## 5. Gate 3: the numbers
 
-(filled from `results/phase3a_verdict/<run>/metrics.json`)
+Rendered from `results/phase3a_verdict/<run>/metrics.json` by
+`experiments/phase3a_gate3_tables.py --inject docs/track_a_verdict.md`, so every number
+here is regenerated rather than typed.
+
+<!-- GATE3:BEGIN -->
+(pending)
+<!-- GATE3:END -->
 
 ## 6. Task 3: Track B's generated clips
 
