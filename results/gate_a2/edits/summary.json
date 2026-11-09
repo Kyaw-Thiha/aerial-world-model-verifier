@@ -1,0 +1,18 @@
+{
+  "tag": "gate_a2_edits",
+  "n_clips": 12,
+  "n_rows": 1344,
+  "conditions": [
+    "identity",
+    "roll_5",
+    "roll_10",
+    "roll_20",
+    "pitch_5",
+    "pitch_10",
+    "pitch_20"
+  ],
+  "size": 224,
+  "f_px": 112.0,
+  "seconds": 237.77575159072876,
+  "geocalib_commit": "1dedb29f94fc11b896c5f572005978aeebccd67f"
+}

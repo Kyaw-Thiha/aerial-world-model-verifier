@@ -1,0 +1,21 @@
+{
+  "tag": "gate_a2_tii",
+  "conditions": null,
+  "flights": {
+    "flight-01p-ellipse": {
+      "n_frames": 1267,
+      "conditions": [
+        "identity",
+        "tilt_k0",
+        "tilt_k05",
+        "tilt_k15",
+        "mirror_roll",
+        "yaw_control"
+      ],
+      "seconds": 2016.0033202171326,
+      "frames_per_s": 3.7708271230333246
+    }
+  },
+  "geocalib_commit": "1dedb29f94fc11b896c5f572005978aeebccd67f",
+  "row_builder": "a_gate._gate_row"
+}

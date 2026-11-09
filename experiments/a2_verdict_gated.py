@@ -110,6 +110,10 @@ def main() -> int:
     ap.add_argument("--mocap-root", default="data/raw/tii")
     ap.add_argument("--gate-config", default="configs/gate_frozen.yaml")
     ap.add_argument("--gate", default="on", choices=["on", "off"])
+    ap.add_argument("--gate-apply", default="per_condition",
+                    choices=["per_condition", "identity"],
+                    help="'identity' gates each clip on its REAL-condition pixels and applies "
+                         "that decision to every condition (analysis only, not pre-registered)")
     ap.add_argument("--policy", default="all_flights")
     ap.add_argument("--k-ds", default=",".join(str(k) for k in K_DS))
     ap.add_argument("--out", default="results/a2_verdict_gated")
@@ -148,6 +152,8 @@ def main() -> int:
 
     results: dict[str, dict] = {}
     for k_d in k_ds:
+        # pair-level decisions, computed once per (flight, clip) when requested
+        pairs: dict[tuple[str, str], bool] = {}
         records: list[dict] = []
         max_axis_diff = 0.0
         for flight, F in flights.items():
@@ -166,6 +172,25 @@ def main() -> int:
                 if clip["flight"] != flight:
                     continue
                 idx = clip_index(clip)
+                if cfg is not None and args.gate_apply == "identity":
+                    irows = F["rows"].get("identity")
+                    nm = F["names"]
+                    if irows is not None:
+                        arrs_i = {"up": np.stack([np.array(irows[n]["gravity_up_cam"])
+                                                  if n in irows else np.full(3, np.nan)
+                                                  for n in nm])[idx],
+                                  "gravity_uncertainty_raw": np.array(
+                                      [irows[n].get("gravity_uncertainty_raw", np.nan)
+                                       if n in irows else np.nan for n in nm])[idx],
+                                  "up_confidence_mean": np.array(
+                                      [irows[n].get("up_confidence_mean", np.nan)
+                                       if n in irows else np.nan for n in nm])[idx],
+                                  "latitude_confidence_mean": np.array(
+                                      [irows[n].get("latitude_confidence_mean", np.nan)
+                                       if n in irows else np.nan for n in nm])[idx]}
+                        pairs[(flight, clip["clip_id"])] = bool(
+                            kept(clip_signal(cfg["signal"], arrs_i, dt_s=F["dt"]),
+                                 float(cfg["tau"])))
                 for cond, rows in F["rows"].items():
                     names = F["names"]
                     up_all = np.stack([np.array(rows[n]["gravity_up_cam"]) if n in rows
@@ -201,7 +226,10 @@ def main() -> int:
                                      if n in rows else np.nan for n in names])[idx]}
                         g = gate_value(cfg, arrs, F["dt"])
                         rec["gate_signal"] = float(g) if np.isfinite(g) else None
-                        rec["gate_kept"] = bool(kept(g, float(cfg["tau"])))
+                        if args.gate_apply == "identity":
+                            rec["gate_kept"] = pairs.get((flight, clip["clip_id"]), False)
+                        else:
+                            rec["gate_kept"] = bool(kept(g, float(cfg["tau"])))
                         if not rec["gate_kept"]:
                             rec["testable"] = False
                             rec["abstain_reasons"] = list(r["abstain_reasons"]) + [
@@ -213,9 +241,11 @@ def main() -> int:
         ev["abstention_with_gate"] = abstention(records)
         ev["acceptance_per_flight"] = acceptance_per_flight(records, ev)
         ev["k_d"] = k_d
-        ev["gate"] = {"mode": args.gate, "config": cfg}
+        ev["gate"] = {"mode": args.gate, "apply": args.gate_apply, "config": cfg,
+                      "pre_registered": args.gate_apply == "per_condition"}
         ev["policy"] = args.policy
         ev["max_axis_reproduction_deg"] = max_axis_diff if abs(k_d - 0.295) < 1e-12 else None
+        ev["_records"] = records      # per-clip rows, so a table can be traced to a run
         results[f"kd_{k_d:g}"] = ev
         def f(x, nd=3):
             return "n/a" if x is None else f"{x:.{nd}f}"

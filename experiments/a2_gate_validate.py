@@ -210,9 +210,9 @@ def main() -> int:
                 "n_dropped_pos": int(np.sum(~k & (labels[m] == 1))),
                 "n_dropped_neg": int(np.sum(~k & (labels[m] == 0))),
             }
-            errs = np.array([r["median_error_deg"] for r, mm in zip(ident_tab, m) if mm])
-            kept_err += list(errs[k & np.isfinite(errs)])
-            drop_err += list(errs[(~k) & np.isfinite(errs)])
+            errs_f = np.array([r["median_error_deg"] for r, mm in zip(ident_tab, m) if mm])
+            kept_err += list(errs_f[k & np.isfinite(errs_f)])
+            drop_err += list(errs_f[(~k) & np.isfinite(errs_f)])
         validation["signals"][sig] = {
             "eligible_to_freeze": bool(SINGLE_FRAME[sig]),
             "single_frame": SINGLE_FRAME[sig],
