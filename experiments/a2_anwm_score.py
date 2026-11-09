@@ -32,6 +32,7 @@ import numpy as np
 import pandas as pd
 import yaml
 
+from experiments.a2_anwm_required import frame_required
 from src.perception.frames import camera_to_body_pitched
 from src.perception.gate import SINGLE_FRAME, clip_signal, kept
 from src.physics.flatness import tilt_deg
@@ -224,7 +225,9 @@ def main() -> int:
     meta = {}
     for mf in sorted((ROOT / args.clips).glob("*/*/manifest.json")):
         m = json.loads(mf.read_text())
-        meta[m["id"]] = {"regime": m["regime"], "maneuver": (m.get("meta") or {}).get("maneuver"),
+        meta[m["id"]] = {"regime": m["regime"],
+                         "positions": m["commanded_path"]["positions"],
+                         "maneuver": (m.get("meta") or {}).get("maneuver"),
                          "policy": (m.get("meta") or {}).get("policy"),
                          "designed": m.get("designed_required_tilt_deg"),
                          "step": m["commanded_path"]["step_spacing_m"],
@@ -265,7 +268,10 @@ def main() -> int:
         }
 
     # ---- required side, joined
-    req_rows = {(r["clip_id"], r.get("dt_s"), r["k_d"]): r for r in req["rows"]}
+    req_rows = {(r["clip_id"], r.get("dt_s"), r["k_d"]): r for r in req["rows"]
+                if not r.get("frame_statistic")}
+    frame_rows = {(r["clip_id"], r.get("dt_s"), r["k_d"]): r for r in req["rows"]
+                  if r.get("frame_statistic")}
     table = []
     for cid, pc in per_clip.items():
         for dt in DTS:
@@ -379,6 +385,135 @@ def main() -> int:
     else:
         summary["not_interpreted_reason"] = (
             "positive control failed or gate not transferable; see controls.json")
+
+    # ---- frame-level analysis (protocol framing; see amendment 5)
+    # Required tilt is evaluated frame by frame at the same times as the depicted tilt,
+    # the residual is |required - depicted|, and the clip statistic is its median over
+    # frames -- exactly the verdict protocol. Testability uses the protocol's excitation
+    # rule: at least 12 frames must carry a required tilt >= 10 deg.
+    frame_tab = []
+    for cid, pc in per_clip.items():
+        for k_d in K_DS:
+            fr = frame_rows.get((cid, 1.0, k_d))
+            if fr is None:
+                continue
+            dep_f = np.array(pc["depicted_per_frame"], dtype=np.float64)
+            for kind in ("spline", "step"):
+                req_f = np.array([np.nan if x is None else x for x in fr[kind]],
+                                 dtype=np.float64)
+                n = min(len(req_f), len(dep_f))
+                rq, dp = req_f[:n], dep_f[:n]
+                ok = np.isfinite(rq) & np.isfinite(dp)
+                if ok.sum() < 8:
+                    continue
+                res = float(np.median(np.abs(rq[ok] - dp[ok])))
+                exc = int((rq[ok] >= 10.0).sum())
+                testable = bool(pc["gate_kept"] and not pc["collapsed"] and exc >= 12)
+                frame_tab.append({
+                    "clip_id": cid, "regime": pc["regime"], "maneuver": pc["maneuver"],
+                    "designed_tilt_deg": pc["designed_tilt_deg"], "k_d": k_d,
+                    "interpolant": kind, "n_frames": int(ok.sum()),
+                    "excitation_frames": exc,
+                    "required_median_deg": float(np.nanmedian(rq[ok])),
+                    "required_max_deg": float(np.nanmax(rq[ok])),
+                    "depicted_median_deg": float(np.nanmedian(dp[ok])),
+                    "residual_median_deg": res,
+                    "gate_kept": pc["gate_kept"], "collapsed": pc["collapsed"],
+                    "testable": testable,
+                    "infeasible": bool(testable and res > args.threshold),
+                })
+    ftab = pd.DataFrame(frame_tab)
+    if len(ftab):
+        ftab.to_csv(out / "anwm_frame_level.csv", index=False)
+        fl: dict = {"rule": "median |required - depicted| over frames; testable needs >=12 "
+                            "frames with required >= 10 deg (verdict excitation rule)",
+                    "threshold_deg": args.threshold, "per_regime": {}}
+        for kind in ("spline", "step"):
+            for k_d in K_DS:
+                for reg in ("A", "B", "C"):
+                    sel = ftab[(ftab.interpolant == kind) & (ftab.k_d == k_d)
+                               & (ftab.regime == reg)]
+                    if not len(sel):
+                        continue
+                    fl["per_regime"][f"{kind}_kd{k_d}_{reg}"] = {
+                        "n": int(len(sel)),
+                        "n_gate_kept": int(sel.gate_kept.sum()),
+                        "n_testable": int(sel.testable.sum()),
+                        "n_infeasible": int(sel.infeasible.sum()),
+                        "median_residual_testable_deg": (
+                            float(sel[sel.testable].residual_median_deg.median())
+                            if sel.testable.any() else None),
+                        "median_excitation_frames": float(sel.excitation_frames.median()),
+                    }
+        dose_frames = {}
+        for kind in ("spline", "step"):
+            for k_d in K_DS:
+                sel = ftab[(ftab.interpolant == kind) & (ftab.k_d == k_d)
+                           & (ftab.regime == "C") & ftab.designed_tilt_deg.notna()]
+                g = sel.groupby("designed_tilt_deg").agg(
+                    n=("clip_id", "size"),
+                    depicted_median=("depicted_median_deg", "median"),
+                    required_median=("required_median_deg", "median"),
+                    residual_median=("residual_median_deg", "median"),
+                    n_testable=("testable", "sum"), n_infeasible=("infeasible", "sum"))
+                dose_frames[f"{kind}_kd{k_d}"] = json.loads(
+                    g.reset_index().to_json(orient="records"))
+        fl["regime_C_dose"] = dose_frames
+        summary["frame_level"] = fl
+        summary["frame_level_rows"] = frame_tab
+
+    # ---- minimum consistent dt under the corrected rule (amendment 5)
+    dt_grid = np.round(np.arange(0.10, 5.0001, 0.05), 3)
+    # Only clips that are testable at the nominal 1 s can say anything about dt: a
+    # plateau-dominated clip is "consistent" at every dt because most of its frames demand
+    # no tilt, and including it would report an unconstrained dt_min (it did, first run).
+    testable_keys = {(r["interpolant"], r["k_d"], r["clip_id"])
+                     for r in frame_tab if r["testable"]}
+    dtmin5 = {"population": "clips testable at 1 s under the frame-level rule", "by": {}}
+    for k_d in K_DS:
+        for kind in ("spline", "step"):
+            per = []
+            for cid, pc in per_clip.items():
+                if (kind, k_d, cid) not in testable_keys:
+                    continue
+                pos = np.asarray(meta[cid]["positions"], dtype=np.float64)
+                dep = np.array(pc["depicted_per_frame"], dtype=np.float64)
+                found = None
+                for dt in dt_grid:
+                    try:
+                        req = frame_required(pos, float(dt), k_d, kind)
+                    except ValueError:
+                        continue
+                    n = min(len(req), len(dep))
+                    ok = np.isfinite(req[:n]) & np.isfinite(dep[:n])
+                    if ok.sum() < 8:
+                        continue
+                    if np.median(np.abs(req[:n][ok] - dep[:n][ok])) <= args.threshold:
+                        found = float(dt)
+                        break
+                per.append({"clip_id": cid, "regime": pc["regime"],
+                            "dt_min_s": found,
+                            "implied_speed_ms": (pc["step_spacing_m"] / found
+                                                 if found else None)})
+            d = pd.DataFrame(per)
+            dist = {}
+            for reg in ("A", "B", "C"):
+                dd = d[d.regime == reg] if len(d) else d
+                dist[reg] = {"n": int(len(dd)),
+                             "n_none": int(dd.dt_min_s.isna().sum()) if len(dd) else 0,
+                             "median": float(dd.dt_min_s.median()) if len(dd) and
+                             dd.dt_min_s.notna().any() else None,
+                             "p10": float(dd.dt_min_s.quantile(0.1)) if len(dd) and
+                             dd.dt_min_s.notna().any() else None,
+                             "p90": float(dd.dt_min_s.quantile(0.9)) if len(dd) and
+                             dd.dt_min_s.notna().any() else None,
+                             "implied_speed_median": (float(dd.implied_speed_ms.median())
+                                                      if len(dd) and
+                                                      dd.implied_speed_ms.notna().any() else None)}
+            dtmin5["by"][f"{kind}_kd{k_d}"] = {"distribution": dist, "per_clip": per}
+            if len(d):
+                d.to_csv(out / f"dt_min_framewise_{kind}_kd{k_d}.csv", index=False)
+    summary["minimum_consistent_dt_framewise"] = dtmin5
 
     # ---- testability bookkeeping (always reported)
     expect = {}

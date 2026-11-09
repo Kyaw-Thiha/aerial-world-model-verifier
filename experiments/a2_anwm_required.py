@@ -69,6 +69,38 @@ def required_tilt(v: np.ndarray, a: np.ndarray, k_d: float) -> np.ndarray:
     return tilt_deg(axis)
 
 
+def frame_required(pos: np.ndarray, dt: float, k_d: float, kind: str) -> np.ndarray:
+    """Required tilt at each generated frame, on the frame's own time base.
+
+    Frame i is the depiction after the action that ends at waypoint i+1 (Track B's
+    convention), so the 16 frames of a 17-waypoint clip are evaluated at nodes 1..16.
+
+    ``kind='step'`` uses the acceleration that produced that frame: v_i = (p_{i+1}-p_i)/dt,
+    a_i = (v_i - v_{i-1})/dt. Frame 0 has no predecessor and is NaN.
+    ``kind='spline'`` evaluates the natural cubic interpolant at the same times.
+
+    This is the framing the verdict protocol uses (a per-frame residual, then a clip
+    median), and it is the one the reports quote. The older "median of the interpolant"
+    summary is kept for the sensitivity table: a natural cubic spline is NOT a lower bound
+    on tilt -- it overshoots on plateau paths, and the per-step profile is zero on the
+    plateaus -- so neither interpolation dominates the other statistic-wise.
+    """
+    p = np.asarray(pos, dtype=np.float64)
+    n, nf = len(p), len(p) - 1
+    t = np.arange(n) * dt
+    if kind == "step":
+        v = np.diff(p, axis=0) / dt
+        out = np.full(nf, np.nan)
+        for i in range(1, nf):
+            a = (v[i] - v[i - 1]) / dt
+            vm = 0.5 * (v[i] + v[i - 1])
+            out[i] = tilt_deg(implied_thrust_axis(a[None, :], vm[None, :], k_d, G0))[0]
+        return out
+    cs = CubicSpline(t, p, bc_type="natural", axis=0)
+    tt = t[1:]
+    return tilt_deg(implied_thrust_axis(cs(tt, 2), cs(tt, 1), k_d, G0))
+
+
 def summarise(tilt: np.ndarray) -> dict:
     t = np.asarray(tilt, dtype=np.float64)
     t = t[np.isfinite(t)]
@@ -117,6 +149,15 @@ def main() -> int:
                 rec["lower"] = summarise(required_tilt(v_lo, a_lo, k_d))
                 rec["upper"] = summarise(required_tilt(v_hi, a_hi, k_d))
                 rows.append(rec)
+        # per-frame required tilt at the nominal dts, both interpolators (the protocol's
+        # framing: a per-frame residual, then a clip median)
+        for dt in DTS:
+            for k_d in K_DS:
+                rec = dict(base, dt_s=dt, k_d=k_d, frame_statistic=True)
+                for kind in ("spline", "step"):
+                    rec[kind] = [None if not np.isfinite(x) else float(x)
+                                 for x in frame_required(pos, dt, k_d, kind)]
+                rows.append(rec)
         # dt sweep for the minimum consistent dt (joined to depicted tilt later)
         for k_d in K_DS:
             sweep = []
@@ -133,7 +174,7 @@ def main() -> int:
     # a flat CSV for the three nominal dts
     flat = []
     for r in rows:
-        if r.get("dt_s") is None:
+        if r.get("dt_s") is None or r.get("frame_statistic"):
             continue
         flat.append({**{k: v for k, v in r.items() if k not in ("lower", "upper")},
                      **{f"lower_{k}": v for k, v in r["lower"].items()},
@@ -147,7 +188,7 @@ def main() -> int:
     for k_d, col in ((0.0, "track_b_required_tilt_1s_drag_free_deg"),
                      (0.295, "track_b_required_tilt_1s_kd_deg")):
         chk = [r for r in rows if r.get("dt_s") == 1.0 and r["k_d"] == k_d
-               and r.get(col) is not None]
+               and r.get(col) is not None and not r.get("frame_statistic")]
         if not chk:
             continue
         mine_max = np.array([r["upper"]["max_deg"] for r in chk], dtype=np.float64)

@@ -14,25 +14,34 @@ modified.
 band of 0.50–2.66°. That is 0.2–0.3° above the 0.57° it reads on released level frames, so
 the generator adds almost no tilt of its own and does not remove what it was given.
 
-**What the commanded paths demand.** At the paper-consistent 1 s per step, the *smoothest
-possible* flight through each commanded path (a minimum-acceleration spline, the least tilt
-any interpolator can ask for) demands a median of 5.0° drag-free and 9.4° with racing-quad
-drag. On the 22 Regime A clips that clear the detectability floor, **14 (drag-free) to 17
-(with drag) are infeasible**: even the lower bound asks for more tilt than the frames show,
-by more than the verifier's 6.46° threshold.
+**What the commanded paths demand.** At the paper-consistent 1 s per step, the commanded
+motion requires a tilt the frames do not show. Judged the way the verdict protocol judges a
+clip — per-frame required vs depicted tilt, clip statistic = median, testable only with at
+least 12 frames above the 10° excitation floor — **every Regime A clip that is testable at
+all is infeasible** (8–9 of 25 via the spline, 2 of 25 via the per-step estimator), with a
+median residual of 21–39°, against a 6.46° threshold.
+
+That is a much smaller population than an earlier draft of this report claimed. The
+"smooth-flight lower bound" behind the earlier count (22 testable, 17 infeasible) was not a
+bound: on plateau-dominated paths a spline's median tilt exceeds the per-step median on
+345 of 492 rows, and its peak exceeds the per-step peak on 422 of 492. Amendment 5 records
+the error and its consequence; the corrected numbers are the ones quoted here, and the old
+statistic is kept below as a sensitivity.
 
 **The designed-control check is the sharpest result.** Regime C was built with 5°, 10° and
-20° of required tilt on purpose. Depicted tilt is **0.790°, 0.785°, 0.771°** — flat. The
+20° of required tilt on purpose. Depicted tilt is **0.79°, 0.78°, 0.77°** — flat. The
 generator does not bank more when the path demands more; if anything the 20° family is
-marginally flatter.
+marginally flatter. Here the population is large enough to be decisive: 11 of 49 Regime C
+clips pass the testability rule and **all 11 are infeasible**, with median residual 9.6°
+(spline) to 12.3° (per-step).
 
-**The minimum consistent dt is about 1.2–1.4 s.** For each clip there is a time step at which
-the commanded path stops demanding more tilt than the pixels show: median 1.39 s (Regime A)
-and 1.24 s (Regime C) with drag, 1.03 s and 0.83 s drag-free. At the step spacing the paths
-were built with, that implies the depicted flight is consistent with a drone moving at a
-median 2.9 m/s (A) / 3.9 m/s (C) with drag, 3.9 / 6.2 m/s drag-free — against the ~5 m/s the
-release was trained on. Read either way, the generated video is the picture of a drone
-flying the commanded path **more slowly than the path's own step spacing implies**.
+**The minimum consistent dt is 1.2–2.8 s, depending on the clip.** For each testable clip
+there is a time step at which the commanded path stops demanding more tilt than the pixels
+show: median **1.55 s** for the designed maneuvers (11 clips) and **2.7 s** for the testable
+Regime A clips (9 clips) with drag. At the step spacing those paths were built with, that
+implies a drone moving at ~3.2 m/s (C) and ~1.4 m/s (A) — against the ~5 m/s the release
+was trained on. The generated video is the picture of a drone flying the commanded path
+**more slowly than the path's own step spacing implies**.
 
 ## 0. Positive controls — run first, and they decide whether anything above counts
 
@@ -94,87 +103,109 @@ verifier's clip score is a median.
 
 ## 1. The comparison, and the rule for calling a path infeasible
 
-For each clip, dt and `k_d`:
+**Corrected rule (amendment 5, the primary).** Required tilt is evaluated frame by frame at
+the same times as the depicted tilt — frame *i* is the depiction after the step ending at
+waypoint *i+1*, so 16 frames from 17 waypoints — both through the verifier's own flatness
+expression \(z_B \propto a + g e_3 + k_d v\). The residual is \(|\text{required} -
+\text{depicted}|\) per frame and the clip statistic is its median, exactly as the verdict
+scores a clip. A clip is **testable** when the gate keeps it, the rollout has not collapsed,
+and at least 12 frames carry a required tilt ≥ 10° (the protocol's excitation rule). It is
+**infeasible** when that median residual exceeds the frozen verdict threshold (6.46° at
+`k_d` = 0.295).
 
-- **lower bound** — natural cubic spline through the commanded waypoints (20 samples per
-  step): the smoothest flight that visits every commanded point;
-- **upper bound** — per-step: the whole velocity change between consecutive waypoints;
-- required tilt is the verifier's own flatness expression
-  \(z_B \propto a + g e_3 + k_d v\), evaluated with `src/physics`.
+Two interpolants are reported for every table: **spline** (natural cubic through the
+waypoints) and **step** (the acceleration that produced each frame). Where they disagree the
+disagreement is the interpolation ambiguity and is stated.
 
-A clip is declared **infeasible only when the lower bound** exceeds the depicted tilt by
-more than the frozen verdict threshold (6.46° at `k_d` = 0.295). If even the least-tilt
-flight through the commanded waypoints asks for tilt the pixels do not show, no
-interpolator can rescue the path. The lower bound never exceeds the upper bound in any
-clip/dt/`k_d` (checked in the run).
+**Retracted rule (amendment 3).** The earlier draft compared the *median over an
+interpolant's samples* against the *median depicted tilt*, and called the spline "the least
+tilt any flight could need". That last claim is false and a unit test caught it:
 
-Testability: gate kept (7 clips dropped), rollout not collapsed (none), and the lower bound
-reaches 10° somewhere at that dt (otherwise "below detectability"). Clip **A15** and all
-eight Regime B clips come out **not testable**, as expected: A15 is a pure 2 m/s climb whose
-lower bound never reaches 10° at 1 s, and Regime B's rescaled paths never do at any dt with
-drag (0 detectable at `k_d` 0.295; 21 of 49 Regime C clips are detectable drag-free, 42 with
-drag).
+- the spline's median exceeds the per-step median on **345 of 492** clip/dt/`k_d` rows,
+  because repeated waypoints make most per-step accelerations exactly zero;
+- its peak exceeds the per-step peak on **422 of 492** rows (natural cubic overshoot);
+- a natural spline minimises ∫|a|² *within C² interpolants*; a flight may have
+  discontinuous acceleration, so it is not an admissible lower bound.
 
-## 2. Regime A — the share of generated flights the pixels cannot support
+The old tables are still produced and appear as §6. They are labelled sensitivity, not
+bound.
 
-| dt | `k_d` | testable | infeasible | share of testable | share of all 25 |
+Testability bookkeeping under the corrected rule: gate keeps 23 of 25 Regime A, 5 of 8
+Regime B and 47 of 49 Regime C clips; nothing is collapsed; **A15 and all eight Regime B
+clips are not testable** (no frame reaches a 10° requirement), as pre-registered.
+
+## 2. Regime A — what the pixels cannot support
+
+Frame-level rule, dt = 1 s, gate applied.
+
+| `k_d` | interpolant | kept | testable | infeasible | median residual (testable) |
 | --- | --- | --- | --- | --- | --- |
-| 0.25 s | 0 | 22 | 16 | 0.73 | 0.64 |
-| 0.25 s | 0.295 | 22 | 20 | **0.91** | 0.80 |
-| 0.667 s | 0 | 22 | 14 | 0.64 | 0.56 |
-| 0.667 s | 0.295 | 22 | 17 | 0.77 | 0.68 |
-| **1.0 s** | **0** | 22 | **14** | **0.64** | **0.56** |
-| **1.0 s** | **0.295** | 22 | **17** | **0.77** | **0.68** |
+| 0.295 | spline | 23 | **9** | **9** | 39.4° |
+| 0.295 | step | 23 | **2** | **2** | 21.0° |
+| 0 | spline | 23 | 8 | 8 | 38.3° |
+| 0 | step | 23 | 2 | 2 | 24.5° |
 
-All infeasible clips have the depicted tilt within three times the measured noise floor.
+Every testable clip is infeasible, under both interpolants and both drag settings. The
+population is the caveat: the per-step rule leaves only 2 testable clips of 25 because most
+Regime A commanded paths are plateau-dominated (fewer than 12 frames demand ≥ 10°), and the
+spline leaves 9. At dt = 0.25 s the same paths demand more and the testable population
+grows; the dt axis in §3 covers this.
 
 ## 3. Regime C — dose-response against the designed tilt
 
-Nominal dt = 1 s.
+Frame-level rule, dt = 1 s. Rows are (spline / step), `k_d` = 0.295.
 
-| designed | n | depicted median (p10–p90) | `k_d` | required lower bound | testable | infeasible |
+| designed | n | depicted median | required median | residual median | testable | infeasible |
 | --- | --- | --- | --- | --- | --- | --- |
-| 5° | 21 | 0.790° (0.53–2.47) | 0.295 | 9.45° | 21 | **19** |
-| 5° | 21 | 0.790° (0.53–2.47) | 0 | 5.01° | 0 | 0 |
-| 10° | 12 | 0.785° (0.61–2.26) | 0.295 | 10.97° | 11 | **11** |
-| 10° | 12 | 0.785° (0.61–2.26) | 0 | 8.49° | 11 | 6 |
-| 20° | 9 | 0.771° (0.61–3.50) | 0.295 | 21.21° | 8 | **7** |
-| 20° | 9 | 0.771° (0.61–3.50) | 0 | 20.68° | 8 | 5 |
+| 5° | 21 | 0.79° | 9.5° / 9.4° | 8.6° / 8.5° | 0 / 0 | 0 / 0 |
+| 10° | 12 | 0.78° | 11.0° / 11.2° | 9.8° / 10.0° | 6 / 6 | **6 / 6** |
+| 20° | 9 | 0.77° | 22.1° / 20.4° | 19.7° / 18.0° | 5 / 5 | **5 / 5** |
 
-Depicted tilt is **flat across a 4× change in designed tilt**. The 5° family drag-free is
-not testable (required 5.0° < 10° floor); with drag it is, and 19 of 21 are infeasible.
-Seed-repeat band on depicted tilt: 0.50–2.66°, i.e. the flatness is not seed noise.
+The 5° family is below the excitation floor and is reported as not testable, not as
+consistent. Depicted tilt is flat across a **4× change in designed tilt** — 0.79 / 0.78 /
+0.77 — with a seed-repeat band of 0.50–2.66°, so the flatness is not seed noise. All 11
+testable Regime C clips are infeasible, with a median residual of 9.6–12.6°.
 
 ## 4. Minimum consistent dt
 
-The smallest dt at which the lower bound's median required tilt comes within 6.46° of the
-depicted tilt; sweep 0.10–5.00 s, step 0.01 s. Every clip reaches one inside the sweep.
+The smallest dt at which the frame-level median residual comes within the 6.46° threshold;
+sweep 0.10–5.00 s in 0.05 s steps. Reported **only for clips that are testable at 1 s** — a
+plateau-dominated clip is "consistent" at every dt because most of its frames demand no
+tilt, and including it reports an unconstrained minimum (it did, first run: a median of
+0.10 s at 28 m/s, which is an artifact, not a result).
 
-| `k_d` | regime | n | median | p10–p90 | implied speed (median) |
-| --- | --- | --- | --- | --- | --- |
-| 0.295 | A | 23 | **1.39 s** | 0.21–2.09 | 2.9 m/s |
-| 0.295 | B | 5 | 0.65 s | 0.41–1.07 | 3.9 m/s |
-| 0.295 | C | 47 | **1.24 s** | 0.99–1.56 | 3.9 m/s |
-| 0 | A | 23 | 1.03 s | 0.15–1.95 | 3.9 m/s |
-| 0 | B | 5 | 0.31 s | 0.29–0.36 | 5.2 m/s |
-| 0 | C | 47 | 0.83 s | 0.10–1.31 | 6.2 m/s |
+| `k_d` | interpolant | regime | n | median dt_min | p10–p90 | implied speed |
+| --- | --- | --- | --- | --- | --- | --- |
+| 0.295 | spline | A | 9 | **2.70 s** | 2.23–2.93 | 1.4 m/s |
+| 0.295 | spline | C | 11 | **1.55 s** | 1.35–2.00 | 3.2 m/s |
+| 0.295 | step | A | 2 | 1.75 s | — | 1.9 m/s |
+| 0.295 | step | C | 11 | 1.55 s | 1.35–1.90 | 3.2 m/s |
+| 0 | spline | A | 8 | 2.78 s | 2.28–3.02 | 1.4 m/s |
+| 0 | spline | C | 11 | 1.25 s | 1.15–1.80 | 4.0 m/s |
+| 0 | step | C | 11 | 1.20 s | 1.10–1.70 | 4.1 m/s |
 
-The implied speed is step spacing divided by dt_min. Under the paper-consistent 1 s, the
-regime C designed maneuvers are consistent with flight at ~3.9 m/s instead of the 5 m/s they
-were built for; drag-free, ~6.2 m/s. The parameter that makes ANWM consistent is the time
-base, and it needs to be ~25 % longer than the release implies (or the speed ~25 % lower).
+Implied speed is step spacing divided by dt_min. Read literally: at 1 s the Regime C
+designed maneuvers depict a flight consistent with ~3.2 m/s rather than the 5 m/s they were
+built for (drag-free ~4.0 m/s), and the testable Regime A clips need ~2.7 s (spline) — a
+~1.4 m/s flight. The time base is an axis, and the release defines none; what the pixels
+rule out is the 1 s reading that the paper's stated speeds imply.
+
+The earlier amendment-3 sweep (median-of-spline vs median depicted, all kept clips) gave
+1.39 s (A) and 1.24 s (C) at `k_d` 0.295; it is retained in `summary.json` as sensitivity.
+Restricting to testable clips and using the frame-level statistic lengthens the required dt.
 
 ## 5. What this supports
 
-- **A specific, bounded claim.** At dt = 1 s and `k_d` = 0.295, on the 22 testable Regime A
-  clips, the **lower bound** on the tilt their commanded paths require exceeds the depicted
-  tilt by more than 6.46° on 17 of them (14 of 22 drag-free). Even the smoothest flight
-  through those waypoints is not what the video shows.
+- **A specific, bounded claim.** At dt = 1 s and `k_d` = 0.295, every clip that passes the
+  verdict protocol's own testability rule has a median per-frame residual above 6.46°:
+  9 of 25 Regime A clips (spline; 2 of 25 per-step) and 11 of 49 Regime C clips, with
+  median residuals of 39° / 21° and 9.6–12.6° respectively. The minority that is testable
+  is not what the video shows; the plateau-dominated majority is untested.
 - **A dose-response failure that cannot be explained by noise.** Regime C's designed 5/10/20°
   families are depicted at 0.79/0.78/0.77° with a seed band of at most ±1.3° (p10–p90 of the
   flat 5° family is 0.53–2.47°, still far below 5°).
 - **A quantified time-base explanation** rather than a bare "breaks physics": the same
-  clips become consistent at dt ≈ 1.2–1.4 s.
+  clips stop contradicting them at dt ≈ 1.2–2.8 s, depending on the clip.
 
 ## 6. What this does not show
 
@@ -195,15 +226,17 @@ base, and it needs to be ~25 % longer than the release implies (or the speed ~25
 
 ## 7. Caveats
 
-- Regime A's commanded paths contain many repeated waypoints (stalls). The per-step upper
-  bound is therefore huge on those clips (up to 55° at 0.25 s); the lower bound is what the
-  infeasibility rule uses, and it is unaffected by the plateaus.
+- Regime A's commanded paths contain many repeated waypoints (stalls). The per-step
+  estimator's peak on those clips reaches 55° at 0.25 s while its median is 0°, which is the
+  reason the excitation rule exists and the reason the testable population is 2–9 clips
+  rather than 25. Neither interpolant is a bound (amendment 5); the frame-level residual is
+  the statistic used.
 - The estimator's ~15 % compression toward level (control b) means depicted tilt is, if
   anything, slightly *under*-reported — which makes the infeasibility finding conservative.
 - Regime C's "designed" tilt is a property of the Track B generator, not of the recorded
   path; the required-tilt column is recomputed here from the commanded positions, and the two
-  differ (designed 5° → lower bound 9.45° with drag) because the design targeted a peak and
-  the spline smooths the path.
+  differ (designed 5° → 9.4–9.5° required with drag) because the design targeted a peak and
+  the recomputation starts from positions.
 - No clip was "collapsed" by the pre-registered frame-statistic rule (minimum median
   frame-to-frame difference over the set is 0.035 against a 0.02 floor).
 
@@ -223,10 +256,12 @@ What the three reports together support, and what they do not.
 3. *With that gate, the verifier accepts well-behaved real footage at 0.949* and ranks
    tilt-removed footage above the real clip at AUROC 0.92 (report 07).
 4. *ANWM's generated flights depict a level aircraft while their commanded paths demand
-   banking.* At dt = 1 s and `k_d` = 0.295, the **lower bound** on required tilt exceeds the
-   depicted tilt by more than 6.46° on 17 of 22 testable Regime A clips (14 drag-free), and
-   the designed 5/10/20° controls are all depicted at ≈0.8° (report 08).
-5. *The time base explains most of it.* The same clips are consistent at dt ≈ 1.2–1.4 s.
+   banking.* At dt = 1 s and `k_d` = 0.295, every clip that passes the verdict's own
+   testability rule has a median per-frame residual above 6.46°: 9 of 25 Regime A clips
+   (spline; 2 of 25 per-step) and 11 of 49 Regime C clips. The designed 5/10/20° controls
+   are all depicted at ≈0.8° (report 08).
+5. *The time base explains most of it.* The same clips stop contradicting their paths at
+   dt ≈ 1.2–2.8 s, longer than the 1 s the release's stated speeds imply.
 
 **Not supported.**
 
@@ -248,3 +283,21 @@ extended code (report 07 §1); the required-tilt estimator reproduces Track B's 
 numbers to 0.003° once the statistic is matched; the depicted-tilt construction reproduces
 the published 0.57° floor; the lower bound never exceeds the upper bound; A15 and Regime B
 are not testable, as predicted before scoring; the gate drops 0 of 10 ground-truth clips.
+
+## 9. Retained for comparison: the amendment-3 statistic (sensitivity, not a bound)
+
+The pre-registered amendment-3 tables, computed as median-of-interpolant against median
+depicted tilt, are in `results/a2_anwm_score/<run>/summary.json` (`regime_A_share`,
+`regime_C_dose_response`) and are summarised here only so the change is auditable.
+
+| statistic | Regime A testable | Regime A infeasible | Regime C testable | Regime C infeasible |
+| --- | --- | --- | --- | --- |
+| spline median vs depicted median (amendment 3) | 22 | 17 | 21–42 | 19–42 |
+| frame-level median residual (amendment 5) | 2–9 | 2–9 | 11 | 11 |
+
+The amendment-3 rule inflated Regime A testability from 2–9 clips to 22 and its infeasible
+count from 2–9 to 14–17. It also made the 5° Regime C family look testable with drag (21
+clips) when the excitation rule says those paths never demand 10° at 1 s. The direction of
+the finding is unchanged; the prevalence in the earlier draft was overstated and is
+withdrawn.
+

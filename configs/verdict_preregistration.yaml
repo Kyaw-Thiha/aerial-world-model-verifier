@@ -460,3 +460,44 @@ amendment_4:
     deleted: it is recorded here as exceeded, with the evidence that it is exceeded for a
     reason unrelated to correctness.
   not_changed: [gate signal, tau, label threshold, verdict thresholds, abstention rules]
+
+# ================================================================ AMENDMENT 5
+# Track A2. Committed after the ANWM scoring run and BEFORE report 08 was corrected, in
+# response to a unit test, not to an ANWM outcome. It records a mathematical error in
+# amendment 3 and switches the primary statistic to the verdict protocol's own framing.
+amendment_5:
+  date: 2026-11-09
+  tag: "[A2]"
+  concerns: amendment_3.required.lower_bound
+  error: >
+    Amendment 3 called a natural cubic spline through the waypoints "the least tilt any
+    flight through those waypoints could need" and made its median the lower bound the
+    infeasibility rule rests on. That is false. A natural spline minimises the integral of
+    squared acceleration among C2 interpolants; it does not bound tilt for any statistic.
+    On plateau paths (many repeated waypoints, as in Regime A) the per-step profile is
+    exactly zero at most nodes while the spline spreads the jump, so the spline's median
+    exceeds the per-step median on 345 of 492 clip/dt/k_d rows, and its peak exceeds the
+    per-step peak on 422 of 492 (natural cubic overshoot). Neither interpolation is a
+    bound.
+  found_by: >
+    tests/test_anwm_required.py, written to check the claim and failing it (median 0.98 deg
+    vs 0.00 deg on a 13-plateau path at dt 0.25). The tests now pin the true relation and
+    the counterexample instead of the false one.
+  corrected_primary: >
+    The verdict protocol's own framing: required tilt is evaluated frame by frame at the
+    same times as the depicted tilt (frame i is the depiction after the step ending at
+    waypoint i+1, so 16 frames from 17 waypoints); the residual is |required - depicted|
+    per frame; the clip statistic is its median. A clip is testable when the gate keeps it,
+    the rollout is not collapsed, and at least 12 of its frames carry a required tilt of
+    >= 10 deg (the protocol's excitation rule). A clip is infeasible when that median
+    exceeds the frozen verdict threshold. Both interpolants are reported: 'spline' and
+    'step'.
+  retained: >
+    The amendment-3 tables (median of each interpolant against the median depicted tilt)
+    are still produced and are still reported, labelled as the statistic-level sensitivity
+    rather than as a bound. No threshold, gate, label or success criterion changes.
+  consequence: >
+    The direction of the ANWM finding survives -- every clip that passes the corrected
+    testability rule is infeasible, under both interpolants and both drag settings -- but
+    its prevalence collapses: only 8-9 of 25 Regime A clips (spline) or 2 of 25 (step) are
+    testable at 1 s, against 22 under the erroneous rule.
