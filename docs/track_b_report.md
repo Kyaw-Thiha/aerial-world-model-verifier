@@ -376,7 +376,10 @@ climb at 5 m/s horizontal plus 1.5 m/s vertical reads 5.2 here and is legal.
 ## Delivery status at the end of this handoff
 
 - Regime C: **49 clips**, generated, pulled, indexed and synced to R2.
-- Regime A: **12 of 25** at the time of writing. The run was interrupted three times, each time by
+- Total delivered at the time of writing: **64 clips** (A 13, B 2, C 49), indexed by
+  `clips_index.csv` and mirrored to R2 `track-b/clips/`.
+- Regime A: **13 of 25** at the time of writing; Regime B: **2 of 8** (the rebuilt moving-window
+  set, extents 20-80 m, verified non-degenerate). The run was interrupted three times, each time by
   the local Modal client being torn down (the app then stops with "local client disconnected"),
   not by the model; each restart resumes and skips the finished clips. One more
   `modal run --detach remote/b_anwm.py::run_generate --regimes A` finishes the remaining 13 in
