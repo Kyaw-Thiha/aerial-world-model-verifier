@@ -95,20 +95,26 @@ def main() -> int:
     ap.add_argument("--out", default="results/pathrec_scale_provenance/v1")
     args = ap.parse_args()
 
+    depth_path = Path(args.depth)
+    depth_by_seq = {}
+    if depth_path.is_file():
+        for r in json.loads(depth_path.read_text()):
+            depth_by_seq[r["seq"]] = r
     rows = []
     for npz in sorted(Path(args.poses).glob("*.npz")):
         if npz.stem.startswith("tii_"):
             continue
         seq = npz.stem
-        tp, dp = Path(args.truth) / seq / "truth.npz", Path(args.depth) / f"{seq}.json"
-        if not tp.exists() or not dp.exists():
+        tp = Path(args.truth) / seq / "truth.npz"
+        drec = depth_by_seq.get(seq)
+        if not tp.exists() or drec is None:
             continue
         c2w = np.load(npz)["c2w"]
         truth = np.load(tp)
         meta = Path(args.truth) / seq / "meta.json"
         fps = json.loads(meta.read_text())["fps"] if meta.exists() else 15.1
         _, s_oracle, _ = umeyama(c2w[:, :3, 3], truth["pos"][:len(c2w)], with_scale=True)
-        ds = depth_scale(c2w, json.loads(dp.read_text())["median_depth_m"])
+        ds = depth_scale(c2w, drec["median_depth_m"])
         with_prior = score_with_scale(c2w, truth["pos"], ds["scale"], 1.0 / fps) if np.isfinite(ds["scale"]) else {}
         rows.append({"seq": seq, "scale_oracle": float(s_oracle), "scale_depth": ds["scale"],
                      "depth_pairs": ds["n"], "depth_spread": ds["spread"],

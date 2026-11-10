@@ -293,6 +293,32 @@ def _score_uzh(model: str, seq: str, max_frames: int = 150, res: int = 0,
 
 @app.function(image=image, gpu="A10G", volumes={A_DATA: data_vol, C_DATA: c_vol, MODELS: model_vol},
               timeout=3600, cpu=4)
+def intrinsics_scan(model: str, seqs: list[str], max_frames: int = 150) -> str:
+    """Predicted intrinsics for several clips in one container (one model load)."""
+    from pathlib import Path as P
+
+    import cv2
+    import numpy as np
+
+    out = []
+    for seq in seqs:
+        clip_dir = P(C_DATA) / "uzh" / seq
+        frames = []
+        for p in sorted((clip_dir / "frames").glob("*.png"))[:max_frames]:
+            g = cv2.imread(str(p), cv2.IMREAD_GRAYSCALE)
+            frames.append(cv2.cvtColor(g, cv2.COLOR_GRAY2RGB))
+        c2w, extra, wall = _infer(model, frames, 0)
+        K = extra.get("intrinsics_first")
+        hw = extra.get("image_hw_processed")
+        out.append({"model": model, "seq": seq, "K": K,
+                    "proc_h": hw[0] if hw else None, "proc_w": hw[1] if hw else None,
+                    "wall_s": wall})
+        print(f"[{model}/{seq}] {K}", flush=True)
+    return json.dumps(out)
+
+
+@app.function(image=image, gpu="A10G", volumes={A_DATA: data_vol, C_DATA: c_vol, MODELS: model_vol},
+              timeout=3600, cpu=4)
 def depth_prior(seq: str, max_frames: int = 150) -> str:
     """Per-frame median metric depth from DA3METRIC-LARGE (for a depth-prior scale).
 
@@ -508,6 +534,16 @@ def main(model: str = "all", source: str = "anwm", n_frames: int = 16, stride: i
          anwm: bool = False, regimes: str = "A", max_clips: int = 0,
          out_json: str = "", intrinsics: bool = False, depth: bool = False) -> None:
     models = ["da3", "vggt", "pi3"] if model == "all" else [m for m in model.split(",") if m]
+    if intrinsics:
+        rows = []
+        for m in models:
+            rows += json.loads(intrinsics_scan.remote(m, [x for x in seq.split(",") if x], n_frames))
+        if out_json:
+            import os
+            os.makedirs(os.path.dirname(out_json) or ".", exist_ok=True)
+            open(out_json, "w").write(json.dumps(rows, indent=1))
+        print(f"== intrinsics: {len(rows)} rows", flush=True)
+        return
     if depth:
         rows = []
         for sq in [x for x in seq.split(",") if x]:

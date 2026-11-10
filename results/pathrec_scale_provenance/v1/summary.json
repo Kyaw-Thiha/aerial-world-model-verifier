@@ -1,0 +1,142 @@
+[
+ {
+  "seq": "indoor_45_9",
+  "scale_oracle": 0.057601804525525956,
+  "scale_depth": 0.023410057628693838,
+  "depth_pairs": 22,
+  "depth_spread": 0.14666885474123847,
+  "depth_vs_oracle": 0.40641187930700656,
+  "with_depth_scale": {
+   "dir_err_deg_median": 13.238322956759523,
+   "mag_ratio": 0.2970112179986494,
+   "coverage": 0.8958333333333334,
+   "path_len_ratio": 0.21162383879001112
+  }
+ },
+ {
+  "seq": "indoor_forward_10",
+  "scale_oracle": 0.23674383487082595,
+  "scale_depth": 0.3346509596380214,
+  "depth_pairs": 24,
+  "depth_spread": 1.8785078781349884,
+  "depth_vs_oracle": 1.4135572308382023,
+  "with_depth_scale": {
+   "dir_err_deg_median": 2.3281646433980576,
+   "mag_ratio": 1.401030938382406,
+   "coverage": 0.625,
+   "path_len_ratio": 1.4191128930845813
+  }
+ },
+ {
+  "seq": "indoor_forward_3",
+  "scale_oracle": 0.6793831946745769,
+  "scale_depth": 0.49887987188984667,
+  "depth_pairs": 28,
+  "depth_spread": 1.9800816455654464,
+  "depth_vs_oracle": 0.7343129412095762,
+  "with_depth_scale": {
+   "dir_err_deg_median": 1.7826602806675296,
+   "mag_ratio": 0.7275497482081493,
+   "coverage": 0.7638888888888888,
+   "path_len_ratio": 0.726182173278666
+  }
+ },
+ {
+  "seq": "indoor_forward_5",
+  "scale_oracle": 0.22651407814112584,
+  "scale_depth": 0.34847208186428724,
+  "depth_pairs": 49,
+  "depth_spread": 0.66214793025967,
+  "depth_vs_oracle": 1.538412467445743,
+  "with_depth_scale": {
+   "dir_err_deg_median": 2.46601465254681,
+   "mag_ratio": 1.5345394458298405,
+   "coverage": 0.5347222222222222,
+   "path_len_ratio": 1.5398976053887339
+  }
+ },
+ {
+  "seq": "indoor_forward_6",
+  "scale_oracle": 0.2586305736114226,
+  "scale_depth": 0.10573017166200233,
+  "depth_pairs": 14,
+  "depth_spread": 0.23205142176580631,
+  "depth_vs_oracle": 0.4088077066281257,
+  "with_depth_scale": {
+   "dir_err_deg_median": 3.094959036980422,
+   "mag_ratio": 0.37432293653647697,
+   "coverage": 0.8472222222222222,
+   "path_len_ratio": 0.38836312773094434
+  }
+ },
+ {
+  "seq": "indoor_forward_7",
+  "scale_oracle": 0.9945634897746277,
+  "scale_depth": 461.25103998845157,
+  "depth_pairs": 4,
+  "depth_spread": 803.1872135844881,
+  "depth_vs_oracle": 463.77234307381724,
+  "with_depth_scale": {
+   "dir_err_deg_median": 20.566043372737738,
+   "mag_ratio": 4.839162463059509,
+   "coverage": 0.8611111111111112,
+   "path_len_ratio": 395.71222066606805
+  }
+ },
+ {
+  "seq": "indoor_forward_9",
+  "scale_oracle": 0.2633007780504071,
+  "scale_depth": 2.084453108876216,
+  "depth_pairs": 27,
+  "depth_spread": 8.123682711827268,
+  "depth_vs_oracle": 7.916623430855043,
+  "with_depth_scale": {
+   "dir_err_deg_median": 1.3932482255177725,
+   "mag_ratio": 7.62215294841805,
+   "coverage": 0.6527777777777778,
+   "path_len_ratio": 7.939248560382833
+  }
+ },
+ {
+  "seq": "outdoor_forward_1",
+  "scale_oracle": 0.17199842098181073,
+  "scale_depth": 0.2237278305472462,
+  "depth_pairs": 70,
+  "depth_spread": 0.573069716213919,
+  "depth_vs_oracle": 1.3007551422283463,
+  "with_depth_scale": {
+   "dir_err_deg_median": 6.8796033816223225,
+   "mag_ratio": 1.2259574939006441,
+   "coverage": 0.4861111111111111,
+   "path_len_ratio": 1.2435101491110576
+  }
+ },
+ {
+  "seq": "outdoor_forward_3",
+  "scale_oracle": 0.2203493165062294,
+  "scale_depth": 0.15306189867658454,
+  "depth_pairs": 51,
+  "depth_spread": 0.2172033231873466,
+  "depth_vs_oracle": 0.6946329632579431,
+  "with_depth_scale": {
+   "dir_err_deg_median": 5.262721557058039,
+   "mag_ratio": 0.6416229493861679,
+   "coverage": 0.6111111111111112,
+   "path_len_ratio": 0.6651370784887672
+  }
+ },
+ {
+  "seq": "outdoor_forward_5",
+  "scale_oracle": 0.2564488614390857,
+  "scale_depth": 0.11873794663438214,
+  "depth_pairs": 42,
+  "depth_spread": 0.4231475236628757,
+  "depth_vs_oracle": 0.4630082815266699,
+  "with_depth_scale": {
+   "dir_err_deg_median": 11.196412394973782,
+   "mag_ratio": 0.5253005679291329,
+   "coverage": 0.8402777777777778,
+   "path_len_ratio": 0.4486195655830235
+  }
+ }
+]
