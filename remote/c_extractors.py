@@ -239,9 +239,8 @@ def run_one(model: str, source: str, n_frames: int = 16, flight: str = "flight-0
     return json.dumps(rec)
 
 
-@app.function(image=image, gpu="A10G", volumes={A_DATA: data_vol, C_DATA: c_vol, MODELS: model_vol},
-              timeout=3600, cpu=4)
-def run_uzh(model: str, seq: str, max_frames: int = 150, res: int = 0) -> str:
+def _score_uzh(model: str, seq: str, max_frames: int = 150, res: int = 0,
+               commit: bool = True) -> dict:
     """Run one extractor on a prepared UZH clip and score it against Leica truth."""
     import traceback
     from pathlib import Path
@@ -279,13 +278,21 @@ def run_uzh(model: str, seq: str, max_frames: int = 150, res: int = 0) -> str:
         out = Path(C_DATA) / "poses" / model / f"{seq}.npz"
         out.parent.mkdir(parents=True, exist_ok=True)
         np.savez_compressed(out, c2w=c2w, t=truth["t"][:n])
-        c_vol.commit()
+        if commit:
+            c_vol.commit()
     except torch.cuda.OutOfMemoryError:
         rec["error"] = "cuda_oom"
     except Exception as exc:
         rec["error"] = f"{type(exc).__name__}: {exc}"
         rec["traceback"] = traceback.format_exc()[-1200:]
-    print(json.dumps(rec, indent=1)[:2500], flush=True)
+    return rec
+
+
+@app.function(image=image, gpu="A10G", volumes={A_DATA: data_vol, C_DATA: c_vol, MODELS: model_vol},
+              timeout=3600, cpu=4)
+def run_uzh(model: str, seq: str, max_frames: int = 150, res: int = 0) -> str:
+    rec = _score_uzh(model, seq, max_frames, res)
+    print(json.dumps(rec, indent=1)[:2000], flush=True)
     return json.dumps(rec)
 
 
@@ -413,9 +420,20 @@ def run_tii(model: str, flight: str, max_frames: int = 100, stride: int = 10) ->
               timeout=3600, cpu=4)
 def sweep(model: str, seqs: list[str], max_frames: int = 150) -> str:
     """Score one extractor over several prepared UZH clips in one container."""
-    import json as _json
-    out = [_json.loads(run_uzh.local(model, s, max_frames=max_frames)) for s in seqs]
-    return _json.dumps(out)
+    out = []
+    for sq in seqs:
+        try:
+            rec = _score_uzh(model, sq, max_frames=max_frames, commit=False)
+        except Exception as exc:
+            rec = {"model": model, "seq": sq, "error": f"{type(exc).__name__}: {exc}"}
+        out.append(rec)
+        sc = rec.get("score") or {}
+        print(f"[{model}/{sq}] err={rec.get('error')} "
+              f"dir={sc.get('accel_dir_err_deg_median')} "
+              f"ratio={sc.get('accel_mag_ratio')} cov={sc.get('coverage_fraction')}",
+              flush=True)
+    c_vol.commit()
+    return json.dumps(out)
 
 
 @app.local_entrypoint()
@@ -477,12 +495,15 @@ def main(model: str = "all", source: str = "anwm", n_frames: int = 16, stride: i
                 out = run_uzh.remote(m, seq, max_frames=max_frames, res=res)
                 rec = json.loads(out)
                 s = rec.get("score") or {}
+                def f_(k, fmt="{:.2f}"):
+                    v = s.get(k)
+                    return fmt.format(v) if isinstance(v, (int, float)) else "nan"
                 print(f"== {m}/{seq}: err={rec.get('error')} "
-                      f"dir={s.get('accel_dir_err_deg_median'):.1f}deg "
-                      f"ratio={s.get('accel_mag_ratio'):.2f} r2={s.get('lean_r2'):.2f} "
-                      f"ate_sim3={s.get('ate_sim3_m'):.2f} ate_se3={s.get('ate_se3_m'):.2f} "
-                      f"cov={s.get('coverage_fraction'):.2f} "
-                      f"rot={rec.get('score', {}).get('rel_rot_err_deg_median'):.2f}")
+                      f"dir={f_('accel_dir_err_deg_median', '{:.1f}')}deg "
+                      f"ratio={f_('accel_mag_ratio')} r2={f_('lean_r2')} "
+                      f"ate_sim3={f_('ate_sim3_m')} ate_se3={f_('ate_se3_m')} "
+                      f"cov={f_('coverage_fraction')} "
+                      f"rot={f_('rel_rot_err_deg_median')}")
             else:
                 out = run_one.remote(m, source, n_frames, stride=stride, res=res)
                 rec = json.loads(out)
