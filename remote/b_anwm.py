@@ -726,13 +726,17 @@ def run_regen(specs_path: str = "results/anwm_clips/specs.json", ids: str = "",
 
 @app.local_entrypoint()
 def run_injected(specs_path: str = "results/anwm_clips_injected/specs.json",
-                 arm: str = "injected_true", limit: int = 0):
+                 arm: str = "injected_true", limit: int = 0, include_variance: bool = False):
     """Stage 1/2: generate the injected-attitude arm, saving the FFP priors."""
     import subprocess
 
     commit = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True,
                             text=True).stdout.strip()
     specs = [s for s in json.load(open(specs_path)) if s.get("arm", arm) == arm]
+    if not include_variance:
+        # the four cruise clips at seeds 1/2 are duplicates of the seed-0 cruise path, and a
+        # zero-tilt injection is a no-op by construction; dropped to stay inside the budget
+        specs = [s for s in specs if int(s.get("seed", 0)) == 0]
     for s in specs:
         s["code_commit"] = commit
     if limit:
