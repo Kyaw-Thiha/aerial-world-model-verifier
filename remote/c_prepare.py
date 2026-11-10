@@ -118,6 +118,57 @@ def prepare_uzh(seq: str, stride: int = 2, max_frames: int = 150, keep_zip: bool
     return json.dumps(rec)
 
 
+@app.function(image=image, volumes={C_DATA: c_data, A_DATA: a_data}, timeout=3600, cpu=4)
+def make_edits(seq: str, cond: str = "tilt_removed", yaw_deg: float = 5.0) -> str:
+    """Warps a prepared UZH clip by a pure camera rotation (Track A's edit maths).
+
+    cond: "tilt_removed" (keep heading, zero roll and pitch) or "yaw_control"
+          (rotate about world up by yaw_deg, tilt untouched).
+    """
+    import json
+    import shutil
+    from pathlib import Path
+
+    import cv2
+    import numpy as np
+    from scipy.spatial.transform import Rotation
+
+    src = Path(C_DATA) / "uzh" / seq
+    dst = Path(C_DATA) / "uzh" / f"{seq}_{cond}"
+    if dst.exists():
+        shutil.rmtree(dst)
+    (dst / "frames").mkdir(parents=True)
+    meta = json.loads((src / "meta.json").read_text())
+    truth = np.load(src / "truth.npz")
+    q = truth["quat"] / np.linalg.norm(truth["quat"], axis=1, keepdims=True)
+    R_bw = Rotation.from_quat(q).as_matrix()
+    K = np.array([[meta["intrinsics"]["fx"], 0, meta["intrinsics"]["cx"]],
+                  [0, meta["intrinsics"]["fy"], meta["intrinsics"]["cy"]], [0, 0, 1.0]])
+    files = sorted((src / "frames").glob("*.png"))
+    for i, f in enumerate(files):
+        R = R_bw[min(i, len(R_bw) - 1)]
+        yaw, pitch, roll = Rotation.from_matrix(R).as_euler("ZYX")
+        if cond == "tilt_removed":
+            Rp = Rotation.from_euler("ZYX", [yaw, 0.0, 0.0]).as_matrix()
+        elif cond == "yaw_control":
+            Rp = Rotation.from_euler("z", np.radians(yaw_deg)).as_matrix() @ R
+        else:
+            raise ValueError(cond)
+        D = Rp @ R.T                       # world-frame rotation between the two attitudes
+        M = R.T @ D @ R                    # same rotation in the camera frame
+        H = K @ M @ np.linalg.inv(K)
+        img = cv2.imread(str(f), cv2.IMREAD_GRAYSCALE)
+        out = cv2.warpPerspective(img, H, (img.shape[1], img.shape[0]),
+                                  flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REPLICATE)
+        cv2.imwrite(str(dst / "frames" / f.name), out)
+    shutil.copy2(src / "truth.npz", dst / "truth.npz")
+    meta["edit"] = {"cond": cond, "yaw_deg": yaw_deg, "source": seq,
+                    "note": "pure-rotation warp; truth unchanged (the edit is a negative)"}
+    (dst / "meta.json").write_text(json.dumps(meta, indent=1))
+    c_data.commit()
+    return json.dumps({"seq": seq, "cond": cond, "out": str(dst), "n": len(files)})
+
+
 @app.function(image=image, volumes={C_DATA: c_data, A_DATA: a_data}, timeout=3600, cpu=2)
 def copy_anwm() -> str:
     """Mirror the 82 ANWM clips (frames, gt, manifest) into the Track C volume."""
@@ -145,9 +196,12 @@ def copy_anwm() -> str:
 
 @app.local_entrypoint()
 def main(seq: str = "", all: bool = False, stride: int = 2, max_frames: int = 150,
-         anwm: bool = False, tag: str = "") -> None:
+         anwm: bool = False, tag: str = "", edits: str = "", cond: str = "tilt_removed") -> None:
     import json as _json
 
+    if edits:
+        print(make_edits.remote(edits, cond), flush=True)
+        return
     if anwm:
         print(copy_anwm.remote())
     todo = list(SEQUENCES) if all else [s for s in seq.split(",") if s]

@@ -11,6 +11,8 @@ first run pays a ~10 minute CUDA build once and Modal caches it.
 """
 from __future__ import annotations
 
+import json
+
 import modal
 
 app = modal.App("awmv-c-dpvo")
