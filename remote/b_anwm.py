@@ -740,3 +740,68 @@ def run_injected(specs_path: str = "results/anwm_clips_injected/specs.json",
     out = generate.remote(json.dumps(specs), out_root=f"/r/clips_injected/{arm}",
                           save_priors=True)
     print(json.dumps(out, indent=1)[:4000])
+
+
+@app.function(cpu=8, memory=16384, timeout=3600,
+              volumes={"/r": vol_results, "/n": vol_native},
+              secrets=[modal.Secret.from_name("awmv-r2")])
+def evaluate_injected(arm: str = "injected_true", writing: bool = True) -> dict:
+    """Checkpoint 2 metrics: LPIPS against the paired level clip and against the FFP prior.
+
+    Reads /r/clips_injected/<arm>/C/<id>/{frames,priors}, pairs with /r/regen_stage0/C/<id> when a
+    same-seed twin exists (else /r/clips/C/<id>), and writes /r/eval_injected_<arm>.json.
+    """
+    import numpy as np
+    from PIL import Image
+
+    import lpips as lpips_lib
+
+    lp = lpips_lib.LPIPS(net="alex", verbose=False)
+
+    def load(d, sub="frames"):
+        fs = sorted((Path(d) / sub).glob("*.png"))
+        return [np.asarray(Image.open(f), float) / 255.0 for f in fs]
+
+    def to_t(a):
+        import torch
+        return torch.as_tensor(2 * a - 1, dtype=torch.float32).permute(2, 0, 1).unsqueeze(0)
+
+    out = {}
+    for d in sorted(Path(f"/r/clips_injected/{arm}/C").iterdir()):
+        m = json.loads((d / "manifest.json").read_text())
+        cid = m["id"]
+        pred = load(d)
+        prior = load(d, "priors")
+        cand = [Path(f"/r/regen_stage0/C/{cid}"), Path(f"/r/clips/C/{cid}")]
+        lvl_dir = next((c for c in cand if (c / "frames").exists()), None)
+        if lvl_dir is None:
+            print("no level pair for", cid)
+            continue
+        lvl = load(lvl_dir)
+        n = min(len(pred), len(lvl), len(prior))
+        with __import__("torch").no_grad():
+            lp_lvl = [float(lp(to_t(pred[i]), to_t(lvl[i])).mean()) for i in range(n)]
+            lp_pri = [float(lp(to_t(pred[i]), to_t(prior[i])).mean()) for i in range(n)]
+        mae_lvl = [float(np.abs(pred[i] - lvl[i]).mean() * 255) for i in range(n)]
+        mae_pri = [float(np.abs(pred[i] - prior[i]).mean() * 255) for i in range(n)]
+        out[cid] = {
+            "level_source": lvl_dir.parent.name if "regen" in str(lvl_dir) else "original",
+            "lpips_vs_level": lp_lvl, "lpips_vs_level_mean": float(np.mean(lp_lvl)),
+            "lpips_vs_prior": lp_pri, "lpips_vs_prior_mean": float(np.mean(lp_pri)),
+            "mae_vs_level_255": mae_lvl, "mae_vs_level_mean": float(np.mean(mae_lvl)),
+            "mae_vs_prior_255": mae_pri, "mae_vs_prior_mean": float(np.mean(mae_pri)),
+            "prior_coverage_min": m.get("prior_coverage_min"),
+            "prior_coverage_mean": m.get("prior_coverage_mean"),
+            "frame_std_mean": float(np.mean(m.get("visual_integrity", {}).get("frame_std", [0]))),
+            "temporal_delta": m.get("visual_integrity", {}).get("temporal_delta"),
+            "maneuver": m.get("meta", {}).get("maneuver"),
+            "designed_tilt_deg": m.get("designed_required_tilt_deg"),
+        }
+        print(f"{cid:34s} lpips(lvl) {np.mean(lp_lvl):.3f} lpips(prior) {np.mean(lp_pri):.3f} "
+              f"cov_min {m.get('prior_coverage_min'):.3f}", flush=True)
+    if writing:
+        Path(f"/r/eval_injected_{arm}.json").write_text(json.dumps(out, indent=1))
+        vol_results.commit()
+    return {"n_clips": len(out),
+            "lpips_vs_level_mean": float(np.mean([v["lpips_vs_level_mean"] for v in out.values()])),
+            "lpips_vs_prior_mean": float(np.mean([v["lpips_vs_prior_mean"] for v in out.values()]))}
