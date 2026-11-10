@@ -59,10 +59,12 @@ def depicted_tilt(rows: list[dict], uptilt_deg: float = 0.0) -> np.ndarray:
 
 
 def fit_nuisances(dep_by_delta: dict[float, np.ndarray], req: np.ndarray,
-                  t: np.ndarray) -> dict:
+                  t: np.ndarray, deltas: tuple[float, ...] | None = None) -> dict:
     """Grid search exactly as the verdict does it: minimise the median residual."""
     best = {"loss": np.inf, "uptilt_offset_deg": 0.0, "lag_ms": 0.0}
-    for delta, dep in dep_by_delta.items():
+    keys = deltas if deltas is not None else tuple(dep_by_delta)
+    for delta in keys:
+        dep = dep_by_delta[delta]
         for lag_ms in LAG_GRID_MS:
             rq = np.interp(t + lag_ms / 1000.0, t, req)
             r = np.abs(dep - rq)
@@ -128,6 +130,11 @@ def main() -> int:
                 tt = t[:n]
                 nofit = residual_no_fit(dp, rq)
                 fit = fit_nuisances({d: v[:n] for d, v in dep_by_delta.items()}, rq, tt)
+                # ANWM's camera is exactly level with a known mount, so the +/-7 deg grid
+                # is the TII mount's uncertainty, not this render's. Lag-only is the
+                # configuration in which nothing can absorb a tilt discrepancy.
+                lag_only = fit_nuisances({d: v[:n] for d, v in dep_by_delta.items()}, rq,
+                                         tt, deltas=(0.0,))
                 exc = int((rq[np.isfinite(rq)] >= 10.0).sum())
                 rec = {"clip_id": cid, "regime": man[cid]["regime"],
                        "maneuver": (man[cid].get("meta") or {}).get("maneuver"),
@@ -136,15 +143,20 @@ def main() -> int:
                        "excitation_frames": exc,
                        "residual_no_fit": nofit,
                        "residual_parity": fit["loss"],
+                       "residual_lag_only": lag_only["loss"],
                        "uptilt_offset_deg": fit["uptilt_offset_deg"],
                        "lag_ms": fit["lag_ms"],
+                       "lag_only_lag_ms": lag_only["lag_ms"],
                        "absorbed_deg": nofit - fit["loss"],
+                       "absorbed_by_uptilt_deg": lag_only["loss"] - fit["loss"],
                        "depicted_median": float(np.median(dp)),
                        "required_median": float(np.nanmedian(rq))}
                 rec["testable"] = bool(gk and exc >= 12)
                 rec["infeasible_parity"] = bool(rec["testable"]
                                                 and rec["residual_parity"] > THRESH)
                 rec["infeasible_nofit"] = bool(rec["testable"] and nofit > THRESH)
+                rec["infeasible_lag_only"] = bool(rec["testable"]
+                                                  and rec["residual_lag_only"] > THRESH)
                 recs.append(rec)
 
     df = pd.DataFrame(recs)
@@ -158,6 +170,10 @@ def main() -> int:
             "n": int(len(g)), "testable": int(g.testable.sum()),
             "infeasible_parity": int(g.infeasible_parity.sum()),
             "infeasible_nofit": int(g.infeasible_nofit.sum()),
+            "infeasible_lag_only": int(g.infeasible_lag_only.sum()),
+            "median_residual_lag_only": (float(g[g.testable].residual_lag_only.median())
+                                         if g.testable.any() else None),
+            "median_absorbed_by_uptilt_deg": float(g.absorbed_by_uptilt_deg.median()),
             "median_residual_parity": (float(g[g.testable].residual_parity.median())
                                        if g.testable.any() else None),
             "median_residual_nofit": (float(g[g.testable].residual_no_fit.median())

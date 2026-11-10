@@ -169,59 +169,77 @@ step spacing 2.5–4.8 m, 12–15 excitation frames, required median 17.5–42.2
 55.8–74.0°), depicted 0.40–1.10°, residual 17.1–40.8°. The other 14 Regime A clips are
 plateau-dominated and cannot be tested at 1 s.
 
-## 2b. Parity with the TII verdict: the same nuisance fits
+## 2b. Nuisance modes: parity, lag-only, and what the ±7° grid absorbs
 
-The TII verdict fits, once per clip, a mount uptilt offset in ±7° (step 1°) and a lag in
-±150 ms (step 25 ms), minimising the median residual. The ANWM scoring as first written
-fitted neither. That was an omission, not a parity choice, and it is measured here on every
-clip (`experiments/a2_parity.py`, `results/a2_parity/`).
+The TII verdict fits a mount uptilt offset (±7°, step 1°) and a lag (±150 ms, step 25 ms).
+Applying the same grid to generated frames needs a decision, because ANWM's camera is
+exactly level: the ±7° grid is *TII's* mount uncertainty, and on this render it can absorb a
+real violation. Three modes are therefore reported (amendment 8):
 
-**Straight-cruise null** (7 clips; no violation is designed into them):
+- **none** — nothing fitted;
+- **lag-only** — lag fitted, mount fixed at its known 0°;
+- **full parity** — both fitted, as on TII.
 
-| `k_d` | residual, no fit | residual, parity fit | absorbed |
+**Straight-cruise null (7 clips, no designed violation):**
+
+| `k_d` | none | lag-only | full parity |
 | --- | --- | --- | --- |
-| 0 | 0.73° | 0.65–0.68° | 0.0–0.1° |
-| 0.295 | 7.8° | **1.2–1.4°** | **6.7°** |
+| 0 | 0.73° | 0.73° | 0.65–0.68° |
+| 0.295 | **7.8°** | 7.8° | 1.2–1.4° |
 
-Under drag the unfitted null is 7.8° — a "violation" on a clip with nothing wrong with it —
-and the fit absorbs it entirely. That is the same absorption the TII ablation measured
-(6.2° of a 13.6° edit), and it is why the fitted number is the honest comparison.
+The lag absorbs **0.0°** on generated clips — at 1 s per step, 150 ms is a sixth of a frame.
+The uptilt grid absorbs the rest. Under `k_d` = 0.295 the unfitted null is 7.8°, so the
+"parity" improvement there is the fit repairing a disagreement between the racing-quad drag
+model and the render, not repairing a violation. Drag-free the null needs no repair at all,
+which is why amendment 8 makes **drag-free + lag-only** primary.
 
-**Effect on the claims** (`k_d` 0.295, spline; the per-step interpolant agrees):
+**What the ±7° grid can absorb, measured** (`k_d` 0.295, spline; median over clips):
 
-| cell | residual, no fit | infeasible | residual, parity | infeasible |
-| --- | --- | --- | --- | --- |
-| Regime A, testable | 39.4° | 9 of 9 | 28.6° | **9 of 9** |
-| Regime C, designed 5° | 8.6° | 0 of 0 | 2.2° | 0 of 0 |
-| Regime C, designed 10° | 9.8° | 6 of 6 | 3.8° | **0 of 6** |
-| Regime C, designed 20° | 19.7° | 5 of 5 | 13.7° | **5 of 5** |
+| cell | none | lag-only | full parity | absorbed by uptilt | clips at the ±7° bound |
+| --- | --- | --- | --- | --- | --- |
+| Regime A | 39.4° | 34.7° | 28.6° | **6.4°** | 0.72 |
+| Regime C | 12.6° | 12.6° | 6.0° | **6.4°** | **0.92** |
 
-Parity changes Regime C materially (the designed-10 family becomes feasible) and Regime A not
-at all. The uptilt fit does it: it walks to the ±7° bound on the absorbed clips, exactly as
-on the TII negatives.
+Drag-free the absorption is 3.4° (C) and 5.0° (A). So the grid costs about 6.4° of
+sensitivity with drag and 3.4° drag-free, and on 92 % of Regime C clips it is saturating at
+the bound — the violation is larger than the grid can hide.
+
+**Consequence for the verdicts** (testable clips, drag-free, spline):
+
+| cell | none / lag-only | full parity |
+| --- | --- | --- |
+| Regime A | 8 of 8 infeasible | 8 of 8 |
+| Regime C, designed 10° | **6 of 6** | 0 of 6 |
+| Regime C, designed 20° | **5 of 5** | 5 of 5 |
+| Regime C, total | **11 of 11** | 5 of 11 |
+
+The headline is the left column (drag-free, no uptilt absorption). The right column is the
+conservative bound and is quoted whenever the finding is repeated.
+
 
 ## 3. Regime C — dose-response against the designed tilt
 
-**Drag-free is primary** (amendment 6): it needs no airframe assumption. Rows are
-(spline / step) with the parity fits applied.
+**Drag-free + lag-only is primary** (amendment 8): it needs no airframe assumption and allows
+no uptilt absorption. Rows are (spline / step). The full-parity column is the conservative
+bound (§2b).
 
 | designed | n | depicted median [p10, p90] | required (drag-free) | residual, drag-free | infeasible | residual, `k_d` 0.295 | infeasible |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 5° | 21 | 0.79° [0.53, 2.47] | 5.0° | 0.7° | 0 / 0 | 2.2° | 0 / 0 |
-| 10° | 12 | 0.78° [0.61, 2.26] | 8.6° | 2.1–2.2° | **0 / 6** | 3.4–3.8° | **0 / 6** |
-| 20° | 9 | 0.77° [0.61, 3.50] | 21.7° | 11.6–12.9° | **5 / 5** | 12.3–13.7° | **5 / 5** |
+| 5° | 21 | 0.79° [0.53, 2.47] | 5.0° | 4.0° | 0 / 0 | 0.7° | 0 / 0 |
+| 10° | 12 | 0.78° [0.61, 2.26] | 8.6° | **7.2–7.3°** | **6 / 6** | 2.1–2.2° | 0 / 6 |
+| 20° | 9 | 0.77° [0.61, 3.50] | 21.7° | **17.2–19.1°** | **5 / 5** | 11.6–12.9° | **5 / 5** |
 
-Slope of depicted on designed: **+0.040 °/°** (both drag settings, both interpolants). Slope
-of required: +0.49–0.66 °/° — the path honours the design, the pixels do not. Within-family
-seed spread is at most **0.60°** (median 0.22°), so the flatness across a 4× change in
-designed tilt is not seed noise.
+Slope of depicted on designed: **+0.040 °/°** (both drag settings, both interpolants,
+unchanged by the nuisance mode). Slope of required: +0.49–0.66 °/° — the path honours the
+design, the pixels do not. Within-family seed spread is at most **0.60°** (median 0.22°), so
+the flatness across a 4× change in designed tilt is not seed noise.
 
-**Which verdicts flip with `k_d`:** no Regime C cell. The designed-20 family is infeasible
-under both settings and both interpolants; the designed-10 family is feasible under both
-once nuisances are fitted (a parity effect, not a drag effect) and infeasible under both
-without them. Three Regime A clips flip with `k_d`: **A10** and **A17** become infeasible at
-0.295 (and testable), **A12** becomes infeasible drag-free and feasible with drag; each sits
-within ~3° of the threshold on one side.
+**Which verdicts flip with `k_d`:** no Regime C cell flips. The designed-20 family is
+infeasible under both drag settings, both interpolants and all three nuisance modes. The
+designed-10 family flips with the **nuisance mode**, not with drag: 6/6 infeasible with
+lag-only, 0/6 under full parity. Three Regime A clips flip with `k_d` — **A10** and **A17**
+infeasible at 0.295 only, **A12** infeasible drag-free only — each within ~3° of the
+threshold.
 
 The 5° family drag-free has no testable clip (its required tilt never reaches 10°), so it is
 not testable, not consistent.
@@ -270,38 +288,39 @@ large acceleration pointing straight up produces little tilt:
 dt = 0.25 s Regime A bound is a median peak tilt of 69.8°; that number inherits the cap and is
 reported as a conditional, not as a headline.
 
-## 4. Minimum consistent dt — conditional, with censored clips shown
+## 4. Minimum consistent dt — per cell, per nuisance mode, conditional on testability
 
-Every value here is **conditional on the clip being testable at 1 s** (amendment 6). Clips
-that fail the excitation rule stay in the accounting as censored, because a plateau-dominated
-clip is "consistent" at any dt and would otherwise report an unconstrained minimum.
+Two corrections to the earlier table: dt_min is quoted **per designed cell** (the aggregate is
+dominated by the 5° family, which has no testable clip) and **per nuisance mode**, because the
+fits shorten it. Everything is conditional on being testable at 1 s; untestable clips stay in
+the accounting as censored.
 
-| `k_d` | interpolant | regime | gate-kept | observed | left-censored (≤0.10 s) | right-censored (>5 s) | untestable at 1 s | median, observed | median, testable only |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 0.295 | spline | A | 23 | 22 | 1 | 0 | 14 | 1.42 s | **2.70 s** |
-| 0.295 | spline | C | 47 | 47 | 0 | 0 | 36 | 1.25 s | **1.55 s** |
-| 0.295 | step | A | 23 | 17 | 6 | 0 | 21 | 1.30 s | 1.75 s |
-| 0.295 | step | C | 47 | 47 | 0 | 0 | 36 | 1.25 s | 1.55 s |
-| 0 | spline | A | 23 | 22 | 1 | 0 | 15 | 1.27 s | 2.78 s |
-| 0 | spline | C | 47 | 40 | 7 | 0 | 36 | 0.85 s | 1.25 s |
-| 0 | step | A | 23 | 7 | 16 | 0 | 21 | 2.00 s | 2.05 s |
-| 0 | step | C | 47 | 35 | 12 | 0 | 36 | 0.85 s | 1.20 s |
+Spline interpolant, gate-kept clips, 0.05 s sweep:
 
-Left-censoring is the plateau artifact in numbers: 16 of 23 Regime A clips are already
-"consistent" at 0.10 s under the per-step reading. The conditional medians (2.7 s Regime A,
-1.55 s Regime C with drag) are what the earlier draft quoted without saying they were
-conditional on 14 of 25 and 36 of 47 clips being untestable at 1 s. No clip is
-right-censored.
+| cell | testable at 1 s | dt_min, none/lag-only | dt_min, full parity | censored |
+| --- | --- | --- | --- | --- |
+| Regime A, drag-free | 8 of 23 | 1.25 s | 1.00 s | 15 untestable, 1 left |
+| Regime A, `k_d` 0.295 | 9 of 23 | 1.40 s | 0.90 s | 14 untestable, 1 left |
+| Regime C, designed 5° | 0 of 21 | 0.85° s (not interpretable) | 0.60 s | all untestable |
+| Regime C, designed 10° | 6 of 11 | 1.10 s | 0.85 s | — |
+| Regime C, designed 20° | 5 of 8 | **1.58 s** | **1.23 s** | — |
+| Regime C, `k_d` 0.295, 20° | 5 of 8 | 1.67 s | 1.30 s | — |
+
+So the time-base claim survives only where it was always specific: the **designed-20° family
+needs 1.2–1.7 s** depending on the nuisance mode, against the 1 s the release's stated speeds
+imply. The aggregate median of 0.6–0.85 s that the fits produce is an artifact of the
+untestable 5° family and is not a result.
+
 
 ## 5. What this supports
 
-- **A bounded claim, partly indicative.** Drag-free and with the verdict's own nuisance
-  fits (parity), every clip that passes the protocol's testability rule has a median
-  per-frame residual above 6.46°: 8 of 8 testable Regime A clips (residual 28°) and 5 of 11
-  testable Regime C clips — all five from the designed-20 family, at 12–13° (designed-10:
-  0 of 6). The Regime A part is indicative (interpolant-dependent); the designed-20 part
-  survives both interpolants, both drag settings, the end-condition variants and the
-  nuisance fits.
+- **A bounded claim, partly indicative, with a stated nuisance mode.** Drag-free with the
+  mount fixed at its known value (lag-only): 8 of 8 testable Regime A clips (residual 35°)
+  and 11 of 11 testable Regime C clips (designed-10 7°, designed-20 17–19°) exceed 6.46°.
+  Allowing the ±7° uptilt grid (§2b) the Regime C count falls to 5 of 11 and Regime A is
+  unchanged. The Regime A part is indicative (interpolant-dependent); the designed-20 part
+  survives both interpolants, both drag settings, the end-condition variants and every
+  nuisance mode.
 - **A dose-response failure that cannot be explained by noise.** Regime C's designed 5/10/20°
   families are depicted at 0.79/0.78/0.77° with a seed band of at most ±1.3° (p10–p90 of the
   flat 5° family is 0.53–2.47°, still far below 5°).
@@ -409,55 +428,69 @@ the finding is unchanged; the prevalence in the earlier draft was overstated and
 withdrawn.
 
 
-## 10. Planned second Regime C run (proposed, not run)
+## 10. Proposed pose-injection arm (design only; nothing run)
 
-The existing Regime C set has one decisive weakness: 36 of its 47 gate-kept clips are
-untestable at 1 s, and the level-pose family was not built as a paired control. The fix is a
-second generation run in which **the required tilt is injected into the target poses**, with a
-level-pose twin for every cell so the comparison is within-pair. Pre-registration:
-amendment 7 (`status: planned_not_run`), committed before the run exists.
+The decisive test is not more tilt levels — it is whether the generator responds to the pose
+channel at all. The arm below is the minimal experiment that answers that, and it is ordered
+first because its outcome decides whether the larger design is worth buying.
 
-**Design.** 4 tilt levels {0 (level baseline), 15, 20, 25°} × 3 maneuvers {turn, slalom,
-accel_brake} × 4 starts × 3 seeds = **144 clips**, of which 36 are level. Every tilted clip
-pairs with the level clip of the same (maneuver, start, seed): **108 pairs**. Starts and seeds
-are shared across the tilt levels by construction, which is the point — the level twin
-controls for generator appearance at that start, so a residual difference cannot be blamed on
-the scene.
+**The arm.** Take the **existing 49 Regime C clips** (their paths, starts and seeds already
+exist) and generate each one **twice**:
 
-**Reachability.** 25° needs ≈4.6 m/s² horizontal; at a 1 s step with the release's 5 m/s cap
-the maximum single-step velocity change is 5 m/s ≈ 26.5°, so 25° is at the edge and is
-expected to be unreachable on some starts. Unreachable cells are reported as unreachable and
-are not replaced or re-seeded (the same rule Track B used).
+- **level arm** — the existing clips serve as the level-pose baseline, same start, same seed,
+  same path, same sampling steps;
+- **injected arm** — the same path generated with flatness-derived roll and pitch injected
+  into the *target poses*: for the commanded acceleration at each step, set
+  `z_B = (a + g e₃)/‖a + g e₃‖` and use the roll and pitch that implies. This is a different
+  factor from tilt level: the path is unchanged and only the target attitude differs.
 
-**Cost** (Track B's measured 235 s/clip end-to-end on an A10G, 250 sampling steps, batch 1, at
-the unverified US$1.10/GPU-hour):
+Pairs are `(clip, start, seed)`, so every injected clip has a level twin generated under
+identical conditions. 49 new clips × 235 s = 3.2 GPU-h ≈ **US$3.5** at the unverified
+US$1.10/h — under the US$5 line, no approval gate. A mirrored-sign control (inject −θ) on 15
+clips adds ≈ US$1.1, total ≈ **US$4.6**, still under the line.
 
-| item | quantity | time | cost |
+**Why not the 144-clip design first.** If injection moves the depicted slope, adding level
+clips buys a sharper estimate of a slope that already exists; if it does not move, no number
+of extra level clips will make the generator honour the pose channel. The 4-tilt-level design
+is therefore deferred until this arm reports.
+
+**Scoring plan for the injected arm** (written before generation; to be frozen as an
+amendment when Track B confirms the format):
+
+1. **Controls first, and they can void the run.**
+   - *null edit*: identity remap of the injected frames vs the raw frames — must agree to
+     ≤0.2° median, as it did on the level set (0.006°).
+   - *edit recovery*: known camera rotations of 5/10/20° on ≥10 injected clips; if the
+     median error at 10° exceeds 3° or at 20° exceeds 5° (the existing rule), the arm is
+     reported as "estimator not validated on the injected distribution" and nothing else is
+     claimed. Injected views are out of the level distribution and may be harder.
+   - *gate transfer*: the frozen gate applied to the injected frames; if it drops >50 % of
+     them, the gate is declared non-transferable to this distribution and the arm reports
+     only the controls.
+2. **Depicted vs required, paired.** For each pair compute `depicted_median` (drag-free,
+   lag-only, per amendment 8) and the required tilt from the same path. Report, per designed
+   tilt: the paired difference (injected − level) with a paired sign test and exact binomial
+   interval, and the slope of depicted on required across the injected clips. A generator
+   that honours the pose channel gives a positive slope near 1; the level set gives +0.04
+   against a required slope of +0.5–0.66.
+3. **Mirrored-sign control.** On the 15 mirrored clips the injected tilt has the opposite
+   sign; the depicted change must flip with it. If the depicted change is unchanged under
+   mirroring, the effect is a rendering artefact of the injection, not a response to the
+   commanded attitude.
+4. **Same testability rule**, with the secondary excitation rule below, and the peak bound as
+   the interpolation-free cross-check (it is unchanged by injection: the path is the same).
+
+**Secondary excitation rule (pre-registered for this arm; primary unchanged).** Primary stays
+≥12 of 16 frames with required ≥10°. Secondary: **≥8 of 16 frames with required ≥10° and max
+required ≥0.8 × designed tilt**, with the clip statistic taken as the median residual over the
+excited frames only. Rationale: a maneuver that holds its tilt for 8–11 steps is a real test
+the primary discards, while a two-step pulse is not. Both are reported on every table.
+
+**Cost summary.**
+
+| item | clips | time | cost |
 | --- | --- | --- | --- |
-| generation, 144 clips | 144 × 235 s | 9.4 GPU-h | ~US$10.3 |
-| Track A scoring (GeoCalib, 224 px) | 144 × 16 = 2,304 frames at ~5 f/s | 0.13 h | ~US$0.15 |
-| edit-recovery re-run on the new distribution | 12 clips × 7 conditions | 0.05 h | ~US$0.06 |
-| **total** | | **~9.6 GPU-h** | **≈US$10.5** |
-
-Above the US$5 approval line, so it needs explicit approval before any job starts. Two
-trims: 3 starts × 3 seeds = 108 clips ≈ US$7.8; 2 starts × 3 seeds = 72 clips ≈ US$5.2
-(marginal).
-
-**Excitation rule, written before scoring** (amendment 7; the primary for the existing set is
-unchanged):
-
-- **primary** — ≥ 12 of 16 frames with required ≥ 10° (unchanged, reported first);
-- **secondary** — ≥ 8 of 16 frames with required ≥ 10° **and** max required ≥ 0.8 × designed
-  tilt, with the clip statistic taken as the median residual **over the excited frames only**.
-  Flagged "secondary" in every table and never substituted for the primary intact state.
-  Rationale: a 15° turn that holds tilt for 8–11 steps is a real test the primary discards; a
-  two-step pulse is not.
-
-**Analysis.** Per cell, the paired sign test: fraction of pairs whose tilted clip has a larger
-residual than its level twin, with an exact binomial interval. No unpaired comparison is used
-for the claim. Nuisances per amendment 6 (parity), gate frozen, drag-free primary.
-
-**Risks.** Injecting tilt changes the rendered view, so the generator may be out of
-distribution in a way the level twin cannot control for; the edit-recovery control is re-run
-on the new distribution before any scoring, and if recovery degrades the run is reported as
-"estimator not validated on this distribution" rather than as a result.
+| injected arm | 49 | 3.2 GPU-h | ~US$3.5 |
+| mirrored-sign control | 15 | 1.0 GPU-h | ~US$1.1 |
+| scoring + controls (Track A) | 64 × 16 frames | 0.15 h | ~US$0.2 |
+| **total** | | **~4.4 GPU-h** | **≈US$4.8** |

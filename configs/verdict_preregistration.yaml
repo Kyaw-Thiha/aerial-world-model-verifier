@@ -572,3 +572,43 @@ amendment_7:
     residual than its level twin (a paired sign test), reported with the exact binomial
     interval; no ANWM claim is made from an unpaired comparison.
   not_in_scope: [new gates, new thresholds, changes to the existing 82 clips]
+
+# ================================================================ AMENDMENT 8
+# Track A2. Two corrections forced by the review: which nuisance mode is primary for
+# generated clips, and which rejection table may be quoted. No gate, label or threshold moves.
+amendment_8:
+  date: 2026-11-10
+  tag: "[A2]"
+  concerns: [amendment_6]
+  nuisance_modes:
+    definition: >
+      Three modes, all fitted once per clip: (none) nothing fitted; (lag_only) lag in
+      +/-150 ms step 25 ms with the mount fixed at its known value of 0 deg; (full_parity)
+      lag plus an uptilt offset in +/-7 deg step 1 deg, which is TII's mount uncertainty.
+    primary_for_generated: {k_d: 0.0, nuisance: lag_only}
+    rationale: >
+      ANWM's camera is exactly level and the mount is known, so the +/-7 deg grid is not this
+      render's uncertainty; it can absorb a real tilt discrepancy of up to about 7 deg. Measured absorption is reported below.
+      Measured: the lag absorbs 0.0 deg on generated clips (frames are one per step, so
+      150 ms is a sixth of a frame), while the uptilt grid absorbs 6.4 deg of a Res Gime C
+      residual with k_d = 0.295 and 3.4 deg drag-free. With the mount free, 92 % of Regime C
+      clips drive the offset to the +/-7 deg bound, i.e. the fit is saturating.
+      Drag-free is primary because the unfitted null on straight-cruise clips is 0.73 deg
+      drag-free and 7.8 deg with k_d = 0.295: at that drag the nuisance fit is absorbing a
+      disagreement between the drag model and the render, not a violation.
+    reported_alongside: [none, full_parity]
+    conservative_bound: full_parity
+  rejection_tables:
+    headline: >
+      the pre-registered table: pairs where BOTH clips are testable (gate + excitation), each
+      edit scored against its clip's leave-one-flight-out conformal threshold.
+    withdrawn: >
+      the "gate-only pairs at a fixed 6.46 deg" table must not be quoted as a comparison
+      across k_d. Decomposition shows the swing is the threshold, not the population: at
+      k_d = 0, tilt x0.5 goes 0.06 (testable, held-out) -> 0.80 (testable, fixed) -> 0.08
+      (gate-only, held-out) -> 0.76 (gate-only, fixed). Population moves it by <= 0.02;
+      fixing the threshold at 6.46 while the correct operating point is 12.95 moves it by
+      0.70. The gate-only/fixed table is retained only as that decomposition.
+  dt_min_reporting: >
+    quoted per cell (designed tilt) and per nuisance mode, never as a single aggregate median:
+    the aggregate is dominated by the 5 deg family, which has no testable clip.

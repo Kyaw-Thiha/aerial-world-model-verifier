@@ -200,6 +200,94 @@ is revisited, this is the change to propose — and it would need its own pre-re
 - Amendment 4: the gate rows differ from Gate 3's by the estimator's run-to-run noise; the
   measured effect on the baseline is one clip.
 
+### Rejection: definitions, and what may be quoted
+
+Two tables have been circulating and they are **not** the same quantity. Both are computed
+here on the same records, so the difference is decomposed rather than argued (amendment 8):
+
+- **Population** — *testable pairs*: both the real clip and its edit are testable, i.e. pass
+  the gate **and** the excitation rule (this is the pre-registered set). *Gate-only pairs*:
+  both pass the gate, excitation ignored.
+- **Threshold** — *held-out*: each edit is compared with its own clip's leave-one-flight-out
+  conformal threshold (5.76–12.95° depending on `k_d` and fold; this is the pre-registered
+  operating point). *fixed*: a single 6.46° cut applied to every `k_d`.
+
+| `k_d` | family | testable, held-out | testable, fixed | gate-only, held-out | gate-only, fixed |
+| --- | --- | --- | --- | --- | --- |
+| 0.295 | tilt ×0 | **0.75** (n=8) | 1.00 (8) | 0.70 (10) | 0.90 (10) |
+| 0.295 | tilt ×0.5 | **0.11** (36) | 0.31 (36) | 0.13 (38) | 0.32 (38) |
+| 0.295 | tilt ×1.5 | **0.07** (56) | 0.11 (56) | 0.09 (58) | 0.12 (58) |
+| 0.295 | mirrored roll | **0.96** (52) | 0.98 (52) | 0.94 (54) | 0.96 (54) |
+| 0.295 | yaw control | **0.06** (53) | 0.04 (53) | 0.07 (55) | 0.05 (55) |
+| 0 | tilt ×0.5 | **0.06** (35) | 0.80 (35) | 0.08 (38) | **0.76** (38) |
+| 0 | tilt ×1.5 | **0.07** (55) | 0.82 (55) | 0.07 (58) | **0.79** (58) |
+| 0 | yaw control | **0.04** (52) | 0.42 (52) | 0.04 (55) | 0.42 (55) |
+| 0 | mirror | 0.96 (51) | 1.00 (51) | 0.91 (54) | 0.98 (54) |
+
+**The swing is the threshold, not the population.** At `k_d` = 0, tilt ×0.5 reads 0.06
+(testable, held-out) → 0.80 (testable, fixed) → 0.08 (gate-only, held-out) → 0.76 (gate-only,
+fixed): population moves it by 0.02, fixing the threshold at 6.46° while the correct
+operating point is 12.95° moves it by 0.70.
+
+**Headline: the bold column** — testable pairs at each clip's leave-one-flight-out conformal
+threshold. The earlier "gate-only pairs at a fixed 6.46°" table is **withdrawn as a
+cross-`k_d` comparison**; it mixed a threshold calibrated for one operating point with scores
+from another, and the yaw-control row shows the cost (0.42 at a 6.46° cut against a ~0.04
+budget). It survives only as the decomposition above. The gate-only/held-out column is a
+legitimate sensitivity: it shows the gate itself, with excitation held out, does not drive
+the rejection rates (differences ≤ 0.05 everywhere).
+
+## 4. What this supports
+
+- The verifier **accepts well-behaved real footage at 0.95** once unreliably-estimated clips
+  are declared not testable, on a gate that never sees mocap.
+- The **ranking** survives the gate and the drag axis: 0.89–1.00 per family, 0.87 pooled
+  unmatched at `k_d` = 0.295, and the yaw control's artifact bound is now inside budget.
+- The **conservative drag-free claim** is quantified: same conclusions, slightly lower
+  separation.
+
+## 5. Analysis only: gate the pair, not each condition
+
+Not pre-registered. The same frozen gate is evaluated on each clip's **real** frames and that
+decision is inherited by its edits, so the comparison set is not filtered by the edit.
+
+| quantity | per condition (pre-registered) | pair level (analysis) |
+| --- | --- | --- |
+| acceptance | 0.949 (59) | 0.949 (59) |
+| pooled AUROC (paired / unmatched) | 0.918 / 0.867 | 0.911 / 0.911 |
+| tilt removal rejected | 0.750 (n = 8) | **0.780 (n = 59)** |
+| tilt ×0.5 rejected | 0.111 (36) | 0.220 (59) |
+| tilt ×1.5 rejected | 0.071 (56) | 0.119 (59) |
+| mirrored roll rejected | 0.962 (52) | 0.949 (59) |
+| yaw control rejected | 0.057 (53) | 0.136 (59) |
+| smallest violation at 80 % rejection | none | none |
+
+The acceptance gain does not depend on gating the edit; only the power does. If the protocol
+is revisited, this is the change to propose — and it would need its own pre-registration.
+
+## 6. What this does not show
+
+- **Not** that the verifier meets its own target. Acceptance 0.949 is one clip below 0.95 on
+  59 clips, and the 80 %-rejection frontier is still not reached.
+- **Not** a result on racing footage: trackRATM flights are 86 % abstained, so their
+  behaviour is unmeasured, not measured and fine.
+- **Not** comparable across `k_d` in the sense of a like-for-like threshold: each refits its
+  own conformal quantile (6.46 / 8.40 / 12.95), so the acceptance rates are operating points,
+  not a common cut.
+- **Not** evidence that the yaw control's 0.57–0.67 AUROC is harmless in deployment; it is
+  reported because any AUROC that ignores it is inflated.
+
+## 7. Caveats
+
+- The gate's own thresholds are leave-one-flight-out; the verdict's conformal thresholds are
+  leave-one-flight-out as well, so no flight sets its own bar.
+- Paired AUROCs with `n` = 8 (tilt removal) are close to meaningless as point estimates and
+  are quoted only to show how few comparisons survive.
+- The unmatched AUROC counts each real clip once; the paired one counts it once per family
+  member. Both are reported because the difference is 0.05 at `k_d` = 0.295.
+- Amendment 4: the gate rows differ from Gate 3's by the estimator's run-to-run noise; the
+  measured effect on the baseline is one clip.
+
 ### Rejection on pairs where both clips pass the gate
 
 The per-family numbers above require both clips to be *testable*, which includes the
