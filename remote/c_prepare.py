@@ -65,7 +65,8 @@ def _fetch(url: str, dst) -> None:
 
 @app.function(image=image, volumes={C_DATA: c_data, A_DATA: a_data}, timeout=3600, cpu=4,
               memory=8192)
-def prepare_uzh(seq: str, stride: int = 2, max_frames: int = 150, keep_zip: bool = True) -> str:
+def prepare_uzh(seq: str, stride: int = 2, max_frames: int = 150, keep_zip: bool = True,
+                tag: str = "") -> str:
     """Undistort one UZH sequence, save frames + truth, and report its kinematics."""
     import json
     import shutil
@@ -83,7 +84,7 @@ def prepare_uzh(seq: str, stride: int = 2, max_frames: int = 150, keep_zip: bool
     calib = zdir / "indoor_forward_calib_snapdragon.zip"
     _fetch(f"{UZH_CALIB_URL}/indoor_forward_calib_snapdragon.zip", calib)
 
-    out = Path(C_DATA) / "uzh" / seq
+    out = Path(C_DATA) / "uzh" / (f"{seq}_{tag}" if tag else seq)
     if out.exists():
         shutil.rmtree(out)
     clip = prepare(zpath, calib, out, stride=stride, max_frames=max_frames)
@@ -95,7 +96,7 @@ def prepare_uzh(seq: str, stride: int = 2, max_frames: int = 150, keep_zip: bool
     tilt = tilt_deg(a, v, k_d=0.295)
     lean = lean_xy(a)
     rec = {
-        "seq": seq, "n": len(clip.t), "fps": clip.fps, "duration_s": clip.duration_s,
+        "seq": seq, "tag": tag, "n": len(clip.t), "fps": clip.fps, "duration_s": clip.duration_s,
         "stride": stride, "intrinsics": clip.intrinsics,
         "vmax_published_mps": vmax_pub,
         "speed_median_mps": float(np.median(speed)), "speed_p95_mps": float(np.percentile(speed, 95)),
@@ -144,14 +145,14 @@ def copy_anwm() -> str:
 
 @app.local_entrypoint()
 def main(seq: str = "", all: bool = False, stride: int = 2, max_frames: int = 150,
-         anwm: bool = False) -> None:
+         anwm: bool = False, tag: str = "") -> None:
     import json as _json
 
     if anwm:
         print(copy_anwm.remote())
-    todo = list(SEQUENCES) if all else ([seq] if seq else [])
+    todo = list(SEQUENCES) if all else [s for s in seq.split(",") if s]
     for s in todo:
-        out = prepare_uzh.remote(s, stride=stride, max_frames=max_frames)
+        out = prepare_uzh.remote(s, stride=stride, max_frames=max_frames, tag=tag)
         rec = _json.loads(out)
         print(f"== {s}: n={rec['n']} fps={rec['fps']:.1f} "
               f"v_med={rec['speed_median_mps']:.2f} v_max={rec['speed_max_mps']:.2f} "
