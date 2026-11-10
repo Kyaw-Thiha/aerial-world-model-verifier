@@ -1,6 +1,6 @@
 # Track A2 artifact manifest
 
-108 objects, 108 present.
+117 objects, 117 present.
 
 | local | R2 key | size | sha256 (first 16) | note |
 | --- | --- | --- | --- | --- |
@@ -112,3 +112,12 @@
 | `results/a2_anwm_score` | `track-a/a2/anwm_scored/20261109T203212Z_46a8a54/per_clip.json` | 0.07 MB | `46ce831db8594437` | ANWM scoring tables, controls and minimum consistent dt |
 | `results/a2_anwm_score` | `track-a/a2/anwm_scored/20261109T203212Z_46a8a54/summary.json` | 0.20 MB | `240deef273b24e9f` | ANWM scoring tables, controls and minimum consistent dt |
 | `configs/gate_frozen.yaml` | `track-a/a2/gate_frozen.yaml` | 0.00 MB | `dc0cc4ff24e0a35d` | the frozen gate |
+| `results/a2_parity` | `track-a/a2/parity/20261110T071920Z_b84994e/parity.csv` | 0.05 MB | `01f989d31617ce3e` | ANWM residuals with the verdict's own nuisance fits (uptilt, lag) |
+| `results/a2_parity` | `track-a/a2/parity/20261110T071920Z_b84994e/summary.json` | 0.01 MB | `dcb33f6fb298a2b2` | ANWM residuals with the verdict's own nuisance fits (uptilt, lag) |
+| `results/a2_parity` | `track-a/a2/parity/20261110T071924Z_b84994e/parity.csv` | 0.05 MB | `01f989d31617ce3e` | ANWM residuals with the verdict's own nuisance fits (uptilt, lag) |
+| `results/a2_parity` | `track-a/a2/parity/20261110T071924Z_b84994e/summary.json` | 0.01 MB | `dcb33f6fb298a2b2` | ANWM residuals with the verdict's own nuisance fits (uptilt, lag) |
+| `results/a2_followups` | `track-a/a2/followups/20261110T072014Z/followups.json` | 0.06 MB | `f5bbd5793f6e76db` | Regime C cells with/without parity, k_d flips, gate selection test, censored dt_min |
+| `results/a2_followups` | `track-a/a2/followups/20261110T072027Z/followups.json` | 0.06 MB | `2e436955bacaf6c6` | Regime C cells with/without parity, k_d flips, gate selection test, censored dt_min |
+| `results/a2_checks` | `track-a/a2/checks/20261109T225038Z/checks.json` | 0.30 MB | `eccc5a4a598750c1` | consolidated follow-up checks |
+| `results/a2_checks` | `track-a/a2/checks/20261109T225120Z/checks.json` | 0.30 MB | `a43cb4eaef926e57` | consolidated follow-up checks |
+| `results/a2_checks` | `track-a/a2/checks/20261109T225321Z/checks.json` | 0.30 MB | `d21df42736e569d8` | consolidated follow-up checks |

@@ -35,6 +35,11 @@ ARTIFACTS = [
     ("results/a2_anwm_score", "track-a/a2/anwm_scored",
      "ANWM scoring tables, controls and minimum consistent dt"),
     ("configs/gate_frozen.yaml", "track-a/a2/gate_frozen.yaml", "the frozen gate"),
+    ("results/a2_parity", "track-a/a2/parity",
+     "ANWM residuals with the verdict's own nuisance fits (uptilt, lag)"),
+    ("results/a2_followups", "track-a/a2/followups",
+     "Regime C cells with/without parity, k_d flips, gate selection test, censored dt_min"),
+    ("results/a2_checks", "track-a/a2/checks", "consolidated follow-up checks"),
 ]
 
 
