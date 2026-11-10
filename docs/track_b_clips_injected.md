@@ -42,6 +42,8 @@ data/processed/anwm_clips_injected/<arm>/C/<clip_id>/
 | `convention` | free-text identifier of the convention version |
 | `paired_level_id` | the level clip this one is paired with |
 | `slim_checkpoint_sha256`, `sampling_steps`, `seed`, `code_commit` | as in the level set |
+| `prior_coverage_per_step` | 16 values: fraction of the **512x512** FFP image that is filled at each target step (the definition used in Stage 0) |
+| `prior_coverage_mean`, `prior_coverage_min` | summary of the above, for stratification |
 
 The spec file `results/anwm_clips_injected/specs.json` also carries the full thrust vectors
 `(17,3)` and the analytic acceleration used to build them.
@@ -59,6 +61,20 @@ The spec file `results/anwm_clips_injected/specs.json` also carries the full thr
   `scipy Rotation.from_euler("zyx")`, which is *extrinsic* z-y-x (`Rx @ Ry @ Rz`). The pose in
   this set is built from the rotation matrix, and the equivalent release triple is reported
   separately only for completeness.
+
+## Pairing table
+
+`clips_injected_index.csv` (next to the arm folders, mirrored to R2) has one row per clip with:
+`clip_id, arm, maneuver, policy, designed_tilt_deg, commanded_tilt_1s_drag_free_deg,
+injected_tilt_drag_free_deg, injected_roll_max_deg, injected_pitch_max_deg, paired_level_id,
+level_source, repeat_noise_mae, prior_cov_level_mean, prior_cov_level_min, prior_cov_inj_mean,
+prior_cov_inj_min, seed, checkpoint_sha256, code_commit, n_frames`.
+
+`level_source` is `regenerated` for the nine clips that have a same-seed twin on disk
+(`data/processed/anwm_clips_regen/`), whose mean absolute pixel difference from the original is
+`repeat_noise_mae` — the null for an injected-vs-level comparison. `prior_cov_*` for the delivered
+level clips comes from `coverage_level_original.json` (recomputed offline, since those manifests
+predate the field).
 
 ## Reading a clip
 
