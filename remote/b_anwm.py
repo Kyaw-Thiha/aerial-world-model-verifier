@@ -759,7 +759,7 @@ def evaluate_injected(arm: str = "injected_true", writing: bool = True) -> dict:
 
     import lpips as lpips_lib
 
-    lp = lpips_lib.LPIPS(net="alex", verbose=False)
+    lp = lpips_lib.LPIPS(net="alex")
 
     def load(d, sub="frames"):
         fs = sorted((Path(d) / sub).glob("*.png"))
