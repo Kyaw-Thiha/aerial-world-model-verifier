@@ -489,6 +489,9 @@ def generate(specs_json, sampling_steps: int = 250, out_root: str = "/r/clips",
             "code_commit": sp.get("code_commit"),
             "camera_axis_change_spread": spread, "meta": sp.get("meta", {}),
             "frames": len(preds),
+            "prior_coverage_per_step": prior_coverage,
+            "prior_coverage_mean": float(np.mean(prior_coverage)),
+            "prior_coverage_min": float(np.min(prior_coverage)),
         }
         Path(f"{folder}/manifest.json").write_text(json.dumps(manifest, indent=1))
         stats = {"frame_std": [float(v.float().std() / 255) for v in preds],
@@ -738,7 +741,7 @@ def run_injected(specs_path: str = "results/anwm_clips_injected/specs.json",
     print(f"{len(specs)} {arm} clips, ~{hours:.2f} GPU-hours, ~US${hours * 1.10:.2f} at the "
           f"verified A10G rate")
     out = generate.remote(json.dumps(specs), out_root=f"/r/clips_injected/{arm}",
-                          save_priors=True)
+                          save_priors=True, require_coverage=True)
     print(json.dumps(out, indent=1)[:4000])
 
 
