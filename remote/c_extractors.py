@@ -432,7 +432,6 @@ def sweep(model: str, seqs: list[str], max_frames: int = 150) -> str:
               f"dir={sc.get('accel_dir_err_deg_median')} "
               f"ratio={sc.get('accel_mag_ratio')} cov={sc.get('coverage_fraction')}",
               flush=True)
-    c_vol.commit()
     return json.dumps(out)
 
 

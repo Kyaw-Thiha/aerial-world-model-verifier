@@ -6,10 +6,13 @@ Track C. Written 2026-11-10. Answers items 3 and 5 of the follow-up.
 
 Two results, both surprising in the same direction.
 
-1. **Widening UZH does not rescue the feed-forward models.** Across nine sequences (six
-   indoor-forward, three outdoor-forward, all with public Leica truth), Pi3 passes 5 of 9,
-   VGGT 4 of 9, DA3 2 of 9 — and every model still fails `outdoor_forward_5`. Pi3's 3/5 from
-   the narrow set was not a small-sample artefact; it is the best of three mediocre results.
+1. **Widening UZH does not rescue the feed-forward models.** Across the sequences scored so
+   far (ten for DA3 and DPVO, nine for VGGT, six for Pi3), **Pi3 passes 4 of 6, VGGT 2 of 9,
+   DA3 2 of 10**, and every model fails the 45-degree-down and outdoor sequences. Pi3's 3/5
+   from the narrow set was not a small-sample artefact: on the sequences scored it passes
+   **every indoor-forward clip** and fails both hard ones. Three Pi3 cells
+   (`indoor_forward_10`, `outdoor_forward_1`, `outdoor_forward_3`) are **not scored**; the
+   last sweep stalled on a Modal volume commit and is reported as outstanding, not assumed.
 
 2. **DPVO — the extractor Track A blamed — passes 10 of 10 on the same clips.** Given the
    calibrated intrinsics, DPVO recovers the acceleration direction to **1.5–21 deg** with
@@ -77,7 +80,46 @@ down for `indoor_45_9`.
 
 ## Results — the three feed-forward models on the widened set
 
-(filled from `results/pathrec_bakeoff/v2/summary.json` once the sweep completes)
+### Pi3
+
+| sequence | split | dir err (deg) | mag ratio | coverage | pass |
+| --- | --- | --- | --- | --- | --- |
+| indoor_forward_3 | fit | 22.3 | 1.23 | 0.76 | yes |
+| indoor_forward_6 | eval | 20.0 | 1.23 | 0.85 | yes |
+| indoor_forward_5 | fit | 12.5 | 1.12 | 0.53 | yes |
+| indoor_45_9 | other | 62.9 | 6.41 | 0.90 | no |
+| outdoor_forward_5 | eval | 62.0 | 3.76 | 0.84 | no |
+| indoor_forward_9 | eval | 13.5 | 1.16 | 0.65 | yes |
+
+### DA3
+
+| sequence | split | dir err (deg) | mag ratio | coverage | pass |
+| --- | --- | --- | --- | --- | --- |
+| indoor_forward_3 | fit | 31.5 | 1.52 | 0.76 | no |
+| indoor_forward_6 | eval | 22.6 | 1.51 | 0.85 | no |
+| indoor_forward_5 | fit | 28.7 | 1.27 | 0.53 | yes |
+| indoor_45_9 | other | 82.6 | 5.93 | 0.90 | no |
+| outdoor_forward_5 | eval | 58.5 | 4.72 | 0.84 | no |
+| indoor_forward_7 | eval | 25.0 | 1.64 | 0.86 | no |
+| indoor_forward_9 | eval | 28.5 | 1.55 | 0.65 | no |
+| indoor_forward_10 | fit | 18.4 | 1.20 | 0.62 | yes |
+| outdoor_forward_1 | fit | 59.6 | 6.59 | 0.49 | no |
+| outdoor_forward_3 | eval | 55.9 | 4.55 | 0.61 | no |
+
+### VGGT
+
+| sequence | split | dir err (deg) | mag ratio | coverage | pass |
+| --- | --- | --- | --- | --- | --- |
+| indoor_forward_3 | fit | 23.3 | 1.28 | 0.76 | yes |
+| indoor_forward_6 | eval | 24.4 | 1.26 | 0.85 | yes |
+| indoor_forward_5 | fit | 28.4 | 1.60 | 0.53 | no |
+| indoor_45_9 | other | 77.6 | 5.35 | 0.90 | no |
+| outdoor_forward_5 | eval | 76.8 | 3.97 | 0.84 | no |
+| indoor_forward_7 | eval | 22.6 | 1.70 | 0.86 | no |
+| indoor_forward_9 | eval | 28.1 | 1.50 | 0.65 | no |
+| indoor_forward_10 | fit | 30.2 | 1.52 | 0.62 | no |
+| outdoor_forward_1 | fit | 83.8 | 5.98 | 0.49 | no |
+
 
 ## What this supports
 

@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import subprocess
 from pathlib import Path
 
@@ -49,10 +50,8 @@ def parse_text_line(line: str) -> dict | None:
     for part in tail.split():
         if "=" in part:
             k, _, v = part.partition("=")
-            try:
-                fields[k] = float(v)
-            except ValueError:
-                fields[k] = v
+            m = re.match(r"[-+]?[0-9]*\.?[0-9]+(?:[eE][-+]?[0-9]+)?", v)
+            fields[k] = float(m.group()) if m else v
     score = {"accel_dir_err_deg_median": fields.get("dir"),
              "accel_mag_ratio": fields.get("ratio"),
              "lean_r2": fields.get("r2"),
