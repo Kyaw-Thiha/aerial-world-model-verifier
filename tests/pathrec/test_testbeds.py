@@ -84,10 +84,24 @@ def test_anwm_loader_reads_manifest_frames_and_command(tmp_path: Path):
     assert anwm_clip_ids(tmp_path) == ["A/A00"]
     c = load_anwm(tmp_path, "A/A00")
     assert len(c.frames) == 4 and len(c.gt_frames) == 4
-    assert c.fps == pytest.approx(1.5)          # declared, not measured
+    assert c.fps == pytest.approx(1.0)          # 1 s per commanded step, documented assumption
     assert np.allclose(c.pos[:, 0], [0, 1, 2, 3])
     assert c.intrinsics["fx"] == pytest.approx(112.0)
     assert "commanded" in c.meta["pose_semantics"]
+
+
+def test_anwm_loader_shifts_n_plus_one_command(tmp_path: Path):
+    """A 17-row command for 16 frames: frame i lines up with positions[i+1]."""
+    d = tmp_path / "A" / "C00"
+    (d / "frames").mkdir(parents=True)
+    for i in range(3):
+        (d / "frames" / f"{i:02d}.png").write_bytes(b"x")
+    cmd = [[0, 0, 0], [1, 0, 0], [2, 0, 0], [3, 0, 0]]        # 4 rows for 3 frames
+    (d / "manifest.json").write_text(json.dumps(
+        {"id": "C00", "regime": "C", "commanded_path": {"positions": cmd}}))
+    c = load_anwm(tmp_path, "C00")
+    assert np.allclose(c.pos[:, 0], [1, 2, 3])
+    assert "level" in c.meta["gt_frames_semantics"]
 
 
 def test_anwm_loader_pads_short_command(tmp_path: Path):

@@ -238,10 +238,14 @@ def load_anwm(root: str | Path, clip_id: str) -> PathRecClip:
     gt_frames = [str(p) for p in sorted((d / "gt").glob("*.png"))] if (d / "gt").is_dir() else []
     cmd = np.asarray(man["commanded_path"]["positions"], dtype=np.float64)
     n = len(frames)
-    if len(cmd) != n:
+    # one frame per commanded step: frame i depicts the pose *after* the action ending at
+    # positions[i+1], so the path rows that line up with frames are positions[1:n+1]
+    if len(cmd) == n + 1:
+        cmd = cmd[1:]
+    elif len(cmd) != n:
         cmd = cmd[:n] if len(cmd) > n else np.pad(cmd, ((0, n - len(cmd)), (0, 0)), mode="edge")
-    # declared raster, not a measured rate: ANWM emits one frame per action
-    fps = float(man.get("fps") or man.get("commanded_path", {}).get("fps") or 1.5)
+    # no fps in the ANWM release; 1 s per step is the documented working assumption
+    fps = float(man.get("fps") or 1.0)
     dt = 1.0 / fps
     return PathRecClip(
         name=clip_id, source="anwm",
@@ -252,7 +256,11 @@ def load_anwm(root: str | Path, clip_id: str) -> PathRecClip:
         frames=frames, gt_frames=gt_frames,
         meta={"regime": man.get("regime"), "start_state": man.get("start_state"),
               "pose_semantics": "commanded path, not depicted motion",
-              "fps_semantics": "declared (one frame per action), not measured"},
+              "fps_semantics": "1 s per commanded step: working assumption from the "
+                               "release, unverified; not measured",
+              "gt_frames_semantics": "Regime A ground-truth renders are exactly level "
+                                     "(roll = pitch = 0) by construction, not a recorded "
+                                     "attitude; use them as a level reference only"},
     )
 
 

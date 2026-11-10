@@ -38,8 +38,39 @@ def prereg_status(path: Path = PREREG) -> dict:
             "staged": staged.returncode != 0}
 
 
+def parse_text_line(line: str) -> dict | None:
+    """Parse one ``== model/seq: err=None dir=..`` line from the Modal sweep output."""
+    line = line.strip()
+    if not line.startswith("== ") or "/" not in line:
+        return None
+    head, _, tail = line[3:].partition(":")
+    model, _, seq = head.partition("/")
+    fields = {}
+    for part in tail.split():
+        if "=" in part:
+            k, _, v = part.partition("=")
+            try:
+                fields[k] = float(v)
+            except ValueError:
+                fields[k] = v
+    score = {"accel_dir_err_deg_median": fields.get("dir"),
+             "accel_mag_ratio": fields.get("ratio"),
+             "lean_r2": fields.get("r2"),
+             "coverage_fraction": fields.get("cov"),
+             "rel_rot_err_deg_median": fields.get("rot")}
+    testbed = "TII" if seq.startswith("flight-") else ("ANWM" if seq.count("/") else "UZH")
+    return {"model": model, "seq": seq, "testbed": testbed, "error": fields.get("err"),
+            "score": {k: v for k, v in score.items() if isinstance(v, float)}}
+
+
 def load_records(raw_dir: Path) -> list[dict]:
     rows = []
+    for txt in sorted(Path(raw_dir).glob("*.txt")):
+        for line in txt.read_text().splitlines():
+            rec = parse_text_line(line)
+            if rec and rec["score"]:
+                rec["source_file"] = txt.name
+                rows.append(rec)
     for path in sorted(Path(raw_dir).glob("*.json")):
         data = json.loads(path.read_text())
         if isinstance(data, dict):
@@ -50,20 +81,26 @@ def load_records(raw_dir: Path) -> list[dict]:
     return rows
 
 
+def _median(values) -> float:
+    v = [x for x in values if isinstance(x, (int, float)) and np.isfinite(x)]
+    return float(np.median(v)) if v else float("nan")
+
+
 def gate1(rows: list[dict], crit: dict) -> dict:
     """Apply the pre-registered criteria per extractor; return rows and verdicts."""
     thresholds = crit["acceleration_direction"]["threshold_deg"]
     lo, hi = crit["acceleration_magnitude"]["interval"]
     cov_min = crit["coverage"]["threshold"]
     out = {}
-    for model in sorted({r["model"] for r in rows}):
-        recs = [r for r in rows if r["model"] == model and r.get("score")]
+    for model in sorted({f'{r["model"]}/{r.get("testbed", "?")}' for r in rows}):
+        recs = [r for r in rows
+                if f'{r["model"]}/{r.get("testbed", "?")}' == model and r.get("score")]
         if not recs:
             out[model] = {"n_clips": 0, "pass": False, "reason": "no scored clips"}
             continue
-        dirs = [r["score"]["accel_dir_err_deg_median"] for r in recs]
-        ratios = [r["score"]["accel_mag_ratio"] for r in recs]
-        tests = [r["score"]["coverage_fraction"] for r in recs]
+        dirs = [r["score"].get("accel_dir_err_deg_median", float("nan")) for r in recs]
+        ratios = [r["score"].get("accel_mag_ratio", float("nan")) for r in recs]
+        tests = [r["score"].get("coverage_fraction", float("nan")) for r in recs]
         per_clip_pass = [bool(d <= thresholds and lo <= q <= hi and t >= 0.2)
                          for d, q, t in zip(dirs, ratios, tests)]
         out[model] = {
@@ -71,11 +108,11 @@ def gate1(rows: list[dict], crit: dict) -> dict:
             "median_dir_err_deg": float(np.median(dirs)),
             "median_mag_ratio": float(np.median(ratios)),
             "median_coverage": float(np.median(tests)),
-            "median_ate_sim3_m": float(np.median([r["score"]["ate_sim3_m"] for r in recs])),
-            "median_ate_se3_m": float(np.median([r["score"]["ate_se3_m"] for r in recs])),
-            "median_scale_sim3": float(np.median([r["score"]["scale_sim3"] for r in recs])),
-            "median_rel_rot_err_deg": float(np.nanmedian(
-                [r["score"]["rel_rot_err_deg_median"] for r in recs])),
+            "median_ate_sim3_m": _median([r["score"].get("ate_sim3_m") for r in recs]),
+            "median_ate_se3_m": _median([r["score"].get("ate_se3_m") for r in recs]),
+            "median_scale_sim3": _median([r["score"].get("scale_sim3") for r in recs]),
+            "median_rel_rot_err_deg": _median([r["score"].get("rel_rot_err_deg_median")
+                                               for r in recs]),
             "coverage_pass": float(np.mean(per_clip_pass)),
             "pass": bool(np.mean(per_clip_pass) >= cov_min),
             "per_clip": [
