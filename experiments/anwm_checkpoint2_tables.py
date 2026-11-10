@@ -42,6 +42,17 @@ def main() -> int:
               f"{np.mean([x['mae_prior'] for x in a]):10.2f} "
               f"{min(x['cov_min'] for x in a):8.3f} "
               f"{np.mean([x['cov_mean'] for x in a]):8.3f}")
+    if len(sys.argv) > 2 and sys.argv[2] == "--markdown":
+        print("\n| cell | clips | LPIPS vs level | LPIPS vs prior | MAE vs level | MAE vs prior | coverage mean (min) |")
+        print("| --- | --- | --- | --- | --- | --- | --- |")
+        for k in sorted(g, key=lambda x: (str(x[0]), -1 if x[1] is None else x[1])):
+            a = g[k]
+            label = k[0] + (" (control)" if k[1] is None else f", {int(k[1])} deg")
+            print(f"| {label} | {len(a)} | {np.mean([x['lpips_lvl'] for x in a]):.3f} | "
+                  f"{np.mean([x['lpips_prior'] for x in a]):.3f} | "
+                  f"{np.mean([x['mae_lvl'] for x in a]):.2f} | "
+                  f"{np.mean([x['mae_prior'] for x in a]):.2f} | "
+                  f"{np.mean([x['cov_mean'] for x in a]):.2f} ({min(x['cov_min'] for x in a):.2f}) |")
     if rows:
         print(f"\nall: n={len(rows)} lpips(lvl) {np.mean([r['lpips_lvl'] for r in rows]):.3f} "
               f"lpips(prior) {np.mean([r['lpips_prior'] for r in rows]):.3f}")
