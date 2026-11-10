@@ -96,3 +96,22 @@ print(spec.audit())   # median / p90 / fraction above 10 deg per dt and estimato
 `PathSpec.audit()` returns one pooled population per cell and asserts the
 `median > 10 deg => fraction >= 0.5` invariant, which is the fixed version of the audit that
 started this handoff.
+
+## FFP prior coverage (added 2026-11-10)
+
+Every clip generated from now on records the fill fraction of its projected future frame:
+
+- `prior_coverage_per_step`: 16 values, fraction of the **512x512** FFP image that is non-zero at
+  each target step;
+- `prior_coverage_mean`, `prior_coverage_min`.
+
+The 82 delivered clips predate the field, so their coverage was recomputed offline into
+`results/anwm_injected/coverage_level_original.json` (same FFP code, same start states). Use it
+when stratifying anything by how much of the prior was actually visible.
+
+Measured consequence, which matters for any "did the model follow its prior" test: **4 of the 49
+Regime C clips have blank priors for late steps.** `C_turn_5_course_0` and
+`C_climb_turn_5_course_0` are empty for 8 of 16 steps (mean fill 0.15), `..._1` for 3 steps; the
+course-policy turn and climb arcs sweep ~160 deg of heading, so after about step 8 the target view
+faces scenery no context frame ever saw. Those clips cannot support a prior-preservation argument
+beyond the steps where the prior is non-empty; the `fixed`-policy cells keep 0.36-0.42 minimum.
