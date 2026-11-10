@@ -792,7 +792,7 @@ def evaluate_injected(arm: str = "injected_true", writing: bool = True) -> dict:
         mae_lvl = [float(np.abs(pred[i] - lvl[i]).mean() * 255) for i in range(n)]
         mae_pri = [float(np.abs(pred[i] - prior[i]).mean() * 255) for i in range(n)]
         out[cid] = {
-            "level_source": lvl_dir.parent.name if "regen" in str(lvl_dir) else "original",
+            "level_source": "regenerated" if "regen" in str(lvl_dir) else "original",
             "lpips_vs_level": lp_lvl, "lpips_vs_level_mean": float(np.mean(lp_lvl)),
             "lpips_vs_prior": lp_pri, "lpips_vs_prior_mean": float(np.mean(lp_pri)),
             "mae_vs_level_255": mae_lvl, "mae_vs_level_mean": float(np.mean(mae_lvl)),
