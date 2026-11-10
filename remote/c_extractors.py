@@ -201,7 +201,7 @@ def run_one(model: str, source: str, n_frames: int = 16, flight: str = "flight-0
         if source == "anwm":
             frames, fps = _anwm_frames(n_frames)
         elif source == "tii":
-            frames, fps = _tii_frames(flight, n_frames, stride=stride)
+            frames, fps = _tii_frames(flight, max_frames, stride=stride)
         else:
             raise ValueError(f"unknown source {source}")
         rec.update({"fps": fps, "image_hw": list(frames[0].shape[:2]), "n_loaded": len(frames)})
@@ -279,6 +279,62 @@ def run_uzh(model: str, seq: str, max_frames: int = 150, res: int = 0) -> str:
 
 @app.function(image=image, gpu="A10G", volumes={A_DATA: data_vol, C_DATA: c_vol, MODELS: model_vol},
               timeout=3600, cpu=4)
+def run_tii(model: str, flight: str, max_frames: int = 100, stride: int = 10) -> str:
+    """Run one extractor on one TII flight and score it against mocap truth.
+
+    TII got its intrinsics from a central pinhole-like crop (fov 100 deg); the released
+    calibration is not used, so the extractor works from an estimated K.
+    """
+    import sys
+    import traceback
+    from pathlib import Path
+
+    import numpy as np
+    import torch
+
+    from src.pathrec.evaluate import score_clip
+
+    sys.path.insert(0, "/root")
+    from src.datasets.tii import load_tii
+
+    rec = {"model": model, "seq": flight, "testbed": "TII",
+           "gpu": torch.cuda.get_device_name(0)}
+    try:
+        frames, fps = _tii_frames(flight, max_frames, stride=stride)
+        clip = load_tii(Path(C_DATA) / "tii" / f"mocap_{flight}.csv", name=flight)
+        c2w, extra, wall = _infer(model, frames, 0)
+        n = min(len(c2w), len(clip.t))
+        # TII frame timestamps are in the frame names; align by nearest mocap sample
+        zp_names = None
+        import zipfile
+        control, _track = __import__("src.datasets.tii_video", fromlist=["x"]).flight_parts(flight)
+        with zipfile.ZipFile(Path(A_DATA) / "tii_video" / control / f"camera_{flight}.zip") as z:
+            names = sorted(x for x in z.namelist() if x.lower().endswith(".jpg"))[::stride][:max_frames]
+        ts_us = np.array([int(Path(x).stem.split("_")[1]) for x in names], dtype=np.int64)[:n]
+        t_rel = (ts_us - clip.meta["epoch_start_us"]) * 1e-6
+        idx = np.searchsorted(clip.t, t_rel).clip(1, len(clip.t) - 1)
+        left = np.abs(clip.t[idx - 1] - t_rel) < np.abs(clip.t[idx] - t_rel)
+        idx = np.where(left, idx - 1, idx)
+        true_pos = clip.pos[idx]
+        q_true = clip.quat[idx]
+        sc = score_clip(c2w[:n, :3, 3], true_pos, dt=1.0 / fps, true_quat=q_true, window_s=0.5)
+        rec.update({"wall_s": wall, "n_poses": int(len(c2w)), "fps": fps, "score": sc,
+                    "peak_gpu_gb": torch.cuda.max_memory_allocated() / 1e9, **extra})
+        out = Path(C_DATA) / "poses" / model / f"tii_{flight}.npz"
+        out.parent.mkdir(parents=True, exist_ok=True)
+        np.savez_compressed(out, c2w=c2w, true_pos=true_pos, t=t_rel)
+        c_vol.commit()
+    except torch.cuda.OutOfMemoryError:
+        rec["error"] = "cuda_oom"
+    except Exception as exc:
+        rec["error"] = f"{type(exc).__name__}: {exc}"
+        rec["traceback"] = traceback.format_exc()[-1200:]
+    print(json.dumps(rec, indent=1)[:2000], flush=True)
+    return json.dumps(rec)
+
+
+@app.function(image=image, gpu="A10G", volumes={A_DATA: data_vol, C_DATA: c_vol, MODELS: model_vol},
+              timeout=3600, cpu=4)
 def sweep(model: str, seqs: list[str], max_frames: int = 150) -> str:
     """Score one extractor over several prepared UZH clips in one container."""
     import json as _json
@@ -289,8 +345,25 @@ def sweep(model: str, seqs: list[str], max_frames: int = 150) -> str:
 @app.local_entrypoint()
 def main(model: str = "all", source: str = "anwm", n_frames: int = 16, stride: int = 10,
          res: int = 0, uzh: bool = False, seq: str = "", max_frames: int = 150,
-         sweep_seqs: str = "") -> None:
+         sweep_seqs: str = "", tii: bool = False, flights: str = "") -> None:
     models = ["da3", "vggt", "pi3"] if model == "all" else [model]
+    if tii:
+        fl = [f for f in flights.split(",") if f] or [
+            "flight-01a-ellipse", "flight-01p-ellipse", "flight-04a-ellipse",
+            "flight-07a-lemniscate", "flight-07p-lemniscate", "flight-13a-trackRATM",
+            "flight-13p-trackRATM", "flight-16p-trackRATM"]
+        for m in models:
+            for f in fl:
+                try:
+                    rec = json.loads(run_tii.remote(m, f, max_frames))
+                    sc = rec.get("score") or {}
+                    print(f"== {m}/{f}: err={rec.get('error')} "
+                          f"dir={sc.get('accel_dir_err_deg_median')} "
+                          f"ratio={sc.get('accel_mag_ratio')} cov={sc.get('coverage_fraction')} "
+                          f"ate_sim3={sc.get('ate_sim3_m')}", flush=True)
+                except Exception as exc:
+                    print(f"== {m}/{f}: FAILED {type(exc).__name__}: {exc}", flush=True)
+        return
     if sweep_seqs:
         seqs = [s for s in sweep_seqs.split(",") if s]
         for m in models:
