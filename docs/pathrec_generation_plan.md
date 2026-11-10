@@ -21,6 +21,11 @@ the pixels. The truth is the path we asked for, so no ground-truth video is need
 - **Model**: WorldForge V2 (`arXiv:2610.31640`, code `Westlake-AGI-Lab/WorldForge`
   Apache-2.0, weights `Chenxis27/WorldForge-V2` — ungated LoRA, **licence not stated**;
   requires the MiniMax-H3 Ref2VA base weights from ModelScope, licence unverified).
+- **Licence check done 2026-11-10 (blocking)**: the HF model card for
+  `Chenxis27/WorldForge-V2` has **no `license` field**; the repository licence (Apache-2.0)
+  covers code, not the LoRA weights; the MiniMax-H3 Ref2VA base weights come from ModelScope
+  under their own terms, unread. **Do not run until the LoRA and base licences are confirmed
+  in writing** — the generation study stays blocked on this, not on compute.
 - **Inputs**: a start frame from UZH-FPV (prepared on the Modal volume) plus trajectories
   taken from real UZH flight truth — straight cruise, constant turn, accelerate/brake — so
   the input path is physically consistent by construction. 8 clips, 2 seeds each.
