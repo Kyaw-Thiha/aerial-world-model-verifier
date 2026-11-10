@@ -43,9 +43,9 @@ def main() -> int:
     args = ap.parse_args()
     cov = json.loads(COV.read_text()) if COV.exists() else {}
     rows = []
-    for arm_dir in sorted(INJ.glob("*")):
+    for arm_dir in sorted(p for p in INJ.glob("*") if p.is_dir()):
         arm = arm_dir.name
-        for d in sorted((arm_dir / "C").iterdir()):
+        for d in sorted(p for p in (arm_dir / "C").iterdir() if p.is_dir()):
             m = json.loads((d / "manifest.json").read_text())
             cp = m["commanded_path"]
             spec = PathSpec(name=m["id"], regime="C", pos=np.asarray(cp["positions"]),
@@ -121,7 +121,13 @@ def main() -> int:
             list(ex.map(put, files))
         for extra in (out, COV,
                       ROOT / "results/anwm_clips_injected/specs.json",
-                      ROOT / "results/anwm_injected/stage0_summary.json"):
+                      ROOT / "results/anwm_injected/stage0_summary.json",
+                      ROOT / "results/anwm_injected/eval_injected_injected_true.json",
+                      ROOT / "results/anwm_injected/prior_difference.json",
+                      ROOT / "results/anwm_injected/repeat_noise.json",
+                      ROOT / "results/anwm_injected/coverage_by_cell.csv"):
+            if not extra.exists():
+                continue
             if extra.exists():
                 s3.upload_file(str(extra), bucket, "track-b/clips_injected/" + extra.name)
         print(f"synced {len(files)} files + {4} index artifacts to s3://{bucket}/"

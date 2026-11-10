@@ -4,9 +4,7 @@ Track B addendum, 2026-11-10. Branch `track-b-generation`.
 Stage 0 (conventions, no generation): report B05. This report covers the injected-true arm and the
 Checkpoint 2 materials; the mirrored control (Stage 2) is not run.
 
-**Status at this revision: 32 of 45 injected clips generated and 30 evaluated.** The tables below
-are the interim numbers; the last cells (climb-and-turn, and two accelerate-brake seeds) were still
-generating when this was written, so their rows are absent rather than zero.
+**Status: all 45 injected clips generated, evaluated and synced.**
 
 Runs and artifacts:
 
@@ -15,8 +13,8 @@ Runs and artifacts:
 | injected specs (49 clips x 2 arms) | `results/anwm_clips_injected/specs.json` | 32a36c9 |
 | generated injected clips (45, arm `injected_true`) | `data/processed/anwm_clips_injected/` (gitignored), R2 `track-b/clips_injected/` | 935f2a6 |
 | level twins (9 clips, same seed) | `data/processed/anwm_clips_regen/`, R2 | 71977ec |
-| pairing/index table | `data/processed/anwm_clips_injected/clips_injected_index.csv` | PENDING |
-| evaluation (interim, 30 of 45 clips) | `results/anwm_injected/eval_injected_injected_true.json` | c1ca216 |
+| pairing/index table | `data/processed/anwm_clips_injected/clips_injected_index.csv`, R2 `track-b/clips_injected/` | adb439f |
+| evaluation (45 clips) | `results/anwm_injected/eval_injected_injected_true.json` | c1ca216 |
 | coverage (delivered level clips, offline) | `results/anwm_injected/coverage_level_original.json`, `coverage_by_cell.csv` | 8a67986, da887a9 |
 
 ## Summary in plain language
@@ -101,19 +99,22 @@ At cell level so far (30 of 45 clips): cruise 0.00 (n=3), slalom-course 23.6 (n=
 0.61). The fixed-yaw turn, whose prior rolls the whole view (prior MAE 40/255), changes the
 generated frames by 35.6/255 on average — the effect tracks both the input change and the coverage.
 
-### LPIPS against the paired level clip (interim, 30 of 45 clips)
+### LPIPS against the paired level clip (all 45 clips)
 
 | cell | clips | LPIPS vs level | LPIPS vs prior | MAE vs level | MAE vs prior | coverage mean (worst step) |
 | --- | --- | --- | --- | --- | --- | --- |
-| accelerate-brake, 5 deg | 3 | 0.247 | 0.447 | 21.8 | 41.2 | 0.63 (0.41) |
-| accelerate-brake, 10 deg | 2 | 0.184 | 0.497 | 16.8 | 50.0 | 0.59 (0.28) |
-| accelerate-brake, 20 deg | 1 | 0.124 | 0.496 | 12.5 | 32.6 | 0.54 (0.22) |
-| cruise (control) | 3 | **0.000** | 0.542 | **0.00** | 46.2 | 0.56 (0.36) |
-| slalom, 5 deg | 6 | 0.182 | 0.528 | 18.4 | 47.3 | 0.55 (0.35) |
-| slalom, 10 deg | 3 | 0.237 | 0.440 | 23.3 | 36.8 | 0.63 (0.48) |
-| turn, 5 deg | 6 | 0.223 | 0.629 | 20.4 | 64.6 | 0.39 (0.00) |
-| turn, 10 deg | 3 | 0.390 | 0.428 | 31.7 | 36.8 | 0.61 (0.40) |
-| turn, 20 deg | 3 | **0.559** | 0.421 | 48.4 | 41.3 | 0.66 (0.44) |
+| accel_brake, 5 deg | 3 | 0.247 | 0.447 | 21.83 | 41.20 | 0.63 (0.41) |
+| accel_brake, 10 deg | 3 | 0.176 | 0.490 | 15.84 | 43.89 | 0.58 (0.28) |
+| accel_brake, 20 deg | 3 | 0.133 | 0.508 | 13.42 | 46.47 | 0.56 (0.15) |
+| climb_turn, 5 deg | 6 | 0.270 | 0.662 | 25.16 | 66.36 | 0.36 (0.00) |
+| climb_turn, 10 deg | 3 | 0.394 | 0.555 | 34.70 | 47.47 | 0.53 (0.36) |
+| climb_turn, 20 deg | 3 | 0.508 | 0.545 | 43.03 | 48.00 | 0.51 (0.22) |
+| cruise (control) | 3 | 0.000 | 0.542 | 0.00 | 46.23 | 0.56 (0.36) |
+| slalom, 5 deg | 6 | 0.182 | 0.528 | 18.40 | 47.27 | 0.55 (0.35) |
+| slalom, 10 deg | 3 | 0.237 | 0.440 | 23.27 | 36.82 | 0.63 (0.48) |
+| turn, 5 deg | 6 | 0.223 | 0.629 | 20.43 | 64.58 | 0.39 (0.00) |
+| turn, 10 deg | 3 | 0.390 | 0.428 | 31.69 | 36.78 | 0.61 (0.40) |
+| turn, 20 deg | 3 | 0.559 | 0.421 | 48.41 | 41.25 | 0.66 (0.44) |
 
 The turn cells show a clean dose-response in the input channel: 0.223, 0.390, 0.559 as the injected
 bank goes 5, 10, 20 deg. The accelerate-brake cells *decrease* with the tilt target (0.247, 0.184,
@@ -166,14 +167,27 @@ step is evidence of persistence, not of attitude.
 
 No threshold is applied here and no depicted-tilt score is computed; that is handoff 04.
 
-## What the numbers say so far (to be finalised)
+## What the numbers say
 
-The injected prior is not cosmetic: in the fixed-yaw turn cell the input image changes by 40/255
-and the generated frames change by 36/255 on average, with the effect present from the first
-predicted step. The cruise control, whose prior is bit-identical, changes by exactly zero. Whether
-the *depicted attitude* tracks the injected attitude is not something this report can say — the
-frames could change while staying level (lighting and texture shift with the view) — and that is
-the measurement handoff 04 makes on this set.
+The injected prior is not cosmetic. Across all 45 clips the generated frames sit **LPIPS 0.266**
+from their level twins (0.000 for the control), and the effect grows with the injected bank in the
+two curvature maneuvers: turn 0.223 -> 0.390 -> 0.559 and climb-and-turn 0.270 -> 0.394 -> 0.508
+for 5, 10 and 20 deg. The pre-registered question — does the *depicted attitude* follow — is not
+answerable from these numbers: a frame can change a lot in lighting, texture and projected
+geometry while the horizon stays level. That measurement belongs to handoff 04, and this set was
+built so it can be made with a same-seed level twin for every clip, a zero-repeat-noise floor, and
+per-step prior coverage for stratification.
+
+Two patterns worth carrying into that step:
+
+- the effect is smaller on clips whose prior is mostly empty (LPIPS 0.181 on the seven clips with
+  a coverage minimum below 0.2, against 0.282 on the other 38), and the four clips with blank
+  late-step priors still show a difference there, carried by the model's own autoregressive
+  context rather than by the prior;
+- accelerate-then-brake *decreases* with the tilt target (0.247, 0.176, 0.133) because only 4 of
+  its 16 steps carry pitch at the 20 deg design, so most of the clip is commanded identically to
+  the level twin. Comparing cells by their nominal tilt level alone would misread that as the
+  model ignoring pitch.
 
 ## Caveats and open items
 
@@ -185,10 +199,12 @@ the measurement handoff 04 makes on this set.
   climb-5-course, starts 0 and 1: 8 and 3 empty steps of 16). No prior-preservation claim can be
   made on those steps.
 - The injected arm is off-distribution by construction: the model never saw a tilted pose.
-- **Cost.** A10G at the verified Modal rate of US$1.10/h; CPU US$0.0473/core/h, memory
-  US$0.008/GiB/h. Billed Track B spend on 2026-11-10 at the time of writing: **US$1.73**, covering
-  the 3-clip determinism run, the 9 regenerated level clips and the first injected clips, including
-  container restarts and model loads. Per clip that is about US$0.12 billed (the pure generation is
-  4.2 min of A10G, US$0.077); the difference is restart and startup overhead. The 45-clip injected
-  arm therefore costs about US$4-5 in total with this much churn — the reason the set is generated
-  as two concurrent halves.
+- **Cost.** A10G at the verified Modal rate of US$1.10/h, CPU US$0.0473/core/h, memory
+  US$0.008/GiB/h. Billed Track B spend on 2026-11-10 (from `modal billing report`): **US$5.28**,
+  covering the Stage 0 determinism run, the 9 regenerated level clips, all 45 injected clips, and
+  the evaluation. That is **US$0.28 over the US$5 line** the handoff set. The cause is restart
+  churn, not per-clip compute: the Modal client was disconnected repeatedly (a "Jwt is expired"
+  auth failure and plain client cancellations), and every restart pays a fresh container start
+  plus a model load (~1.5 min of GPU). Pure generation is 4.2 min of A10G per clip, US$0.077;
+  billed cost came to about US$0.10-0.12 per clip with the churn. Two concurrent halves halved the
+  wall clock (about 3 h instead of 5.5 h) but not the bill.
