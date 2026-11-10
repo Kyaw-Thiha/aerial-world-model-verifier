@@ -12,6 +12,28 @@ possible? With no input path, the path has to come from the pixels, so the answe
 every assumption measured in Gate 2: an fps, a scale (or a scale interval), a differentiation
 window, and a drag coefficient.
 
+## Step 0 (first, before any text-prompt study): the WorldForge known-path test
+
+The cleanest test of the extractor on general-model output needs no prompt at all: give a
+camera-controlled model a **known trajectory** and see whether the extractor recovers it from
+the pixels. The truth is the path we asked for, so no ground-truth video is needed.
+
+- **Model**: WorldForge V2 (`arXiv:2610.31640`, code `Westlake-AGI-Lab/WorldForge`
+  Apache-2.0, weights `Chenxis27/WorldForge-V2` — ungated LoRA, **licence not stated**;
+  requires the MiniMax-H3 Ref2VA base weights from ModelScope, licence unverified).
+- **Inputs**: a start frame from UZH-FPV (prepared on the Modal volume) plus trajectories
+  taken from real UZH flight truth — straight cruise, constant turn, accelerate/brake — so
+  the input path is physically consistent by construction. 8 clips, 2 seeds each.
+- **Measurement**: run Pi3, VGGT and DPVO on each generated clip; compare the recovered path
+  to the **input** trajectory with the Gate 1 metrics (direction, magnitude ratio, coverage),
+  and report how much of the gap is generation vs extraction.
+- **Why first**: it costs one GPU-hour and answers "does the extractor survive general-model
+  imagery" before spending on a prompt study whose ground truth is only the prompt.
+- **Cost**: WorldForge V2 needs an **80 GB GPU** and 8-step sampling. Estimate: 16 clips x
+  ~4 min = ~1.1 GPU-hours on an A100-80GB (about US$2.50/h) = **US$3**, plus a one-off
+  weight download (MiniMax-H3 Ref2VA, tens of GB) into a volume. Under the US$5 threshold,
+  but recorded because the base weights are large and the licence is unclear.
+
 ## What is being measured
 
 For every generated clip: the violation rate **with abstention**, i.e.
