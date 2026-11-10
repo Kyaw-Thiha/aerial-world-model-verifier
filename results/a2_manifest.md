@@ -1,6 +1,6 @@
 # Track A2 artifact manifest
 
-120 objects, 120 present.
+122 objects, 122 present.
 
 | local | R2 key | size | sha256 (first 16) | note |
 | --- | --- | --- | --- | --- |
@@ -62,6 +62,8 @@
 | `results/a2_gate` | `track-a/a2/gate/20261109T201449Z_298ff20/gate_validation.json` | 0.25 MB | `fa827c1a62fad196` | gate validation tables + the frozen-gate fit |
 | `results/a2_verdict_gated` | `track-a/a2/verdict_gated/20261109T201506Z_9e1656d/metrics.json` | 0.05 MB | `056fb4224043a688` | gated verdict tables for k_d in {0, 0.15, 0.295} |
 | `results/a2_verdict_gated` | `track-a/a2/verdict_gated/20261109T201851Z_9e1656d/metrics.json` | 1.95 MB | `fcfe1068abfbad68` | gated verdict tables for k_d in {0, 0.15, 0.295} |
+| `results/a2_verdict_gated` | `track-a/a2/verdict_gated/20261110T165240Z_71fb651/metrics.json` | 0.65 MB | `ddcfdf9ccef9a92a` | gated verdict tables for k_d in {0, 0.15, 0.295} |
+| `results/a2_verdict_gated` | `track-a/a2/verdict_gated/20261110T165308Z_71fb651/metrics.json` | 1.30 MB | `db1ddd8abafa0aee` | gated verdict tables for k_d in {0, 0.15, 0.295} |
 | `results/a2_anwm` | `track-a/a2/anwm_required/20261109T193059Z_d8941e8/crosscheck_track_b.json` | 0.00 MB | `1fe9a446b0e7fcc4` | required tilt from the commanded paths (both interpolators, dt sweep) |
 | `results/a2_anwm` | `track-a/a2/anwm_required/20261109T193059Z_d8941e8/required_tilt.csv` | 0.10 MB | `fe30d796dbde476d` | required tilt from the commanded paths (both interpolators, dt sweep) |
 | `results/a2_anwm` | `track-a/a2/anwm_required/20261109T193059Z_d8941e8/required_tilt.json` | 3.03 MB | `f3615043e2ee7c7d` | required tilt from the commanded paths (both interpolators, dt sweep) |

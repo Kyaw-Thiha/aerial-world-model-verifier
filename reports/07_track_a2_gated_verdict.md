@@ -219,6 +219,7 @@ here on the same records, so the difference is decomposed rather than argued (am
 | 0.295 | tilt ×1.5 | **0.07** (56) | 0.11 (56) | 0.09 (58) | 0.12 (58) |
 | 0.295 | mirrored roll | **0.96** (52) | 0.98 (52) | 0.94 (54) | 0.96 (54) |
 | 0.295 | yaw control | **0.06** (53) | 0.04 (53) | 0.07 (55) | 0.05 (55) |
+| 0 | tilt ×0 | 0.50 (8) | 1.00 (8) | 0.50 (10) | 0.90 (10) |
 | 0 | tilt ×0.5 | **0.06** (35) | 0.80 (35) | 0.08 (38) | **0.76** (38) |
 | 0 | tilt ×1.5 | **0.07** (55) | 0.82 (55) | 0.07 (58) | **0.79** (58) |
 | 0 | yaw control | **0.04** (52) | 0.42 (52) | 0.04 (55) | 0.42 (55) |
@@ -228,6 +229,25 @@ here on the same records, so the difference is decomposed rather than argued (am
 (testable, held-out) → 0.80 (testable, fixed) → 0.08 (gate-only, held-out) → 0.76 (gate-only,
 fixed): population moves it by 0.02, fixing the threshold at 6.46° while the correct
 operating point is 12.95° moves it by 0.70.
+
+The `k_d` = 0 tilt ×0 row is the one left out of the earlier message: 0.50 on 8 testable
+pairs, 1.00 at a fixed 6.46° cut, 0.50 on 10 gate-only pairs, 0.90 gate-only at the fixed cut.
+
+**Per-fold threshold spread** (all eight flights, gate applied before the fit; the pooled
+value in brackets). This is the spread that any "threshold" claim inherits:
+
+| mode | folds | pooled |
+| --- | --- | --- |
+| drag-free, lag-only | 13.5–16.5° | 14.73° |
+| drag-free, full parity | 10.6–13.8° | 12.95° |
+| `k_d` 0.295, lag-only | 9.0–12.1° | 8.96° |
+| `k_d` 0.295, full parity | 5.8–10.1° | 6.46° |
+
+**Detection floor** — the primary threshold plus the median straight-cruise residual in the
+same mode, i.e. the smallest *required* tilt each mode can detect: **15.6°** (drag-free,
+lag-only), 13.8° (drag-free, full parity), 16.6° (`k_d` 0.295, lag-only), 16.1° (`k_d` 0.295,
+full parity). All four are above the 10° excitation floor, which is the consistency check
+that the testability rule and the verdict rule are not contradicting each other.
 
 **Headline: the bold column** — testable pairs at each clip's leave-one-flight-out conformal
 threshold. The earlier "gate-only pairs at a fixed 6.46°" table is **withdrawn as a
