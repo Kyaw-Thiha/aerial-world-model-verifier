@@ -76,13 +76,25 @@ Run: `results/pathrec_calib/focal_matrix.json`.
 - The monotone shape is as expected — direction error rises from 3.9 deg (correct focal) to
   12.6–13.5 deg at ±20 % — but the criterion has a wide margin.
 
-### Estimated intrinsics (DA3, VGGT)
+### Estimated intrinsics (DA3, VGGT) — H3 refuted
 
-**Outstanding.** The scan ran twice; both attempts stalled in Modal (20 separate containers
-per model) and produced no file. This is the same volume/container issue that cost three
-cells in C07. The DPVO matrix is ready to consume the numbers (`--calib --intr-json ...`), so
-this is a five-minute job once the rescan lands. **H3 is therefore untested**, and the claim
-"estimated K explains the feed-forward failures" remains a hypothesis.
+DPVO run with the intrinsics that DA3-LARGE and VGGT predict on the same frames (their
+processed rasters — 504 px for DA3, 518 px for VGGT — rescaled to the 640 px prepared frames):
+
+| intrinsics fed to DPVO | clips | median dir err (deg) | passing | failing |
+| --- | --- | --- | --- | --- |
+| fx*1 | 10 | 3.0 | 10 | — |
+| da3 | 10 | 13.5 | 8 | outdoor_forward_5, indoor_45_9 |
+| vggt | 10 | 18.9 | 8 | outdoor_forward_5, indoor_45_9 |
+
+Run: `results/pathrec_calib/estimated_k.json`.
+
+**H3 is refuted.** Handed the feed-forward models' own K, DPVO still passes 8 of 10 clips,
+with direction errors of 8–31 deg — nothing like the 58–83 deg those same models produce when
+they estimate the trajectory themselves. **The feed-forward failure is in the trajectory, not
+in the focal length.** DA3's K costs 20–30 deg of direction on the hard clips
+(`outdoor_forward_5` 31.5, `indoor_45_9` 24.1), so estimated K does contribute, but it is a
+second-order effect.
 
 ## What this supports
 
