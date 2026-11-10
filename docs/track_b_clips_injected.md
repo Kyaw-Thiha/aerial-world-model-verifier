@@ -85,3 +85,17 @@ roll = np.array(m["injected_roll_deg"][1:])     # step 1..16, radians? no: degre
 pitch = np.array(m["injected_pitch_deg"][1:])
 path = m["commanded_path"]["positions"]         # 17 waypoints, world frame
 ```
+
+## How to use this set (for the scoring step)
+
+1. Join `clips_injected_index.csv` on `clip_id` with the level clips' own index; the `arm` column
+   separates `injected_true` from `level`.
+2. Compare each injected clip with its `paired_level_id`. Where `level_source` is `regenerated`,
+   the same-seed twin difference (`repeat_noise_mae`, measured in 0-255 pixel units) is the null:
+   any injected-vs-level difference below it is indistinguishable from reseeding the sampler.
+3. Stratify by `prior_cov_inj_min`. Four of the 49 clips have blank priors for late steps
+   (`C_turn_5_course_0/1`, `C_climb_turn_5_course_0/1`); their injected frames beyond the first
+   empty step were conditioned on nothing and cannot support a prior-preservation claim.
+4. The injected attitude is off-distribution by construction: the released model saw only level
+   poses. A null result (frames stay level) is informative about the architecture; a positive one
+   is evidence that the prior channel carries attitude.
