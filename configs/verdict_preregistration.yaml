@@ -501,3 +501,74 @@ amendment_5:
     testability rule is infeasible, under both interpolants and both drag settings -- but
     its prevalence collapses: only 8-9 of 25 Regime A clips (spline) or 2 of 25 (step) are
     testable at 1 s, against 22 under the erroneous rule.
+
+# ================================================================ AMENDMENT 6
+# Track A2. Reporting corrections required by the parity check and the peak-bound review.
+# No gate, threshold, label or signal changes.
+amendment_6:
+  date: 2026-11-10
+  tag: "[A2]"
+  concerns: [amendment_3, amendment_5]
+  changes:
+    parity:
+      rule: >
+        Generated clips are scored WITH the same two nuisance fits the TII verdict uses
+        (mount uptilt offset in +/-7 deg step 1, lag in +/-150 ms step 25 ms, one constant
+        per clip), and both the fitted and the unfitted residual are reported. The fitted
+        version is primary because a verifier that fits nuisances on real footage must be
+        allowed the same freedom on generated footage; the unfitted version is kept because
+        the render is exactly level, so an uptilt fit can absorb the violation itself.
+      measured: >
+        On straight-cruise clips (null) the drag-free residual is 0.73 deg unfitted and
+        0.65-0.68 deg fitted; with k_d = 0.295 it is 7.8 deg unfitted and 1.2-1.4 deg fitted,
+        i.e. the fit absorbs the whole drag-induced pitch. In Regime C the fitted residual
+        halves (kd 0.295: 12.6 -> 6.0 deg) and the infeasible count falls from 11 to 5 of 11
+        testable; the designed-10 cells flip to feasible and the designed-20 cells stay
+        infeasible (12.9-13.7 deg residual).
+    regime_C_primary: drag_free
+    regime_A_headline: >
+      restated as "no rigorous violation at 1 s; the spline results are indicative". The
+      only interpolation-free statement is the peak bound, which is satisfied at 1 s
+      (thrust-to-weight lower bound <= 0.51) and violated at 0.25 s (>= 3 for 24 of 25
+      Regime A clips).
+    dt_min: >
+      reported as conditional on being testable at 1 s, with untestable clips shown as
+      censored rather than dropped.
+
+# ================================================================ AMENDMENT 7
+# Pre-registration for a PLANNED second Regime C run (not generated, not scored). Written
+# before that run exists so the rule cannot be shaped by its results. The primary excitation
+# rule for the existing clip set is unchanged (12 of 16 frames with required >= 10 deg).
+amendment_7:
+  date: 2026-11-10
+  tag: "[A2]"
+  status: planned_not_run
+  design: >
+    Regime C regenerated with the required tilt injected into the target poses. Four tilt
+    levels {0 (level baseline), 15, 20, 25 deg} x three maneuvers {turn, slalom, accel_brake}
+    x four starts x three seeds = 144 clips, of which 36 are the level baseline. Every
+    tilted clip is PAIRED with the level clip of the same (maneuver, start, seed), so the
+    baseline and the injected set share starts and seeds and the comparison is within-pair.
+  reachability: >
+    a cell is kept only if the generator reports the design reachable within the release's
+    caps (5 m/s horizontal, 2 m/s vertical, 15 deg/s yaw); unreachable cells are reported as
+    unreachable, not replaced. 25 deg needs about 4.6 m/s^2 of horizontal acceleration,
+    which at a 1 s step and a 5 m/s cap is close to the limit and is expected to fail on
+    some starts.
+  scoring: >
+    identical pipeline to the existing set: frozen gate, parity nuisances per amendment 6,
+    frame-level residual, both interpolants, k_d in {0, 0.295}, drag-free primary.
+  excitation_rule:
+    primary: '>= 12 of 16 frames with required >= 10 deg (UNCHANGED; reported first)'
+    secondary: >
+      >= 8 of 16 frames with required >= 10 deg AND max required >= 0.8 x designed tilt;
+      the clip statistic is then the median residual over the frames with required >= 10 deg
+      (not over all 16). Reported alongside the primary, never instead of it, and flagged
+      "secondary" in every table. Rationale: a 15 deg turn that holds its tilt for 8-11 steps
+      is a real test that the primary rule discards, while a 2-step pulse is not.
+    both_reported: true
+  success_reading: >
+    the paired design yields, per cell, the fraction of pairs whose tilted clip has a larger
+    residual than its level twin (a paired sign test), reported with the exact binomial
+    interval; no ANWM claim is made from an unpaired comparison.
+  not_in_scope: [new gates, new thresholds, changes to the existing 82 clips]
