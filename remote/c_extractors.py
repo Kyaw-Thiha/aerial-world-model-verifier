@@ -277,10 +277,31 @@ def run_uzh(model: str, seq: str, max_frames: int = 150, res: int = 0) -> str:
     return json.dumps(rec)
 
 
+@app.function(image=image, gpu="A10G", volumes={A_DATA: data_vol, C_DATA: c_vol, MODELS: model_vol},
+              timeout=3600, cpu=4)
+def sweep(model: str, seqs: list[str], max_frames: int = 150) -> str:
+    """Score one extractor over several prepared UZH clips in one container."""
+    import json as _json
+    out = [_json.loads(run_uzh.local(model, s, max_frames=max_frames)) for s in seqs]
+    return _json.dumps(out)
+
+
 @app.local_entrypoint()
 def main(model: str = "all", source: str = "anwm", n_frames: int = 16, stride: int = 10,
-         res: int = 0, uzh: bool = False, seq: str = "", max_frames: int = 150) -> None:
+         res: int = 0, uzh: bool = False, seq: str = "", max_frames: int = 150,
+         sweep_seqs: str = "") -> None:
     models = ["da3", "vggt", "pi3"] if model == "all" else [model]
+    if sweep_seqs:
+        seqs = [s for s in sweep_seqs.split(",") if s]
+        for m in models:
+            rows = json.loads(sweep.remote(m, seqs, max_frames=max_frames))
+            for rec in rows:
+                sc = rec.get("score") or {}
+                print(f"== {m}/{rec['seq']}: err={rec.get('error')} "
+                      f"dir={sc.get('accel_dir_err_deg_median')} ratio={sc.get('accel_mag_ratio')} "
+                      f"r2={sc.get('lean_r2')} cov={sc.get('coverage_fraction')} "
+                      f"rot={sc.get('rel_rot_err_deg_median')}", flush=True)
+        return
     for m in models:
         try:
             if uzh:

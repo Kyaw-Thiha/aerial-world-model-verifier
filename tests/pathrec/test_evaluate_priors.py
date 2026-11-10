@@ -110,3 +110,19 @@ def test_reliability_signals():
     ang = np.linspace(0, 1, 50)
     r = Rotation.from_rotvec(np.c_[0 * ang, 0 * ang, ang]).as_matrix()
     assert rotation_rate_deg(r) > 0
+
+
+def test_prereg_guard_detects_untracked_and_clean(tmp_path):
+    """The runner must only score against a committed, unmodified pre-registration."""
+    import subprocess
+    from pathlib import Path
+
+    from experiments.pathrec_bakeoff import prereg_status
+
+    st = prereg_status(Path("configs/pathrec_prereg.yaml"))
+    assert st["tracked"] is True and st["modified"] is False
+
+    tmp = tmp_path / "not_tracked.yaml"
+    tmp.write_text("version: 1\n")
+    st2 = prereg_status(tmp)
+    assert st2["tracked"] is False
