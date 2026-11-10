@@ -34,7 +34,11 @@ def start_pose(spec, starts) -> tuple[np.ndarray, float]:
     for traj, v in starts.items():
         for c in v["candidates"]:
             if traj == spec["start_traj"] and int(c["ct"]) == int(spec["start_time"]):
-                return np.asarray(spec["positions"], float)[0], float(np.asarray(spec["yaw"])[0])
+                # the rotation must use the START STATE's heading, not the spec's first yaw (which
+                # already includes the design's own first heading). Using the latter rotated every
+                # rebuilt design by 12 deg and made three clips look irreproducible.
+                return (np.asarray(c["positions"], float)[0],
+                        float(np.asarray(c["yaw"], float)[0]))
     raise KeyError(f"start state not found for {spec['id']}")
 
 

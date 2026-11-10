@@ -274,9 +274,12 @@ def _context_inputs(ds, traj, ctx_times, target_poses, data_dir="/n/airvln_16"):
         rgb.append(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
     rgb = np.stack(rgb, 0)
     proj = _ffp(traj, list(ctx_times), rgb, np.asarray(target_poses))
+    # per-step fill of the projected prior, measured on the 512x512 image FFP produces (the same
+    # definition as Stage 0); Track A2 stratifies depicted tilt by this
+    coverage = [float((proj[i].sum(-1) > 0).mean()) for i in range(len(proj))]
     obs = torch.stack([ds.transform(Image.fromarray(rgb[i])) for i in range(len(ctx_times))])
     sup = torch.stack([ds.transform(Image.fromarray(proj[i])) for i in range(len(proj))])
-    return obs.unsqueeze(0), sup.unsqueeze(0)
+    return obs.unsqueeze(0), sup.unsqueeze(0), coverage
 
 
 # --------------------------------------------------------------------- Task 2
@@ -432,7 +435,7 @@ def generate(specs_json, sampling_steps: int = 250, out_root: str = "/r/clips",
                                               np.asarray(sp["thrust"], float)[1:n], R_ec)
         else:
             target_poses = _pose_from_position_yaw(pos[1:n], yaw[1:n], R_ec)
-        obs, sup = _context_inputs(ds, traj, ctx_times, target_poses)
+        obs, sup, prior_coverage = _context_inputs(ds, traj, ctx_times, target_poses)
 
         # actions along the commanded path, straight through ANWM's own construction
         act, _ = ds._compute_actions({"point": pos, "yaw": yaw.reshape(-1, 1)}, 0,
@@ -707,7 +710,7 @@ def run_regen(specs_path: str = "results/anwm_clips/specs.json", ids: str = "",
     for s in specs:
         s["code_commit"] = commit
     print(f"regenerating {len(specs)} clips: {[s['id'] for s in specs]}")
-    out = generate.remote(json.dumps(specs), out_root=out_root, force=True)
+    out = generate.remote(json.dumps(specs), out_root=out_root, force=True, save_priors=True)
     print(json.dumps(out, indent=1)[:2000])
 
 
