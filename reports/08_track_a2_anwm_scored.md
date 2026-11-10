@@ -295,16 +295,20 @@ right-censored.
 
 ## 5. What this supports
 
-- **A specific, bounded claim.** At dt = 1 s and `k_d` = 0.295, every clip that passes the
-  verdict protocol's own testability rule has a median per-frame residual above 6.46°:
-  9 of 25 Regime A clips (spline; 2 of 25 per-step) and 11 of 49 Regime C clips, with
-  median residuals of 39° / 21° and 9.6–12.6° respectively. The minority that is testable
-  is not what the video shows; the plateau-dominated majority is untested.
+- **A bounded claim, partly indicative.** Drag-free and with the verdict's own nuisance
+  fits (parity), every clip that passes the protocol's testability rule has a median
+  per-frame residual above 6.46°: 8 of 8 testable Regime A clips (residual 28°) and 5 of 11
+  testable Regime C clips — all five from the designed-20 family, at 12–13° (designed-10:
+  0 of 6). The Regime A part is indicative (interpolant-dependent); the designed-20 part
+  survives both interpolants, both drag settings, the end-condition variants and the
+  nuisance fits.
 - **A dose-response failure that cannot be explained by noise.** Regime C's designed 5/10/20°
   families are depicted at 0.79/0.78/0.77° with a seed band of at most ±1.3° (p10–p90 of the
   flat 5° family is 0.53–2.47°, still far below 5°).
-- **A quantified time-base explanation** rather than a bare "breaks physics": the same
-  clips stop contradicting them at dt ≈ 1.2–2.8 s, depending on the clip.
+- **A quantified time-base explanation** rather than a bare "breaks physics", but one that
+  is conditional on testability at 1 s: the same clips stop contradicting their paths at
+  dt ≈ 1.55 s (Regime C) to 2.7 s (Regime A), and 36 of 47 Regime C clips are untestable at
+  1 s and censored in that accounting.
 
 ## 6. What this does not show
 
@@ -355,12 +359,15 @@ What the three reports together support, and what they do not.
 3. *With that gate, the verifier accepts well-behaved real footage at 0.949* and ranks
    tilt-removed footage above the real clip at AUROC 0.92 (report 07).
 4. *ANWM's generated flights depict a level aircraft while their commanded paths demand
-   banking.* At dt = 1 s and `k_d` = 0.295, every clip that passes the verdict's own
-   testability rule has a median per-frame residual above 6.46°: 9 of 25 Regime A clips
-   (spline; 2 of 25 per-step) and 11 of 49 Regime C clips. The designed 5/10/20° controls
-   are all depicted at ≈0.8° (report 08).
-5. *The time base explains most of it.* The same clips stop contradicting their paths at
-   dt ≈ 1.2–2.8 s, longer than the 1 s the release's stated speeds imply.
+   banking.* Drag-free with parity nuisances: the designed-20° family is depicted at 0.77°
+   where its paths require 21.7°, and all 5 testable clips are infeasible (12–13°) under both
+   interpolants; the testable Regime A clips are 28° off. The designed-10° family is **not**
+   infeasible once nuisances are fitted, and the Regime A result is indicative — the peak
+   bound shows no rigorous violation at 1 s.
+5. *The time base explains most of it.* Conditional on 1 s testability the same clips stop
+   contradicting their paths at dt ≈ 1.55 s (Regime C) to 2.7 s (Regime A), longer than the
+   1 s the release's stated speeds imply. At 0.25 s the rigorous peak check is violated
+   outright.
 
 **Not supported.**
 
@@ -401,3 +408,56 @@ clips) when the excitation rule says those paths never demand 10° at 1 s. The d
 the finding is unchanged; the prevalence in the earlier draft was overstated and is
 withdrawn.
 
+
+## 10. Planned second Regime C run (proposed, not run)
+
+The existing Regime C set has one decisive weakness: 36 of its 47 gate-kept clips are
+untestable at 1 s, and the level-pose family was not built as a paired control. The fix is a
+second generation run in which **the required tilt is injected into the target poses**, with a
+level-pose twin for every cell so the comparison is within-pair. Pre-registration:
+amendment 7 (`status: planned_not_run`), committed before the run exists.
+
+**Design.** 4 tilt levels {0 (level baseline), 15, 20, 25°} × 3 maneuvers {turn, slalom,
+accel_brake} × 4 starts × 3 seeds = **144 clips**, of which 36 are level. Every tilted clip
+pairs with the level clip of the same (maneuver, start, seed): **108 pairs**. Starts and seeds
+are shared across the tilt levels by construction, which is the point — the level twin
+controls for generator appearance at that start, so a residual difference cannot be blamed on
+the scene.
+
+**Reachability.** 25° needs ≈4.6 m/s² horizontal; at a 1 s step with the release's 5 m/s cap
+the maximum single-step velocity change is 5 m/s ≈ 26.5°, so 25° is at the edge and is
+expected to be unreachable on some starts. Unreachable cells are reported as unreachable and
+are not replaced or re-seeded (the same rule Track B used).
+
+**Cost** (Track B's measured 235 s/clip end-to-end on an A10G, 250 sampling steps, batch 1, at
+the unverified US$1.10/GPU-hour):
+
+| item | quantity | time | cost |
+| --- | --- | --- | --- |
+| generation, 144 clips | 144 × 235 s | 9.4 GPU-h | ~US$10.3 |
+| Track A scoring (GeoCalib, 224 px) | 144 × 16 = 2,304 frames at ~5 f/s | 0.13 h | ~US$0.15 |
+| edit-recovery re-run on the new distribution | 12 clips × 7 conditions | 0.05 h | ~US$0.06 |
+| **total** | | **~9.6 GPU-h** | **≈US$10.5** |
+
+Above the US$5 approval line, so it needs explicit approval before any job starts. Two
+trims: 3 starts × 3 seeds = 108 clips ≈ US$7.8; 2 starts × 3 seeds = 72 clips ≈ US$5.2
+(marginal).
+
+**Excitation rule, written before scoring** (amendment 7; the primary for the existing set is
+unchanged):
+
+- **primary** — ≥ 12 of 16 frames with required ≥ 10° (unchanged, reported first);
+- **secondary** — ≥ 8 of 16 frames with required ≥ 10° **and** max required ≥ 0.8 × designed
+  tilt, with the clip statistic taken as the median residual **over the excited frames only**.
+  Flagged "secondary" in every table and never substituted for the primary intact state.
+  Rationale: a 15° turn that holds tilt for 8–11 steps is a real test the primary discards; a
+  two-step pulse is not.
+
+**Analysis.** Per cell, the paired sign test: fraction of pairs whose tilted clip has a larger
+residual than its level twin, with an exact binomial interval. No unpaired comparison is used
+for the claim. Nuisances per amendment 6 (parity), gate frozen, drag-free primary.
+
+**Risks.** Injecting tilt changes the rendered view, so the generator may be out of
+distribution in a way the level twin cannot control for; the edit-recovery control is re-run
+on the new distribution before any scoring, and if recovery degrades the run is reported as
+"estimator not validated on this distribution" rather than as a result.
