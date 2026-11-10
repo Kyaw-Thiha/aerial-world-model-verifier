@@ -55,15 +55,16 @@ def analyse_clip(est_c2w: np.ndarray, true_pos: np.ndarray, true_quat: np.ndarra
     t_e, v_e, a_e = differentiate(scale * est @ rot.T + trans, dt=dt, window_s=window_s)
     m = min(len(a_e), len(a_t))
     lean_true = lean_xy(a_t[:m][:, perm])
-    lean_est = lean_xy(a_e[:m][:, perm])
-    fit = lean_regression(lean_true, lean_est[:, :2])            # l_true ~ a_est / g_app
-    out["g_app_oracle_lean"] = fit["g_app"]
+    a_est_h = a_e[:m][:, perm][:, :2]                  # horizontal acceleration, extractor units
+    fit = lean_regression(lean_true, a_est_h)          # l_true ~ a_est / g_app
+    # a_e comes from the Sim(3)-aligned track, so it is already in metres: no rescale
+    out["g_app_oracle_lean"] = float(fit["g_app"])
     out["r2_oracle_lean"] = fit["r2"]
 
     for factor in (2.0, 0.5):
-        a_wrong = time_rescale(a_e[:m][:, perm], factor)   # dt assumed 1/factor of the truth
-        fit_w = lean_regression(lean_true, a_wrong[:, :2])
-        out[f"g_app_fps_x{factor:g}"] = fit_w["g_app"]
+        # dt assumed 1/factor of the truth rate -> acceleration scales by factor^2
+        fit_w = lean_regression(lean_true, time_rescale(a_est_h, factor))
+        out[f"g_app_fps_x{factor:g}"] = float(fit_w["g_app"])
         out[f"r2_fps_x{factor:g}"] = fit_w["r2"]
     return out
 

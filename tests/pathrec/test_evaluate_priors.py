@@ -126,3 +126,23 @@ def test_prereg_guard_detects_untracked_and_clean(tmp_path):
     tmp.write_text("version: 1\n")
     st2 = prereg_status(tmp)
     assert st2["tracked"] is False
+
+
+def test_apparent_gravity_is_scale_free_and_fps_quadratic():
+    """Gate 2's statistic: g_app = 1/slope, unchanged by an unknown scale, x4 for 2x fps."""
+    from experiments.pathrec_priors_study import analyse_clip
+    rng = np.random.default_rng(0)
+    n, dt = 300, 1 / 15
+    t = np.arange(n) * dt
+    a = np.c_[2.0 * np.sin(0.7 * t), 1.5 * np.cos(0.5 * t)]
+    pos = np.c_[np.cumsum(np.cumsum(a[:, 0]) * dt ** 2),
+                np.cumsum(np.cumsum(a[:, 1]) * dt ** 2), np.zeros(n)]
+    q = np.tile([0.0, 0.0, 0.0, 1.0], (n, 1))
+    for s in (1.0, 0.2):
+        c2w = np.tile(np.eye(4), (n, 1, 1))
+        c2w[:, :3, 3] = s * pos
+        r = analyse_clip(c2w, pos, q, 15.0)
+        assert r["scale_ratio"] == pytest.approx(1.0 / s, rel=1e-6)
+        assert r["g_app_oracle_lean"] == pytest.approx(9.80665, rel=1e-3)
+        assert r["g_app_fps_x2"] == pytest.approx(4 * 9.80665, rel=1e-2)
+        assert r["r2_oracle_lean"] == pytest.approx(1.0, abs=1e-6)
