@@ -384,7 +384,8 @@ def validate_native(names="", sampling_steps: int = 250, lpips_net: str = "alex"
                                                     "/n": vol_native, "/r": vol_results},
               env={"HF_HOME": "/hf"})
 def generate(specs_json, sampling_steps: int = 250, out_root: str = "/r/clips",
-             force: bool = False, save_priors: bool = False) -> dict:
+             force: bool = False, save_priors: bool = False,
+             require_coverage: bool = False) -> dict:
     """Roll out the released model from native start states along commanded paths.
 
     Each spec: {id, regime, positions (17,3), yaw (17,), start_traj, start_time, seed,
@@ -412,8 +413,13 @@ def generate(specs_json, sampling_steps: int = 250, out_root: str = "/r/clips",
     for sp in specs:
         folder = f"{out_root}/{sp['regime']}/{sp['id']}"
         if not force and os.path.exists(f"{folder}/manifest.json"):
-            print("skip (already done)", sp["id"])
-            continue
+            done = True
+            if require_coverage:
+                old = json.load(open(f"{folder}/manifest.json"))
+                done = "prior_coverage_per_step" in old
+            if done:
+                print("skip (already done)", sp["id"])
+                continue
         name, ct = sp["start_traj"], int(sp["start_time"])
         if name not in cache:
             traj = pickle.load(open(f"/n/airvln_16/{name}/traj_data.pkl", "rb"))
@@ -710,7 +716,8 @@ def run_regen(specs_path: str = "results/anwm_clips/specs.json", ids: str = "",
     for s in specs:
         s["code_commit"] = commit
     print(f"regenerating {len(specs)} clips: {[s['id'] for s in specs]}")
-    out = generate.remote(json.dumps(specs), out_root=out_root, force=True, save_priors=True)
+    out = generate.remote(json.dumps(specs), out_root=out_root, save_priors=True,
+                          require_coverage=True)
     print(json.dumps(out, indent=1)[:2000])
 
 
