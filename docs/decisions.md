@@ -211,3 +211,12 @@ One line per structural choice, with the reason. Newest at the bottom.
 ### Task 4 (DPVO on a well-calibrated sequence)
 
 - [A] Not completed, two attempts used. One UZH-FPV DAVIS sequence (417 MB) was fetched and unpacked: it ships images, IMU, events and ground truth but **no calibration**, and the calibration bundle is not at the documented paths. Without it the experiment cannot distinguish a calibration cause from a parsing cause, so it was not run. The scaffolding (prepare, remote DPVO entry point, oracle-scale analysis) is committed and unit-tested, and the two format quirks (ground truth is `id timestamp tx ty tz qx qy qz qw`; `images.txt` is `id timestamp image_name`) are recorded in `docs/track_a_verdict.md` section 7.
+
+## Track C, path-from-pixels feasibility — all entries tagged [C]
+
+### Task 0 (reproducing Track A's DPVO number)
+
+- [C] Branch `track-c-pathrec` off `track-a-perception` (`164c5e0`), worktree `../awmv-track-c`. Own files: `src/pathrec/`, `remote/c_*`, `experiments/pathrec_*`, `configs/pathrec_*`, `reports/C*`.
+- [C] **Track A's "41 m VO vs 479 m mocap" does not reproduce from stored artifacts.** Replaying the Phase 2 route (`experiments/pathrec_repro_dpvo.py`, `results/pathrec_repro/repro_v1/repro.json`) gives mocap 479 m and ATE 5.97 m exactly as stored, and scale -0.0022 (stored -0.0039), but the scalar-fitted VO path is **2.12 m**, not 41 m. The stored `metrics.json` has n = 317, dt = 0.333 s while the artifacts on disk pair 1267 frames at 0.083 s, so the run's frame selection is unrecorded and the 41 m is a stale quoted number (report 03 already marks it "not re-derived in this pass"). Everything the attribution rests on does reproduce.
+- [C] The reproduced failure is **directional, not a magnitude deficit**: the raw VO path is 1.4-2.8x the true path length in every flight (01p 960 u vs 479 m, 07p 1239 u vs 444 m) and the best similarity scale is 0.0065-0.12, i.e. the fit has to crush the path rather than stretch it, with per-axis correlation 0.02/0.06/-0.26 on 01p. Track C therefore scores acceleration **direction** first; path length, and especially ATE, must not stand in for it (5 m ATE coexists with zero per-axis correlation).
+- [C] A second, unrecorded confound in the stored run: its dt is 0.333 s, where the artifacts are 0.083 s. At 0.333 s and 20 m/s a drone travels 6.7 m between frames, and acceleration scales as 1/dt^2. Inferred, not measured; every Track C number will state its dt/fps and pre-register windows in seconds.
