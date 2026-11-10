@@ -125,8 +125,11 @@ Two delivered level clips were regenerated with the same start, path, seed, chec
 | `C_cruise_ctl_course_0` | **2.40** | 223 | 33.1% |
 | `C_turn_10_fixed_0` | **1.09** | 149 | 18.9% |
 
-Generation is **not bit-reproducible** (bf16 kernels, no deterministic-algorithms setting in the
-image). The difference is 10-20x smaller than seed-to-seed variability (0.088-0.196 in 0-1 units,
+**Corrected the same day: generation is bit-reproducible.** Re-running the same check against the
+current code gave **byte-identical PNGs on all 16 frames for 8 of 8 regenerated clips**
+(`results/anwm_injected/repeat_noise.json`); the numbers above are not reproducible and are
+withdrawn, most likely because the comparison ran while the producing app was still writing the
+directory. The first-run values are kept here because they drove a decision for an hour. The difference is 10-20x smaller than seed-to-seed variability (0.088-0.196 in 0-1 units,
 i.e. 22-50/255) but it is not zero, so a paired comparison against the existing level clips
 carries a repeat noise of about 1-2.4/255 per clip.
 
