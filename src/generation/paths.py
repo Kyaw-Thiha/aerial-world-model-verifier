@@ -52,6 +52,7 @@ class PathSpec:
     nominal_dt: float = 1.0
     t: np.ndarray | None = None
     meta: dict = field(default_factory=dict)
+    accel: np.ndarray | None = None   # (N,3) analytic acceleration, world frame m/s^2
 
     def __post_init__(self):
         self.pos = np.asarray(self.pos, dtype=np.float64).reshape(-1, 3)
@@ -61,6 +62,10 @@ class PathSpec:
         if self.t is None:
             self.t = np.arange(len(self.pos)) * self.nominal_dt
         self.t = np.asarray(self.t, dtype=np.float64)
+        if self.accel is not None:
+            self.accel = np.asarray(self.accel, dtype=np.float64).reshape(-1, 3)
+            if len(self.accel) != len(self.pos):
+                raise ValueError(f"{self.name}: accel/pos length mismatch")
 
     # ---- derived quantities -------------------------------------------------
     def speeds(self) -> dict:
@@ -246,19 +251,22 @@ def _yaw_from_course(p: np.ndarray) -> np.ndarray:
 def _cruise(v: float, n: int, dt: float, yaw0: float = 0.0, z0: float = 0.0):
     s = np.arange(n) * v * dt
     p = np.column_stack([s * np.cos(yaw0), s * np.sin(yaw0), np.full(n, z0)])
-    return p, np.full(n, yaw0)
+    return p, np.full(n, yaw0), np.zeros((n, 3))
 
 
 def _turn(v: float, kappa: float, n: int, dt: float, yaw0: float = 0.0, z0: float = 0.0):
     tt = np.arange(n) * dt
     psi = yaw0 + v * kappa * tt
     p = np.column_stack([np.sin(psi) / kappa, (1 - np.cos(psi)) / kappa, np.full(n, z0)])
-    return p, psi
+    # centripetal, analytic: v^2 kappa pointing at the centre (-sin psi, cos psi)
+    a = np.column_stack([-v * v * kappa * np.sin(psi), v * v * kappa * np.cos(psi),
+                         np.zeros(n)])
+    return p, psi, a
 
 
 def _turn_yaw_fixed(v: float, kappa: float, n: int, dt: float, yaw0: float = 0.0):
-    p, _ = _turn(v, kappa, n, dt, yaw0)
-    return p, np.full(n, yaw0)
+    p, _, a = _turn(v, kappa, n, dt, yaw0)
+    return p, np.full(n, yaw0), a
 
 
 def _slalom(v: float, amp: float, wavelength: float, n: int, dt: float,
@@ -269,11 +277,17 @@ def _slalom(v: float, amp: float, wavelength: float, n: int, dt: float,
     vx = v / np.sqrt(1 + (amp * k) ** 2)
     x = vx * tt
     p = np.column_stack([x, amp * np.sin(k * x), np.zeros(n)])
-    return p, (_yaw_from_course(p) if yaw_policy == "course" else np.zeros(n))
+    a = np.column_stack([np.zeros(n), -amp * k * k * vx * vx * np.sin(k * x), np.zeros(n)])
+    return p, (_yaw_from_course(p) if yaw_policy == "course" else np.zeros(n)), a
 
 
 def _quintic(u: np.ndarray) -> np.ndarray:
     return 10 * u ** 3 - 15 * u ** 4 + 6 * u ** 5
+
+
+def _quintic_d(u: np.ndarray) -> np.ndarray:
+    """d/du of `_quintic` (starts and ends at zero velocity, peak 1.875)."""
+    return 30 * u ** 2 - 60 * u ** 3 + 30 * u ** 4
 
 
 def _accel_brake(v0: float, v_peak: float, ramp_s: float, n: int, dt: float, yaw0: float = 0.0):
@@ -293,18 +307,27 @@ def _accel_brake(v0: float, v_peak: float, ramp_s: float, n: int, dt: float, yaw
                           v0 + (v_peak - v0) * _quintic(np.clip((T - tt) / ramp_s, 0, 1))))
     s = np.concatenate([[0.0], np.cumsum(0.5 * (v[1:] + v[:-1]))]) * dt
     p = np.column_stack([s, np.zeros(n), np.zeros(n)])
-    return p, np.full(n, yaw0)
+    # analytic dv/dt of the same profile (0 outside the ramps, mirrored on the way down)
+    acc = np.where(tt <= ramp_s, (v_peak - v0) * _quintic_d(u) / ramp_s,
+                   np.where(tt <= T - ramp_s, 0.0,
+                            -(v_peak - v0) * _quintic_d(np.clip((T - tt) / ramp_s, 0, 1))
+                            / ramp_s))
+    a = np.column_stack([acc, np.zeros(n), np.zeros(n)])
+    return p, np.full(n, yaw0), a
 
 
 def _climb_turn(v: float, kappa: float, vz: float, n: int, dt: float, yaw0: float = 0.0,
                 vz_ramp_s: float = 2.0):
     """Helix: horizontal arc plus a quintic vertical-speed ramp to `vz`."""
-    p, psi = _turn(v, kappa, n, dt, yaw0)
+    p, psi, _ = _turn(v, kappa, n, dt, yaw0)
     tt = np.arange(n) * dt
     u = np.clip(tt / vz_ramp_s, 0, 1)
     p[:, 2] = np.cumsum(np.concatenate([[0.0], 0.5 * (vz * _quintic(u[1:]) +
                                                    vz * _quintic(u[:-1]))])) * dt
-    return p, psi
+    _, _, a = _turn(v, kappa, n, dt, yaw0)
+    a = np.array(a, dtype=float, copy=True)
+    a[:, 2] = np.where(tt <= vz_ramp_s, vz * _quintic_d(u) / vz_ramp_s, 0.0)
+    return p, psi, a
 
 
 def _accel_brake_steps(v0: float, a: float, n: int, dt: float, yaw0: float = 0.0):
@@ -326,7 +349,9 @@ def _accel_brake_steps(v0: float, a: float, n: int, dt: float, yaw0: float = 0.0
     v = np.clip(v, -CAP_H_SPEED, CAP_H_SPEED)
     s = np.concatenate([[0.0], np.cumsum(v[:-1])]) * dt
     p = np.column_stack([s, np.zeros(n), np.zeros(n)])
-    return p, np.full(n, yaw0)
+    a = np.zeros((n, 3))
+    a[1:, 0] = np.diff(v) / dt          # analytic: the profile is defined per step
+    return p, np.full(n, yaw0), a
 
 
 def _amplitudes(lo: float, hi: float, n: int = 120):
@@ -343,8 +368,8 @@ def _design_one(maneuver: str, target: float, speed: float, n: int, dt: float,
         if maneuver == "slalom":
             return _slalom(speed, amp, 40.0, n, dt, yaw_policy)
         if maneuver == "climb_turn":
-            p, y = _climb_turn(speed, amp, 1.5, n, dt)
-            return (p, y) if yaw_policy == "course" else (p, np.zeros(n))
+            p, y, a = _climb_turn(speed, amp, 1.5, n, dt)
+            return (p, y, a) if yaw_policy == "course" else (p, np.zeros(n), a)
         raise ValueError(maneuver)
 
     best = None
@@ -352,7 +377,7 @@ def _design_one(maneuver: str, target: float, speed: float, n: int, dt: float,
     kappa_max = min(1.0, np.radians(CAP_TRAVEL_TURN) / (speed * dt))
     hi = {"turn": kappa_max, "slalom": 20.0, "climb_turn": kappa_max}[maneuver]
     for amp in _amplitudes(1e-4, hi):
-        p, y = build(amp)
+        p, y, a = build(amp)
         ps = PathSpec(name="cand", regime="C", pos=p, yaw=y, nominal_dt=dt)
         viol = ps.caps_violations(strict_yaw=(yaw_policy == "course"))
         if viol:
@@ -360,12 +385,12 @@ def _design_one(maneuver: str, target: float, speed: float, n: int, dt: float,
         t_peak = ps.peak_tilt(dt, 0.0)
         score = abs(t_peak - target)
         if best is None or score < best[0]:
-            best = (score, amp, p, y, t_peak, viol)
+            best = (score, amp, p, y, a, t_peak, viol)
     if best is None:
         raise RuntimeError(f"{maneuver}: no amplitude satisfied the caps")
-    score, amp, p, y, t_peak, viol = best
-    return p, y, {"amplitude": float(amp), "achieved_tilt_deg": float(t_peak),
-                  "reachable": bool(score <= tol)}
+    score, amp, p, y, a, t_peak, viol = best
+    return p, y, a, {"amplitude": float(amp), "achieved_tilt_deg": float(t_peak),
+                     "reachable": bool(score <= tol)}
 
 
 def design(maneuver: str, target_tilt_deg: float | None, speed: float = 5.0, n: int = 17,
@@ -375,31 +400,31 @@ def design(maneuver: str, target_tilt_deg: float | None, speed: float = 5.0, n: 
     `target_tilt_deg = None` gives the straight-cruise control (no shaping).
     """
     if maneuver == "cruise" or target_tilt_deg is None:
-        p, y = _cruise(speed, n, dt)
+        p, y, a = _cruise(speed, n, dt)
         meta = {"achieved_tilt_deg": 0.0, "reachable": True, "note": "drag-free cruise"}
         
     elif maneuver == "accel_brake":
         best = None
         for v0 in np.linspace(0.0, speed, 21):
-            for a in np.linspace(0.05, G0 * np.tan(np.radians(35.0)), 120):
-                p, y = _accel_brake_steps(v0, a, n, dt)
+            for acc in np.linspace(0.05, G0 * np.tan(np.radians(35.0)), 120):
+                p, y, a = _accel_brake_steps(v0, acc, n, dt)
                 ps = PathSpec(name="cand", regime="C", pos=p, yaw=y, nominal_dt=dt)
                 if ps.caps_violations():
                     continue
                 t_peak = ps.peak_tilt(dt, 0.0)
                 sc = abs(t_peak - target_tilt_deg)
                 if best is None or sc < best[0]:
-                    best = (sc, v0, a, p, y, t_peak)
+                    best = (sc, v0, acc, p, y, a, t_peak)
         if best is None:
             raise RuntimeError("accel_brake: no feasible profile")
-        sc, v0, a, p, y, t_peak = best
-        meta = {"v_start_ms": float(v0), "accel_ms2": float(a),
+        sc, v0, acc, p, y, a, t_peak = best
+        meta = {"v_start_ms": float(v0), "accel_ms2": float(acc),
                 "achieved_tilt_deg": float(t_peak), "reachable": bool(sc <= 0.5)}
     else:
-        p, y, extra = _design_one(maneuver, target_tilt_deg, speed, n, dt, yaw_policy)
+        p, y, a, extra = _design_one(maneuver, target_tilt_deg, speed, n, dt, yaw_policy)
         meta = {**extra}
     spec = PathSpec(name=name or f"C:{maneuver}:{target_tilt_deg}:{speed}:{yaw_policy}",
-                    regime="C", pos=p, yaw=y, nominal_dt=dt,
+                    regime="C", pos=p, yaw=y, nominal_dt=dt, accel=a,
                     meta={"maneuver": maneuver, "speed_ms": speed, "yaw_policy": yaw_policy,
                           "target_tilt_deg": target_tilt_deg, "nominal_dt": dt,
                           "reachable_deg_target": meta["reachable"], **meta})

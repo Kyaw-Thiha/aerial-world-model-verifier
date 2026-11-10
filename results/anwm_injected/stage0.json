@@ -1,0 +1,251 @@
+{
+ "traj": "3KA7IJSNXE3LKLTL2ARA5RQP4ACBP0_processed",
+ "start_time": 39,
+ "R_ec": [
+  [
+   0.0,
+   0.0,
+   1.0
+  ],
+  [
+   1.0,
+   0.0,
+   0.0
+  ],
+  [
+   0.0,
+   1.0,
+   0.0
+  ]
+ ],
+ "R_ec_spread": 2.220446049250313e-16,
+ "R_ec_equals_notebook_t_ec": true,
+ "pose_translation_equals_point": 0.0,
+ "pure_rotation": {
+  "roll_x": {
+   "point_uv_max_err_px": 2.842170943040401e-14,
+   "rendered_vs_homography_mad": 55.12623274161736,
+   "rendered_filled": 0.70361328125
+  },
+  "pitch_y": {
+   "point_uv_max_err_px": 2.3092638912203256e-14,
+   "rendered_vs_homography_mad": 56.96292607348384,
+   "rendered_filled": 0.738037109375
+  },
+  "mix": {
+   "point_uv_max_err_px": 2.2648549702353193e-14,
+   "rendered_vs_homography_mad": 64.09241509880488,
+   "rendered_filled": 0.687744140625
+  },
+  "real_frame_roll12": {
+   "point_uv_max_err_px": 1.6845297068357468e-07,
+   "n_points": 262144,
+   "ncc_rendered_vs_homography": 0.9789484384857641,
+   "overlap_frac": 0.2870063781738281
+  }
+ },
+ "axis_and_signs": {
+  "axis_max_err": 2.220446049250313e-16,
+  "axis_err_per_design": {
+   "cruise_ctl": 0.0,
+   "turn_5_course": 1.1102230246251565e-16,
+   "turn_5_fixed": 2.220446049250313e-16,
+   "turn_10_fixed": 1.1102230246251565e-16,
+   "turn_20_fixed": 1.1102230246251565e-16,
+   "slalom_5_course": 1.1102230246251565e-16,
+   "slalom_5_fixed": 1.1102230246251565e-16,
+   "slalom_10_fixed": 1.1102230246251565e-16,
+   "accel_5": 1.3877787807814457e-17,
+   "accel_10": 1.1102230246251565e-16,
+   "accel_20": 1.1102230246251565e-16,
+   "climb_5_course": 1.1102230246251565e-16,
+   "climb_5_fixed": 2.220446049250313e-16,
+   "climb_10_fixed": 1.1102230246251565e-16,
+   "climb_20_fixed": 2.220446049250313e-16
+  },
+  "signs": {
+   "cruise_ctl": {
+    "n_tilted_steps": 0,
+    "min_dot_accel_xy_thrust_xy": null,
+    "max_abs_roll_deg": 0.0,
+    "max_abs_pitch_deg": 0.0,
+    "max_zB_tilt_deg": 0.0,
+    "euler_reconstruction_err": 1.1102230246251565e-16
+   },
+   "turn_5_course": {
+    "n_tilted_steps": 17,
+    "min_dot_accel_xy_thrust_xy": 0.07509601969956019,
+    "max_abs_roll_deg": 5.009783728947636,
+    "max_abs_pitch_deg": 2.394563721022719e-15,
+    "max_zB_tilt_deg": 5.009783728947535,
+    "euler_reconstruction_err": 7.771561172376096e-16
+   },
+   "turn_5_fixed": {
+    "n_tilted_steps": 17,
+    "min_dot_accel_xy_thrust_xy": 0.07509601969956019,
+    "max_abs_roll_deg": 4.9356850283707665,
+    "max_abs_pitch_deg": 5.008478802540465,
+    "max_zB_tilt_deg": 5.009783728947535,
+    "euler_reconstruction_err": 5.551115123125783e-16
+   },
+   "turn_10_fixed": {
+    "n_tilted_steps": 17,
+    "min_dot_accel_xy_thrust_xy": 0.3074619784818713,
+    "max_abs_roll_deg": 10.116306083737454,
+    "max_abs_pitch_deg": 9.987917670940348,
+    "max_zB_tilt_deg": 10.116728979636479,
+    "euler_reconstruction_err": 3.885780586188048e-16
+   },
+   "turn_20_fixed": {
+    "n_tilted_steps": 17,
+    "min_dot_accel_xy_thrust_xy": 1.3250577191065118,
+    "max_abs_roll_deg": 20.541439470107775,
+    "max_abs_pitch_deg": 20.753912889364763,
+    "max_zB_tilt_deg": 20.81351382722482,
+    "euler_reconstruction_err": 3.3306690738754696e-16
+   },
+   "slalom_5_course": {
+    "n_tilted_steps": 15,
+    "min_dot_accel_xy_thrust_xy": 0.002281213567283619,
+    "max_abs_roll_deg": 5.116746727703456,
+    "max_abs_pitch_deg": 0.7507258020038815,
+    "max_zB_tilt_deg": 5.140101463150072,
+    "euler_reconstruction_err": 3.3306690738754696e-16
+   },
+   "slalom_5_fixed": {
+    "n_tilted_steps": 15,
+    "min_dot_accel_xy_thrust_xy": 0.002281213567283619,
+    "max_abs_roll_deg": 5.140101463150071,
+    "max_abs_pitch_deg": 1.995529589961421e-16,
+    "max_zB_tilt_deg": 5.140101463150072,
+    "euler_reconstruction_err": 5.551115123125783e-16
+   },
+   "slalom_10_fixed": {
+    "n_tilted_steps": 16,
+    "min_dot_accel_xy_thrust_xy": 0.0014733789075070992,
+    "max_abs_roll_deg": 10.133390556938387,
+    "max_abs_pitch_deg": 4.0376652384836877e-16,
+    "max_zB_tilt_deg": 10.133390556938375,
+    "euler_reconstruction_err": 3.885780586188048e-16
+   },
+   "accel_5": {
+    "n_tilted_steps": 12,
+    "min_dot_accel_xy_thrust_xy": 0.05548293638110748,
+    "max_abs_roll_deg": 1.987846675914698e-16,
+    "max_abs_pitch_deg": 4.965080397099036,
+    "max_zB_tilt_deg": 4.965080397099064,
+    "euler_reconstruction_err": 2.7755575615628914e-16
+   },
+   "accel_10": {
+    "n_tilted_steps": 6,
+    "min_dot_accel_xy_thrust_xy": 0.1777336380653135,
+    "max_abs_roll_deg": 3.975693351829396e-16,
+    "max_abs_pitch_deg": 9.898088712552823,
+    "max_zB_tilt_deg": 9.8980887125528,
+    "euler_reconstruction_err": 3.885780586188048e-16
+   },
+   "accel_20": {
+    "n_tilted_steps": 4,
+    "min_dot_accel_xy_thrust_xy": 0.21333052314728157,
+    "max_abs_roll_deg": 3.975693351829396e-16,
+    "max_abs_pitch_deg": 19.870569672264363,
+    "max_zB_tilt_deg": 19.870569672264356,
+    "euler_reconstruction_err": 2.7755575615628914e-16
+   },
+   "climb_5_course": {
+    "n_tilted_steps": 17,
+    "min_dot_accel_xy_thrust_xy": 0.06573971108994485,
+    "max_abs_roll_deg": 5.009783728947636,
+    "max_abs_pitch_deg": 2.394563721022719e-15,
+    "max_zB_tilt_deg": 5.009783728947535,
+    "euler_reconstruction_err": 7.771561172376096e-16
+   },
+   "climb_5_fixed": {
+    "n_tilted_steps": 17,
+    "min_dot_accel_xy_thrust_xy": 0.06573971108994485,
+    "max_abs_roll_deg": 4.71562372570611,
+    "max_abs_pitch_deg": 5.008478802540465,
+    "max_zB_tilt_deg": 5.009783728947535,
+    "euler_reconstruction_err": 5.551115123125783e-16
+   },
+   "climb_10_fixed": {
+    "n_tilted_steps": 17,
+    "min_dot_accel_xy_thrust_xy": 0.26989397543204674,
+    "max_abs_roll_deg": 10.116306083737454,
+    "max_abs_pitch_deg": 9.987917670940348,
+    "max_zB_tilt_deg": 10.116728979636479,
+    "euler_reconstruction_err": 3.885780586188048e-16
+   },
+   "climb_20_fixed": {
+    "n_tilted_steps": 17,
+    "min_dot_accel_xy_thrust_xy": 1.1765149438009033,
+    "max_abs_roll_deg": 20.541439470107775,
+    "max_abs_pitch_deg": 20.753912889364763,
+    "max_zB_tilt_deg": 20.81351382722482,
+    "euler_reconstruction_err": 3.3306690738754696e-16
+   }
+  }
+ },
+ "coverage": {
+  "coverage": {
+   "turn_10_fixed": {
+    "level_mean": 0.554844856262207,
+    "level_min": 0.4793357849121094,
+    "injected_mean": 0.5032122135162354,
+    "injected_min": 0.40435028076171875,
+    "max_tilt_deg": 10.116728979636479
+   },
+   "turn_20_fixed": {
+    "level_mean": 0.662520170211792,
+    "level_min": 0.5780220031738281,
+    "injected_mean": 0.5741000175476074,
+    "injected_min": 0.4410438537597656,
+    "max_tilt_deg": 20.81351382722482
+   },
+   "slalom_10_fixed": {
+    "level_mean": 0.5866761207580566,
+    "level_min": 0.481781005859375,
+    "injected_mean": 0.582111120223999,
+    "injected_min": 0.48423004150390625,
+    "max_tilt_deg": 10.133390556938375
+   },
+   "accel_10": {
+    "level_mean": 0.564711332321167,
+    "level_min": 0.386749267578125,
+    "injected_mean": 0.5302186012268066,
+    "injected_min": 0.27722930908203125,
+    "max_tilt_deg": 9.8980887125528
+   },
+   "accel_20": {
+    "level_mean": 0.5499346256256104,
+    "level_min": 0.3754539489746094,
+    "injected_mean": 0.5129599571228027,
+    "injected_min": 0.14817047119140625,
+    "max_tilt_deg": 19.870569672264356
+   },
+   "climb_20_fixed": {
+    "level_mean": 0.47440624237060547,
+    "level_min": 0.3695068359375,
+    "injected_mean": 0.39513301849365234,
+    "injected_min": 0.21665573120117188,
+    "max_tilt_deg": 20.81351382722482
+   },
+   "cruise_ctl": {
+    "level_mean": 0.5072484016418457,
+    "level_min": 0.3643379211425781,
+    "injected_mean": 0.5072484016418457,
+    "injected_min": 0.3643379211425781,
+    "max_tilt_deg": 0.0
+   }
+  },
+  "sheets": {
+   "turn_10_fixed": "results/anwm_injected/stage0/priors_turn_10_fixed.png",
+   "turn_20_fixed": "results/anwm_injected/stage0/priors_turn_20_fixed.png",
+   "slalom_10_fixed": "results/anwm_injected/stage0/priors_slalom_10_fixed.png",
+   "accel_10": "results/anwm_injected/stage0/priors_accel_10.png",
+   "accel_20": "results/anwm_injected/stage0/priors_accel_20.png",
+   "climb_20_fixed": "results/anwm_injected/stage0/priors_climb_20_fixed.png",
+   "cruise_ctl": "results/anwm_injected/stage0/priors_cruise_ctl.png"
+  }
+ }
+}

@@ -380,11 +380,15 @@ def validate_native(names="", sampling_steps: int = 250, lpips_net: str = "alex"
 @app.function(gpu="A10G", timeout=10 * 3600, volumes={"/w": vol_weights, "/hf": vol_hf,
                                                     "/n": vol_native, "/r": vol_results},
               env={"HF_HOME": "/hf"})
-def generate(specs_json: str, sampling_steps: int = 250, sync_r2_prefix: str | None = None) -> dict:
+def generate(specs_json, sampling_steps: int = 250, out_root: str = "/r/clips",
+             force: bool = False, save_priors: bool = False) -> dict:
     """Roll out the released model from native start states along commanded paths.
 
     Each spec: {id, regime, positions (17,3), yaw (17,), start_traj, start_time, seed,
-    designed_tilt_deg, meta}. Frames go to /r/clips/<regime>/<id>/frames/ + manifest.json.
+    designed_tilt_deg, meta} and optionally {arm, thrust (17,3), roll_deg (17,), pitch_deg (17,),
+    paired_level_id, convention}. Without `thrust` the target poses are level (the original arm);
+    with it, the target poses carry the injected attitude for FFP. Frames go to
+    `<out_root>/<regime>/<id>/frames/`; priors to `.../priors/` when `save_priors`.
     """
     import pickle
 
@@ -401,8 +405,10 @@ def generate(specs_json: str, sampling_steps: int = 250, sync_r2_prefix: str | N
     cache = {}
     out = {}
 
+    slim_sha = json.load(open("/w/slim/manifest.json"))["slim_sha256"]
     for sp in specs:
-        if os.path.exists(f"/r/clips/{sp['regime']}/{sp['id']}/manifest.json"):
+        folder = f"{out_root}/{sp['regime']}/{sp['id']}"
+        if not force and os.path.exists(f"{folder}/manifest.json"):
             print("skip (already done)", sp["id"])
             continue
         name, ct = sp["start_traj"], int(sp["start_time"])
@@ -418,7 +424,14 @@ def generate(specs_json: str, sampling_steps: int = 250, sync_r2_prefix: str | N
         yaw = np.asarray(sp["yaw"], float)
         n = len(pos)
         ctx_times = list(range(ct - CTX + 1, ct + 1))
-        target_poses = _pose_from_position_yaw(pos[1:n], yaw[1:n], R_ec)
+        if sp.get("thrust") is not None:
+            import sys as _sys
+            _sys.path.insert(0, "/app")
+            from src.generation.attitude import pose_with_attitude
+            target_poses = pose_with_attitude(pos[1:n], yaw[1:n],
+                                              np.asarray(sp["thrust"], float)[1:n], R_ec)
+        else:
+            target_poses = _pose_from_position_yaw(pos[1:n], yaw[1:n], R_ec)
         obs, sup = _context_inputs(ds, traj, ctx_times, target_poses)
 
         # actions along the commanded path, straight through ANWM's own construction
@@ -438,8 +451,12 @@ def generate(specs_json: str, sampling_steps: int = 250, sync_r2_prefix: str | N
                 device=device, num_cond=CTX, num_goals=1, x_supervised=sup[:, i:i + 1].to(device))
             curr = torch.cat((curr, x_pred.unsqueeze(1)), dim=1)[:, 1:]
             preds.append(((x_pred.clamp(-1, 1) + 1) / 2 * 255).byte().cpu())
-        folder = f"/r/clips/{sp['regime']}/{sp['id']}"
         os.makedirs(f"{folder}/frames", exist_ok=True)
+        if save_priors:
+            os.makedirs(f"{folder}/priors", exist_ok=True)
+            for k in range(sup.shape[1]):
+                pr = ((sup[0, k].float().clamp(-1, 1) + 1) / 2 * 255).byte()
+                Image.fromarray(pr.permute(1, 2, 0).numpy()).save(f"{folder}/priors/{k:02d}.png")
         for i, t in enumerate(preds):
             Image.fromarray(t[0].permute(1, 2, 0).numpy()).save(f"{folder}/frames/{i:02d}.png")
         if sp["regime"] == "A":  # ground-truth frames are only meaningful for native commands
@@ -454,7 +471,12 @@ def generate(specs_json: str, sampling_steps: int = 250, sync_r2_prefix: str | N
                               "step_spacing_m": float(np.mean(np.linalg.norm(np.diff(pos, axis=0), axis=1)))},
             "designed_required_tilt_deg": sp.get("designed_tilt_deg"),
             "seed": int(sp.get("seed", 0)), "sampling_steps": sampling_steps,
-            "slim_checkpoint_sha256": json.load(open("/w/slim/manifest.json"))["slim_sha256"],
+            "slim_checkpoint_sha256": slim_sha,
+            "arm": sp.get("arm", "level"),
+            "injected_roll_deg": sp.get("roll_deg"),
+            "injected_pitch_deg": sp.get("pitch_deg"),
+            "convention": sp.get("convention"),
+            "paired_level_id": sp.get("paired_level_id"),
             "code_commit": sp.get("code_commit"),
             "camera_axis_change_spread": spread, "meta": sp.get("meta", {}),
             "frames": len(preds),
@@ -670,3 +692,41 @@ def measure_starts(min_coverage: float = 0.02) -> dict:
     n = sum(r["usable"] for v in out.values() for r in v["candidates"])
     print("usable starts:", n, "of", sum(len(v["candidates"]) for v in out.values()))
     return out
+
+
+@app.local_entrypoint()
+def run_regen(specs_path: str = "results/anwm_clips/specs.json", ids: str = "",
+              out_root: str = "/r/regen_stage0"):
+    """Regenerate the named C clips unchanged (determinism check for Stage 0)."""
+    import subprocess
+
+    commit = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True,
+                            text=True).stdout.strip()
+    want = [s for s in ids.split(",") if s]
+    specs = [s for s in json.load(open(specs_path)) if s["id"] in want]
+    for s in specs:
+        s["code_commit"] = commit
+    print(f"regenerating {len(specs)} clips: {[s['id'] for s in specs]}")
+    out = generate.remote(json.dumps(specs), out_root=out_root, force=True)
+    print(json.dumps(out, indent=1)[:2000])
+
+
+@app.local_entrypoint()
+def run_injected(specs_path: str = "results/anwm_clips_injected/specs.json",
+                 arm: str = "injected_true", limit: int = 0):
+    """Stage 1/2: generate the injected-attitude arm, saving the FFP priors."""
+    import subprocess
+
+    commit = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True,
+                            text=True).stdout.strip()
+    specs = [s for s in json.load(open(specs_path)) if s.get("arm", arm) == arm]
+    for s in specs:
+        s["code_commit"] = commit
+    if limit:
+        specs = specs[:limit]
+    hours = len(specs) * 251 / 3600
+    print(f"{len(specs)} {arm} clips, ~{hours:.2f} GPU-hours, ~US${hours * 1.10:.2f} at the "
+          f"verified A10G rate")
+    out = generate.remote(json.dumps(specs), out_root=f"/r/clips_injected/{arm}",
+                          save_priors=True)
+    print(json.dumps(out, indent=1)[:4000])
