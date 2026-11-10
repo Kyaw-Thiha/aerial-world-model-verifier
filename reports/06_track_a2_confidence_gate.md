@@ -171,3 +171,36 @@ on that flight looks unreliable, because it is.
 - S3 is a mean over an image of a per-pixel confidence map; its threshold is therefore tied
   to the image size (224 px for generated clips, 640×480 for TII). The transfer check is the
   only evidence that the same tau is meaningful in both.
+
+### Selection effect (six candidates, eight positives)
+
+The chosen signal was the best of six, four of which were eligible. That search inflates the
+winner, so it is tested by permuting the labels within each flight (which preserves the number
+of positives per flight) and recomputing the **maximum** AUROC over the four eligible signals,
+2000 times:
+
+| quantity | value |
+| --- | --- |
+| observed best (S3) | 0.946 |
+| null distribution of the best-of-four, median | 0.822 |
+| null, 95th percentile | 0.874 |
+| max-statistic p-value | **< 0.0005** |
+
+The null is high because positives cluster in three flights, so any flight-correlated signal
+scores well; even against that null the gate's ranking is not a selection artifact.
+
+### False drops per held-out flight (good clips dropped)
+
+| flight | good clips dropped | bad clips dropped | n | coverage |
+| --- | --- | --- | --- | --- |
+| 01a-ellipse | 0 | 0 | 5 | 1.00 |
+| 01p-ellipse | 0 | 0 | 26 | 1.00 |
+| 04a-ellipse | 1 | 0 | 7 | 0.86 |
+| 07a-lemniscate | **6** | 1 | 7 | 0.00 |
+| 07p-lemniscate | 1 | 0 | 26 | 0.96 |
+| 13a-trackRATM | 0 | 3 | 11 | 0.73 |
+| 13p-trackRATM | **9** | 1 | 11 | 0.09 |
+| 16p-trackRATM | **5** | 1 | 7 | 0.14 |
+
+22 good clips of 92 are dropped in total, 20 of them on the three trackRATM flights: the gate
+pays for its 100 % bad-clip recall with flight-level collateral.

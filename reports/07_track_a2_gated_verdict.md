@@ -199,3 +199,22 @@ is revisited, this is the change to propose — and it would need its own pre-re
   member. Both are reported because the difference is 0.05 at `k_d` = 0.295.
 - Amendment 4: the gate rows differ from Gate 3's by the estimator's run-to-run noise; the
   measured effect on the baseline is one clip.
+
+### Rejection on pairs where both clips pass the gate
+
+The per-family numbers above require both clips to be *testable*, which includes the
+excitation rule. Isolating the gate, on pairs where the real and the edited clip both pass the
+gate (threshold 6.46° applied to both):
+
+| family | `k_d` 0.295 | `k_d` 0.15 | `k_d` 0 |
+| --- | --- | --- | --- |
+| tilt ×0 | 0.90 (n=10, AUROC 0.99) | 0.90 (10, 0.95) | 0.90 (10, 0.92) |
+| tilt ×0.5 | 0.32 (38, 0.90) | 0.45 (38, 0.88) | 0.76 (38, 0.85) |
+| tilt ×1.5 | 0.12 (58, 0.87) | 0.52 (58, 0.91) | 0.79 (58, 0.85) |
+| mirrored roll | 0.96 (54, 0.99) | 0.96 (54, 0.99) | 0.98 (54, 0.99) |
+| yaw control | 0.05 (55, 0.66) | 0.07 (55, 0.56) | 0.42 (55, 0.61) |
+
+The comparison set is 3–7× larger than the testable-only one, and the ranking is unchanged
+(0.85–0.99). Rejection at a fixed 6.46° cut rises with the drag-free setting because the
+scores themselves rise, so the three columns are not operating points of a common threshold —
+each `k_d` has its own conformal threshold (6.46 / 8.40 / 12.95).
