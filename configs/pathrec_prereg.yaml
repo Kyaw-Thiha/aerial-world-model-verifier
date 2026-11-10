@@ -1,0 +1,124 @@
+# Track C pre-registration: path-from-pixels bake-off
+# Committed BEFORE any extractor is scored. Any edit after scoring invalidates the run.
+# Scored by experiments/pathrec_bakeoff.py, which refuses to run on an uncommitted change.
+
+version: 1
+written: 2026-11-10
+track: C
+
+question: >
+  On data where the true path is known, can a pixel-only extractor recover the horizontal
+  acceleration well enough to feed the lean verifier (direction, magnitude, and an honest
+  abstention signal)?
+
+# --------------------------------------------------------------------------- testbeds
+testbeds:
+  T1_uzh:
+    role: primary
+    why: >
+      Real drone racing with Leica laser-tracker ground truth and a proper Kannala-Brandt
+      calibration shipped separately (indoor_forward_calib_snapdragon.zip). Blackbird was the
+      designated T1 in the handoff but its download host no longer resolves (issues #28/#31/
+      #32/#34 in mit-aera/Blackbird-Dataset are open "download dead"); UZH-FPV replaces it
+      and has the property the test exists to isolate: trustworthy intrinsics.
+    sequences:                # (published vmax m/s), stride 2 from 30 Hz = 15 Hz frames
+      indoor_forward_5: 4.87
+      indoor_forward_3: 9.5
+      indoor_45_9: 11.23
+      indoor_forward_6: 12.52
+      outdoor_forward_5: 20.73
+    split:
+      fit: [indoor_forward_5, indoor_forward_3]
+      eval: [indoor_45_9, indoor_forward_6, outdoor_forward_5]
+    frames_per_clip: 150
+    frame_stride: 2        # 30 Hz -> 15 Hz, so a 0.5 s differentiation window is 7 samples
+    preprocessing: >
+      cv2.fisheye KB4 -> pinhole at the same focal (640x480); frames restricted to the
+      interval covered by the Leica truth (no extrapolation).
+
+  T2_tii:
+    role: secondary (asymmetric, reported separately)
+    why: >
+      The project's own real flights: mocap truth at 274.73 Hz, 120 Hz camera, no
+      trustworthy intrinsics (released calibration is a pinhole fit of a 175 deg fisheye).
+    flights: [flight-01a-ellipse, flight-01p-ellipse, flight-04a-ellipse, flight-07a-lemniscate,
+              flight-07p-lemniscate, flight-13a-trackRATM, flight-13p-trackRATM, flight-16p-trackRATM]
+    crop: central pinhole-like window, fov 100 deg, 320x240 (Track A's virtual camera)
+    intrinsics: estimated by the extractor's own calibration path; the released TII
+                calibration is not used
+    bins: [autonomous, piloted]
+
+  T3_anwm:
+    role: attribution (not a model-quality measurement)
+    clips: regime A, 82 clips, 16 frames, 224x224, declared 1.5 fps (one frame per action)
+    runs: [generated frames, same-start ground-truth frames]
+    claim_limit: >
+      The commanded path is an input command, not what the model depicted. The difference
+      between the two runs is the model's action-following error; nothing about generated
+      video beyond that is claimed.
+
+# --------------------------------------------------------------------------- extractors
+extractors:
+  dpvo:   {variant: princeton-vl/DPVO @ 0ac95b6, licence: MIT, metric_scale: no, streaming: true}
+  da3:    {variant: depth-anything/DA3-LARGE-1.1, licence: CC BY-NC 4.0, metric_scale: no, streaming: false}
+  vggt:   {variant: facebook/VGGT-1B, licence: CC BY-NC 4.0, metric_scale: no, streaming: false}
+  pi3:    {variant: yyfz233/Pi3, licence: BSD-2-Clause, metric_scale: no, streaming: false}
+  metrictrail: {variant: nvidia/MetricTrail weights + nv-tlabs/vipe, licence: NVIDIA non-commercial,
+                metric_scale: yes, streaming: true, status: build not yet validated in this track}
+scale_providers: [moge-2-vitl, da3metric-large]   # only where Gate 1 passes at least partly
+
+# --------------------------------------------------------------------------- procedures
+alignment:
+  primary: sim3            # Umeyama 7-DoF, for shape and direction
+  required_secondary: se3  # Umeyama 6-DoF, scale 1; never report sim3 alone
+  gravity: >
+    up axis = the world axis with the smallest positional extent, requiring the next axis to
+    be at least 2x larger; if that margin is not met the clip's tilt numbers are marked
+    unreliable and only the scale-free metrics are read.
+
+differentiation:
+  video_window_s: 0.5      # 15 samples at 30 Hz; 2x the 0.25 s used by the truth kinematics
+  anwm_window_steps: 5     # 16-frame clips: 5 steps at the declared 1.5 fps
+  polyorder: 3
+  k_d: 0.295               # Phase 0 value, fixed, not fitted
+
+metrics_per_clip:
+  - ate_sim3_m, scale_sim3, ate_se3_m, path_len_ratio_se3
+  - step_dir_err_deg_median
+  - accel_dir_err_deg_median, accel_mag_ratio, lean_corr_x/y, lean_r2
+  - tilt_err_deg_median (drag-free), tilt_err_deg_median_drag
+  - rel_rot_err_deg_median
+  - testable_fraction (true required tilt >= 10 deg)
+  - reliability features (parallax, jitter, rotation rate, cross-extractor agreement)
+
+# --------------------------------------------------------------------------- gates
+gate1_pass_criteria:
+  scope: clips whose true required tilt is >= 10 deg on at least 20% of samples
+  acceleration_direction:
+    statistic: median accel_dir_err_deg over testable samples
+    threshold_deg: 30
+  acceleration_magnitude:
+    statistic: accel_mag_ratio after the depth-prior scale
+    interval: [0.7, 1.4]
+  coverage:
+    statistic: fraction of clips meeting both criteria
+    threshold: 0.5
+  rotation_sanity:
+    statistic: median relative-rotation error per frame
+    threshold_deg: 5
+    role: sanity check only; rotation is expected to pass
+
+abstention:
+  declared_before_scoring: true
+  rules:
+    - reject a clip whose up-axis margin is < 2.0 (tilt undefined)
+    - reject a clip whose testable_fraction < 0.2
+    - reject a clip whose jitter_ratio exceeds the value that keeps 90% of the fit-split clips
+    - reject a clip whose cross-extractor step-direction disagreement exceeds 60 deg
+  claim_rule: >
+    A clip may be called inconsistent only if NO scale inside the depth-prior interval makes
+    depicted and implied tilt agree. Anything else is "not testable".
+
+no_tuning: >
+  Thresholds, windows, splits and criteria above are frozen at commit. Results are reported
+  for every extractor and testbed regardless of outcome; failure is reported as failure.
