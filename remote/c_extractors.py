@@ -61,6 +61,9 @@ image = (
 )
 
 
+_MODEL_CACHE: dict = {}
+
+
 def _infer(model: str, frames, res: int = 0):
     """Run one extractor on RGB uint8 frames; return (c2w [N,4,4], extra, wall_seconds)."""
     import os
@@ -78,7 +81,10 @@ def _infer(model: str, frames, res: int = 0):
     if model == "da3":
         sys.path.insert(0, f"{DA3_ROOT}/src")
         from depth_anything_3.api import DepthAnything3
-        net = DepthAnything3.from_pretrained("depth-anything/DA3-LARGE-1.1").to("cuda").eval()
+        net = _MODEL_CACHE.get(model)
+        if net is None:
+            net = DepthAnything3.from_pretrained("depth-anything/DA3-LARGE-1.1").to("cuda").eval()
+            _MODEL_CACHE[model] = net
         kw = {"process_res": res} if res else {}
         with torch.no_grad():
             pred = net.inference(frames, **kw)
@@ -105,7 +111,10 @@ def _infer(model: str, frames, res: int = 0):
             Image.fromarray(f).save(p)
             paths.append(p)
         imgs = load_and_preprocess_images(paths).to("cuda")
-        net = VGGT.from_pretrained("facebook/VGGT-1B").to("cuda").eval()
+        net = _MODEL_CACHE.get(model)
+        if net is None:
+            net = VGGT.from_pretrained("facebook/VGGT-1B").to("cuda").eval()
+            _MODEL_CACHE[model] = net
         t0 = time.time()
         with torch.no_grad(), torch.cuda.amp.autocast(dtype=torch.bfloat16):
             tokens, ps_idx = net.aggregator(imgs[None])
@@ -132,7 +141,10 @@ def _infer(model: str, frames, res: int = 0):
             imgs = torch.nn.functional.interpolate(imgs, size=(res, res), mode="bilinear",
                                                    align_corners=False)
         imgs = imgs.to("cuda")
-        net = Pi3.from_pretrained("yyfz233/Pi3").to("cuda").eval()
+        net = _MODEL_CACHE.get(model)
+        if net is None:
+            net = Pi3.from_pretrained("yyfz233/Pi3").to("cuda").eval()
+            _MODEL_CACHE[model] = net
         t0 = time.time()
         with torch.no_grad(), torch.amp.autocast("cuda", dtype=torch.bfloat16):
             out = net(imgs[None])
@@ -279,6 +291,70 @@ def run_uzh(model: str, seq: str, max_frames: int = 150, res: int = 0) -> str:
 
 @app.function(image=image, gpu="A10G", volumes={A_DATA: data_vol, C_DATA: c_vol, MODELS: model_vol},
               timeout=3600, cpu=4)
+def run_anwm(model: str, regimes: str = "A", max_clips: int = 0) -> str:
+    """T3 attribution: extractor on generated frames vs on the same-start ground-truth frames.
+
+    Both are scored against the *commanded* path (16 steps at 1 s/step). The difference
+    between the two runs is the model's contribution; neither run says anything about the
+    physical possibility of the generated flight on its own.
+    """
+    import json as _json
+    import traceback
+    from pathlib import Path as P
+
+    import cv2
+    import numpy as np
+    import torch
+
+    from src.pathrec.evaluate import score_clip
+
+    root = P(A_DATA) / "anwm_clips"
+    want = {r.strip() for r in regimes.split(",") if r.strip()}
+    clips = []
+    for man in sorted(root.rglob("manifest.json")):
+        meta = _json.loads(man.read_text())
+        if want and meta.get("regime") not in want:
+            continue
+        clips.append((man.parent, meta))
+    if max_clips:
+        clips = clips[:max_clips]
+
+    out = []
+    for d, meta in clips:
+        rec = {"model": model, "clip": str(d.relative_to(root)), "regime": meta.get("regime")}
+        try:
+            frames = [cv2.cvtColor(cv2.imread(str(p)), cv2.COLOR_BGR2RGB)
+                      for p in sorted((d / "frames").glob("*.png"))]
+            cmd = np.asarray(meta["commanded_path"]["positions"], dtype=np.float64)
+            n = len(frames)
+            truth = cmd[1:n + 1] if len(cmd) == n + 1 else cmd[:n]
+            c2w, extra, wall = _infer(model, frames, 0)
+            m = min(len(c2w), len(truth))
+            rec["generated"] = score_clip(c2w[:m, :3, 3], truth[:m], dt=1.0, window_s=5.0)
+            rec["generated"]["wall_s"] = wall
+            rec["generated"]["steps_m"] = float(np.median(
+                np.linalg.norm(np.diff(truth[:m], axis=0), axis=1)))
+            gt_dir = d / "gt"
+            if gt_dir.is_dir():
+                gt = [cv2.cvtColor(cv2.imread(str(p)), cv2.COLOR_BGR2RGB)
+                      for p in sorted(gt_dir.glob("*.png"))]
+                if gt:
+                    c2g, _, wall_g = _infer(model, gt, 0)
+                    mg = min(len(c2g), len(truth))
+                    rec["gt"] = score_clip(c2g[:mg, :3, 3], truth[:mg], dt=1.0, window_s=5.0)
+                    rec["gt"]["wall_s"] = wall_g
+                    rec["delta_dir_deg"] = (rec["generated"]["accel_dir_err_deg_median"]
+                                            - rec["gt"]["accel_dir_err_deg_median"])
+        except Exception as exc:
+            rec["error"] = f"{type(exc).__name__}: {exc}"
+            rec["traceback"] = traceback.format_exc()[-800:]
+        out.append(rec)
+    print(_json.dumps({"n": len(out)}, indent=1), flush=True)
+    return _json.dumps(out)
+
+
+@app.function(image=image, gpu="A10G", volumes={A_DATA: data_vol, C_DATA: c_vol, MODELS: model_vol},
+              timeout=3600, cpu=4)
 def run_tii(model: str, flight: str, max_frames: int = 100, stride: int = 10) -> str:
     """Run one extractor on one TII flight and score it against mocap truth.
 
@@ -345,8 +421,28 @@ def sweep(model: str, seqs: list[str], max_frames: int = 150) -> str:
 @app.local_entrypoint()
 def main(model: str = "all", source: str = "anwm", n_frames: int = 16, stride: int = 10,
          res: int = 0, uzh: bool = False, seq: str = "", max_frames: int = 150,
-         sweep_seqs: str = "", tii: bool = False, flights: str = "") -> None:
+         sweep_seqs: str = "", tii: bool = False, flights: str = "",
+         anwm: bool = False, regimes: str = "A", max_clips: int = 0,
+         out_json: str = "") -> None:
     models = ["da3", "vggt", "pi3"] if model == "all" else [m for m in model.split(",") if m]
+    if anwm:
+        for m in models:
+            rows = json.loads(run_anwm.remote(m, regimes, max_clips))
+            if out_json:
+                import os
+                p = f"{out_json.rstrip('/')}_{m}.json"
+                os.makedirs(os.path.dirname(p) or ".", exist_ok=True)
+                open(p, "w").write(json.dumps(rows))
+            for r in rows:
+                if "error" in r:
+                    print(f"== {m}/{r['clip']}: ERROR {r['error']}", flush=True)
+                    continue
+                g, q = r.get("generated") or {}, r.get("gt") or {}
+                print(f"== {m}/{r['clip']}: gen dir={g.get('accel_dir_err_deg_median')} "
+                      f"ratio={g.get('accel_mag_ratio')} cov={g.get('coverage_fraction')} "
+                      f"| gt dir={q.get('accel_dir_err_deg_median')} "
+                      f"ratio={q.get('accel_mag_ratio')}", flush=True)
+        return
     if tii:
         fl = [f for f in flights.split(",") if f] or [
             "flight-01a-ellipse", "flight-01p-ellipse", "flight-04a-ellipse",

@@ -32,6 +32,11 @@ SEQUENCES = {
     "indoor_forward_5": ("indoor_forward_5_snapdragon_with_gt", 4.87, True),
     "indoor_45_9": ("indoor_45_9_snapdragon_with_gt", 11.23, True),
     "outdoor_forward_5": ("outdoor_forward_5_snapdragon_with_gt", 20.73, True),
+    "indoor_forward_7": ("indoor_forward_7_snapdragon_with_gt", 12.78, True),
+    "indoor_forward_9": ("indoor_forward_9_snapdragon_with_gt", 11.42, True),
+    "indoor_forward_10": ("indoor_forward_10_snapdragon_with_gt", 9.49, True),
+    "outdoor_forward_1": ("outdoor_forward_1_snapdragon_with_gt", 8.55, True),
+    "outdoor_forward_3": ("outdoor_forward_3_snapdragon_with_gt", 14.04, True),
 }
 
 image = (
