@@ -247,5 +247,10 @@
    "climb_20_fixed": "results/anwm_injected/stage0/priors_climb_20_fixed.png",
    "cruise_ctl": "results/anwm_injected/stage0/priors_cruise_ctl.png"
   }
+ },
+ "roll_to_image_rotation": {
+  "5": -5.0,
+  "-5": 5.0,
+  "20": -20.0
  }
 }
