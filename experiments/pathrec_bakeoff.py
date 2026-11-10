@@ -57,7 +57,8 @@ def parse_text_line(line: str) -> dict | None:
              "accel_mag_ratio": fields.get("ratio"),
              "lean_r2": fields.get("r2"),
              "coverage_fraction": fields.get("cov"),
-             "rel_rot_err_deg_median": fields.get("rot")}
+             "rel_rot_err_deg_median": fields.get("rot"),
+             "ate_sim3_m": fields.get("ate_sim3")}
     testbed = "TII" if seq.startswith("flight-") else ("ANWM" if seq.count("/") else "UZH")
     return {"model": model, "seq": seq, "testbed": testbed, "error": fields.get("err"),
             "score": {k: v for k, v in score.items() if isinstance(v, float)}}
@@ -116,9 +117,14 @@ def gate1(rows: list[dict], crit: dict) -> dict:
             "coverage_pass": float(np.mean(per_clip_pass)),
             "pass": bool(np.mean(per_clip_pass) >= cov_min),
             "per_clip": [
-                {"seq": r.get("seq"), "dir": d, "ratio": q, "coverage": t, "pass": p}
+                {"seq": r.get("seq"), "split": r.get("split"), "dir": d, "ratio": q,
+                 "coverage": t, "pass": p}
                 for r, d, q, t, p in zip(recs, dirs, ratios, tests, per_clip_pass)
             ],
+            "pass_by_split": {
+                sp: [bool(x) for x, rr in zip(per_clip_pass, recs) if rr.get("split") == sp]
+                for sp in ("fit", "eval", "other")
+            },
         }
     return out
 
@@ -128,11 +134,23 @@ def main() -> int:
     ap.add_argument("--inputs", default="results/pathrec_bakeoff/raw")
     ap.add_argument("--out", default="results/pathrec_bakeoff/v1")
     ap.add_argument("--prereg", default=str(PREREG))
+    ap.add_argument("--split-config", default="configs/pathrec_prereg_v2.yaml")
     args = ap.parse_args()
 
     status = prereg_status(Path(args.prereg))
     crit = yaml.safe_load(Path(args.prereg).read_text())["gate1_pass_criteria"]
     rows = load_records(Path(args.inputs))
+    split = {}
+    try:
+        cfg2 = yaml.safe_load(Path(args.split_config).read_text())
+        for s_ in cfg2["split"]["fit"]:
+            split[s_] = "fit"
+        for s_ in cfg2["split"]["eval"]:
+            split[s_] = "eval"
+    except Exception:
+        pass
+    for r in rows:
+        r["split"] = split.get(r.get("seq"), "other")
     table = gate1(rows, crit)
 
     out = Path(args.out)
@@ -145,6 +163,9 @@ def main() -> int:
     print(f"{'model':8s} {'clips':>5s} {'dir_deg':>8s} {'ratio':>6s} {'cov':>5s} "
           f"{'simp3_m':>8s} {'se3_m':>7s} {'rot_deg':>8s} {'pass':>5s}")
     for model, t in table.items():
+        if t.get("pass_by_split"):
+            t["rate_by_split"] = {k: (float(np.mean(v)) if v else None)
+                                  for k, v in t["pass_by_split"].items()}
         print(f"{model:8s} {t['n_clips']:5d} {t.get('median_dir_err_deg', float('nan')):8.1f} "
               f"{t.get('median_mag_ratio', float('nan')):6.2f} "
               f"{t.get('median_coverage', float('nan')):5.2f} "

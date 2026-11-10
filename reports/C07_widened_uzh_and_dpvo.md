@@ -51,6 +51,30 @@ outdoor_forward_5`. Every clip: 150 frames, **15.1 Hz** (stride 2 of the 30 Hz c
 **All ten pass the pre-registered criteria.** The two failures of three feed-forward models
 become two passes here, at 13 deg and 11 deg.
 
+## Per-sequence characteristics (required context for every number)
+
+Stride 2 of the 30 Hz camera = **15.1 Hz** for every clip; 150 frames = 10 s.
+
+| sequence | published vmax (m/s) | measured vmed / vmax (m/s) | median truth body tilt from vertical (deg) | tilt ≥10 deg fraction |
+| --- | --- | --- | --- | --- |
+| indoor_forward_5 | 4.87 | 2.50 / 6.26 | 8.6 | 0.61 |
+| indoor_forward_10 | 9.49 | 3.73 / 8.94 | 15.8 | 0.71 |
+| indoor_forward_9 | 11.42 | 3.74 / 9.01 | 14.0 | 0.69 |
+| indoor_forward_3 | 9.5 | 5.17 / 13.38 | 25.4 | 0.80 |
+| indoor_forward_6 | 12.52 | 5.05 / 18.50 | 32.9 | 0.84 |
+| indoor_forward_7 | 12.78 | 4.62 / 17.06 | 36.0 | 0.86 |
+| outdoor_forward_1 | 8.55 | 2.65 / 11.97 | 14.2 | 0.66 |
+| outdoor_forward_3 | 14.04 | 4.74 / 12.36 | n/a | 0.70 |
+| outdoor_forward_5 | 20.73 | 7.52 / 20.94 | 25.6 | 0.95 |
+| indoor_45_9 (diagnostic only) | 11.23 | 6.13 / 11.55 | 27.1 | 0.90 |
+
+"Measured" speeds come from nearest-sample Leica truth at 15 Hz, so short peaks are not
+averaged out and can exceed the published vmax. "Body tilt" is the angle between the truth
+body z axis and world up, from the truth quaternions; UZH does not document whether those
+quaternions are body or camera, so treat the column as a banked-flight indicator rather than a
+mount angle. The camera mount is forward-facing for all `*_forward_*` sequences and 45-degree
+down for `indoor_45_9`.
+
 ## Results — the three feed-forward models on the widened set
 
 (filled from `results/pathrec_bakeoff/v2/summary.json` once the sweep completes)

@@ -240,7 +240,7 @@ def run_one(model: str, source: str, n_frames: int = 16, flight: str = "flight-0
 
 
 def _score_uzh(model: str, seq: str, max_frames: int = 150, res: int = 0,
-               commit: bool = True) -> dict:
+               commit: bool = False) -> dict:
     """Run one extractor on a prepared UZH clip and score it against Leica truth."""
     import traceback
     from pathlib import Path
@@ -277,8 +277,8 @@ def _score_uzh(model: str, seq: str, max_frames: int = 150, res: int = 0,
                     **extra})
         out = Path(C_DATA) / "poses" / model / f"{seq}.npz"
         out.parent.mkdir(parents=True, exist_ok=True)
-        np.savez_compressed(out, c2w=c2w, t=truth["t"][:n])
         if commit:
+            np.savez_compressed(out, c2w=c2w, t=truth["t"][:n])
             c_vol.commit()
     except torch.cuda.OutOfMemoryError:
         rec["error"] = "cuda_oom"
