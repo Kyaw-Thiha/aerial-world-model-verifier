@@ -14,6 +14,10 @@ But the sample that can carry the claim is small: at ANWM's 1 s-per-step time ba
 all. On those 6, the extractor alone passes the pre-registered criteria on 4, and on the
 generated frames it passes **0**.
 
+Regimes B and C add 57 generated clips, of which only 6 are testable (the designed 20-degree
+turns). There the generated frames do pass sometimes — Pi3 4/6, VGGT 3/6 — so "generated
+footage cannot be tracked" is too strong: flat turns track, climbing turns mostly do not.
+
 ## Setup
 
 - Clips: ANWM Regime A, 25 clips (`A/A00` … `A/A18` plus `_s1`/`_s2` variants), 16 generated
@@ -45,6 +49,26 @@ Per-clip attribution (the clips where the ground-truth run is best):
 | A/A07 | 5 | — | 14.7 / 131.2 |
 
 Median (generated − ground truth) direction gap: **43.7 deg (Pi3), 38.2 deg (VGGT)**.
+
+## Results — Regimes B and C (generated only; no ground-truth frames exist)
+
+57 clips, 8 in B and 49 in C. Median coverage is **0.00**: almost none of these clips move
+enough for the commanded path to require 10 deg of tilt on 20 % of samples, so the
+pre-registered testability rule abstains on 51 of 57. The 6 that survive are the designed
+20-degree turns:
+
+| clip | steps | Pi3 dir (deg) | VGGT dir (deg) | coverage |
+| --- | --- | --- | --- | --- |
+| C/C_turn_20_fixed_0 | 4.9 | **7.3** | 52.3 | 1.00 |
+| C/C_turn_20_fixed_1 | 4.9 | **10.2** | **16.7** | 1.00 |
+| C/C_turn_20_fixed_2 | 4.9 | **9.8** | **10.6** | 1.00 |
+| C/C_climb_turn_20_fixed_0 | 5.1 | 71.0 | 65.4 | 0.50 |
+| C/C_climb_turn_20_fixed_1 | 5.1 | 41.8 | 68.9 | 0.50 |
+| C/C_climb_turn_20_fixed_2 | 5.1 | **10.9** | **26.1** | 0.50 |
+
+So generated footage is not uniformly untrackable: on flat 20-degree turns Pi3 passes all
+three seeds and VGGT two of three, while the climbing turns fail for both at two seeds of
+three. With 6 clips and three seeds each this is a pattern to test, not a rate.
 
 ## What this supports
 
