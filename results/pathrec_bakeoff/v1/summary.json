@@ -1,0 +1,266 @@
+{
+ "prereg": {
+  "path": "configs/pathrec_prereg.yaml",
+  "tracked": true,
+  "modified": false,
+  "staged": false,
+  "git_diff_clean": true
+ },
+ "criteria": {
+  "scope": "clips whose true required tilt is >= 10 deg on at least 20% of samples",
+  "acceleration_direction": {
+   "statistic": "median accel_dir_err_deg over testable samples",
+   "threshold_deg": 30
+  },
+  "acceleration_magnitude": {
+   "statistic": "accel_mag_ratio after the depth-prior scale",
+   "interval": [
+    0.7,
+    1.4
+   ]
+  },
+  "coverage": {
+   "statistic": "fraction of clips meeting both criteria",
+   "threshold": 0.5
+  },
+  "rotation_sanity": {
+   "statistic": "median relative-rotation error per frame",
+   "threshold_deg": 5,
+   "role": "sanity check only; rotation is expected to pass"
+  }
+ },
+ "table": {
+  "da3/TII": {
+   "n_clips": 4,
+   "median_dir_err_deg": 85.63572486768032,
+   "median_mag_ratio": 47.49023966688545,
+   "median_coverage": 0.5,
+   "median_ate_sim3_m": NaN,
+   "median_ate_se3_m": NaN,
+   "median_scale_sim3": NaN,
+   "median_rel_rot_err_deg": NaN,
+   "coverage_pass": 0.0,
+   "pass": false,
+   "per_clip": [
+    {
+     "seq": "flight-01a-ellipse",
+     "dir": 87.34055445899995,
+     "ratio": 171.99452300034073,
+     "coverage": 0.3904109589041096,
+     "pass": false
+    },
+    {
+     "seq": "flight-01p-ellipse",
+     "dir": 80.43442167282645,
+     "ratio": 15.59329701505249,
+     "coverage": 0.6917808219178082,
+     "pass": false
+    },
+    {
+     "seq": "flight-04a-ellipse",
+     "dir": 98.56973819251147,
+     "ratio": 79.38718231871842,
+     "coverage": 0.3082191780821918,
+     "pass": false
+    },
+    {
+     "seq": "flight-07p-lemniscate",
+     "dir": 83.9308952763607,
+     "ratio": 8.07576157122537,
+     "coverage": 0.6095890410958904,
+     "pass": false
+    }
+   ]
+  },
+  "da3/UZH": {
+   "n_clips": 5,
+   "median_dir_err_deg": 31.486257745096214,
+   "median_mag_ratio": 1.515775647321152,
+   "median_coverage": 0.8402777777777778,
+   "median_ate_sim3_m": NaN,
+   "median_ate_se3_m": NaN,
+   "median_scale_sim3": NaN,
+   "median_rel_rot_err_deg": 3.883176278884975,
+   "coverage_pass": 0.2,
+   "pass": false,
+   "per_clip": [
+    {
+     "seq": "indoor_forward_3",
+     "dir": 31.486257745096214,
+     "ratio": 1.515775647321152,
+     "coverage": 0.7638888888888888,
+     "pass": false
+    },
+    {
+     "seq": "indoor_forward_6",
+     "dir": 22.55691600081189,
+     "ratio": 1.5127667071645226,
+     "coverage": 0.8472222222222222,
+     "pass": false
+    },
+    {
+     "seq": "indoor_forward_5",
+     "dir": 28.680303181099433,
+     "ratio": 1.26932322892986,
+     "coverage": 0.5347222222222222,
+     "pass": true
+    },
+    {
+     "seq": "indoor_45_9",
+     "dir": 82.62220318662825,
+     "ratio": 5.9313557018332315,
+     "coverage": 0.8958333333333334,
+     "pass": false
+    },
+    {
+     "seq": "outdoor_forward_5",
+     "dir": 58.455221398903184,
+     "ratio": 4.716581142133114,
+     "coverage": 0.8402777777777778,
+     "pass": false
+    }
+   ]
+  },
+  "pi3/UZH": {
+   "n_clips": 5,
+   "median_dir_err_deg": 22.336328489628706,
+   "median_mag_ratio": 1.2343249028844097,
+   "median_coverage": 0.8402777777777778,
+   "median_ate_sim3_m": NaN,
+   "median_ate_se3_m": NaN,
+   "median_scale_sim3": NaN,
+   "median_rel_rot_err_deg": 3.896994991360695,
+   "coverage_pass": 0.6,
+   "pass": true,
+   "per_clip": [
+    {
+     "seq": "indoor_forward_3",
+     "dir": 22.336328489628706,
+     "ratio": 1.2317761633350157,
+     "coverage": 0.7638888888888888,
+     "pass": true
+    },
+    {
+     "seq": "indoor_forward_6",
+     "dir": 19.97409220703573,
+     "ratio": 1.2343249028844097,
+     "coverage": 0.8472222222222222,
+     "pass": true
+    },
+    {
+     "seq": "indoor_forward_5",
+     "dir": 12.524320759323597,
+     "ratio": 1.120615833015962,
+     "coverage": 0.5347222222222222,
+     "pass": true
+    },
+    {
+     "seq": "indoor_45_9",
+     "dir": 62.94958086717258,
+     "ratio": 6.409596761879777,
+     "coverage": 0.8958333333333334,
+     "pass": false
+    },
+    {
+     "seq": "outdoor_forward_5",
+     "dir": 61.96097394625926,
+     "ratio": 3.7603395925910355,
+     "coverage": 0.8402777777777778,
+     "pass": false
+    }
+   ]
+  },
+  "vggt/TII": {
+   "n_clips": 4,
+   "median_dir_err_deg": 85.14162262264634,
+   "median_mag_ratio": 4.601773847451861,
+   "median_coverage": 0.5,
+   "median_ate_sim3_m": NaN,
+   "median_ate_se3_m": NaN,
+   "median_scale_sim3": NaN,
+   "median_rel_rot_err_deg": NaN,
+   "coverage_pass": 0.0,
+   "pass": false,
+   "per_clip": [
+    {
+     "seq": "flight-01a-ellipse",
+     "dir": 74.41350954478487,
+     "ratio": 9.084476610085364,
+     "coverage": 0.3904109589041096,
+     "pass": false
+    },
+    {
+     "seq": "flight-01p-ellipse",
+     "dir": 95.86973570050782,
+     "ratio": 2.3900743305593037,
+     "coverage": 0.6917808219178082,
+     "pass": false
+    },
+    {
+     "seq": "flight-04a-ellipse",
+     "dir": 44.71425992850942,
+     "ratio": 6.813473364344418,
+     "coverage": 0.3082191780821918,
+     "pass": false
+    },
+    {
+     "seq": "flight-07p-lemniscate",
+     "dir": 96.23429741591235,
+     "ratio": 2.276811225858916,
+     "coverage": 0.6095890410958904,
+     "pass": false
+    }
+   ]
+  },
+  "vggt/UZH": {
+   "n_clips": 5,
+   "median_dir_err_deg": 28.42868865099313,
+   "median_mag_ratio": 1.6049012119025101,
+   "median_coverage": 0.8402777777777778,
+   "median_ate_sim3_m": NaN,
+   "median_ate_se3_m": NaN,
+   "median_scale_sim3": NaN,
+   "median_rel_rot_err_deg": 3.8147805488295763,
+   "coverage_pass": 0.4,
+   "pass": false,
+   "per_clip": [
+    {
+     "seq": "indoor_forward_3",
+     "dir": 23.32254464707512,
+     "ratio": 1.2803264919046558,
+     "coverage": 0.7638888888888888,
+     "pass": true
+    },
+    {
+     "seq": "indoor_forward_6",
+     "dir": 24.439441580332847,
+     "ratio": 1.2558531672733135,
+     "coverage": 0.8472222222222222,
+     "pass": true
+    },
+    {
+     "seq": "indoor_forward_5",
+     "dir": 28.42868865099313,
+     "ratio": 1.6049012119025101,
+     "coverage": 0.5347222222222222,
+     "pass": false
+    },
+    {
+     "seq": "indoor_45_9",
+     "dir": 77.62332324181176,
+     "ratio": 5.350112751349361,
+     "coverage": 0.8958333333333334,
+     "pass": false
+    },
+    {
+     "seq": "outdoor_forward_5",
+     "dir": 76.75291176773635,
+     "ratio": 3.973835170337935,
+     "coverage": 0.8402777777777778,
+     "pass": false
+    }
+   ]
+  }
+ },
+ "n_records": 23
+}
