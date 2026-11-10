@@ -95,8 +95,11 @@ def _infer(model: str, frames, res: int = 0):
         c2w[:, :3, :3] = np.transpose(ext[:, :3, :3], (0, 2, 1))
         c2w[:, :3, 3] = -np.einsum("nij,nj->ni", c2w[:, :3, :3], ext[:, :3, 3])
         depth = getattr(pred, "depth", None)
+        proc = getattr(pred, "processed_images", None)
         extra = {"intrinsics_first": np.asarray(pred.intrinsics)[0].tolist(),
                  "depth_median_first": float(np.median(np.asarray(depth[0]))) if depth is not None else None}
+        if proc is not None:
+            extra["image_hw_processed"] = list(np.asarray(proc).shape[1:3])
 
     elif model == "vggt":
         sys.path.insert(0, VGGT_ROOT)
@@ -290,6 +293,69 @@ def _score_uzh(model: str, seq: str, max_frames: int = 150, res: int = 0,
 
 @app.function(image=image, gpu="A10G", volumes={A_DATA: data_vol, C_DATA: c_vol, MODELS: model_vol},
               timeout=3600, cpu=4)
+def depth_prior(seq: str, max_frames: int = 150) -> str:
+    """Per-frame median metric depth from DA3METRIC-LARGE (for a depth-prior scale).
+
+    DA3's metric model returns focal * net_output / 300 metres (documented FAQ), so the
+    clip's calibrated focal converts it to metres.
+    """
+    import json as _json
+    import sys
+    from pathlib import Path as P
+
+    import cv2
+    import numpy as np
+    import torch
+
+    clip_dir = P(C_DATA) / "uzh" / seq
+    meta = _json.loads((clip_dir / "meta.json").read_text())
+    fx = float(meta["intrinsics"]["fx"])
+    frames = []
+    for p in sorted((clip_dir / "frames").glob("*.png"))[:max_frames]:
+        g = cv2.imread(str(p), cv2.IMREAD_GRAYSCALE)
+        frames.append(cv2.cvtColor(g, cv2.COLOR_GRAY2RGB))
+
+    sys.path.insert(0, f"{DA3_ROOT}/src")
+    from depth_anything_3.api import DepthAnything3
+    net = DepthAnything3.from_pretrained("depth-anything/DA3METRIC-LARGE").to("cuda").eval()
+    med = []
+    with torch.no_grad():
+        for i in range(0, len(frames), 50):
+            pred = net.inference(frames[i:i + 50])
+            d = np.asarray(pred.depth, dtype=np.float64) * fx / 300.0
+            for j in range(d.shape[0]):
+                med.append(float(np.median(d[j][np.isfinite(d[j])])))
+    out = {"seq": seq, "n": len(med), "fx": fx, "median_depth_m": med,
+           "model": "depth-anything/DA3METRIC-LARGE", "conversion": "focal * depth / 300"}
+    print(_json.dumps({k: v for k, v in out.items() if k != "median_depth_m"}), flush=True)
+    return _json.dumps(out)
+
+
+@app.function(image=image, gpu="A10G", volumes={A_DATA: data_vol, C_DATA: c_vol, MODELS: model_vol},
+              timeout=3600, cpu=4)
+def intrinsics_only(model: str, seq: str, max_frames: int = 150) -> str:
+    """Predict intrinsics on a prepared UZH clip (for feeding DPVO estimated K)."""
+    from pathlib import Path as P
+
+    import cv2
+    import json as _json
+
+    clip_dir = P(C_DATA) / "uzh" / seq
+    frames = []
+    for p in sorted((clip_dir / "frames").glob("*.png"))[:max_frames]:
+        g = cv2.imread(str(p), cv2.IMREAD_GRAYSCALE)
+        frames.append(cv2.cvtColor(g, cv2.COLOR_GRAY2RGB))
+    c2w, extra, wall = _infer(model, frames, 0)
+    K = extra.get("intrinsics_first")
+    hw = extra.get("image_hw_processed")
+    out = {"model": model, "seq": seq, "n_frames": len(frames), "K": K,
+           "proc_h": hw[0] if hw else None, "proc_w": hw[1] if hw else None, "wall_s": wall}
+    print(_json.dumps(out)[:600], flush=True)
+    return _json.dumps(out)
+
+
+@app.function(image=image, gpu="A10G", volumes={A_DATA: data_vol, C_DATA: c_vol, MODELS: model_vol},
+              timeout=3600, cpu=4)
 def run_uzh(model: str, seq: str, max_frames: int = 150, res: int = 0) -> str:
     rec = _score_uzh(model, seq, max_frames, res)
     print(json.dumps(rec, indent=1)[:2000], flush=True)
@@ -440,8 +506,30 @@ def main(model: str = "all", source: str = "anwm", n_frames: int = 16, stride: i
          res: int = 0, uzh: bool = False, seq: str = "", max_frames: int = 150,
          sweep_seqs: str = "", tii: bool = False, flights: str = "",
          anwm: bool = False, regimes: str = "A", max_clips: int = 0,
-         out_json: str = "") -> None:
+         out_json: str = "", intrinsics: bool = False, depth: bool = False) -> None:
     models = ["da3", "vggt", "pi3"] if model == "all" else [m for m in model.split(",") if m]
+    if depth:
+        rows = []
+        for sq in [x for x in seq.split(",") if x]:
+            rows.append(json.loads(depth_prior.remote(sq, n_frames)))
+        if out_json:
+            import os
+            os.makedirs(os.path.dirname(out_json) or ".", exist_ok=True)
+            open(out_json, "w").write(json.dumps(rows, indent=1))
+        print(f"== depth: {len(rows)} clips", flush=True)
+        return
+    if intrinsics:
+        rows = []
+        for m in models:
+            for sq in [x for x in seq.split(",") if x]:
+                rows.append(json.loads(intrinsics_only.remote(m, sq, max_frames)))
+        if out_json:
+            import os
+            os.makedirs(os.path.dirname(out_json) or ".", exist_ok=True)
+            open(out_json, "w").write(json.dumps(rows, indent=1))
+        for r in rows:
+            print(f"== intr {r['model']}/{r['seq']}: {r.get('K')}", flush=True)
+        return
     if anwm:
         for m in models:
             rows = json.loads(run_anwm.remote(m, regimes, max_clips))

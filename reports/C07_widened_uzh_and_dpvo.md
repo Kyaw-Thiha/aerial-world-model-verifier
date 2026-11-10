@@ -6,13 +6,12 @@ Track C. Written 2026-11-10. Answers items 3 and 5 of the follow-up.
 
 Two results, both surprising in the same direction.
 
-1. **Widening UZH does not rescue the feed-forward models.** Across the sequences scored so
-   far (ten for DA3 and DPVO, nine for VGGT, six for Pi3), **Pi3 passes 4 of 6, VGGT 2 of 9,
-   DA3 2 of 10**, and every model fails the 45-degree-down and outdoor sequences. Pi3's 3/5
-   from the narrow set was not a small-sample artefact: on the sequences scored it passes
-   **every indoor-forward clip** and fails both hard ones. Three Pi3 cells
-   (`indoor_forward_10`, `outdoor_forward_1`, `outdoor_forward_3`) are **not scored**; the
-   last sweep stalled on a Modal volume commit and is reported as outstanding, not assumed.
+1. **Widening UZH does not rescue the feed-forward models.** All cells are now scored
+   (VGGT's `outdoor_forward_3` excepted): **Pi3 6/10, VGGT 2/9, DA3 2/10**. Pi3 passes
+   **every one of the six indoor-forward sequences** and fails the 45-degree-down clip and all
+   three outdoor-forward clips (44.3, 31.4, 62.0 deg). So Pi3's 3/5 was not a small-sample
+   artefact — it is a real split by camera geometry, not by speed: `outdoor_forward_1` is
+   slower (8.55 m/s published) than `indoor_forward_6` (12.52) and still fails.
 
 2. **DPVO — the extractor Track A blamed — passes 10 of 10 on the same clips.** Given the
    calibrated intrinsics, DPVO recovers the acceleration direction to **1.5–21 deg** with
@@ -90,6 +89,10 @@ down for `indoor_45_9`.
 | indoor_45_9 | other | 62.9 | 6.41 | 0.90 | no |
 | outdoor_forward_5 | eval | 62.0 | 3.76 | 0.84 | no |
 | indoor_forward_9 | eval | 13.5 | 1.16 | 0.65 | yes |
+| indoor_forward_10 | fit | 12.1 | 1.10 | 0.62 | yes |
+| outdoor_forward_1 | fit | 44.3 | 2.36 | 0.49 | no |
+| outdoor_forward_3 | eval | 31.4 | 1.94 | 0.61 | no |
+| indoor_forward_7 | eval | 8.4 | 1.10 | 0.86 | yes |
 
 ### DA3
 
