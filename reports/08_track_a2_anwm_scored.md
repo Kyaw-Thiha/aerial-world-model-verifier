@@ -387,11 +387,12 @@ What the three reports together support, and what they do not.
 3. *With that gate, the verifier accepts well-behaved real footage at 0.949* and ranks
    tilt-removed footage above the real clip at AUROC 0.92 (report 07).
 4. *ANWM's generated flights depict a level aircraft while their commanded paths demand
-   banking.* Drag-free with parity nuisances: the designed-20° family is depicted at 0.77°
-   where its paths require 21.7°, and all 5 testable clips are infeasible (12–13°) under both
-   interpolants; the testable Regime A clips are 28° off. The designed-10° family is **not**
-   infeasible once nuisances are fitted, and the Regime A result is indicative — the peak
-   bound shows no rigorous violation at 1 s.
+   banking.* The designed-20° family is depicted at 0.77° where its paths require 21.7°
+   (drag-free), and it is infeasible in three of four modes at each mode's own threshold
+   (5 of 5 at the primary; 0 of 5 for the step reading under drag-free full parity, where the
+   ±7° uptilt grid absorbs the difference). The designed-10° family is not robust, the
+   Regime A result is indicative (no peak-bound violation at 1 s), and the weakest 20° margin
+   is **+0.25°** at the strictest fold, with **−2.75°** in the most conservative mode.
 5. *The time base explains most of it.* Conditional on 1 s testability the same clips stop
    contradicting their paths at dt ≈ 1.55 s (Regime C) to 2.7 s (Regime A), longer than the
    1 s the release's stated speeds imply. At 0.25 s the rigorous peak check is violated
@@ -399,18 +400,21 @@ What the three reports together support, and what they do not.
 
 **Not supported.**
 
-1. *"The verifier reaches its gate-3 targets."* Acceptance 0.949 is one clip short of 0.95
+1. *"A pass means the flight is consistent with its path."* At the drag-free primary the TII
+   verdict rejects a full tilt removal only about half the time (0.50 on 8 testable pairs), so
+   a pass is "no gross violation", not consistency.
+2. *"The verifier reaches its gate-3 targets."* Acceptance 0.949 is one clip short of 0.95
    on 59 clips, and no violation magnitude reaches 80 % rejection. On the pre-registered
    per-condition gate, the small violations are rejected at 0.11 and 0.07.
-2. *"The gate is free."* It abstains on 41 % of clips, 86 % on the racing flights, and on
+3. *"The gate is free."* It abstains on 41 % of clips, 86 % on the racing flights, and on
    79 % of tilt-removal edits. Any acceptance number is an acceptance number on what it
    keeps.
-3. *"ANWM breaks physics."* Without naming dt, `k_d`, the interpolator, the nuisances and
+4. *"ANWM breaks physics."* Without naming dt, `k_d`, the interpolator, the nuisances and
    the gate, the statement is not supported. With them named, the supported form is (4) —
    and it holds for the designed-20 family and the testable Regime A clips, a minority of
    the set, not for the whole of it.
-4. *"Regime B is fine."* 0 of 8 Regime B clips are testable; nothing is known about them.
-5. *"The path can be recovered from video."* Parked and untouched; nothing here depends on
+5. *"Regime B is fine."* 0 of 8 Regime B clips are testable; nothing is known about them.
+6. *"The path can be recovered from video."* Parked and untouched; nothing here depends on
    it, because the path is commanded in every number above.
 
 **Internal consistency checks that passed.** The Gate 3 baseline reproduces through the

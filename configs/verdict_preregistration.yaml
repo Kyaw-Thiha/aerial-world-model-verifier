@@ -700,3 +700,27 @@ amendment_10:
   order: >
     amendment frozen and committed first; controls run and reported; only then the paired
     slope with the bootstrap. No score is computed before Checkpoint 2 is delivered.
+
+# ---------------------------------------------------------------- amendment 10a
+# Clarification of amendment 10, written before any injected clip exists. The slope basis was
+# ambiguous in amendment 10 (it named both +0.5 drag-free and +0.66 with drag); nothing has
+# been scored, so fixing it now costs nothing and keeps the rule unambiguous.
+amendment_10a:
+  date: 2026-11-10
+  clarifies: amendment_10.decision_rule
+  slope_basis:
+    required_slope: >
+      computed DRAG-FREE (k_d = 0, lag-only nudged to zero by construction since the slope is
+      of required tilt on designed tilt, not a residual): the primary mode of amendment 8.
+      Measured +0.50 deg/deg over the designed 5/10/20 cells; the k_d 0.295 value (+0.66) is
+      reported as a secondary sensitivity and never used for the decision.
+    injected_slope: >
+      slope of DEPICTED tilt on DESIGNED (injected) tilt, least squares over the cell's clips,
+      with the lag-only mode (lag absorbs nothing, so this equals the unfitted slope).
+    level_arm_slope: 0.04 (measured on the existing level-pose set, report 08 section 3)
+    untransformed_units: degrees of depicted tilt per degree of designed tilt
+  decision_reading: >
+    following: injected_slope >= 0.5 * required_slope (>= +0.25 deg/deg) AND the bootstrap
+    interval excludes 0.04. partial: 0.15 < injected_slope < +0.25, or the interval contains
+    0.04 with a point estimate above 0.15. ignoring: injected_slope <= 0.15.
+  no_change: [gate, thresholds, nuisance modes, excitation rules, controls]
