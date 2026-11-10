@@ -346,7 +346,7 @@ def sweep(model: str, seqs: list[str], max_frames: int = 150) -> str:
 def main(model: str = "all", source: str = "anwm", n_frames: int = 16, stride: int = 10,
          res: int = 0, uzh: bool = False, seq: str = "", max_frames: int = 150,
          sweep_seqs: str = "", tii: bool = False, flights: str = "") -> None:
-    models = ["da3", "vggt", "pi3"] if model == "all" else [model]
+    models = ["da3", "vggt", "pi3"] if model == "all" else [m for m in model.split(",") if m]
     if tii:
         fl = [f for f in flights.split(",") if f] or [
             "flight-01a-ellipse", "flight-01p-ellipse", "flight-04a-ellipse",
