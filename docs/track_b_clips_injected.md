@@ -22,6 +22,7 @@ Arms:
 ## Layout
 
 ```
+data/processed/anwm_clips_regen/C/<clip_id>/     same-seed level twins (9 clips, kept beside the originals)
 data/processed/anwm_clips_injected/<arm>/C/<clip_id>/
   frames/00.png .. 15.png     generated frames, 224x224
   priors/00.png .. 15.png     the FFP image the model was conditioned on for that step
@@ -29,6 +30,11 @@ data/processed/anwm_clips_injected/<arm>/C/<clip_id>/
   strip.png                   contact sheet (frames)
   priors_strip.png            contact sheet (priors: level above, injected below, when built)
 ```
+
+R2 mirrors the whole tree under `track-b/clips_injected/` (`injected_true/`, plus
+`regen_level/` for the twins), with `clips_injected_index.csv` and the evaluation artifacts
+(`eval_injected_injected_true.json`, `coverage_by_cell.csv`, `prior_difference.json`,
+`repeat_noise.json`, `stage0_summary.json`) at its root.
 
 `<clip_id>` equals the level clip id for `injected_true` and `<id>__<seed>` for
 `injected_mirrored`, so the pairing is a string match.

@@ -112,13 +112,19 @@ def main() -> int:
                                         retries={"max_attempts": 5, "mode": "standard"}))
         bucket = os.environ["R2_BUCKET"]
         files = [p for p in INJ.rglob("*") if p.is_file()]
+        regen = [p for p in REGEN.parent.rglob("*") if p.is_file()]   # the level twins
         from concurrent.futures import ThreadPoolExecutor
 
         def put(p):
             s3.upload_file(str(p), bucket, "track-b/clips_injected/" + str(p.relative_to(INJ)))
 
+        def put_regen(p):
+            s3.upload_file(str(p), bucket,
+                           "track-b/clips_injected/regen_level/" + str(p.relative_to(REGEN.parent)))
+
         with ThreadPoolExecutor(max_workers=16) as ex:
             list(ex.map(put, files))
+            list(ex.map(put_regen, regen))
         for extra in (out, COV,
                       ROOT / "results/anwm_clips_injected/specs.json",
                       ROOT / "results/anwm_injected/stage0_summary.json",
@@ -130,8 +136,8 @@ def main() -> int:
                 continue
             if extra.exists():
                 s3.upload_file(str(extra), bucket, "track-b/clips_injected/" + extra.name)
-        print(f"synced {len(files)} files + {4} index artifacts to s3://{bucket}/"
-              f"track-b/clips_injected/")
+        print(f"synced {len(files)} clip files + {len(regen)} level-twin files + index artifacts "
+              f"to s3://{bucket}/track-b/clips_injected/")
     return 0
 
 
