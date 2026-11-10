@@ -12,7 +12,9 @@ odometry model (DPVO) on the video to recover the flight path, differentiated th
 and applied the same physics as Phase 0.
 
 **It does not work, and we know why.** The recovered path is not the real path: on one
-flight DPVO's path is 41 m long where the drone actually flew 479 m, and the per-axis
+flight DPVO's path **points the wrong way** (replaying the stored artifact gives a
+960-camera-unit path, ATE 5.97 m; the earlier "41 m against 479 m" mixed camera units with
+metres and is withdrawn), and the per-axis
 correlation with the real path is essentially zero (0.01 / −0.09 / 0.13). Feeding a path
 that does not track into the physics produces noise, not tilt: the implied tilt is off by
 about **29-35°**, against a Phase 0 floor of 1.2°.
@@ -75,7 +77,7 @@ explained by the window** and is left as an open item rather than papered over.
 | --- | --- | --- |
 | oracle scale (VO path against mocap), per flight | −0.003, −0.002, −0.009, +0.011, −0.041 (01a, 01p, 04a, 07a, 13a; the other three flights are in the same artifact) | `scale_oracle` in both runs |
 | per-axis correlation, VO against mocap | 0.01 / −0.09 / 0.13 | Phase 2 handoff record, `docs/decisions.md` `[A] Gate 2`; **not re-derived in this pass** |
-| path length, one flight (01p) | 41 m (VO) vs 479 m (mocap) | same record; not re-derived in this pass |
+| path geometry, one flight (01p) | **direction wrong**; replayed path 960 camera units, ATE 5.97 m (the "41 m vs 479 m" row mixed units and is withdrawn) | replay of the stored artifact, reported by Track C; not re-derived in this pass |
 | DPVO rotation error, per frame | 0.15-1.5° | `vo_relative_rotation_check` in `results/phase1b_fusion/20261108T133135Z_c738aa8` |
 
 An oracle scale near zero — negative on four of the five printed flights — means the

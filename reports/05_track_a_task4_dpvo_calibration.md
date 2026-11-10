@@ -30,7 +30,7 @@ correlation, path-length ratio and implied-tilt RMSE with `k_d` = 0.295.
 | attempt | what was tried | outcome |
 | --- | --- | --- |
 | 1 | Disk budget: full UZH-FPV release (tens of GB) vs 3.9 GB free; 128 px HuggingFace derivative as an alternative | full release does not fit; the derivative carries no trustworthy calibration, which is the one property the test exists to isolate |
-| 2 | Downloaded `indoor_forward_3_davis_with_gt.zip` (417,718,727 bytes, 2,091 frames) from `download.ifi.uzh.ch/rpg/web/datasets/uzh-fpv/` | sequence contains `images.txt`, `imu.txt`, `events.txt`, `groundtruth.txt` and `img/*.png` — **no calibration**; probes for `calib.zip`, `uzh_fpv/calib.zip`, `calib/<sequence>.yaml`, and every `*_snapdragon*` name returned 404 |
+| 2 | Downloaded `indoor_forward_3_davis_with_gt.zip` (417,718,727 bytes, 2,091 frames) from `download.ifi.uzh.ch/rpg/web/datasets/uzh-fpv/` | the zip has `images.txt`, `imu.txt`, `events.txt`, `groundtruth.txt`, `img/*.png` and no calibration **inside it**; my probes for `calib.zip`, `uzh_fpv/calib.zip`, `calib/<sequence>.yaml` and `*_snapdragon*` returned 404 — **but the release does ship a Kalibr camchain elsewhere** (found by Track C), so this was a wrong-path probe, not a missing calibration |
 
 Two facts found while probing, so the next attempt is short:
 
@@ -51,6 +51,9 @@ Two facts found while probing, so the next attempt is short:
 - The Phase 2 attribution is **suspended, not settled**: "DPVO's translation fails, its
   rotation does not" is measured on TII; "the TII calibration is the cause" remains a
   hypothesis.
+- **Corrected 2026-11-10:** the "UZH-FPV ships no calibration" claim above is withdrawn — the
+  release ships a Kalibr camchain (Track C found it). The task is parked on effort, not on
+  missing data.
 - Nothing else. No number in this report is a measurement of DPVO on good calibration.
 
 ## What this does not show

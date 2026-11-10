@@ -1,0 +1,83 @@
+# Amendment 9 -- frozen before any injected clip is scored.
+#
+# Mode consistency for the ANWM verdict, and the pose-injection scoring plan. Written 2026-11-10 after the review that
+# found the earlier lag-only infeasible counts were produced with a threshold calibrated for a different nuisance mode.
+# Nothing in this file is tuned after seeing injected clips; Track B's Checkpoint 2 must land before scoring starts.
+amendment: 9
+status: frozen
+frozen_utc: "2026-11-10T17:00:00Z"
+scope: track-a2
+
+primary_mode:
+  drag: drag-free          # k_d = 0
+  nuisance: lag_only       # mount-uptilt offset fixed at 0, lag fitted on the +/-150 ms grid
+  rationale: >-
+    Lag absorbs 0.0 deg on generated clips, the uptilt grid absorbs 3.4 deg drag-free (6.4 deg with drag) and 92% of
+    Regime C clips drive it to the bound. Drag-free + lag-only needs no airframe assumption; full parity stays the
+    conservative bound and is reported beside it.
+
+thresholds_deg:
+  # TII held-out conformal, per mode, from experiments/a2_mode_thresholds.py. The per-fold spread is min/median/max.
+  parity_kd0.295: {value: 6.46,  folds: [5.84, 6.63, 10.08],  n: 59, acceptance: 0.949}
+  parity_kd0.15:  {value: 8.40,  folds: [8.40, 8.71, 11.03],  n: 59, acceptance: 0.966}
+  parity_kd0.0:   {value: 12.95, folds: [10.61, 12.95, 13.76], n: 58, acceptance: 0.966}
+  lag_only_kd0.295: {value: 8.96,  folds: [8.96, 9.49, 12.07], n: 59, acceptance: 0.966}
+  lag_only_kd0.15:  {value: 10.60, folds: [10.60, 11.26, 14.39], n: 59, acceptance: 0.966}
+  lag_only_kd0.0:   {value: 14.73, folds: [13.50, 14.73, 16.46], n: 58, acceptance: 0.966}
+
+anwm_null:
+  cruise_lag_only_kd0.0: {n: 14, median: 0.80, p95: 2.24, p99: 2.29}
+  released_frames_p99: 4.20
+  primary_threshold_deg: 14.73   # max(TII lag-only k_d 0 conformal, ANWM null p99)
+
+verdicts_on_primary_mode:        # infeasible / testable at the primary threshold
+  regime_A: {infeasible: 10, testable: 10, median_residual_deg: 33.8}
+  regime_C_10deg: {infeasible: 0, testable: 12, median_residual_deg: 9.0}
+  regime_C_20deg: {infeasible: 10, testable: 10, median_residual_deg: 19.1}
+  withdrawn: >-
+    The earlier "Regime C 11/11 lag-only" applied the parity k_d 0.295 cut (6.46) to lag-only residuals and is
+    withdrawn. At 6.46 on the same residuals the 10-deg cell reads 12/12; at its own threshold it reads 0/12.
+
+detection_floor_required_tilt_deg:
+  lag_only_kd0.0: 15.52
+  lag_only_kd0.295: 9.75
+  parity_kd0.295: 7.25
+
+injection_scoring:
+  blocked_until: "Track B Checkpoint 2"
+  population:
+    injectable_clips: 46          # Regime C; 3 slalom-5 course clips are not reproducible and are excluded
+    pairing: existing level clip of the same start, seed and path
+    cells: maneuver x designed_tilt
+    unit: cell (not clip); bootstrap over starts
+  covariates:
+    prior_coverage:
+      accel_20deg: 0.148
+      climb_20deg: 0.217
+      use: included per cell as a covariate in the slope estimate, not as a filter
+  repeat_noise:
+    source: Track B's 8 regenerated pairs
+    pixel_difference: 0.4-0.9 percent (1-2.4 of 255)
+    degrees: measured by Track B at Checkpoint 2; a cell whose repeat noise exceeds the released-frame p99 (4.20 deg)
+      is reported but not counted toward a verdict
+  endpoint:
+    statistic: injected-arm slope of depicted tilt on injected tilt (degrees per degree)
+    required_slope: 1.0
+    level_arm_slope: 0.04
+  verdicts:
+    following: slope >= 0.50 AND the 95 percent CI excludes 0.04
+    ignoring: 95 percent CI upper bound <= 0.15
+    partial: anything else
+  secondary:
+    projected_priors: reported only; unfilled regions, estimator not validated on them
+  controls:
+    mirrored_sign: 15 clips, expected to invert the slope; failure to invert voids the arm
+  analysis:
+    nuisance_mode: primary (drag-free + lag-only)
+    threshold_deg: 14.73
+    excitation_rule: 12 of 16 frames at >= 10 deg (unchanged)
+    reported_per: maneuver x designed_tilt
+  stop_rule:
+    ignoring: stop; more level clips cannot help if the generator ignores the pose channel
+    partial: diagnose the cell before adding clips
+    following: proceed to the 144-clip design only with a new approval

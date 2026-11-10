@@ -14,12 +14,13 @@ modified.
 band of 0.50–2.66°. That is 0.2–0.3° above the 0.57° it reads on released level frames, so
 the generator adds almost no tilt of its own and does not remove what it was given.
 
-**What the commanded paths demand.** At the paper-consistent 1 s per step, the commanded
-motion requires a tilt the frames do not show. Judged the way the verdict protocol judges a
-clip — per-frame required vs depicted tilt, clip statistic = median, testable only with at
-least 12 frames above the 10° excitation floor — **every Regime A clip that is testable at
-all is infeasible** (8–9 of 25 via the spline, 2 of 25 via the per-step estimator), with a
-median residual of 21–39°, against a 6.46° threshold.
+**What the commanded paths demand.** At the paper-consistent 1 s per step, with a threshold
+calibrated in the same mode as the residual (drag-free, lag-only, 14.73°; detection floor
+15.6°), the noise-free part of the claim is narrow: the **designed-20° family is infeasible
+in every mode** (5 of 5), the **designed-10° family is not robust** (feasible drag-free,
+infeasible with `k_d` 0.295), and **every testable Regime A clip is infeasible** (8 of 8,
+34.7°) but only indicatively. All previous counts at a 6.46° cut are withdrawn as
+threshold/mode mismatches.
 
 That is a much smaller population than an earlier draft of this report claimed. The
 "smooth-flight lower bound" behind the earlier count (22 testable, 17 infeasible) was not a
@@ -217,32 +218,44 @@ The headline is the left column (drag-free, no uptilt absorption). The right col
 conservative bound and is quoted whenever the finding is repeated.
 
 
-## 3. Regime C — dose-response against the designed tilt
+## 3. Regime C — dose-response, with mode-consistent thresholds
 
-**Drag-free + lag-only is primary** (amendment 8): it needs no airframe assumption and allows
-no uptilt absorption. Rows are (spline / step). The full-parity column is the conservative
-bound (§2b).
+**Drag-free + lag-only is primary** (amendment 8). Thresholds are now calibrated in the same
+mode as the residual they judge (amendment 9). The 6.46° cut used earlier is TII's value at
+`k_d` 0.295 with both nuisances fitted; applying it elsewhere mixed thresholds with
+residuals and is withdrawn.
 
-| designed | n | depicted median [p10, p90] | required (drag-free) | residual, drag-free | infeasible | residual, `k_d` 0.295 | infeasible |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| 5° | 21 | 0.79° [0.53, 2.47] | 5.0° | 4.0° | 0 / 0 | 0.7° | 0 / 0 |
-| 10° | 12 | 0.78° [0.61, 2.26] | 8.6° | **7.2–7.3°** | **6 / 6** | 2.1–2.2° | 0 / 6 |
-| 20° | 9 | 0.77° [0.61, 3.50] | 21.7° | **17.2–19.1°** | **5 / 5** | 11.6–12.9° | **5 / 5** |
+**Thresholds and detection floors, per mode** (TII conformal refit with the gate applied,
+pooled over all eight flights, fold spread in brackets; ANWM nulls from the cruise clips and
+the 186 released level frames):
 
-Slope of depicted on designed: **+0.040 °/°** (both drag settings, both interpolants,
-unchanged by the nuisance mode). Slope of required: +0.49–0.66 °/° — the path honours the
-design, the pixels do not. Within-family seed spread is at most **0.60°** (median 0.22°), so
-the flatness across a 4× change in designed tilt is not seed noise.
+| mode | TII conformal | folds | cruise p95 / p99 | GT p99 | primary | detection floor |
+| --- | --- | --- | --- | --- | --- | --- |
+| **drag-free, lag-only** | **14.73°** | 13.5–16.5 | 4.78 / 6.70 | 4.17 | **14.73°** | **15.6°** |
+| drag-free, full parity | 12.95° | 10.6–13.8 | 4.78 / 6.70 | 4.17 | 12.95° | 13.8° |
+| `k_d` 0.295, lag-only | 8.96° | 9.0–12.1 | 8.32 / 8.48 | 4.17 | 8.96° | 16.6° |
+| `k_d` 0.295, full parity | 6.46° | 5.8–10.1 | 8.32 / 8.48 | 4.17 | **8.48°** (cruise p99 wins) | 16.1° |
 
-**Which verdicts flip with `k_d`:** no Regime C cell flips. The designed-20 family is
-infeasible under both drag settings, both interpolants and all three nuisance modes. The
-designed-10 family flips with the **nuisance mode**, not with drag: 6/6 infeasible with
-lag-only, 0/6 under full parity. Three Regime A clips flip with `k_d` — **A10** and **A17**
-infeasible at 0.295 only, **A12** infeasible drag-free only — each within ~3° of the
-threshold.
+The detection floor is the primary threshold plus the median cruise residual in that mode:
+**14–17° of required tilt in every mode**, which is the same order as TII's own frontier.
 
-The 5° family drag-free has no testable clip (its required tilt never reaches 10°), so it is
-not testable, not consistent.
+**Verdicts by mode, per interpolant** (testable clips; cells are `infeasible / n`):
+
+| cell | drag-free, lag-only (14.73°) | `k_d` 0.295, lag-only (8.96°) | drag-free, full parity (12.95°) | `k_d` 0.295, full parity (8.48°) |
+| --- | --- | --- | --- | --- |
+| Regime A | **8/8** spline, 2/2 step | 9/9 spline, 2/2 step | 8/8, 2/2 | 9/9, 2/2 |
+| C, 5° | 0/0 (not testable) | 0/0 | 0/0 | 0/0 |
+| C, 10° | **0/6**, 0/6 | **6/6**, 6/6 | 0/6, 0/6 | 0/6, 0/6 |
+| C, 20° | **5/5**, 5/5 | **5/5**, 5/5 | **5/5**, 5/5 | **5/5**, 5/5 |
+
+**Plainly: the 20° cell is robust — every mode, every interpolant, 5 of 5 infeasible. The 10°
+cell is not: it is infeasible only at `k_d` 0.295 (11.6° residual against 8.96°) and feasible
+at the drag-free primary (9.2° against 14.73°).** The earlier "6/6 at 6.46°" reading is
+exactly the mismatched threshold.
+
+Dose and slope are unchanged by mode: depicted **+0.040 °/°** against required **+0.49 to
++0.66 °/°**, seed spread ≤ 0.60°.
+
 
 ## 3b. Rigorous peak bounds (interpolator-free, attitude-free)
 
@@ -288,39 +301,35 @@ large acceleration pointing straight up produces little tilt:
 dt = 0.25 s Regime A bound is a median peak tilt of 69.8°; that number inherits the cap and is
 reported as a conditional, not as a headline.
 
-## 4. Minimum consistent dt — per cell, per nuisance mode, conditional on testability
+## 4. Minimum consistent dt — per cell, per mode, conditional on testability
 
-Two corrections to the earlier table: dt_min is quoted **per designed cell** (the aggregate is
-dominated by the 5° family, which has no testable clip) and **per nuisance mode**, because the
-fits shorten it. Everything is conditional on being testable at 1 s; untestable clips stay in
-the accounting as censored.
+Conditional on being testable at 1 s; untestable clips are censored, not dropped. Spline
+interpolant unless stated.
 
-Spline interpolant, gate-kept clips, 0.05 s sweep:
+| cell | testable at 1 s | no fit / lag-only | full parity |
+| --- | --- | --- | --- |
+| Regime A, drag-free | 8 of 23 | 1.25 s | 1.00 s |
+| Regime A, `k_d` 0.295 | 9 of 23 | 1.40 s | 0.90 s |
+| Regime C, 5° | 0 of 21 | not interpretable | not interpretable |
+| Regime C, 10°, drag-free | 6 of 11 | **1.10 s** | 0.85 s |
+| Regime C, 20°, drag-free | 5 of 8 | **1.58 s** | 1.23 s |
+| Regime C, 20°, `k_d` 0.295 | 5 of 8 | 1.67 s | 1.30 s |
 
-| cell | testable at 1 s | dt_min, none/lag-only | dt_min, full parity | censored |
-| --- | --- | --- | --- | --- |
-| Regime A, drag-free | 8 of 23 | 1.25 s | 1.00 s | 15 untestable, 1 left |
-| Regime A, `k_d` 0.295 | 9 of 23 | 1.40 s | 0.90 s | 14 untestable, 1 left |
-| Regime C, designed 5° | 0 of 21 | 0.85° s (not interpretable) | 0.60 s | all untestable |
-| Regime C, designed 10° | 6 of 11 | 1.10 s | 0.85 s | — |
-| Regime C, designed 20° | 5 of 8 | **1.58 s** | **1.23 s** | — |
-| Regime C, `k_d` 0.295, 20° | 5 of 8 | 1.67 s | 1.30 s | — |
-
-So the time-base claim survives only where it was always specific: the **designed-20° family
-needs 1.2–1.7 s** depending on the nuisance mode, against the 1 s the release's stated speeds
-imply. The aggregate median of 0.6–0.85 s that the fits produce is an artifact of the
-untestable 5° family and is not a result.
+The aggregate medians (0.6–0.85 s) are artifacts of the untestable 5° family. The defensible
+statement is per cell: **the designed-20° family becomes consistent at 1.2–1.7 s**, above the
+1 s the release's stated speeds imply.
 
 
 ## 5. What this supports
 
-- **A bounded claim, partly indicative, with a stated nuisance mode.** Drag-free with the
-  mount fixed at its known value (lag-only): 8 of 8 testable Regime A clips (residual 35°)
-  and 11 of 11 testable Regime C clips (designed-10 7°, designed-20 17–19°) exceed 6.46°.
-  Allowing the ±7° uptilt grid (§2b) the Regime C count falls to 5 of 11 and Regime A is
-  unchanged. The Regime A part is indicative (interpolant-dependent); the designed-20 part
-  survives both interpolants, both drag settings, the end-condition variants and every
-  nuisance mode.
+- **One robust cell, one not.** With a threshold calibrated in the same mode (amendment 9),
+  the **designed-20° family is infeasible in every mode and both interpolants** (5 of 5, at
+  12.9–21.2° against a 14.73° primary threshold). The **designed-10° family is not robust**:
+  infeasible only at `k_d` 0.295 (11.6° against 8.96°), feasible at the drag-free primary
+  (9.2° against 14.73°). The earlier "6/6" came from the mismatched 6.46° cut.
+- **Regime A is indicative**, not rigorous: 8 of 8 testable clips exceed the threshold
+  (34.7° lag-only), but no peak-bound violation exists at 1 s, and the residual depends on
+  the interpolant.
 - **A dose-response failure that cannot be explained by noise.** Regime C's designed 5/10/20°
   families are depicted at 0.79/0.78/0.77° with a seed band of at most ±1.3° (p10–p90 of the
   flat 5° family is 0.53–2.47°, still far below 5°).

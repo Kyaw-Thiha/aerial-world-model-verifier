@@ -115,6 +115,8 @@ def main() -> int:
                     help="'identity' gates each clip on its REAL-condition pixels and applies "
                          "that decision to every condition (analysis only, not pre-registered)")
     ap.add_argument("--policy", default="all_flights")
+    ap.add_argument("--nuisances", default="both", choices=["both", "lag_only"],
+                    help="both = mount uptilt + lag (full parity); lag_only = fix the uptilt offset at 0")
     ap.add_argument("--k-ds", default=",".join(str(k) for k in K_DS))
     ap.add_argument("--out", default="results/a2_verdict_gated")
     args = ap.parse_args()
@@ -209,8 +211,13 @@ def main() -> int:
                            "k_d": k_d}
                     sub_up, sub_t, sub_tilt = up_all[idx], spec["t"][idx], tilt[idx]
                     sub_yaw, sub_valid = F["yaw"][idx], valid_all[idx]
+                    nu = None
+                    if args.nuisances == "lag_only":
+                        mask = np.isfinite(sub_up).all(axis=1) & (sub_tilt >= 10.0)
+                        nu = fit_nuisances(sub_up, axis[idx], sub_yaw, sub_t, F["uptilt"],
+                                           mask, prereg, uptilt_offset_override=0.0)
                     r = score_clip(sub_up, axis[idx], sub_yaw, sub_t, F["uptilt"], sub_tilt,
-                                   sub_valid, prereg)
+                                   sub_valid, prereg, nuisances=nu)
                     rec.update(r)
                     rec["abstain_reasons_excitation"] = list(r["abstain_reasons"])
                     if cfg is not None:

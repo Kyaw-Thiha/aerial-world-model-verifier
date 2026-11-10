@@ -7,7 +7,9 @@ Every number below is from a `results/` run; the run id and git hash are in each
 
 ## 0. What changed in the plan, and what this test now claims
 
-DPVO's translation is unusable (path 41 m against mocap's 479 m), so the earlier
+DPVO's translation is unusable (the recovered path's **direction** is wrong: replayed, it
+is 960 camera units with a per-flight ATE of 5.97 m, so the earlier "41 m against 479 m"
+mixed units and is withdrawn), so the earlier
 pixel-only implied-tilt route cannot carry a verdict. The test therefore runs in
 **commanded-path mode**: the path is known (mocap for TII, the commanded action
 sequence for ANWM) and only the *depicted* attitude comes from pixels.
@@ -316,7 +318,9 @@ Attempt 2 (the actual download): one sequence fits and was fetched —
 `indoor_forward_3_davis_with_gt.zip`, 417,718,727 bytes, 2,091 frames, from
 `download.ifi.uzh.ch/rpg/web/datasets/uzh-fpv/` (the `uzh_fpv/` sub-path 404s for this
 name, and the `*_snapdragon*` names 404 everywhere I probed). **The `with_gt` zip ships
-`images.txt`, `imu.txt`, `events.txt` and `groundtruth.txt` and no calibration anywhere**,
+`images.txt`, `imu.txt`, `events.txt` and `groundtruth.txt` and no calibration inside that
+zip** (the wider UZH-FPV release does ship a Kalibr camchain — see the correction in
+report 05),
 and the calibration bundle is not at `calib.zip`, `uzh_fpv/calib.zip` or
 `calib/<sequence>.yaml`. Without a calibration the experiment cannot separate "DPVO fails
 because the TII intrinsics are wrong" from "DPVO fails because my UZH intrinsics are

@@ -612,3 +612,91 @@ amendment_8:
   dt_min_reporting: >
     quoted per cell (designed tilt) and per nuisance mode, never as a single aggregate median:
     the aggregate is dominated by the 5 deg family, which has no testable clip.
+
+# ================================================================ AMENDMENT 9
+# Threshold/mode consistency. Every infeasibility count must use a threshold calibrated in
+# the SAME mode as the residual it judges. No gate, signal or label changes.
+amendment_9:
+  date: 2026-11-10
+  tag: "[A2]"
+  concerns: [amendment_8]
+  rule: >
+    For each mode (k_d in {0, 0.295} x nuisance in {lag_only, full_parity}) the threshold is
+    the larger of (a) TII's conformal threshold refit under that mode, all eight flights,
+    gate applied first, held out per fold; (b) the ANWM cruise-clip residual p99 in that
+    mode; (c) the released level-frame depicted-tilt p99 (4.17 deg). Infeasible = residual
+    above that mode's threshold. The single 6.46 deg cut was TII's value at k_d 0.295 with
+    both nuisances; using it at other modes mixed thresholds and residuals, and is withdrawn.
+  measured:
+    kd0.0_lag_only:      {tii_conformal: 14.73, folds: [13.5, 16.5], cruise_p99: 6.70, primary: 14.73, floor_deg: 15.62}
+    kd0.0_full_parity:   {tii_conformal: 12.95, folds: [10.6, 13.8], cruise_p99: 6.70, primary: 12.95, floor_deg: 13.84}
+    kd0.295_lag_only:    {tii_conformal: 8.96,  folds: [9.0, 12.1],  cruise_p99: 8.48, primary: 8.96,  floor_deg: 16.62}
+    kd0.295_full_parity: {tii_conformal: 6.46,  folds: [5.8, 10.1],  cruise_p99: 8.48, primary: 8.48,  floor_deg: 16.14}
+  detection_floor: >
+    reported as primary threshold + median cruise residual in the same mode: 15.6 / 13.8 /
+    16.6 / 16.1 deg of required tilt. That is the smallest real violation each mode can
+    detect, and it is the number to compare with TII's own minimum detectable violation
+    (which never reached 80 % rejection above 27 deg).
+  verdict_reading: >
+    the designed-20 cell is infeasible under every mode and threshold (5 of 5 clips,
+    residual 12.9-21.2 deg). The designed-10 cell is infeasible only at k_d 0.295
+    (11.6 > 8.96) and feasible at the drag-free primary (9.2 < 14.73), so it is NOT robust
+    and is reported as drag-dependent. Regime A is infeasible in every mode.
+
+# ================================================================ AMENDMENT 10
+# Pose-injection arm: scoring protocol, frozen BEFORE Track B's Checkpoint 2 delivers clips.
+# Status: awaiting delivery. Nothing is scored under it until the clips exist.
+amendment_10:
+  date: 2026-11-10
+  tag: "[A2]"
+  status: awaiting_checkpoint_2
+  design:
+    arm: >
+      the same path, start, seed and sampling steps generated twice: once with level target
+      poses (the existing level clips serve where reproducible) and once with flatness-derived
+      roll and pitch injected into the target poses, z_B = (a + g e3)/||a + g e3||.
+    available: 46 of 49 Regime C clips are injectable; 3 slalom-5 course clips cannot be
+      reproduced and are excluded by identity BEFORE scoring, with the exclusion listed.
+    non_reproducibility: >
+      generation is not bit-reproducible: Track B's regenerated pairs differ by 1-2.4/255.
+      Pairs are therefore formed against the EXISTING level clips, and the 8 regenerated
+      level pairs are scored to measure repeat noise in degrees of depicted tilt. That
+      repeat-noise band is reported and used as the floor for any slope claim.
+    covariate: >
+      per-step prior coverage is recorded per clip and entered as a covariate (Track B:
+      accel-20 minimum 0.148, climb-20 0.217). Cells with coverage below 0.15 are reported
+      separately as poorly conditioned.
+  inferential_unit: >
+    (maneuver x tilt) cells, not clips. Bootstrap resamples STARTS (not clips, not frames),
+    2000 draws, seed 0; each cell reports its interval. Clips within a start are not
+    independent and are not resampled individually.
+  decision_rule:
+    required_slope: the slope of required tilt on injected tilt within the cell, recomputed
+      from the commanded paths (about +0.5 to +0.66 deg/deg drag-free).
+    level_arm_slope: 0.04 (measured, report 08 section 3)
+    following: injected slope >= 0.5 x required slope AND the bootstrap interval excludes 0.04
+    partial: 0.15 < injected slope < 0.5 x required slope, or the interval includes 0.04
+      while the point estimate exceeds 0.15
+    ignoring: injected slope <= 0.15
+    no_other_categories: reported as "indeterminate" only when the gate or a control voids
+      the cell, and then with the reason.
+  controls_first:
+    null_edit: identity remap vs raw frames, must agree to <= 0.2 deg median (0.006 deg on
+      the level set)
+    edit_recovery: 5/10/20 deg on >= 10 injected clips; void if median error > 3 deg at 10 or
+      > 5 deg at 20 (the existing rule)
+    gate_transfer: frozen gate on the injected frames; if > 50 % are dropped the arm reports
+      controls only
+    mirror_control: mirrored-sign injection (-theta) on a subset; the depicted change must
+      flip sign with it, else the effect is an injection rendering artefact
+  secondary_excitation_rule:
+    primary: '>= 12 of 16 frames with required >= 10 deg (UNCHANGED)'
+    secondary: '>= 8 of 16 frames with required >= 10 deg AND max required >= 0.8 x designed
+      tilt; statistic = median residual over the excited frames only; flagged as secondary'
+    both_reported: true
+  projected_priors: >
+    if delivered, projected-prior variants are secondary: they have unfilled regions and the
+    estimator is not validated on them. They cannot carry a "following" verdict.
+  order: >
+    amendment frozen and committed first; controls run and reported; only then the paired
+    slope with the bootstrap. No score is computed before Checkpoint 2 is delivered.

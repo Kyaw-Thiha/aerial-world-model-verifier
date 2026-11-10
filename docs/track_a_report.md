@@ -15,7 +15,8 @@ Headline numbers:
 The useful part is the attribution: the depicted side is accurate at the median and fails
 in a heavy tail; the fusion fails on azimuth, which gravity cannot observe; and the
 implied side fails because **DPVO's translation does not track** (per-axis correlation
-with mocap 0.01 / -0.09 / 0.13, path length 41 m against 479 m) while its **rotation is
+with mocap 0.01 / -0.09 / 0.13; the *direction* of the recovered path is wrong, not its
+length — corrected below) while its **rotation is
 excellent (0.15-1.5 deg per frame)**. Nothing in these failures is a physics-model
 failure: the mocap floor is 1.24 deg.
 
@@ -248,7 +249,11 @@ are the problem:
 - the **oracle scale against mocap position is -0.003 to 0.011**, i.e. essentially zero,
   and negative on three flights;
 - per-axis correlation between the VO trajectory and mocap is 0.01 / -0.09 / 0.13;
-- the VO path length is 41 m where mocap says 479 m on 01p, and 4x-12x short elsewhere;
+- the VO path **direction** is wrong. **Corrected 2026-11-10:** the earlier "41 m against
+  479 m" compared a trajectory in camera units with one in metres. Replaying the stored
+  artifacts gives a 960-camera-unit path with a per-flight ATE of 5.97 m, so the failure is
+  direction, not magnitude, and the "4x-12x short" reading is withdrawn. The conclusion —
+  that this trajectory cannot carry a metric implied-tilt verdict — is unchanged;
 - raising DPVO to full 640x480 with 80 patches/frame does not change the result (01p:
   26.90 vs 26.67 deg).
 
