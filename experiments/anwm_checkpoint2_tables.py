@@ -16,8 +16,8 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def main() -> int:
     ev = json.loads(Path(sys.argv[1]).read_text()) if len(sys.argv) > 1 else {}
-    idx = {r["clip_id"]: r for r in csv.DictReader(
-        open(ROOT / "data/processed/anwm_clips_injected/clips_injected_index.csv"))}
+    idx_path = ROOT / "data/processed/anwm_clips_injected/clips_injected_index.csv"
+    idx = {r["clip_id"]: r for r in csv.DictReader(open(idx_path))} if idx_path.exists() else {}
     rows = []
     for cid, e in ev.items():
         r = idx.get(cid, {})
