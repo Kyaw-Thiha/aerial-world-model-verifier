@@ -54,8 +54,8 @@ def main() -> int:
             pitch = np.asarray(m.get("injected_pitch_deg") or [], float)
             ztilt = np.nan
             if len(roll) > 1:
-                ztilt = float(np.degrees(np.arccos(np.clip(
-                    np.cos(np.radians(roll[1:])) * np.cos(np.radians(pitch[1:])).min(), -1, 1))))
+                c = np.cos(np.radians(roll[1:])) * np.cos(np.radians(pitch[1:]))
+                ztilt = float(np.degrees(np.arccos(np.clip(c, -1, 1))).max())
             c = cov.get(m["paired_level_id"], {})
             # repeat noise: level original versus its regenerated twin, same seed
             repeat = None
