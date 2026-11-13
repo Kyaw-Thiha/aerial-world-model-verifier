@@ -1,0 +1,134 @@
+version: 1
+date: '2026-11-13'
+status: frozen
+source_run: results/d_eval/d01
+commit: 613a10298fc074d1523dd960f34b34bda227fd70
+rule: R1_scalar_g1
+statistic: per-clip regression of depicted lean on required lean; l_dep = G1*l_req0
+  + G2*(R_yaw v/g) + b
+options:
+  drag: fitted
+  fixed_drag: 0.295
+  intercept: true
+  lag_search: true
+  lag_bounds_ms:
+  - -150.0
+  - 150.0
+  lag_step_ms: 25.0
+  estimator: ols
+  smoothing_s: 0.0
+  confidence_weights: false
+  sg_window_s: 0.37
+  sg_polyorder: 3
+  n_boot: 400
+  seed: 20261113
+  min_frames: 24
+abstention:
+  min_frames: 24
+  usable_fraction_min: 0.5
+  signal_frames:
+    required_tilt_deg_min: 10.0
+    min_frames: 12
+    fraction_min: 0.2
+    note: the existing pre-registered excitation rule, carried over unchanged
+  excitation:
+    statistic: standard deviation of required lean along its principal axis (sqrt
+      of the largest eigenvalue of the 2x2 covariance)
+    floor_deg: 2.0
+    justification: 'With the depicted estimator''s ~4 deg median error and about 8
+      independent 0.5 s blocks in a 4 s clip, a regressor spread below 2 deg gives
+      a gain standard error above 0.35: a 50 % gain change cannot be resolved, so
+      the clip is not testable rather than tested and passed.
+
+      '
+  conditioning:
+    statistic: condition number of the scalar design matrix including the intercept
+    max: 1000
+    justification: 'Straight-line acceleration makes the acceleration and velocity
+      columns collinear; above 1e3 the coefficient standard error is inflated by more
+      than an order of magnitude and the gain is not identified.
+
+      '
+  ci_half_width:
+    statistic: bootstrap half-width of G1
+    max: 0.35
+    justification: 'The smallest violation in scope is a 50 % gain change. A per-clip
+      interval wider than 0.35 cannot contribute to that decision, so the clip abstains.
+
+      '
+  confidence_gate:
+    config: configs/gate_frozen.yaml
+    application: pair_level
+    sensitivity: per_condition
+  order:
+  - min_frames
+  - usable_fraction
+  - signal_frames
+  - excitation
+  - conditioning
+  - ci_half_width
+  - confidence_gate
+gate:
+  config: configs/gate_frozen.yaml
+  signal: S3_latitude_confidence
+  tau: -0.0016656352350220922
+  direction: drop when signal > tau
+  application: pair_level in evaluation; per clip when scoring one clip
+bands:
+  scalar:
+    lo: 0.5277408648616264
+    hi: 0.9477204858311644
+    alpha: 0.05
+    n: 57
+bands_per_fold:
+  flight-01a-ellipse:
+    scalar:
+      lo: 0.5265839525448975
+      hi: 0.9498205463055891
+      alpha: 0.05
+      n: 55
+  flight-04a-ellipse:
+    scalar:
+      lo: 0.527162408703262
+      hi: 0.9487705160683768
+      alpha: 0.05
+      n: 56
+  flight-07a-lemniscate:
+    scalar:
+      lo: 0.5277408648616264
+      hi: 0.9477204858311644
+      alpha: 0.05
+      n: 57
+  flight-13a-trackRATM:
+    scalar:
+      lo: 0.5277408648616264
+      hi: 0.9477204858311644
+      alpha: 0.05
+      n: 57
+  flight-01p-ellipse:
+    scalar:
+      lo: 0.5130807246533011
+      hi: 0.901568111360114
+      alpha: 0.05
+      n: 31
+  flight-07p-lemniscate:
+    scalar:
+      lo: 0.5141616929882
+      hi: 0.9309200020357657
+      alpha: 0.05
+      n: 33
+  flight-13p-trackRATM:
+    scalar:
+      lo: 0.5467016008808107
+      hi: 0.9508705765428015
+      alpha: 0.05
+      n: 54
+  flight-16p-trackRATM:
+    scalar:
+      lo: 0.5474827990682626
+      hi: 0.9487705160683768
+      alpha: 0.05
+      n: 56
+n_real_testable: 57
+note: A pass means no violation of the tested size on a clip with enough excitation.
+  It is not proof that the flight is physically consistent.
