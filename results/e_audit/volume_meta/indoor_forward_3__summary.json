@@ -1,0 +1,45 @@
+{
+ "seq": "indoor_forward_3",
+ "n": 150,
+ "fps": 15.071857643580936,
+ "duration_s": 10.94746362099977,
+ "stride": 2,
+ "intrinsics": {
+  "fx": 278.66723066149086,
+  "fy": 278.48991409740296,
+  "cx": 320.0,
+  "cy": 240.0,
+  "w": 640,
+  "h": 480,
+  "model": "pinhole",
+  "source_calib": {
+   "fx": 278.66723066149086,
+   "fy": 278.48991409740296,
+   "cx": 319.75221200593535,
+   "cy": 241.96858910358173,
+   "k": [
+    -0.013721808247486035,
+    0.020727425669427896,
+    -0.012786476702685545,
+    0.0025242267320687625
+   ],
+   "w": 640,
+   "h": 480,
+   "model": "pinhole+equidistant",
+   "source": "indoor_forward_calib_snapdragon.zip"
+  }
+ },
+ "vmax_published_mps": 9.5,
+ "speed_median_mps": 5.174618831894849,
+ "speed_p95_mps": 10.698838511966608,
+ "speed_max_mps": 13.378389533613094,
+ "accel_h_median_mps2": 4.836121131593064,
+ "accel_h_p95_mps2": 22.163857976739074,
+ "tilt_median_deg": 29.13120646124164,
+ "tilt_p90_deg": 67.5577860922648,
+ "frac_tilt_ge_10deg": 0.8013698630136986,
+ "frac_tilt_ge_25deg": 0.6506849315068494,
+ "lean_magnitude_median": 0.4718887966828763,
+ "pose_semantics": "Leica ground truth (camera frame as published), TUM xyzw",
+ "world_axes": "as published (not re-oriented here); orientation checked downstream"
+}

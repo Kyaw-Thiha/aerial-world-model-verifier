@@ -1,0 +1,332 @@
+"""Track E: export verdict clips for UZH-FPV in the shared schema (Tasks 4-5).
+
+Per sequence: build non-overlapping 4 s clips from the prepared frames, keep the testable
+ones, warp the six edit conditions as exact pure rotations about the camera centre, run the
+depicted-tilt estimator on the real and every edited clip, and write one
+``verdict_clip.npz`` + ``meta.json`` per clip and condition under ``/e-data/clips/<seq>/``.
+
+Two jobs:
+
+* ``validate_edits`` — the pre-registered edit check (5/10/20 deg roll and pitch must be
+  recovered, the null edit must reproduce the real clip). Run and read before scoring clips.
+* ``export_sequence`` — the export itself.
+
+Both write small JSONL summaries so the local side never has to touch the volume's frames.
+
+    pixi run modal run remote/e_export.py --validate --seqs indoor_forward_5
+    pixi run modal run remote/e_export.py --seqs indoor_forward_5 --max-clips 4
+"""
+from __future__ import annotations
+
+import modal
+
+app = modal.App("awmv-e-export")
+
+e_data = modal.Volume.from_name("awmv-e-data", create_if_missing=True)
+a_data = modal.Volume.from_name("awmv-a-data", create_if_missing=True)
+
+E_DATA = "/e-data"
+A_DATA = "/a-data"
+GEOCALIB_COMMIT = "1dedb29f94fc11b896c5f572005978aeebccd67f"
+
+image = (
+    modal.Image.debian_slim(python_version="3.11")
+    .apt_install("git", "libgl1", "libglib2.0-0")
+    .pip_install("numpy<2", "scipy", "pandas", "pyyaml", "opencv-python-headless==4.10.0.84",
+                 "torch==2.4.1", "torchvision==0.19.1", "matplotlib")
+    .pip_install("kornia", "gdown", "huggingface_hub", "omegaconf", "poselib")
+    .run_commands(f"pip install git+https://github.com/cvg/GeoCalib@{GEOCALIB_COMMIT}")
+    .add_local_python_source("src")
+)
+
+CONDITIONS = ("real", "null_edit", "tilt_removal", "scale_0.5", "scale_1.5",
+              "mirror_roll", "yaw_control")
+GEOMETRY = {"a": "pinhole", "c": "pinhole", "b": "kb4"}
+
+
+def _ensure_weights() -> None:
+    import shutil
+    from pathlib import Path
+
+    cache = Path("/root/.cache/torch/hub/geocalib")
+    cache.mkdir(parents=True, exist_ok=True)
+    for name in ("pinhole.tar", "distorted.tar"):
+        dst = cache / name
+        src = Path(A_DATA) / "geocalib_weights" / f"geocalib-{name}"
+        if not dst.exists() and src.exists():
+            shutil.copyfile(src, dst)
+
+
+def _estimator(variant: str):
+    from geocalib import GeoCalib
+
+    if variant == "b":
+        return GeoCalib(weights="distorted"), "simple_divisional"
+    return GeoCalib(weights="pinhole"), "pinhole"
+
+
+def _run(model, camera_model, img, device, focal=None):
+    import cv2
+    import torch
+
+    feed = torch.from_numpy(cv2.cvtColor(img, cv2.COLOR_GRAY2RGB))
+    feed = feed.permute(2, 0, 1).float().to(device) / 255.0
+    priors = ({"focal": torch.tensor(float(focal), device=device)}
+              if focal is not None else None)
+    with torch.no_grad():
+        res = model.calibrate(feed, camera_model=camera_model, priors=priors)
+    g = res["gravity"].vec3d.detach().cpu().numpy().ravel()
+    conf = res.get("latitude_confidence")
+    if conf is not None:
+        conf = conf.detach().cpu().numpy() if hasattr(conf, "detach") else conf
+        conf = float(np.asarray(conf, dtype=np.float64).mean())
+    return g, conf
+
+
+def _condition_rotations(name: str, R_bw, R_cb, yaw_deg: float):
+    import numpy as np
+
+    from src.depicted.edits import Condition, camera_maps
+
+    if name == "real" or name == "null_edit":
+        return np.tile(np.eye(3), (len(R_bw), 1, 1))
+    if name == "tilt_removal":
+        return camera_maps(Condition("tilt_k", k=0.0), R_bw, R_cb)
+    if name == "scale_0.5":
+        return camera_maps(Condition("tilt_k", k=0.5), R_bw, R_cb)
+    if name == "scale_1.5":
+        return camera_maps(Condition("tilt_k", k=1.5), R_bw, R_cb)
+    if name == "mirror_roll":
+        return camera_maps(Condition("mirror_roll"), R_bw, R_cb)
+    if name == "yaw_control":
+        return camera_maps(Condition("yaw_control", yaw_deg=yaw_deg), R_bw, R_cb)
+    raise ValueError(name)
+
+
+@app.function(image=image, gpu="A10G", volumes={E_DATA: e_data, A_DATA: a_data},
+              timeout=3 * 3600)
+def validate_edits(seq: str, variant: str = "b", angles: str = "5,10,20",
+                   n_frames: int = 6) -> str:
+    """Apply known rotations and check that the estimator's gravity follows them."""
+    import json
+    from pathlib import Path
+
+    import cv2
+    import numpy as np
+    import torch
+    from scipy.spatial.transform import Rotation
+
+    from src.depicted.edits import kb4_from_meta, pinhole_K, warp
+    from src.depicted.uzh import load_truth
+
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    _ensure_weights()
+    clip = Path(E_DATA) / "uzh" / seq
+    meta = json.loads((clip / "meta.json").read_text())
+    geometry = GEOMETRY[variant]
+    calib = kb4_from_meta(meta) if geometry == "kb4" else pinhole_K(meta)
+    folder = "frames_raw" if geometry == "kb4" else "frames_pinhole"
+    files = sorted((clip / folder).glob("*.png"))
+    truth = load_truth(clip)
+    step = max(1, len(files) // n_frames)
+    model, cm = _estimator(variant)
+    model = model.to(device)
+    focal = float(meta["intrinsics_pinhole"]["fx"]) if variant == "a" else None
+
+    rows = []
+    for i in list(range(0, len(files), step))[:n_frames]:
+        img = cv2.imread(str(files[i]), cv2.IMREAD_GRAYSCALE)
+        g0, _ = _run(model, cm, img, device, focal)
+        g0 = g0 / np.linalg.norm(g0)
+        for axis_name in ("roll", "pitch"):
+            for ang in [float(a) for a in angles.split(",") if a]:
+                ax = {"roll": [1.0, 0.0, 0.0], "pitch": [0.0, 1.0, 0.0]}[axis_name]
+                M = Rotation.from_rotvec(np.deg2rad(ang) * np.array(ax)).as_matrix()
+                warped, valid = warp(img, M, geometry, calib)
+                g1, _ = _run(model, cm, warped, device, focal)
+                g1 = g1 / np.linalg.norm(g1)
+                # the image was rotated by M, so the same world direction reads as M^-1 g0
+                pred = np.linalg.inv(M) @ g0
+                pred = pred / np.linalg.norm(pred)
+                err = float(np.degrees(np.arccos(np.clip(pred @ g1, -1, 1))))
+                rows.append({"seq": seq, "variant": variant, "frame": files[i].name,
+                             "axis": axis_name, "angle_deg": ang, "recovery_err_deg": err,
+                             "valid_frac": float(valid.mean()),
+                             "gravity_before": g0.tolist(),
+                             "gravity_after": g1.tolist()})
+        # null edit must reproduce the real estimate
+        warped, valid = warp(img, np.eye(3), geometry, calib)
+        gn, _ = _run(model, cm, warped, device, focal)
+        gn = gn / np.linalg.norm(gn)
+        rows.append({"seq": seq, "variant": variant, "frame": files[i].name, "axis": "null",
+                     "angle_deg": 0.0,
+                     "recovery_err_deg": float(np.degrees(np.arccos(np.clip(gn @ g0, -1, 1)))),
+                     "valid_frac": float(valid.mean()),
+                     "gravity_before": g0.tolist(), "gravity_after": gn.tolist()})
+
+    out = Path(E_DATA) / "edits"
+    out.mkdir(parents=True, exist_ok=True)
+    (out / f"validate_{seq}__{variant}.jsonl").write_text("\n".join(json.dumps(r) for r in rows))
+    e_data.commit()
+    rec = {"seq": seq, "variant": variant, "n": len(rows),
+           "median_err_by_angle": {str(a): float(np.median([r["recovery_err_deg"] for r in rows
+                                                            if r["angle_deg"] == a]))
+                                   for a in sorted({r["angle_deg"] for r in rows})},
+           "median_err_null": float(np.median([r["recovery_err_deg"] for r in rows
+                                               if r["axis"] == "null"]))}
+    print(json.dumps(rec), flush=True)
+    return json.dumps(rec)
+
+
+@app.function(image=image, gpu="A10G", volumes={E_DATA: e_data, A_DATA: a_data},
+              timeout=3 * 3600)
+def export_sequence(seq: str, variant: str = "b", clip_seconds: float = 4.0,
+                    max_clips: int = 4, yaw_deg: float = 20.0) -> str:
+    """Clip, warp, estimate and write one npz per clip and condition."""
+    import json
+    import shutil
+    from pathlib import Path
+
+    import cv2
+    import numpy as np
+    import torch
+
+    from src.depicted.clips import (clip_bounds, lean_from_up_body, path_side_with_gt,
+                                    signal_mask)
+    from src.depicted.edits import (Condition, camera_maps, common_mask, kb4_from_meta,
+                                   pinhole_K, warp)
+    from src.depicted.uzh import load_truth
+
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    _ensure_weights()
+    clip_dir = Path(E_DATA) / "uzh" / seq
+    meta = json.loads((clip_dir / "meta.json").read_text())
+    geometry = GEOMETRY[variant]
+    calib = kb4_from_meta(meta) if geometry == "kb4" else pinhole_K(meta)
+    folder = "frames_raw" if geometry == "kb4" else "frames_pinhole"
+    files = sorted((clip_dir / folder).glob("*.png"))
+    truth = load_truth(clip_dir)
+    gt = np.load(clip_dir / "truth.npz")["gt"]
+    path = path_side_with_gt(truth, gt, k_d=0.0)
+    R_cb = truth.R_cb()
+    yaw = truth.yaw()
+    focal = float(meta["intrinsics_pinhole"]["fx"]) if variant == "a" else None
+    model, cm = _estimator(variant)
+    model = model.to(device)
+
+    fps = float(1.0 / np.median(np.diff(truth.t)))
+    bounds = clip_bounds(len(files), clip_seconds, fps)
+    out_root = Path(E_DATA) / "clips" / seq
+    if out_root.exists():
+        shutil.rmtree(out_root)
+    out_root.mkdir(parents=True, exist_ok=True)
+    index = []
+    kept = 0
+    for ci, (lo, hi) in enumerate(bounds):
+        if kept >= max_clips:
+            break
+        sig = signal_mask(path["required_tilt_deg"][lo:hi])
+        if not sig["testable"]:
+            index.append({"clip": f"{seq}#{ci:02d}", "index": [lo, hi],
+                          "testable": False, "reasons": sig["abstain_reasons"]})
+            continue
+        kept += 1
+        R_bw_clip = truth.R_bw[lo:hi]
+        t_clip = truth.t[lo:hi] - truth.t[lo]
+        per_cond = {}
+        for cond in CONDITIONS:
+            per_cond[cond] = _condition_rotations(cond, R_bw_clip, R_cb, yaw_deg)
+
+        # common mask over the warped conditions (real is the untouched footage)
+        masks = []
+        img0 = cv2.imread(str(files[lo]), cv2.IMREAD_GRAYSCALE)
+        h, w = img0.shape
+        for cond in CONDITIONS:
+            if cond == "real":
+                continue
+            masks.append(common_mask(list(per_cond[cond]), w, h, geometry, calib))
+        mask = np.logical_and.reduce(masks)
+
+        for cond in CONDITIONS:
+            up = np.full((len(t_clip), 3), np.nan)
+            conf = np.full(len(t_clip), np.nan)
+            valid_frac = np.full(len(t_clip), np.nan)
+            frames_out = out_root / f"{seq}_{ci:02d}_{cond}" / "frames"
+            frames_out.mkdir(parents=True, exist_ok=True)
+            for j, fi in enumerate(range(lo, hi)):
+                img = cv2.imread(str(files[fi]), cv2.IMREAD_GRAYSCALE)
+                if cond == "real":
+                    warped, valid = img, np.ones_like(img, bool)
+                else:
+                    warped, valid = warp(img, per_cond[cond][j], geometry, calib, mask=mask)
+                cv2.imwrite(str(frames_out / f"{j:05d}.png"), warped)
+                valid_frac[j] = float(valid.mean())
+                if valid.mean() < 0.5:
+                    continue
+                g, c = _run(model, cm, warped, device, focal)
+                if g is None or not np.all(np.isfinite(g)) or np.linalg.norm(g) < 1e-6:
+                    continue
+                up[j] = g / np.linalg.norm(g)
+                conf[j] = c
+            up_b = np.einsum("ij,nj->ni", R_cb, up)
+            lean = lean_from_up_body(up_b)
+            name = f"{seq}_{ci:02d}_{cond}"
+            np.savez_compressed(out_root / f"{name}.npz", t=t_clip,
+                                pos=truth.pos[lo:hi], yaw=yaw[lo:hi],
+                                depicted_lean=lean, depicted_conf=conf,
+                                valid_frac=valid_frac)
+            cmeta = {
+                "dataset": "uzh_fpv", "sequence": seq, "clip_id": name,
+                "condition": cond, "index": [lo, hi], "fps": fps,
+                "n_frames": int(hi - lo),
+                "mount_source": "published",
+                "mount_rotation_R_cb": R_cb.tolist(),
+                "mount_rotation_T_cam_imu": meta["kalibr_imu_cam0"]["T_cam_imu"],
+                "estimator": "geocalib", "estimator_commit": GEOCALIB_COMMIT,
+                "estimator_variant": variant,
+                "estimator_camera_model": cm,
+                "depicted_conf_meaning": "mean of GeoCalib's latitude_confidence map",
+                "truth_frames": ("Leica MS60 total station, IMU frame of the Snapdragon "
+                                 "Flight in a gravity-aligned world frame, nearest sample at "
+                                 "the frame timestamp"),
+                "clock_offset_applied_s": truth.offset_s,
+                "k_d_path": 0.0, "yaw_control_deg": yaw_deg if cond == "yaw_control" else None,
+                "testability": sig,
+                "frames_dir": str(frames_out),
+            }
+            (out_root / f"{name}.meta.json").write_text(json.dumps(cmeta, indent=1))
+        index.append({"clip": f"{seq}#{ci:02d}", "index": [lo, hi], "testable": True,
+                      "valid_frac_median": float(np.nanmedian(
+                          np.load(out_root / f"{seq}_{ci:02d}_tilt_removal.npz")["valid_frac"])),
+                      "conditions": list(CONDITIONS)})
+        e_data.commit()
+
+    (out_root / "index.json").write_text(json.dumps(
+        {"sequence": seq, "variant": variant, "fps": fps, "clip_seconds": clip_seconds,
+         "clips": index}, indent=1))
+    e_data.commit()
+    rec = {"seq": seq, "variant": variant, "n_bounds": len(bounds), "n_exported": kept}
+    print(json.dumps(rec), flush=True)
+    return json.dumps(rec)
+
+
+@app.local_entrypoint()
+def main(seqs: str = "", variant: str = "b", max_clips: int = 4, validate: bool = False,
+         clip_seconds: float = 4.0, parallel: bool = True) -> None:
+    import json
+
+    from src.depicted.uzh import all_sequences
+
+    wanted = [s for s in seqs.split(",") if s] or all_sequences()
+    fn = validate_edits if validate else export_sequence
+    args = (variant,) if validate else (variant, clip_seconds, max_clips)
+    if parallel:
+        handles = [(s, fn.spawn(s, *args)) for s in wanted]
+        for s, h in handles:
+            try:
+                print(json.loads(h.get()), flush=True)
+            except Exception as exc:
+                print(f"FAILED {s}: {exc}", flush=True)
+    else:
+        for s in wanted:
+            print(json.loads(fn.remote(s, *args)), flush=True)

@@ -89,3 +89,29 @@ def roll_pitch_from_up_body(up_b: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     theta = -np.arcsin(np.clip(u[:, 0], -1.0, 1.0))
     phi = np.arctan2(u[:, 1], u[:, 2])
     return phi, theta
+
+
+def up_body_from_lean(lean: np.ndarray) -> np.ndarray:
+    """Invert the schema's lean vector back to world up in the body frame.
+
+    ``lean = (cos(phi) sin(theta), -sin(phi))`` with ``phi`` in (-pi/2, pi/2), so ``cos(phi)``
+    is non-negative and the inversion is exact:
+
+        sin(phi) = -lean_y, cos(phi) = sqrt(1 - lean_y^2)
+        sin(theta) = lean_x / cos(phi), cos(theta) = sqrt(1 - sin(theta)^2)
+        up_b = (-sin(theta), sin(phi) cos(theta), cos(phi) cos(theta))
+
+    Rows with a NaN lean (estimator failure) come back as NaN, which is what every downstream
+    mask expects. This exists so the scoring script can run on the shared schema alone, with no
+    extra arrays.
+    """
+    lean = np.asarray(lean, dtype=np.float64).reshape(-1, 2)
+    ok = np.isfinite(lean).all(axis=1)
+    out = np.full((len(lean), 3), np.nan)
+    sy = np.clip(-lean[ok, 1], -1.0, 1.0)
+    cy = np.sqrt(np.maximum(0.0, 1.0 - sy ** 2))
+    sx = np.divide(lean[ok, 0], cy, out=np.zeros_like(cy), where=cy > 1e-9)
+    sx = np.clip(sx, -1.0, 1.0)
+    cx = np.sqrt(np.maximum(0.0, 1.0 - sx ** 2))
+    out[ok] = np.column_stack([-sx, sy * cx, cy * cx])
+    return out

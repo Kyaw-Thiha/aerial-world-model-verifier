@@ -1,21 +1,20 @@
-"""Track E: clock and time-offset audit for UZH-FPV (Task 1).
+"""Track E: measure the image/IMU clock against the Leica truth clock (Task 1).
 
-The question this answers, without using any pixel estimator: on what clock are the image
-timestamps, the IMU samples and the Leica ground truth, and how much are they offset?
+Per sequence it reads the ground-truth table, the IMU stream and the image list straight out of
+the sequence zip and reports:
 
-Method. The IMU and the Leica prism are bolted to the same airframe, so the *magnitude* of
-the angular velocity is the same signal on both. Cross-correlating |omega| from ``imu.txt``
-with |omega| differenced from the ground-truth quaternions gives the clock offset directly,
-with no camera, no extrinsics and no estimator in the loop. The Kalibr camera-IMU timeshift
-(published per rig) then carries the image clock onto the IMU clock.
+* the three clocks (first/last/span/rate) and whether the images share the IMU clock;
+* the offset tau with ``gt_time = imu_time + tau`` measured by correlating |omega| from the IMU
+  with |omega| differenced from the truth quaternions (``src.depicted.sync``);
+* the correlation peak, the offset resolution, and per-bin offsets (clock drift);
+* the published Kalibr camera-IMU timeshift for the rig, for comparison.
 
-Why it matters: the indoor-45 rig's image timestamps are on a clock about 18 years away from
-the Leica clock but its *ranges still overlap numerically*, so a naive "keep frames inside
-the truth interval" filter (Track C's `prepare_uzh`) silently pairs frames with unrelated
-truth samples. Any depicted-vs-truth error computed on a sequence prepared that way is
-meaningless, so the pairing has to be rebuilt on a measured offset.
+Why this is not optional: the indoor-45 rig stamps images on a clock about 18 years from the
+Leica rows, and its numeric ranges still overlap, so a naive "keep the frames inside the truth
+interval" filter pairs frames with unrelated truth. Any depicted-vs-truth error computed from
+such a pairing is meaningless, and Track C's indoor_45_9 numbers were built that way.
 
-    pixi run modal run remote/e_sync.py --seqs indoor_forward_5,indoor_45_9
+    pixi run modal run remote/e_sync.py
 """
 from __future__ import annotations
 
@@ -27,208 +26,166 @@ e_data = modal.Volume.from_name("awmv-e-data", create_if_missing=True)
 c_data = modal.Volume.from_name("awmv-c-data", create_if_missing=True)
 E_DATA = "/e-data"
 C_DATA = "/c-data"
+
 UZH_BASE = "https://download.ifi.uzh.ch/rpg/web/datasets/uzh-fpv-newer-versions/v3"
+CALIB = {"indoor_forward": "indoor_forward_calib_snapdragon.zip",
+         "indoor_45": "indoor_45_calib_snapdragon.zip",
+         "outdoor_forward": "outdoor_forward_calib_snapdragon.zip",
+         "outdoor_45": "outdoor_45_calib_snapdragon.zip"}
 
 image = (
     modal.Image.debian_slim(python_version="3.10")
     .pip_install("numpy<2", "scipy", "pyyaml")
+    .add_local_python_source("src")
 )
 
 
-def _read_rows(text: str, min_cols: int = 8):
+def _rows(text: str, min_cols: int):
     import numpy as np
 
-    rows = []
+    out = []
     for line in text.splitlines():
         line = line.strip()
         if not line or line.startswith("#"):
             continue
         v = [float(x) for x in line.split()]
         if len(v) >= min_cols:
-            rows.append(v)
-    out = np.asarray(rows, dtype=np.float64)
-    return out[np.argsort(out[:, 0])]
+            out.append(v)
+    a = np.asarray(out, dtype=np.float64)
+    return a[np.argsort(a[:, 0])]
+
+
+def _zip_path(seq: str):
+    """Prefer Track C's copy on its own volume: a volume-to-volume copy buys nothing."""
+    import shutil
+    import urllib.request
+    from pathlib import Path
+
+    stem = f"{seq}_snapdragon_with_gt.zip"
+    own = Path(E_DATA) / "zips" / stem
+    if own.exists():
+        return own
+    alt = Path(C_DATA) / "zips" / stem
+    if alt.exists():
+        return alt
+    own.parent.mkdir(parents=True, exist_ok=True)
+    tmp = own.with_suffix(".part")
+    with urllib.request.urlopen(f"{UZH_BASE}/{stem}", timeout=900) as r, open(tmp, "wb") as f:
+        while True:
+            chunk = r.read(1 << 20)
+            if not chunk:
+                break
+            f.write(chunk)
+    tmp.rename(own)
+    return own
 
 
 @app.function(image=image, volumes={E_DATA: e_data, C_DATA: c_data}, timeout=1800, cpu=4)
-def sync_probe(seq: str, max_lag_s: float = 0.0, bins: int = 3) -> str:
-    """Report the zip's three clocks and the IMU<->ground-truth offset from |omega|."""
+def sync_probe(seq: str, drift_bins: int = 3) -> str:
     import json
     import zipfile
     from pathlib import Path
 
     import numpy as np
+    import yaml
     from scipy.spatial.transform import Rotation
 
-    zdir = Path(E_DATA) / "zips"
-    zdir.mkdir(parents=True, exist_ok=True)
-    stem = f"{seq}_snapdragon_with_gt.zip"
-    # Track C already holds ten of these zips on its own volume: read them in place. A
-    # volume-to-volume copy of 1-2 GB per sequence costs minutes and buys nothing.
-    zpath = Path(E_DATA) / "zips" / stem
-    if not zpath.exists():
-        alt = Path(C_DATA) / "zips" / stem
-        if alt.exists():
-            zpath = alt
-        else:
-            import urllib.request
-            tmp = zpath.with_suffix(".part")
-            with urllib.request.urlopen(f"{UZH_BASE}/{stem}", timeout=900) as r, \
-                    open(tmp, "wb") as f:
-                while True:
-                    chunk = r.read(1 << 20)
-                    if not chunk:
-                        break
-                    f.write(chunk)
-            tmp.rename(zpath)
-    with zipfile.ZipFile(zpath) as z:
-        gt = _read_rows(z.read("groundtruth.txt").decode(), 8)
-        imu_raw = z.read("imu.txt").decode()
-        imu_head = imu_raw.splitlines()[:3]
-        imu = _read_rows(imu_raw, 7)
-        img_lines = [l for l in z.read("left_images.txt").decode().splitlines()
-                     if l.strip() and not l.startswith("#")]
-        img_ts = np.array([float(l.split()[1]) for l in img_lines])
+    from src.depicted.sync import estimate_offset
+    from src.depicted.uzh import rig_of
 
-    gt_t = gt[:, 0]
+    zpath = _zip_path(seq)
+    with zipfile.ZipFile(zpath) as z:
+        gt = _rows(z.read("groundtruth.txt").decode(), 8)
+        imu = _rows(z.read("imu.txt").decode(), 7)
+        lines = [l for l in z.read("left_images.txt").decode().splitlines()
+                 if l.strip() and not l.startswith("#")]
+    img_ts = np.array([float(l.split()[1]) for l in lines])
+    img_names = [l.split()[2] for l in lines]
+
+    t_gt = gt[:, 0]
     quat = gt[:, 4:8] / np.linalg.norm(gt[:, 4:8], axis=1, keepdims=True)
-    # GT angular speed at the GT rate
-    dt = np.diff(gt_t)
-    om_gt = np.zeros(len(gt_t))
-    if len(gt_t) > 2:
+    om_gt = np.zeros(len(t_gt))
+    if len(t_gt) > 3:
         R = Rotation.from_quat(quat)
         rel = R[:-1].inv() * R[1:]
+        dt = np.diff(t_gt)
         om_gt[:-1] = np.linalg.norm(rel.as_rotvec(), axis=1) / dt
         om_gt[-1] = om_gt[-2]
 
-    imu_t = imu[:, 0]
-    # column layout is checked, not assumed: report the header and per-column scale
-    col_stats = {f"col{i}": [float(np.median(np.abs(imu[:, i]))),
-                            float(np.percentile(np.abs(imu[:, i]), 99))] for i in range(1, imu.shape[1])}
+    t_imu = imu[:, 0]
+    cols = imu.shape[1]
+    # choose the three consecutive columns that behave like a gyro instead of assuming a layout
+    best_i, best_score = 1, None
+    for i in range(1, cols - 2):
+        m = float(np.median(np.abs(imu[:, i])))
+        if 0.01 < m < 5.0:
+            s = abs(np.log(m / 0.3))
+            if best_score is None or s < best_score:
+                best_i, best_score = i, s
+    om_imu = np.linalg.norm(imu[:, best_i:best_i + 3], axis=1)
 
-    def best_gyro():
-        """Pick the three consecutive columns that behave like a gyro (small, ~1 rad/s)."""
-        best, best_i = None, None
-        for i in range(1, imu.shape[1] - 2):
-            v = imu[:, i:i + 3]
-            m = np.median(np.abs(v))
-            if 0.01 < m < 5.0:
-                score = abs(np.log(m / 0.3))
-                if best is None or score < best:
-                    best, best_i = score, i
-        return best_i
+    est = estimate_offset(t_imu, om_imu, t_gt, om_gt, drift_bins=drift_bins)
 
-    gi = best_gyro() or 1
-    om_imu = np.linalg.norm(imu[:, gi:gi + 3], axis=1)
+    # the rig's published camera-IMU timeshift, for comparison
+    shift = None
+    cp = Path(E_DATA) / "zips" / CALIB[rig_of(seq)]
+    if not cp.exists():
+        cp = Path(C_DATA) / "zips" / CALIB[rig_of(seq)]
+    if cp.exists():
+        with zipfile.ZipFile(cp) as zc:
+            name = next(n for n in zc.namelist() if "camchain-imucam" in n and n.endswith(".yaml"))
+            chain = yaml.safe_load(zc.read(name))
+        shift = float(chain["cam0"]["timeshift_cam_imu"])
 
-    grid_dt = 0.002
-    off0 = float(np.median(gt_t)) - float(np.median(imu_t))
-    lo = min(imu_t[0], imu_t[-1]) - 5.0
-    hi = max(imu_t[0], imu_t[-1]) + 5.0
-    n = int((hi - lo) / grid_dt) + 1
-    grid = lo + np.arange(n) * grid_dt
-
-    def resample(t, y):
-        return np.interp(grid, t, y, left=np.nan, right=np.nan)
-
-    a_imu = resample(imu_t, om_imu)
-
-    def corr_at(tau, t0=None, t1=None):
-        """Normalised correlation of |omega| at offset tau (gt_time = imu_time + tau)."""
-        m = np.isfinite(a_imu)
-        if t0 is not None:
-            m &= (grid >= t0) & (grid <= t1)
-        a = a_imu[m]
-        b = np.interp(grid[m] + tau, gt_t, om_gt, left=np.nan, right=np.nan)
-        ok = np.isfinite(a) & np.isfinite(b)
-        if ok.sum() < 50:
-            return -1.0, 0, int(ok.sum())
-        a, b = a[ok], b[ok]
-        a = np.sqrt(np.abs(a))
-        b = np.sqrt(np.abs(b))
-        a = a - a.mean()
-        b = b - b.mean()
-        d = np.sqrt((a @ a) * (b @ b))
-        return (float(a @ b / d) if d > 0 else -1.0), 0, int(ok.sum())
-
-    # Search every offset that puts *some* part of the truth span over the IMU span.
-    # Anchoring on medians instead would miss a clock whose epoch differs by years, which
-    # is exactly the failure the indoor-45 rig shows. tau_true = gt_time - imu_time.
-    tau_lo = float(gt_t[0] - imu_t[-1]) - 2.0
-    tau_hi = float(gt_t[-1] - imu_t[0]) + 2.0
-    # coarse then fine: 20 ms steps first, then 2 ms around the peak
-    coarse = np.arange(tau_lo, tau_hi, 0.020)
-    cs = np.array([corr_at(t, )[0] for t in coarse])
-    best_c = float(coarse[int(np.argmax(cs))])
-    fine = best_c + np.arange(-0.040, 0.040, 0.002)
-    fs = np.array([corr_at(t)[0] for t in fine])
-    ib = int(np.argmax(fs))
-    best = float(fine[ib])
-
-    # drift check: repeat on equal thirds of the IMU span
-    span = imu_t[-1] - imu_t[0]
-    per_bin = []
-    for k in range(bins):
-        t0 = imu_t[0] + span * k / bins
-        t1 = imu_t[0] + span * (k + 1) / bins
-        loc = best + np.arange(-2.0, 2.0, 0.002)
-        vals = np.array([corr_at(t, t0, t1)[0] for t in loc])
-        per_bin.append({"t0_s": float(t0 - imu_t[0]), "t1_s": float(t1 - imu_t[0]),
-                        "offset_s": float(loc[int(np.argmax(vals))]),
-                        "peak_corr": float(vals.max())})
-
+    imu_first, imu_last = float(t_imu[0]), float(t_imu[-1])
     rec = {
-        "seq": seq, "zip": str(zpath.name),
+        "seq": seq, "rig": rig_of(seq), "zip": zpath.name,
         "clocks": {
             "images": {"n": int(len(img_ts)), "first": float(img_ts.min()),
-                       "last": float(img_ts.max()), "span_s": float(img_ts.max() - img_ts.min()),
-                       "median_dt_s": float(np.median(np.diff(np.sort(img_ts))))},
-            "imu": {"n": int(len(imu_t)), "first": float(imu_t.min()), "last": float(imu_t.max()),
-                    "span_s": float(imu_t.max() - imu_t.min()),
-                    "median_dt_s": float(np.median(np.diff(imu_t)))},
-            "gt": {"n": int(len(gt_t)), "first": float(gt_t.min()), "last": float(gt_t.max()),
-                   "span_s": float(gt_t.max() - gt_t.min()),
-                   "median_dt_s": float(np.median(np.diff(gt_t)))},
+                       "last": float(img_ts.max()),
+                       "span_s": float(img_ts.max() - img_ts.min()),
+                       "dt_s": float(np.median(np.diff(np.sort(img_ts))))},
+            "imu": {"n": int(len(t_imu)), "first": imu_first, "last": imu_last,
+                    "span_s": imu_last - imu_first,
+                    "dt_s": float(np.median(np.diff(t_imu)))},
+            "gt": {"n": int(len(t_gt)), "first": float(t_gt[0]), "last": float(t_gt[-1]),
+                   "span_s": float(t_gt[-1] - t_gt[0]),
+                   "dt_s": float(np.median(np.diff(t_gt)))},
         },
-        "imu_header": imu_head, "imu_col_stats": col_stats, "gyro_cols": [gi, gi + 1, gi + 2],
-        "images_minus_imu_first_s": float(img_ts.min() - imu_t.min()),
-        "images_minus_imu_last_s": float(img_ts.max() - imu_t.max()),
-        "gt_minus_imu_first_s": float(gt_t.min() - imu_t.min()),
-        "gt_minus_imu_last_s": float(gt_t.max() - imu_t.max()),
-        "offset_gt_minus_imu_s": best,
-        "offset_peak_corr": float(fs[ib]),
-        "offset_coarse_corr": float(cs.max()),
-        "offset_search_range_s": [tau_lo, tau_hi],
-        "epoch_diff_gt_minus_imu_first_s": float(gt_t[0] - imu_t[0]),
-        "offset_minus_epoch_diff_s": float(best - (gt_t[0] - imu_t[0])),
-        "offset_curve": {"lags": [float(x) for x in fine[::2]],
-                         "corr": [float(x) for x in fs[::2]]},
-        "drift_bins": per_bin,
-        "drift_span_s": float(per_bin[-1]["offset_s"] - per_bin[0]["offset_s"]) if bins > 1 else None,
+        "gui_columns_used": [int(best_i), int(best_i + 1), int(best_i + 2)],
+        "images_minus_imu_s": {"first": float(img_ts.min() - imu_first),
+                               "last": float(img_ts.max() - imu_last)},
+        "gt_minus_imu_s": {"first": float(t_gt[0] - imu_first),
+                           "last": float(t_gt[-1] - imu_last)},
+        "offset_gt_minus_imu_s": est["offset_s"],
+        "offset_peak_corr": est["peak_corr"],
+        "offset_resolution_s": est["resolution_s"],
+        "offset_epoch_difference_s": float(est["offset_s"] - (t_gt[0] - imu_first)),
+        "drift_bins": est["drift_bins"],
+        "drift_span_s": est["drift_span_s"],
+        "kalibr_timeshift_cam_imu_s": shift,
+        "first_image_name": img_names[0] if img_names else None,
     }
-    (Path(E_DATA) / "sync").mkdir(parents=True, exist_ok=True)
-    (Path(E_DATA) / "sync" / f"{seq}.json").write_text(json.dumps(rec, indent=1))
+    out = Path(E_DATA) / "sync"
+    out.mkdir(parents=True, exist_ok=True)
+    (out / f"{seq}.json").write_text(json.dumps(rec, indent=1))
     e_data.commit()
     print(json.dumps({k: rec[k] for k in ("seq", "offset_gt_minus_imu_s", "offset_peak_corr",
-                                          "drift_bins", "gyro_cols")}), flush=True)
+                                          "offset_epoch_difference_s", "drift_span_s",
+                                          "kalibr_timeshift_cam_imu_s")}), flush=True)
     return json.dumps(rec)
 
 
 @app.local_entrypoint()
-def main(seqs: str = "", bins: int = 3) -> None:
-    """One container per sequence: the downloads and the correlations are independent."""
+def main(seqs: str = "", drift_bins: int = 3) -> None:
     import json
 
     from src.depicted.uzh import all_sequences
 
     wanted = [s for s in seqs.split(",") if s] or all_sequences()
-    handles = [(s, sync_probe.spawn(s, 0.0, bins)) for s in wanted]
+    handles = [(s, sync_probe.spawn(s, drift_bins)) for s in wanted]
     for s, h in handles:
         try:
-            rec = json.loads(h.get())
-            print(json.dumps({k: rec[k] for k in (
-                "seq", "offset_gt_minus_imu_s", "offset_minus_epoch_diff_s",
-                "offset_peak_corr", "drift_span_s", "gyro_cols",
-                "images_minus_imu_first_s")}), flush=True)
+            print(json.dumps(json.loads(h.get()), indent=1)[:400], flush=True)
         except Exception as exc:
             print(f"FAILED {s}: {exc}", flush=True)

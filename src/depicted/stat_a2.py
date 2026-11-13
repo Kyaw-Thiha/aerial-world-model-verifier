@@ -40,6 +40,27 @@ def rotate_mount_about_body_y(R_cb: np.ndarray, delta_rad: float) -> np.ndarray:
     return Ry @ np.asarray(R_cb, dtype=np.float64)
 
 
+def depicted_axis_from_up_body(up_b: np.ndarray, yaw: np.ndarray) -> np.ndarray:
+    """Body z axis in the world from world up in the body frame and the path's yaw.
+
+    Same construction as ``src.score.verdict.depicted_axis_world`` but starting from the body
+    frame, which is what the shared clip schema provides (via its lean vector). ZYX attitude:
+    ``u_b = (-sin p, sin r cos p, cos r cos p)`` gives pitch and roll, the path gives yaw.
+    """
+    from scipy.spatial.transform import Rotation
+
+    up_b = np.asarray(up_b, dtype=np.float64).reshape(-1, 3)
+    n = np.linalg.norm(up_b, axis=1)
+    u = np.full_like(up_b, np.nan)
+    ok = np.isfinite(n) & (n > 1e-9)
+    u[ok] = up_b[ok] / n[ok, None]
+    yaw = np.broadcast_to(np.asarray(yaw, dtype=np.float64).ravel(), (len(u),))
+    pitch = np.arcsin(np.clip(-u[:, 0], -1.0, 1.0))
+    roll = np.arctan2(u[:, 1], u[:, 2])
+    R = Rotation.from_euler("ZYX", np.column_stack([yaw, pitch, roll])).as_matrix()
+    return R[:, :, 2]
+
+
 def score_clip_mount(up_cam: np.ndarray, imp_axis: np.ndarray, yaw: np.ndarray, t: np.ndarray,
                      R_cb: np.ndarray, implied_tilt_deg: np.ndarray, valid: np.ndarray,
                      uptilt_offsets_deg=(0.0,), lag_grid_ms: np.ndarray | None = None) -> dict:
@@ -71,10 +92,52 @@ def score_clip_mount(up_cam: np.ndarray, imp_axis: np.ndarray, yaw: np.ndarray, 
         out["abstain_reasons"] = reasons + ["no testable frames"]
         return out
 
+    return score_clip_upb(up_body=np.einsum("ij,nj->ni", np.asarray(R_cb, dtype=np.float64),
+                                           up_cam),
+                          imp_axis=imp_axis, yaw=yaw, t=t, R_cb=R_cb,
+                          implied_tilt_deg=implied_tilt_deg, valid=valid,
+                          uptilt_offsets_deg=uptilt_offsets_deg,
+                          lag_grid_ms=lag_grid_ms)
+
+
+def score_clip_upb(up_body: np.ndarray, imp_axis: np.ndarray, yaw: np.ndarray, t: np.ndarray,
+                   R_cb: np.ndarray, implied_tilt_deg: np.ndarray, valid: np.ndarray,
+                   uptilt_offsets_deg=(0.0,), lag_grid_ms: np.ndarray | None = None) -> dict:
+    """The same score, starting from world up in the body frame (schema-native)."""
+    up_body = np.asarray(up_body, dtype=np.float64)
+    imp_axis = np.asarray(imp_axis, dtype=np.float64)
+    t = np.asarray(t, dtype=np.float64)
+    valid = np.asarray(valid, dtype=bool) if valid is not None else np.ones(len(t), bool)
+    finite = np.isfinite(up_body).all(axis=1) & np.isfinite(imp_axis).all(axis=1)
+    signal = finite & (np.asarray(implied_tilt_deg) >= SIGNAL_TILT_DEG)
+    n_signal = int(signal.sum())
+    frac_signal = n_signal / max(len(t), 1)
+    frac_valid = float((finite & valid).sum()) / max(len(t), 1)
+    reasons = []
+    if n_signal < ABSTENTION_MIN_SIGNAL_FRAMES:
+        reasons.append(f"signal_frames {n_signal} < {ABSTENTION_MIN_SIGNAL_FRAMES}")
+    if frac_signal < ABSTENTION_MIN_SIGNAL_FRACTION:
+        reasons.append(f"testable_fraction {frac_signal:.2f} < {ABSTENTION_MIN_SIGNAL_FRACTION}")
+    if frac_valid < ABSTENTION_MIN_USABLE_FRACTION:
+        reasons.append(f"usable_depicted {frac_valid:.2f} < {ABSTENTION_MIN_USABLE_FRACTION}")
+    out = {"n_frames": int(len(t)), "n_signal": n_signal, "frac_signal": frac_signal,
+           "frac_usable": frac_valid, "abstain_reasons": reasons}
+    lags = (np.arange(LAG_BOUNDS_MS[0], LAG_BOUNDS_MS[1] + 1e-9, LAG_STEP_MS) / 1000.0
+            if lag_grid_ms is None else np.asarray(lag_grid_ms, dtype=np.float64) / 1000.0)
+    if n_signal == 0:
+        out.update({"testable": False, "score": None, "nuisances": None,
+                    "abstain_reasons": reasons + ["no testable frames"]})
+        return out
+
     best = {"loss": np.inf}
     for doff in uptilt_offsets_deg:
-        R = rotate_mount_about_body_y(R_cb, np.deg2rad(float(doff)))
-        dep = depicted_axis_world(up_cam, R, yaw)
+        # An extra mount pitch by delta maps a measured up direction to Ry(-delta) @ up_body:
+        # for TII's analytic mount family, camera_to_body_pitched(theta + delta) is exactly
+        # Ry(-delta) @ camera_to_body_pitched(theta), so the fitted number keeps A2's meaning.
+        up_b = np.einsum("ij,nj->ni", rotate_mount_about_body_y(np.eye(3),
+                                                                -np.deg2rad(float(doff))),
+                         up_body)
+        dep = depicted_axis_from_up_body(up_b, yaw)
         for lag in lags:
             imp = shift_series(imp_axis, t, float(lag))
             r = residual_axis(dep, imp)
@@ -82,8 +145,9 @@ def score_clip_mount(up_cam: np.ndarray, imp_axis: np.ndarray, yaw: np.ndarray, 
             if loss < best["loss"]:
                 best = {"loss": loss, "uptilt_offset_deg": float(doff),
                         "lag_ms": float(lag * 1000.0)}
-    R = rotate_mount_about_body_y(R_cb, np.deg2rad(best["uptilt_offset_deg"]))
-    dep = depicted_axis_world(up_cam, R, yaw)
+    up_b = np.einsum("ij,nj->ni", rotate_mount_about_body_y(
+        np.eye(3), -np.deg2rad(best["uptilt_offset_deg"])), up_body)
+    dep = depicted_axis_from_up_body(up_b, yaw)
     imp = shift_series(imp_axis, t, best["lag_ms"] / 1000.0)
     r_axis = residual_axis(dep, imp)
     use = signal & valid & np.isfinite(r_axis)
