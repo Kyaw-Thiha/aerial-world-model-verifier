@@ -24,7 +24,10 @@ import modal
 app = modal.App("awmv-e-sync")
 
 e_data = modal.Volume.from_name("awmv-e-data", create_if_missing=True)
+c_data = modal.Volume.from_name("awmv-c-data", create_if_missing=True)
 E_DATA = "/e-data"
+C_DATA = "/c-data"
+UZH_BASE = "https://download.ifi.uzh.ch/rpg/web/datasets/uzh-fpv-newer-versions/v3"
 
 image = (
     modal.Image.debian_slim(python_version="3.10")
@@ -47,8 +50,8 @@ def _read_rows(text: str, min_cols: int = 8):
     return out[np.argsort(out[:, 0])]
 
 
-@app.function(image=image, volumes={E_DATA: e_data}, timeout=1800, cpu=4)
-def sync_probe(seq: str, max_lag_s: float = 40.0, bins: int = 3) -> str:
+@app.function(image=image, volumes={E_DATA: e_data, C_DATA: c_data}, timeout=1800, cpu=4)
+def sync_probe(seq: str, max_lag_s: float = 0.0, bins: int = 3) -> str:
     """Report the zip's three clocks and the IMU<->ground-truth offset from |omega|."""
     import json
     import zipfile
@@ -58,7 +61,28 @@ def sync_probe(seq: str, max_lag_s: float = 40.0, bins: int = 3) -> str:
     from scipy.spatial.transform import Rotation
 
     zdir = Path(E_DATA) / "zips"
-    cand = sorted(zdir.glob(f"{seq}*with_gt.zip")) + sorted(zdir.glob(f"{seq}*.zip"))
+    zdir.mkdir(parents=True, exist_ok=True)
+    cand = sorted(zdir.glob(f"{seq}_snapdragon_with_gt.zip"))
+    if not cand:
+        # Track C already downloaded ten of these; copying inside Modal is much cheaper
+        # than re-fetching, so prefer its copy before the network.
+        import shutil
+        import urllib.request
+        stem = f"{seq}_snapdragon_with_gt.zip"
+        dst = zdir / stem
+        src = Path(C_DATA) / "zips" / stem
+        if src.exists():
+            shutil.copyfile(src, dst)
+        else:
+            tmp = dst.with_suffix(".part")
+            with urllib.request.urlopen(f"{UZH_BASE}/{stem}", timeout=900) as r, open(tmp, "wb") as f:
+                while True:
+                    chunk = r.read(1 << 20)
+                    if not chunk:
+                        break
+                    f.write(chunk)
+            tmp.rename(dst)
+        cand = [dst]
     zpath = cand[0]
     with zipfile.ZipFile(zpath) as z:
         gt = _read_rows(z.read("groundtruth.txt").decode(), 8)
@@ -130,9 +154,13 @@ def sync_probe(seq: str, max_lag_s: float = 40.0, bins: int = 3) -> str:
         d = np.sqrt((a @ a) * (b @ b))
         return (float(a @ b / d) if d > 0 else -1.0), 0, int(ok.sum())
 
-    taus = off0 + np.arange(-max_lag_s, max_lag_s, 0.002)
+    # Search every offset that puts *some* part of the truth span over the IMU span.
+    # Anchoring on medians instead would miss a clock whose epoch differs by years, which
+    # is exactly the failure the indoor-45 rig shows. tau_true = gt_time - imu_time.
+    tau_lo = float(gt_t[0] - imu_t[-1]) - 2.0
+    tau_hi = float(gt_t[-1] - imu_t[0]) + 2.0
     # coarse then fine: 20 ms steps first, then 2 ms around the peak
-    coarse = off0 + np.arange(-max_lag_s, max_lag_s, 0.020)
+    coarse = np.arange(tau_lo, tau_hi, 0.020)
     cs = np.array([corr_at(t, )[0] for t in coarse])
     best_c = float(coarse[int(np.argmax(cs))])
     fine = best_c + np.arange(-0.040, 0.040, 0.002)
@@ -173,6 +201,9 @@ def sync_probe(seq: str, max_lag_s: float = 40.0, bins: int = 3) -> str:
         "offset_gt_minus_imu_s": best,
         "offset_peak_corr": float(fs[ib]),
         "offset_coarse_corr": float(cs.max()),
+        "offset_search_range_s": [tau_lo, tau_hi],
+        "epoch_diff_gt_minus_imu_first_s": float(gt_t[0] - imu_t[0]),
+        "offset_minus_epoch_diff_s": float(best - (gt_t[0] - imu_t[0])),
         "offset_curve": {"lags": [float(x) for x in fine[::2]],
                          "corr": [float(x) for x in fs[::2]]},
         "drift_bins": per_bin,
@@ -187,6 +218,20 @@ def sync_probe(seq: str, max_lag_s: float = 40.0, bins: int = 3) -> str:
 
 
 @app.local_entrypoint()
-def main(seqs: str = "", max_lag_s: float = 40.0) -> None:
-    for s in [x for x in seqs.split(",") if x]:
-        print(sync_probe.remote(s, max_lag_s), flush=True)
+def main(seqs: str = "", bins: int = 3) -> None:
+    """One container per sequence: the downloads and the correlations are independent."""
+    import json
+
+    from src.depicted.uzh import all_sequences
+
+    wanted = [s for s in seqs.split(",") if s] or all_sequences()
+    handles = [(s, sync_probe.spawn(s, 0.0, bins)) for s in wanted]
+    for s, h in handles:
+        try:
+            rec = json.loads(h.get())
+            print(json.dumps({k: rec[k] for k in (
+                "seq", "offset_gt_minus_imu_s", "offset_minus_epoch_diff_s",
+                "offset_peak_corr", "drift_span_s", "gyro_cols",
+                "images_minus_imu_first_s")}), flush=True)
+        except Exception as exc:
+            print(f"FAILED {s}: {exc}", flush=True)

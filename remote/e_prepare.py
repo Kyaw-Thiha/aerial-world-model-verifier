@@ -130,7 +130,8 @@ def _gt_rows(text: str):
 
 @app.function(image=image, volumes={E_DATA: e_data, C_DATA: c_data}, timeout=3600, cpu=4,
               memory=8192)
-def prepare(seq: str, stride: int = 2, max_frames: int = 450) -> str:
+def prepare(seq: str, stride: int = 2, max_frames: int = 450,
+            offset_s: float = 0.0) -> str:
     """Extract raw + pinhole frames inside the truth interval, with truth and provenance."""
     import json
     import zipfile
@@ -172,7 +173,8 @@ def prepare(seq: str, stride: int = 2, max_frames: int = 450) -> str:
                 rows.append((float(p[1]), p[2]))
         rows.sort(key=lambda r: r[0])
         lo, hi = gt[0, 0], gt[-1, 0]
-        rows = [r for r in rows if lo <= r[0] <= hi]
+        # frame time on the truth clock = image timestamp + measured clock offset
+        rows = [r for r in rows if lo <= r[0] + offset_s <= hi]
         n_in_truth = len(rows)
         rows = rows[::stride][:max_frames]
         if len(rows) < 3:
@@ -196,7 +198,7 @@ def prepare(seq: str, stride: int = 2, max_frames: int = 450) -> str:
             names_out.append(name)
 
     # truth sampled at the frame timestamps (nearest; the tracker is far faster than 30 Hz)
-    t_gt = gt[:, 0] - ts_unix[0]
+    t_gt = gt[:, 0] - (ts_unix[0] + offset_s)
     idx = np.searchsorted(t_gt, t).clip(1, len(t_gt) - 1)
     left = np.abs(t_gt[idx - 1] - t) < np.abs(t_gt[idx] - t)
     idx = np.where(left, idx - 1, idx)
@@ -221,6 +223,7 @@ def prepare(seq: str, stride: int = 2, max_frames: int = 450) -> str:
         "kalibr_cam0": cam0,
         "kalibr_imu_cam0": imu_chain["cam0"],
         "kalibr_files": {"cam": cam_name, "imucam": imu_name},
+        "clock_offset_applied_s": float(offset_s),
         "gt_format": "TUM: timestamp tx ty tz qx qy qz qw (xyzw), Leica MS60 world frame",
         "gt_rows": int(len(gt)), "gt_dt_s": dt_gt, "gt_span_s": float(gt[-1, 0] - gt[0, 0]),
         "frame_names": names_out, "t_unix": ts_unix.tolist(),
@@ -285,12 +288,16 @@ def probe(seq: str) -> str:
 
 
 @app.local_entrypoint()
-def main(seqs: str = "", stride: int = 2, max_frames: int = 450, do_probe: bool = False) -> None:
+def main(seqs: str = "", stride: int = 2, max_frames: int = 450, do_probe: bool = False,
+         offsets: str = "") -> None:
+    """``offsets`` is ``seq=seconds,...`` for sequences whose clock offset is measured."""
     import json
 
+    want = {kv.split("=")[0]: float(kv.split("=")[1])
+            for kv in offsets.split(",") if "=" in kv}
     wanted = [s for s in seqs.split(",") if s] or list(SEQUENCES)
     for s in wanted:
         if do_probe:
             print("probe", probe.remote(s), flush=True)
         else:
-            print("prepare", prepare.remote(s, stride, max_frames), flush=True)
+            print("prepare", prepare.remote(s, stride, max_frames, want.get(s, 0.0)), flush=True)
