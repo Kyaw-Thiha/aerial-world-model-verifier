@@ -87,21 +87,37 @@ def _fetch(url: str, dst) -> None:
     tmp.rename(dst)
 
 
-def _local_or_fetch(zip_name: str, remote_url: str, dst):
-    """Prefer the copy Track C already downloaded (saves the transfer), else fetch."""
+def _local_or_fetch(zip_name: str, remote_url: str, cache):
+    """Return a container-local path to ``zip_name``.
+
+    Random reads inside a 1-2 GB zip on a Volume mount are ~10x slower than sequential reads
+    on local disk (Track A measured this on TII), so the zip is always used from /tmp. The
+    persistent cache still gets a copy of anything newly downloaded, and Track C's volume is
+    used in place of a download. Volume-to-volume copies are avoided: they cost minutes.
+    """
     import shutil
+    import urllib.request
     from pathlib import Path
 
-    dst = Path(dst)
-    if dst.exists() and dst.stat().st_size > 0:
-        return dst
-    src = Path(C_DATA) / "zips" / zip_name
-    if src.exists() and src.stat().st_size > 0:
-        dst.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(src, dst)
-        return dst
-    _fetch(remote_url, dst)
-    return dst
+    local = Path("/tmp") / zip_name
+    if local.exists() and local.stat().st_size > 0:
+        return local
+    for cand in (Path(cache), Path(C_DATA) / "zips"):
+        p = cand / zip_name
+        if p.exists() and p.stat().st_size > 0:
+            shutil.copyfile(p, local)
+            return local
+    tmp = Path(cache) / (zip_name + ".part")
+    tmp.parent.mkdir(parents=True, exist_ok=True)
+    with urllib.request.urlopen(remote_url, timeout=900) as r, open(tmp, "wb") as f:
+        while True:
+            chunk = r.read(1 << 20)
+            if not chunk:
+                break
+            f.write(chunk)
+    tmp.rename(Path(cache) / zip_name)
+    shutil.copyfile(Path(cache) / zip_name, local)
+    return local
 
 
 def _read_yaml_from_zip(path, needle: str, exclude: str = "") -> dict:
@@ -142,9 +158,8 @@ def prepare(seq: str, stride: int = 2, max_frames: int = 450,
 
     stem, rig, env, vmax, note = SEQUENCES[seq]
     zdir = Path(E_DATA) / "zips"
-    zpath = _local_or_fetch(f"{stem}.zip", f"{UZH_BASE}/{stem}.zip", zdir / f"{stem}.zip")
-    cpath = _local_or_fetch(CALIB_FOR_RIG[rig], f"{UZH_CALIB}/{CALIB_FOR_RIG[rig]}",
-                            zdir / CALIB_FOR_RIG[rig])
+    zpath = _local_or_fetch(f"{stem}.zip", f"{UZH_BASE}/{stem}.zip", zdir)
+    cpath = _local_or_fetch(CALIB_FOR_RIG[rig], f"{UZH_CALIB}/{CALIB_FOR_RIG[rig]}", zdir)
 
     out = Path(E_DATA) / "uzh" / seq
     (out / "frames_raw").mkdir(parents=True, exist_ok=True)
@@ -248,7 +263,7 @@ def probe(seq: str) -> str:
 
     stem = SEQUENCES[seq][0]
     zdir = Path(E_DATA) / "zips"
-    zpath = _local_or_fetch(f"{stem}.zip", f"{UZH_BASE}/{stem}.zip", zdir / f"{stem}.zip")
+    zpath = _local_or_fetch(f"{stem}.zip", f"{UZH_BASE}/{stem}.zip", zdir)
     with zipfile.ZipFile(zpath) as z:
         names = z.namelist()
         gt_text = z.read("groundtruth.txt").decode()

@@ -62,28 +62,25 @@ def sync_probe(seq: str, max_lag_s: float = 0.0, bins: int = 3) -> str:
 
     zdir = Path(E_DATA) / "zips"
     zdir.mkdir(parents=True, exist_ok=True)
-    cand = sorted(zdir.glob(f"{seq}_snapdragon_with_gt.zip"))
-    if not cand:
-        # Track C already downloaded ten of these; copying inside Modal is much cheaper
-        # than re-fetching, so prefer its copy before the network.
-        import shutil
-        import urllib.request
-        stem = f"{seq}_snapdragon_with_gt.zip"
-        dst = zdir / stem
-        src = Path(C_DATA) / "zips" / stem
-        if src.exists():
-            shutil.copyfile(src, dst)
+    stem = f"{seq}_snapdragon_with_gt.zip"
+    # Track C already holds ten of these zips on its own volume: read them in place. A
+    # volume-to-volume copy of 1-2 GB per sequence costs minutes and buys nothing.
+    zpath = Path(E_DATA) / "zips" / stem
+    if not zpath.exists():
+        alt = Path(C_DATA) / "zips" / stem
+        if alt.exists():
+            zpath = alt
         else:
-            tmp = dst.with_suffix(".part")
-            with urllib.request.urlopen(f"{UZH_BASE}/{stem}", timeout=900) as r, open(tmp, "wb") as f:
+            import urllib.request
+            tmp = zpath.with_suffix(".part")
+            with urllib.request.urlopen(f"{UZH_BASE}/{stem}", timeout=900) as r, \
+                    open(tmp, "wb") as f:
                 while True:
                     chunk = r.read(1 << 20)
                     if not chunk:
                         break
                     f.write(chunk)
-            tmp.rename(dst)
-        cand = [dst]
-    zpath = cand[0]
+            tmp.rename(zpath)
     with zipfile.ZipFile(zpath) as z:
         gt = _read_rows(z.read("groundtruth.txt").decode(), 8)
         imu_raw = z.read("imu.txt").decode()
