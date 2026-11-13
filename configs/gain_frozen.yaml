@@ -2,7 +2,7 @@ version: 1
 date: '2026-11-13'
 status: frozen
 source_run: results/d_eval/d01
-commit: 613a10298fc074d1523dd960f34b34bda227fd70
+commit: 17510f7dded39ff7464ce068bc51ee5a78358621
 rule: R1_scalar_g1
 statistic: per-clip regression of depicted lean on required lean; l_dep = G1*l_req0
   + G2*(R_yaw v/g) + b
