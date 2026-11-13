@@ -1,0 +1,200 @@
+# Track D pre-registration: the gain test (handoff 08).
+#
+# Committed BEFORE any edited clip is scored under this statistic. Everything here is a
+# decision rule, a nuisance setting, or a calibration procedure; the evaluated numbers
+# are produced afterwards by experiments/d_eval.py. Amendment-style changes go in a new
+# committed version, never an edit of this file.
+#
+# Deviation record (honest, disclosed): while designing the estimator a scratch pass on
+# the stored TII gains was run to confirm that the regression recovers the known signs
+# (removal -> ~0, mirror -> negative roll-axis gain). No threshold, band, abstention
+# bound or candidate rule below was chosen from those numbers; all calibration constants
+# come from the real-clip conformal procedure or from the noise arguments stated inline.
+
+version: 1
+date: 2026-11-13
+status: committed_before_edited_scoring
+owner: track-d
+
+# ----------------------------------------------------------------- inputs
+schema:
+  file: verdict_clip.npz
+  fields: [t, pos, yaw, depicted_lean, depicted_conf]
+  metadata: meta.json
+  loader: src/verdict/schema.py
+  no_mocap_beyond: [pos, yaw]          # the schema carries the commanded path and heading
+
+required_lean:
+  source: pos, yaw
+  differentiate: savitzky_golay
+  polyorder: 3
+  window_s: 0.37
+  window_note: >
+    0.37 s is the Phase 0 chosen window (101 samples at 275 Hz) expressed in seconds.
+    The stored TII per-frame grid is 12 Hz (stride 10); there 0.11 s (the Phase 0
+    pixel-stage reference) is 1.3 samples and cannot carry a second derivative, so the
+    frame-rate analogue is used. A 0.25 s sensitivity is reported. New datasets whose
+    pos is sampled fast enough may resolve 0.11 s; the window is a config value.
+  edge_trim: one full half-window at each end (one-sided stencils are biased)
+  drag_free_axis: u0 = (a + g e3) / ||a + g e3||
+  lean_definition: >
+    l = (cos(phi) sin(theta), -sin(phi)) = horizontal part of the unit thrust axis in the
+    yaw-aligned frame, with ZYX body roll phi and pitch theta.
+  drag_free_lean: l_req0 = Rz(-yaw) [u0_x, u0_y]
+  velocity_regressor: w = Rz(-yaw) v / g        # units 1/s when multiplied by a coefficient
+
+depicted_lean:
+  source: per-frame gravity estimate through the recorded camera-to-body mount
+  formulas: >
+    u_b = R_cb up_cam; theta = -asin(u_b_x); phi = atan2(u_b_y, u_b_z);
+    l_dep = (cos(phi) sin(theta), -sin(phi)).
+  mount: recorded metadata angle for TII; the free intercept absorbs mount error
+  nan_policy: NaN where the estimator failed or the frame is unusable
+  confidence: latitude_confidence_mean (the frozen gate's S3 signal; higher is better)
+
+# ----------------------------------------------------------------- statistic family
+model:
+  equation: l_dep = G1 * l_req0 + G2 * w + b
+  G1: scalar acceleration gain (the quantity the verdict tests)
+  G2: drag coefficient in 1/s (fitted nuisance unless fixed)
+  b: free 2-D intercept (mount offset)
+  estimator: ordinary least squares on the stacked 2N rows
+
+axis_gains:
+  equation_x: l_dep_x = gx * l_req0_x + hx * w_x + bx
+  equation_y: l_dep_y = gy * l_req0_y + hy * w_y + by
+  note: fitted separately; a mirrored roll gives gy about -1 while gx stays positive
+
+variants:
+  drag: [fitted, fixed_0.295, free]    # primary: fitted per clip
+  intercept: [free, fixed_0]           # primary: free
+  lag_search: [on, off]                # primary: on
+  estimator: [ols, huber]              # primary: ols
+  smoothing_s: [0.0, 0.25]             # primary: 0.0
+  confidence_weights: [off, on]        # primary: off
+  primary:
+    drag: fitted
+    intercept: free
+    lag_search: on
+    estimator: ols
+    smoothing_s: 0.0
+    confidence_weights: off
+
+lag:
+  bounds_ms: [-150, 150]
+  step_ms: 25
+  applied_to: required lean and velocity regressor (interpolated on the clip time base)
+  selection: minimum residual sum of squares of the primary fit
+
+robust_fit:
+  estimator: huber
+  f_scale_rad: 0.05                    # about 3 deg, the depicted estimator's median error
+
+confidence_weights:
+  definition: weight_i = clip(latitude_confidence_i / median(latitude_confidence), 0.1, 10)
+  note: a sensitivity variant only; the primary fit is unweighted
+
+bootstrap:
+  type: block
+  block_s: 0.5
+  n_resamples: 400
+  seed: 20261113
+  ci: percentile 2.5 / 97.5
+  report: G1, gx, gy, G2 half-widths
+
+# ----------------------------------------------------------------- decision rules
+decision_rules:
+  candidates:
+    R1_scalar_g1:
+      rule: flag if G1 outside the two-sided conformal band of real-clip G1
+      bands: fitted on fit flights, leave-one-flight-out, alpha 0.05 (2.5 % each tail)
+    R2_axis_gains:
+      rule: >
+        standardise gx and gy by the fit-flight median and robust scale
+        (s = (q97.5 - q2.5) / 3.92), take T_axis = max(|z_gx|, |z_gy|), and flag if
+        T_axis exceeds its conformal 95th percentile on the fit flights.
+      note: this is the rule that catches a mirrored roll (gy about -1)
+    R3_scalar_or_axis:
+      rule: >
+        standardise G1, gx, gy the same way, take T = max(|z_G1|, |z_gx|, |z_gy|), and
+        flag if T exceeds its conformal 95th percentile on the fit flights.
+  selection:
+    criterion: >
+      On the fit flights only, by inner leave-one-flight-out, choose the candidate with
+      the highest mean detection of full tilt removal and mirrored roll at an inner
+      false-reject rate of at most 0.10. Ties break toward the simpler rule
+      (R1 < R2 < R3).
+    applied: nested, per outer leave-one-flight-out fold
+  optional_r2_floor: none               # not part of any candidate; reported only
+
+# ----------------------------------------------------------------- abstention
+abstention:
+  min_frames: 24                        # a 2 s clip at the TII frame rate
+  usable_fraction_min: 0.50             # finite depicted lean / clip frames
+  signal_frames:
+    required_tilt_deg_min: 10.0
+    min_frames: 12
+    fraction_min: 0.20
+    note: the existing pre-registered excitation rule, carried over unchanged
+  excitation:
+    statistic: standard deviation of required lean along its principal axis (sqrt of
+               the largest eigenvalue of the 2x2 covariance)
+    floor_deg: 2.0
+    justification: >
+      With the depicted estimator's ~4 deg median error and about 8 independent 0.5 s
+      blocks in a 4 s clip, a regressor spread below 2 deg gives a gain standard error
+      above 0.35: a 50 % gain change cannot be resolved, so the clip is not testable
+      rather than tested and passed.
+  conditioning:
+    statistic: condition number of the scalar design matrix including the intercept
+    max: 1000
+    justification: >
+      Straight-line acceleration makes the acceleration and velocity columns collinear;
+      above 1e3 the coefficient standard error is inflated by more than an order of
+      magnitude and the gain is not identified.
+  ci_half_width:
+    statistic: bootstrap half-width of G1
+    max: 0.35
+    justification: >
+      The smallest violation in scope is a 50 % gain change. A per-clip interval wider
+      than 0.35 cannot contribute to that decision, so the clip abstains.
+  confidence_gate:
+    config: configs/gate_frozen.yaml    # read-only, frozen by Track A2
+    application: pair_level             # gate the real clip, inherit to its edits
+    sensitivity: per_condition          # reported, not primary (edits shift the gate)
+  order: [min_frames, usable_fraction, signal_frames, excitation, conditioning,
+          ci_half_width, confidence_gate]
+
+# ----------------------------------------------------------------- calibration
+calibration:
+  unit: clip
+  split: leave-one-flight-out
+  fit_set: all flights except the held-out flight (no flight excluded by identity)
+  real_values: testable real clips (identity condition)
+  bands: two-sided conformal, alpha 0.05 (2.5 % below, 2.5 % above)
+  axis_and_joint_bands: conformal on the standardised max statistic (95th percentile)
+  report: per-fold threshold, fold spread, pooled value
+  no_outcome_tuning: no threshold, band, floor or rule may be changed after any
+                    edited clip is scored under this version
+
+# ----------------------------------------------------------------- evaluation
+evaluation:
+  folds: leave-one-flight-out
+  records: every clip of every flight under every stored condition
+  conditions: [real, tilt_removal, scale_0.5, scale_1.5, mirror_roll, yaw_control,
+               null_edit, delay_100, delay_200, delay_300]
+  primary_conditions: [real, tilt_removal, mirror_roll]
+  partial_conditions: [scale_0.5, scale_1.5]
+  controls: [yaw_control, null_edit, delay_100, delay_200, delay_300]
+  synthetic_gain_sweep:
+    k: [0, 0.25, 0.5, 0.75, 1.25, 1.5, 2.0]
+    construction: l_dep_syn = b + k * (l_dep_real - b), b the real clip's fitted intercept
+    label: synthetic
+  matched_false_reject:
+    method: sweep the band alpha (gain) and the threshold (baseline) over the full range
+            on held-out folds; report detection vs false-reject curves
+  reporting:
+    - per flight, per flight type, per speed bin
+    - track flights separately (they must not dominate pooled numbers)
+    - fitted drag per clip against the Phase 0 value (~0.30) and by flight type
+    - first-run numbers kept beside revised ones

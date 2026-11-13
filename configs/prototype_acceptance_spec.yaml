@@ -1,0 +1,72 @@
+# Track D: acceptance spec for the gain-test prototype verifier.
+#
+# Committed BEFORE any edited clip is scored under the gain statistic. The numbers are
+# the handoff's targets; wording is refined only where the stored artifacts force it.
+# Any change to a target number needs the user's approval and a new committed version.
+#
+# All rates are over *testable* clips (the statistic's own abstention applied), with
+# Wilson 95 % intervals. "Detection" is the fraction of edited clips flagged at the
+# frozen operating point; false-reject is the fraction of real clips flagged.
+
+version: 1
+date: 2026-11-13
+statistic: per-clip regression gain of depicted lean on required lean ("gain test")
+baseline: clip-level median residual between depicted and required thrust axis
+          (Track A2, drag-free + lag-only fit, conformal threshold 14.73 deg)
+
+datasets:
+  fit_and_test: TII racing (8 flights, leave-one-flight-out; thresholds fitted on fit flights only)
+  transfer: UZH-FPV, run by Track E with configs/gain_frozen.yaml unchanged
+
+targets:
+  T1_within_tii:
+    false_reject_rate_max: 0.10        # overall, testable real clips
+    detection_tilt_removal_min: 0.90
+    detection_mirrored_roll_min: 0.90
+    report: Wilson 95 % interval, per flight type (piloted/autonomous, track/non-track)
+
+  T2_transfer_uzh_fpv:
+    false_reject_rate_max: 0.15
+    detection_tilt_removal_min: 0.80
+    detection_mirrored_roll_min: 0.80
+    note: Track E runs this with the frozen statistic and thresholds unchanged.
+
+  T3_partial_changes:
+    conditions: [scale_0.5, scale_1.5]
+    report: detection with Wilson 95 % intervals
+    comparison: >
+      The gain statistic must improve materially on the current median-residual
+      statistic at a matched false-reject rate. The comparison is drawn as operating
+      curves (false-reject vs detection over a threshold sweep), not as one point.
+
+  T4_abstention:
+    max_above_current_points: 0.10     # current statistic abstains 0.41 overall on TII
+    report: by flight type, with the abstention reason for every abstained clip
+    note: >
+      The confidence gate is frozen (configs/gate_frozen.yaml) and is read only.
+      Applying it to the real clip of an edited pair and inheriting the decision is
+      permitted and pre-registered; applying it per edited condition is reported as a
+      sensitivity, because an edit is a distribution shift for the gate.
+
+  T5_output:
+    graded: true                       # not pass/fail
+    per_clip_fields:
+      - required_tilt_deg
+      - depicted_tilt_deg
+      - gain_g1_with_ci95
+      - axis_gains_with_ci95
+      - drag_coefficient_with_ci95
+      - intercept
+      - r_squared
+      - lag_ms
+      - testable
+      - abstention_reason
+      - flagged
+    note: A pass means "no violation of the tested size on a clip with enough
+          excitation", never "physically consistent".
+
+  T6_reproducibility:
+    - scripts/score_clip.py scores any clip in the shared verdict_clip.npz schema.
+    - unit tests pass (pure synthetic clips with known gain, intercept, drag).
+    - no mocap-derived quantity enters beyond pos and yaw (the schema inputs).
+    - the frozen config records the commit hash and the thresholds per fold and pooled.
