@@ -135,7 +135,7 @@ reported and the difference is one real clip.
 | T4 abstention, overall | <= 41 % + 10 points | **43.0 %** (baseline 42 %) | **met** |
 | T4 by flight type | report | piloted 3.8 %, autonomous 75 %, track 86 % | reported |
 | T5 graded output | yes | `scripts/score_clip.py` emits every field | **met** |
-| T6 reproducibility | tests pass, schema only | 30 new tests, 161 total pass; no mocap beyond `pos`/`yaw` | **met** |
+| T6 reproducibility | tests pass, schema only | 30 new tests, 131 total pass; no mocap beyond `pos`/`yaw` | **met** |
 
 T1 is **met at the frozen pooled rule and not met under the honest nested selection**, by
 one clip. T2 is Track E's. T3 is met for x0.5 without qualification and for x1.5 only at
