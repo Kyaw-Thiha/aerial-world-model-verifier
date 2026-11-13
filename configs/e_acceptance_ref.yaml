@@ -1,0 +1,38 @@
+# Track E acceptance reference (handoff 09, section 5) — copied verbatim, do not modify.
+# Track D commits the authoritative copy; if the two differ, Track D's wins and the
+# discrepancy is reported. This file exists so that the numbers Track E reports can be
+# checked against a fixed target that predates any of its results.
+# Copied 2026-11-13 by Track E, before any UZH number was computed.
+#
+# - T1, within TII (leave-one-flight-out): false-reject at most 10%, detection of full tilt
+#   removal and mirrored roll at least 90% on testable clips.
+# - T2, transfer to UZH-FPV (thresholds frozen on TII, not refit): false-reject at most 15%,
+#   detection of removal and mirror at least 80%.
+# - T3: report detection of x0.5 and x1.5 with Wilson intervals; new statistic to improve on
+#   the current one at matched false-reject.
+# - T4: abstention no more than 10 points above the current statistic's rate.
+# - T5: graded output (required tilt, depicted tilt, gain with interval, drag estimate,
+#   abstention reason, flag).
+# - T6: scoring script reproducible on any clip in the shared schema.
+
+spec:
+  T1: {dataset: tii, protocol: leave-one-flight-out, false_reject_max: 0.10,
+       detection: {tilt_removal: 0.90, mirror_roll: 0.90}, population: testable_clips}
+  T2: {dataset: uzh_fpv, protocol: thresholds_frozen_on_tii, false_reject_max: 0.15,
+       detection: {tilt_removal: 0.80, mirror_roll: 0.80}, population: testable_clips}
+  T3: {report: [tilt_x0.5, tilt_x1.5], intervals: wilson,
+       requirement: new_statistic_improves_at_matched_false_reject}
+  T4: {abstention_max_delta_vs_current_statistic: 0.10}
+  T5: {graded_output: [required_tilt, depicted_tilt, gain_with_interval, drag_estimate,
+                       abstention_reason, flag]}
+  T6: {scoring_script: reproducible_on_any_clip_in_shared_schema}
+
+# TII reference numbers this spec was written against (Track A / A2), for the record.
+tii_reference:
+  depicted_tilt_median_deg: 3.9617
+  depicted_tilt_trimmed_rmse_deg: 4.7971   # NOTE: a 10% trim, not 5% (see E01 report)
+  depicted_tilt_rmse_deg: 22.3236
+  n_frames: 5007
+  gate_s3_tau: -0.0016656352350220922
+  verdict_primary: {mode: drag_free_lag_only, threshold_deg: 14.73, false_reject_tii: 0.50,
+                    abstention_tii: 0.41}

@@ -1,0 +1,135 @@
+# Track E pre-registration — Task 2: does the depicted-tilt estimator transfer to UZH-FPV?
+# Written and committed BEFORE any GeoCalib run on UZH frames. A change after this commit is
+# an amendment appended to the bottom, never an edit of a rule above.
+track: E
+task: 2
+date: 2026-11-13
+handoff: "docs/handoffs (09): Track E"
+acceptance_reference: configs/e_acceptance_ref.yaml
+
+## Question
+
+On TII, GeoCalib recovers the gravity direction of a real flight to a median 3.96 deg
+(trimmed RMSE 4.80 deg, full RMSE 22.32 deg, n = 5007 frames of 8 flights, `div10` raw-fisheye
+run `20261108T131825Z_c738aa8`). Does the same estimator, on UZH-FPV footage, reach a
+comparable error? This is a per-frame question about the *depicted gravity*, independent of
+the verdict test. If it fails, Task 4-5 are meaningless and the study stops at Gate E1.
+
+## Data (fixed here, prepared by `remote/e_prepare.py`)
+
+14 sequences with public ground truth, stride 2 (about 15 Hz), at most 450 frames each,
+taken from the first frame inside the *measured* truth interval (see the pairing rule below).
+Frame types per sequence: `frames_raw` (raw KB4 fisheye, 640x480, 8-bit grey) and
+`frames_pinhole` (cv2.fisheye.undistortImage with the Kalibr focal kept and the principal
+point centred, 640x480). Volume `awmv-e-data`, R2 prefix `track-e/`.
+
+| rig | sequences | environment |
+| --- | --- | --- |
+| indoor_forward | indoor_forward_3, _5, _6, _7, _9, _10 | indoor |
+| outdoor_forward | outdoor_forward_1, _3, _5 | outdoor |
+| indoor_45 | indoor_45_2, _4, _9, _13 | indoor |
+| outdoor_45 | outdoor_45_1 | outdoor |
+
+**Truth pairing rule (applied before any estimation).** The Leica ground-truth (GT) rows and
+the image list are not always on the same clock: the indoor-45 rig stamps images on a clock
+about 18 years away from the GT clock while the numeric ranges still overlap. Frames are
+therefore paired using a per-sequence clock offset measured from IMU-vs-GT angular speed
+(`remote/e_sync.py`), and a sequence whose offset cannot be established with a correlation
+peak of at least 0.5 is **excluded from the per-frame table** for that stated reason.
+This rule is mechanical and is applied to every sequence before any error is computed.
+
+## Ground truth for the metric
+
+`up_in_camera(t) = R_cb^T R_bw(t)^T e3`, with
+
+- `R_bw` from the released TUM rows `timestamp tx ty tz qx qy qz qw` (xyzw), nearest GT
+  sample at the frame timestamp; the audit in `experiments/e_uzh_audit.py` checks the
+  convention (body-to-world) and the world z direction empirically;
+- `R_cb = R(T_cam_imu)^T` from the **published** Kalibr `camchain-imucam` cam0 of the
+  sequence's own rig (`T_cam_imu` maps IMU coordinates to camera coordinates), not fitted.
+
+The metric is convention-free with respect to the mount *given* a published mount: it is the
+angle between two directions both expressed in the camera frame.
+
+## Variants (all three run on all 14 sequences)
+
+| id | frames | camera model given to GeoCalib | focal |
+| --- | --- | --- | --- |
+| a | pinhole | `pinhole` | Kalibr fx as a scalar prior |
+| **b (primary)** | raw KB4 | `simple_divisional` | none (Track A's TII-best setting) |
+| c | pinhole | `pinhole` | none (GeoCalib estimates f) |
+
+**The primary variant is b, fixed by the TII result before any UZH frame is seen.** The UZH
+data are not used to pick it. (a) and (c) are reported as pre-registered comparisons,
+including the question of whether the TII ranking reproduces.
+
+Estimator: GeoCalib, pinned commit `1dedb29f94fc11b896c5f572005978aeebccd67f`, weights
+`pinhole`/`distorted` as Track A used. Frames converted grey -> 3 channels, /255, no crop.
+
+## Metric and summaries (per frame, not per clip, for this task)
+
+`err = angle(up_est, up_in_camera)`, degrees, NaN where the estimator returns no gravity.
+
+Reported for every variant: n, median, **trimmed RMSE at both 5% and 10%** (TII's published
+4.80 is a 10% trim — established by re-deriving it in this task; the handoff's "worst 5%" is
+wrong and both are printed so the comparison is like-for-like), full RMSE, fraction over 10
+deg, overall and per sequence, by rig, by environment (indoor/outdoor), by truth speed bin
+(0-5, 5-10, 10-15, 15-20, 20+ m/s) and by blur quintile (variance of the Laplacian on the
+frame the estimator actually saw).
+
+## Split (fixed; used for the mount fit and for any variant replacement)
+
+fit: `indoor_forward_3`, `indoor_forward_5`, `indoor_45_2`, `outdoor_forward_1`
+eval: everything else.
+
+No headline number is computed on the fit set alone, and no variant is chosen on the eval set.
+
+## Temporal smoothing (pre-registered, secondary)
+
+Running median of the per-frame gravity direction over 0.5 s (primary window) and 1.0 s
+(reported), then the same error table. Reported for the primary variant only, with the
+unsmoothed numbers beside them.
+
+## Frozen confidence gate S3 applied to UZH (transfer check)
+
+`configs/gate_frozen.yaml` (branch `track-a2-gate`), read-only: signal = median GeoCalib
+latitude confidence per clip, drop when signal > tau = -0.001666. Applied **unchanged** to
+UZH clips of 4.0 s (60 frames at 15 Hz, non-overlapping, mirroring TII's 4 s clips).
+Label: clip median per-frame error > 10 deg. Report AUROC with a sequence-level bootstrap
+interval, the fraction of clips and of frames dropped, and per-rig coverage. A threshold
+fitted on TII is not refit; a UZH-refit threshold is reported only as a labelled sensitivity.
+
+## Gate E1 (stop/go, decided by these numbers)
+
+Transfer is **accepted** on the forward rigs only if the pooled median error is at most
+6.0 deg **and** at most TII + 2.0 deg (i.e. 5.96 deg), and the 10%-trimmed RMSE is at most
+TII + 2.0 deg (6.80 deg). Any one failing means "does not transfer", and the study stops to
+diagnose (frame convention, truth pairing, time offset, undistortion, grayscale, blur,
+rolling shutter, estimator) before Task 4-5.
+
+The 45-degree-down rigs are reported separately and are not part of the E1 go/no-go, because
+the handoff's E1 criterion is stated for forward-camera sequences. Their failure would still
+be reported and would block a rig-agnostic claim.
+
+## Estimator ladder (conditional, at most one replacement)
+
+Trigger: forward-rig pooled median > 6.0 deg. Then, in order, Perspective Fields, then
+AnyCalib, each on the same frames of the same sequences, stopping at the first that brings
+the forward-rig **fit-set** median under 6.0 deg; the replacement is then evaluated on the
+eval sequences. Adding an estimator beyond these two is out of scope. If the ladder is used,
+the claim is no longer "GeoCalib's frozen variant transfers" and is stated as such.
+
+## Compute estimate (stated before running, per the project rule)
+
+Preparation: CPU only (frame extraction + undistortion), about 20 container-minutes of CPU,
+cents. GeoCalib: 14 sequences x 450 frames x 3 variants = 18,900 single-image estimates at
+about 5 estimates/s on an A10G = about 63 GPU-minutes = about US$1.20 at US$1.10/h. Edits and
+verdict scoring later add at most another US$2. Total for Tasks 2-5 is expected under US$5;
+stopping for approval if it approaches that.
+
+## What will not be done
+
+- No threshold is refit for a headline number; refits appear only under "sensitivity".
+- No sequence is dropped because the estimator does badly on it; exclusions are for the
+  pre-declared pairing failure only.
+- No estimator beyond GeoCalib unless the ladder trigger fires.
