@@ -1,0 +1,1556 @@
+[
+ {
+  "seq": "indoor_forward_3",
+  "rig": "indoor_forward",
+  "environment": "indoor",
+  "n_frames_used": 450,
+  "n_frames_in_recording": 1333,
+  "fps_measured": 15.072271314987658,
+  "truth_span_s": 49.49799999999959,
+  "truth_rows": 24750,
+  "truth_dt_s": 0.0020000000004074536,
+  "clock": {
+   "offset_gt_minus_imu_s": 0.017406124987331885,
+   "offset_peak_corr": 0.9681555806615862,
+   "offset_minus_epoch_diff_s": null,
+   "drift_span_s": null,
+   "images_minus_imu_first_s": null
+  },
+  "clock_offset_applied_s": 0.0,
+  "kalibr_timeshift_cam_imu_s": -0.016684572091862235,
+  "quat_orthonormality_max_err": 8.881784197001252e-16,
+  "quat_convention": {
+   "body_to_world_median_residual_deg": 7.901565999791779,
+   "world_to_body_median_residual_deg": 33.16485430896388,
+   "reading_used": "body_to_world"
+  },
+  "world_frame": {
+   "up_world": [
+    -0.0005538326732370295,
+    0.0008548600019359393,
+    -0.999999481241739
+   ],
+   "horizon_angle_deg": 179.94163934440706,
+   "median_residual_deg": 7.878892070511073,
+   "residual_median": 7.878892070511073
+  },
+  "world_frame_with_drag": {
+   "up_world": [
+    7.091566565843341e-05,
+    7.680808345126302e-05,
+    -0.9999999945357433
+   ],
+   "horizon_angle_deg": 179.99401032611,
+   "median_residual_deg": 2.4877037440321246,
+   "residual_median": 2.4877037440321246
+  },
+  "flatness_residual_kd0295": {
+   "n": 450,
+   "median_deg": 2.4899337888427513,
+   "mean_deg": 2.9310547682500854,
+   "trimmed_rmse_5pct_deg": 3.0850811903002113,
+   "trimmed_rmse_10pct_deg": 2.7916804339622137,
+   "rmse_deg": 3.5836937395681914,
+   "p75_deg": 3.9201610988521414,
+   "p90_deg": 5.6554860699546,
+   "p99_deg": 10.057149914330585,
+   "frac_over_10_deg": 0.011111111111111112,
+   "frac_over_20_deg": 0.0
+  },
+  "rest_segment": {
+   "n_frames": 5,
+   "tilt_deg_median": 1.165932893435875,
+   "accel_norm_median_mps2": 0.11151984470458427
+  },
+  "mount": {
+   "R_cb": [
+    [
+     -0.028228787368606456,
+     0.014401251861751119,
+     0.999497743623523
+    ],
+    [
+     -0.999601488301944,
+     -0.00041887083271471837,
+     -0.028225682131089447
+    ],
+    [
+     1.2175294828553618e-05,
+     -0.9998962088597202,
+     0.014407337010089172
+    ]
+   ],
+   "t_cam_imu_m": [
+    0.02172388268966517,
+    -6.605455433829172e-05,
+    -0.00048817563004522853
+   ],
+   "optical_axis_elevation_deg": -0.8255081650225526
+  },
+  "kinematics": {
+   "speed_median_mps": 5.638893523225267,
+   "speed_p95_mps": 8.685497322677417,
+   "speed_max_mps": 9.291046731774554,
+   "implied_tilt_median_deg": 25.37157883052459,
+   "implied_tilt_p90_deg": 49.28782949154526,
+   "frac_implied_tilt_ge_10deg": 0.8533333333333334,
+   "body_tilt_median_deg": 28.20935978552621
+  },
+  "flatness_residual_kd0": {
+   "n": 450,
+   "median_deg": 7.901565999791779,
+   "mean_deg": 7.569144624939769,
+   "trimmed_rmse_5pct_deg": 7.857902424312493,
+   "trimmed_rmse_10pct_deg": 7.538563664547555,
+   "rmse_deg": 8.281248311377103,
+   "p75_deg": 9.811665377925609,
+   "p90_deg": 11.337326762068985,
+   "p99_deg": 14.551745594364927,
+   "frac_over_10_deg": 0.2288888888888889,
+   "frac_over_20_deg": 0.0
+  }
+ },
+ {
+  "seq": "indoor_forward_5",
+  "rig": "indoor_forward",
+  "environment": "indoor",
+  "n_frames_used": 264,
+  "n_frames_in_recording": 528,
+  "fps_measured": 15.072243783239902,
+  "truth_span_s": 19.29800009727478,
+  "truth_rows": 9650,
+  "truth_dt_s": 0.002000093460083008,
+  "clock": {
+   "offset_gt_minus_imu_s": 0.010115074133466607,
+   "offset_peak_corr": 0.8702780481642828,
+   "offset_minus_epoch_diff_s": null,
+   "drift_span_s": null,
+   "images_minus_imu_first_s": null
+  },
+  "clock_offset_applied_s": 0.0,
+  "kalibr_timeshift_cam_imu_s": -0.016684572091862235,
+  "quat_orthonormality_max_err": 8.881784197001252e-16,
+  "quat_convention": {
+   "body_to_world_median_residual_deg": 3.995384234807904,
+   "world_to_body_median_residual_deg": 9.713164492233952,
+   "reading_used": "body_to_world"
+  },
+  "world_frame": {
+   "up_world": [
+    -0.0014691516413291193,
+    -0.00030235670096325076,
+    -0.9999988750863074
+   ],
+   "horizon_angle_deg": 179.91405961943562,
+   "median_residual_deg": 3.951161766737525,
+   "residual_median": 3.951161766737525
+  },
+  "world_frame_with_drag": {
+   "up_world": [
+    -0.0019092912869209666,
+    0.0002696514436169377,
+    -0.9999981409457123
+   ],
+   "horizon_angle_deg": 179.88951998269613,
+   "median_residual_deg": 1.8997554358379145,
+   "residual_median": 1.8997554358379145
+  },
+  "flatness_residual_kd0295": {
+   "n": 264,
+   "median_deg": 1.9415691330561269,
+   "mean_deg": 2.035676243637444,
+   "trimmed_rmse_5pct_deg": 2.0685362216378333,
+   "trimmed_rmse_10pct_deg": 1.9637427301471988,
+   "rmse_deg": 2.2394757593649626,
+   "p75_deg": 2.5576725035259473,
+   "p90_deg": 3.203637647400296,
+   "p99_deg": 4.740404914660085,
+   "frac_over_10_deg": 0.0,
+   "frac_over_20_deg": 0.0
+  },
+  "rest_segment": {
+   "n_frames": 5,
+   "tilt_deg_median": 1.4911818857904324,
+   "accel_norm_median_mps2": 0.11717927836326289
+  },
+  "mount": {
+   "R_cb": [
+    [
+     -0.028228787368606456,
+     0.014401251861751119,
+     0.999497743623523
+    ],
+    [
+     -0.999601488301944,
+     -0.00041887083271471837,
+     -0.028225682131089447
+    ],
+    [
+     1.2175294828553618e-05,
+     -0.9998962088597202,
+     0.014407337010089172
+    ]
+   ],
+   "t_cam_imu_m": [
+    0.02172388268966517,
+    -6.605455433829172e-05,
+    -0.00048817563004522853
+   ],
+   "optical_axis_elevation_deg": -0.8255081650225526
+  },
+  "kinematics": {
+   "speed_median_mps": 2.9661661268748505,
+   "speed_p95_mps": 4.3131459200240325,
+   "speed_max_mps": 4.684349609239884,
+   "implied_tilt_median_deg": 7.3768780773734814,
+   "implied_tilt_p90_deg": 14.23173878583972,
+   "frac_implied_tilt_ge_10deg": 0.3560606060606061,
+   "body_tilt_median_deg": 10.095049124330307
+  },
+  "flatness_residual_kd0": {
+   "n": 264,
+   "median_deg": 3.995384234807904,
+   "mean_deg": 3.899482885700898,
+   "trimmed_rmse_5pct_deg": 4.0455152291286,
+   "trimmed_rmse_10pct_deg": 3.890269894522224,
+   "rmse_deg": 4.234410419359848,
+   "p75_deg": 5.195306068230963,
+   "p90_deg": 6.061191397012588,
+   "p99_deg": 6.973626181637574,
+   "frac_over_10_deg": 0.0,
+   "frac_over_20_deg": 0.0
+  }
+ },
+ {
+  "seq": "indoor_forward_6",
+  "rig": "indoor_forward",
+  "environment": "indoor",
+  "n_frames_used": 408,
+  "n_frames_in_recording": 816,
+  "fps_measured": 15.072027137744175,
+  "truth_span_s": 30.197999954223633,
+  "truth_rows": 15100,
+  "truth_dt_s": 0.002000093460083008,
+  "clock": {
+   "offset_gt_minus_imu_s": 0.017104108817046527,
+   "offset_peak_corr": 0.9794255826318601,
+   "offset_minus_epoch_diff_s": null,
+   "drift_span_s": null,
+   "images_minus_imu_first_s": null
+  },
+  "clock_offset_applied_s": 0.0,
+  "kalibr_timeshift_cam_imu_s": -0.016684572091862235,
+  "quat_orthonormality_max_err": 8.881784197001252e-16,
+  "quat_convention": {
+   "body_to_world_median_residual_deg": 9.328656667840567,
+   "world_to_body_median_residual_deg": 43.37574762481799,
+   "reading_used": "body_to_world"
+  },
+  "world_frame": {
+   "up_world": [
+    -0.1061648363799866,
+    -0.00012603953938454808,
+    -0.9943485362942137
+   ],
+   "horizon_angle_deg": 173.90571377892041,
+   "median_residual_deg": 9.066180716333271,
+   "residual_median": 9.066180716333271
+  },
+  "world_frame_with_drag": {
+   "up_world": [
+    0.002999990572276391,
+    5.437488866585774e-06,
+    -0.999995500003375
+   ],
+   "horizon_angle_deg": 179.82811266146084,
+   "median_residual_deg": 3.1192579761226646,
+   "residual_median": 3.1192579761226646
+  },
+  "flatness_residual_kd0295": {
+   "n": 408,
+   "median_deg": 3.1853129717070607,
+   "mean_deg": 3.7859474691320276,
+   "trimmed_rmse_5pct_deg": 3.9113824172599174,
+   "trimmed_rmse_10pct_deg": 3.5218119168075295,
+   "rmse_deg": 4.693875804612933,
+   "p75_deg": 5.070118295343445,
+   "p90_deg": 7.218904968851376,
+   "p99_deg": 13.482030859685734,
+   "frac_over_10_deg": 0.03431372549019608,
+   "frac_over_20_deg": 0.0
+  },
+  "rest_segment": {
+   "n_frames": 5,
+   "tilt_deg_median": 0.899519258996046,
+   "accel_norm_median_mps2": 0.052557554912535505
+  },
+  "mount": {
+   "R_cb": [
+    [
+     -0.028228787368606456,
+     0.014401251861751119,
+     0.999497743623523
+    ],
+    [
+     -0.999601488301944,
+     -0.00041887083271471837,
+     -0.028225682131089447
+    ],
+    [
+     1.2175294828553618e-05,
+     -0.9998962088597202,
+     0.014407337010089172
+    ]
+   ],
+   "t_cam_imu_m": [
+    0.02172388268966517,
+    -6.605455433829172e-05,
+    -0.00048817563004522853
+   ],
+   "optical_axis_elevation_deg": -0.8255081650225526
+  },
+  "kinematics": {
+   "speed_median_mps": 6.9083349645105345,
+   "speed_p95_mps": 11.231752234814826,
+   "speed_max_mps": 11.75331127575168,
+   "implied_tilt_median_deg": 32.68850889035225,
+   "implied_tilt_p90_deg": 63.981063145701455,
+   "frac_implied_tilt_ge_10deg": 0.9093137254901961,
+   "body_tilt_median_deg": 36.70555907679632
+  },
+  "flatness_residual_kd0": {
+   "n": 408,
+   "median_deg": 9.328656667840567,
+   "mean_deg": 9.17046918979022,
+   "trimmed_rmse_5pct_deg": 9.488584156988757,
+   "trimmed_rmse_10pct_deg": 8.996680945052558,
+   "rmse_deg": 10.291399390467804,
+   "p75_deg": 11.94436323294487,
+   "p90_deg": 14.873606876940519,
+   "p99_deg": 22.695036817391262,
+   "frac_over_10_deg": 0.4387254901960784,
+   "frac_over_20_deg": 0.022058823529411766
+  }
+ },
+ {
+  "seq": "indoor_forward_7",
+  "rig": "indoor_forward",
+  "environment": "indoor",
+  "n_frames_used": 450,
+  "n_frames_in_recording": 1734,
+  "fps_measured": 15.064123837230184,
+  "truth_span_s": 66.69799995422363,
+  "truth_rows": 33350,
+  "truth_dt_s": 0.002000093460083008,
+  "clock": {
+   "offset_gt_minus_imu_s": 0.016947227460169446,
+   "offset_peak_corr": 0.9893334163711494,
+   "offset_minus_epoch_diff_s": null,
+   "drift_span_s": null,
+   "images_minus_imu_first_s": null
+  },
+  "clock_offset_applied_s": 0.0,
+  "kalibr_timeshift_cam_imu_s": -0.016684572091862235,
+  "quat_orthonormality_max_err": 8.881784197001252e-16,
+  "quat_convention": {
+   "body_to_world_median_residual_deg": 6.982307771209944,
+   "world_to_body_median_residual_deg": 45.24619887290788,
+   "reading_used": "body_to_world"
+  },
+  "world_frame": {
+   "up_world": [
+    0.011936937284058606,
+    -6.860837550887737e-05,
+    -0.9999287498722933
+   ],
+   "horizon_angle_deg": 179.31603633239862,
+   "median_residual_deg": 6.933958138485297,
+   "residual_median": 6.933958138485297
+  },
+  "world_frame_with_drag": {
+   "up_world": [
+    -0.011523715015046634,
+    6.7315858232776e-06,
+    -0.9999335997689736
+   ],
+   "horizon_angle_deg": 179.3397250384741,
+   "median_residual_deg": 2.9472969803379367,
+   "residual_median": 2.9472969803379367
+  },
+  "flatness_residual_kd0295": {
+   "n": 450,
+   "median_deg": 3.0566333953012217,
+   "mean_deg": 3.809719953390838,
+   "trimmed_rmse_5pct_deg": 4.028042064806069,
+   "trimmed_rmse_10pct_deg": 3.5969330411182603,
+   "rmse_deg": 4.819386708058024,
+   "p75_deg": 5.101704236213086,
+   "p90_deg": 7.766013909382494,
+   "p99_deg": 13.729519007850381,
+   "frac_over_10_deg": 0.04666666666666667,
+   "frac_over_20_deg": 0.0
+  },
+  "rest_segment": {
+   "n_frames": 5,
+   "tilt_deg_median": 0.6159436366626082,
+   "accel_norm_median_mps2": 0.049876656827593215
+  },
+  "mount": {
+   "R_cb": [
+    [
+     -0.028228787368606456,
+     0.014401251861751119,
+     0.999497743623523
+    ],
+    [
+     -0.999601488301944,
+     -0.00041887083271471837,
+     -0.028225682131089447
+    ],
+    [
+     1.2175294828553618e-05,
+     -0.9998962088597202,
+     0.014407337010089172
+    ]
+   ],
+   "t_cam_imu_m": [
+    0.02172388268966517,
+    -6.605455433829172e-05,
+    -0.00048817563004522853
+   ],
+   "optical_axis_elevation_deg": -0.8255081650225526
+  },
+  "kinematics": {
+   "speed_median_mps": 4.757320573986097,
+   "speed_p95_mps": 10.40879557487823,
+   "speed_max_mps": 12.09397083510738,
+   "implied_tilt_median_deg": 39.48596870640256,
+   "implied_tilt_p90_deg": 56.006908984082415,
+   "frac_implied_tilt_ge_10deg": 0.94,
+   "body_tilt_median_deg": 41.27456733491711
+  },
+  "flatness_residual_kd0": {
+   "n": 450,
+   "median_deg": 6.982307771209944,
+   "mean_deg": 7.961647720313916,
+   "trimmed_rmse_5pct_deg": 8.170187668374636,
+   "trimmed_rmse_10pct_deg": 7.5460684668197295,
+   "rmse_deg": 9.389743006155111,
+   "p75_deg": 10.352678097483263,
+   "p90_deg": 14.34340732572684,
+   "p99_deg": 23.62494279034556,
+   "frac_over_10_deg": 0.27111111111111114,
+   "frac_over_20_deg": 0.02666666666666667
+  }
+ },
+ {
+  "seq": "indoor_forward_9",
+  "rig": "indoor_forward",
+  "environment": "indoor",
+  "n_frames_used": 383,
+  "n_frames_in_recording": 766,
+  "fps_measured": 15.070510793641668,
+  "truth_span_s": 28.79800009727478,
+  "truth_rows": 14400,
+  "truth_dt_s": 0.002000093460083008,
+  "clock": {
+   "offset_gt_minus_imu_s": 0.01647797585325609,
+   "offset_peak_corr": 0.9696299684082132,
+   "offset_minus_epoch_diff_s": null,
+   "drift_span_s": null,
+   "images_minus_imu_first_s": null
+  },
+  "clock_offset_applied_s": 0.0,
+  "kalibr_timeshift_cam_imu_s": -0.016684572091862235,
+  "quat_orthonormality_max_err": 8.881784197001252e-16,
+  "quat_convention": {
+   "body_to_world_median_residual_deg": 6.5340559919795895,
+   "world_to_body_median_residual_deg": 24.970996748010553,
+   "reading_used": "body_to_world"
+  },
+  "world_frame": {
+   "up_world": [
+    -0.06137863582292477,
+    0.0003556398284508641,
+    -0.9981144907197917
+   ],
+   "horizon_angle_deg": 176.4809921969622,
+   "median_residual_deg": 5.923316131871512,
+   "residual_median": 5.923316131871512
+  },
+  "world_frame_with_drag": {
+   "up_world": [
+    -0.014676994043406787,
+    -1.3572412325230338e-05,
+    -0.9998922870297777
+   ],
+   "horizon_angle_deg": 179.1590396314858,
+   "median_residual_deg": 1.7861491762515915,
+   "residual_median": 1.7861491762515915
+  },
+  "flatness_residual_kd0295": {
+   "n": 383,
+   "median_deg": 1.9658785916992103,
+   "mean_deg": 2.1291075512356517,
+   "trimmed_rmse_5pct_deg": 2.2047657395366937,
+   "trimmed_rmse_10pct_deg": 2.0661121373910114,
+   "rmse_deg": 2.395303042187644,
+   "p75_deg": 2.8188825672620297,
+   "p90_deg": 3.719324326124456,
+   "p99_deg": 4.99262529503358,
+   "frac_over_10_deg": 0.0,
+   "frac_over_20_deg": 0.0
+  },
+  "rest_segment": {
+   "n_frames": 5,
+   "tilt_deg_median": 1.1193311344876593,
+   "accel_norm_median_mps2": 0.08211260710088841
+  },
+  "mount": {
+   "R_cb": [
+    [
+     -0.028228787368606456,
+     0.014401251861751119,
+     0.999497743623523
+    ],
+    [
+     -0.999601488301944,
+     -0.00041887083271471837,
+     -0.028225682131089447
+    ],
+    [
+     1.2175294828553618e-05,
+     -0.9998962088597202,
+     0.014407337010089172
+    ]
+   ],
+   "t_cam_imu_m": [
+    0.02172388268966517,
+    -6.605455433829172e-05,
+    -0.00048817563004522853
+   ],
+   "optical_axis_elevation_deg": -0.8255081650225526
+  },
+  "kinematics": {
+   "speed_median_mps": 4.401529858528099,
+   "speed_p95_mps": 6.81197655779248,
+   "speed_max_mps": 7.861317932926275,
+   "implied_tilt_median_deg": 20.847017393761085,
+   "implied_tilt_p90_deg": 34.93043324603189,
+   "frac_implied_tilt_ge_10deg": 0.783289817232376,
+   "body_tilt_median_deg": 21.80432122267927
+  },
+  "flatness_residual_kd0": {
+   "n": 383,
+   "median_deg": 6.5340559919795895,
+   "mean_deg": 6.101511734810683,
+   "trimmed_rmse_5pct_deg": 6.3384461402186645,
+   "trimmed_rmse_10pct_deg": 6.128693378308003,
+   "rmse_deg": 6.591482892943073,
+   "p75_deg": 7.985858235435714,
+   "p90_deg": 9.139495039282732,
+   "p99_deg": 10.543301259307075,
+   "frac_over_10_deg": 0.031331592689295036,
+   "frac_over_20_deg": 0.0
+  }
+ },
+ {
+  "seq": "indoor_forward_10",
+  "rig": "indoor_forward",
+  "environment": "indoor",
+  "n_frames_used": 410,
+  "n_frames_in_recording": 819,
+  "fps_measured": 15.072243783239902,
+  "truth_span_s": 29.89800000190735,
+  "truth_rows": 14950,
+  "truth_dt_s": 0.002000093460083008,
+  "clock": {
+   "offset_gt_minus_imu_s": 0.0088719921186469,
+   "offset_peak_corr": 0.974709526394892,
+   "offset_minus_epoch_diff_s": null,
+   "drift_span_s": null,
+   "images_minus_imu_first_s": null
+  },
+  "clock_offset_applied_s": 0.0,
+  "kalibr_timeshift_cam_imu_s": -0.016684572091862235,
+  "quat_orthonormality_max_err": 8.881784197001252e-16,
+  "quat_convention": {
+   "body_to_world_median_residual_deg": 6.148777187139643,
+   "world_to_body_median_residual_deg": 28.47134915023713,
+   "reading_used": "body_to_world"
+  },
+  "world_frame": {
+   "up_world": [
+    0.0021786997809840956,
+    -0.0002106391629526243,
+    -0.9999976044463343
+   ],
+   "horizon_angle_deg": 179.87458754507432,
+   "median_residual_deg": 6.126608115499913,
+   "residual_median": 6.126608115499913
+  },
+  "world_frame_with_drag": {
+   "up_world": [
+    -0.003033189338501761,
+    0.0012487777100762968,
+    -0.9999946201438624
+   ],
+   "horizon_angle_deg": 179.8120582977291,
+   "median_residual_deg": 2.108587441681218,
+   "residual_median": 2.108587441681218
+  },
+  "flatness_residual_kd0295": {
+   "n": 410,
+   "median_deg": 2.2065698207588085,
+   "mean_deg": 2.3175252155649853,
+   "trimmed_rmse_5pct_deg": 2.376320834119548,
+   "trimmed_rmse_10pct_deg": 2.241482103738669,
+   "rmse_deg": 2.5975663636953357,
+   "p75_deg": 3.032828151019139,
+   "p90_deg": 3.7590332524659167,
+   "p99_deg": 5.775322360055119,
+   "frac_over_10_deg": 0.0,
+   "frac_over_20_deg": 0.0
+  },
+  "rest_segment": {
+   "n_frames": 5,
+   "tilt_deg_median": 1.5606275531018137,
+   "accel_norm_median_mps2": 0.11918482332029147
+  },
+  "mount": {
+   "R_cb": [
+    [
+     -0.028228787368606456,
+     0.014401251861751119,
+     0.999497743623523
+    ],
+    [
+     -0.999601488301944,
+     -0.00041887083271471837,
+     -0.028225682131089447
+    ],
+    [
+     1.2175294828553618e-05,
+     -0.9998962088597202,
+     0.014407337010089172
+    ]
+   ],
+   "t_cam_imu_m": [
+    0.02172388268966517,
+    -6.605455433829172e-05,
+    -0.00048817563004522853
+   ],
+   "optical_axis_elevation_deg": -0.8255081650225526
+  },
+  "kinematics": {
+   "speed_median_mps": 4.339283204905529,
+   "speed_p95_mps": 7.376622581508735,
+   "speed_max_mps": 8.463469703024742,
+   "implied_tilt_median_deg": 22.52787670037693,
+   "implied_tilt_p90_deg": 34.33394096330854,
+   "frac_implied_tilt_ge_10deg": 0.7926829268292683,
+   "body_tilt_median_deg": 23.10426752166002
+  },
+  "flatness_residual_kd0": {
+   "n": 410,
+   "median_deg": 6.148777187139643,
+   "mean_deg": 6.403889186620871,
+   "trimmed_rmse_5pct_deg": 6.561361140743199,
+   "trimmed_rmse_10pct_deg": 6.2714599448634045,
+   "rmse_deg": 6.942514266566137,
+   "p75_deg": 8.306719806941492,
+   "p90_deg": 9.741239707914161,
+   "p99_deg": 12.83019681054181,
+   "frac_over_10_deg": 0.09024390243902439,
+   "frac_over_20_deg": 0.0
+  }
+ },
+ {
+  "seq": "outdoor_forward_1",
+  "rig": "outdoor_forward",
+  "environment": "outdoor",
+  "n_frames_used": 450,
+  "n_frames_in_recording": 1165,
+  "fps_measured": 15.072044372110417,
+  "truth_span_s": 42.59800000000007,
+  "truth_rows": 21300,
+  "truth_dt_s": 0.0019999999999527063,
+  "clock": {
+   "offset_gt_minus_imu_s": -0.0053361059909351125,
+   "offset_peak_corr": 0.863922232638191,
+   "offset_minus_epoch_diff_s": null,
+   "drift_span_s": null,
+   "images_minus_imu_first_s": null
+  },
+  "clock_offset_applied_s": 0.0,
+  "kalibr_timeshift_cam_imu_s": -0.007999243205055177,
+  "quat_orthonormality_max_err": 8.881784197001252e-16,
+  "quat_convention": {
+   "body_to_world_median_residual_deg": 9.14057116337682,
+   "world_to_body_median_residual_deg": 18.69185487420878,
+   "reading_used": "body_to_world"
+  },
+  "world_frame": {
+   "up_world": [
+    -0.11470082319793123,
+    -0.00010319399029865051,
+    -0.9934000757543344
+   ],
+   "horizon_angle_deg": 173.41362802684296,
+   "median_residual_deg": 7.560968515682001,
+   "residual_median": 7.560968515682001
+  },
+  "world_frame_with_drag": {
+   "up_world": [
+    -0.022114094781744476,
+    -0.00011311766924539742,
+    -0.9997554471051293
+   ],
+   "horizon_angle_deg": 178.73283582727925,
+   "median_residual_deg": 1.4434741782640264,
+   "residual_median": 1.4434741782640264
+  },
+  "flatness_residual_kd0295": {
+   "n": 450,
+   "median_deg": 1.8836600494368163,
+   "mean_deg": 2.2483066958917255,
+   "trimmed_rmse_5pct_deg": 2.1583185491920256,
+   "trimmed_rmse_10pct_deg": 1.9478736330999433,
+   "rmse_deg": 2.854171095307016,
+   "p75_deg": 2.5838320801200383,
+   "p90_deg": 3.621596208768932,
+   "p99_deg": 9.278624340155803,
+   "frac_over_10_deg": 0.0,
+   "frac_over_20_deg": 0.0
+  },
+  "rest_segment": {
+   "n_frames": 5,
+   "tilt_deg_median": 9.183042076899552,
+   "accel_norm_median_mps2": 0.0627687600390345
+  },
+  "mount": {
+   "R_cb": [
+    [
+     -0.03179778293757218,
+     0.012827844120885779,
+     0.9994120008362244
+    ],
+    [
+     -0.9994933985910031,
+     0.0009515801497960164,
+     -0.03181258663210035
+    ],
+    [
+     -0.001359107523862424,
+     -0.9999172670328424,
+     0.012791087377928778
+    ]
+   ],
+   "t_cam_imu_m": [
+    0.021115239798621798,
+    -0.0008992998316121829,
+    -0.009491094814035777
+   ],
+   "optical_axis_elevation_deg": -0.7328953081325339
+  },
+  "kinematics": {
+   "speed_median_mps": 6.179230820012249,
+   "speed_p95_mps": 8.028248004071298,
+   "speed_max_mps": 8.396030922375783,
+   "implied_tilt_median_deg": 14.77241497787287,
+   "implied_tilt_p90_deg": 26.4640081642794,
+   "frac_implied_tilt_ge_10deg": 0.7444444444444445,
+   "body_tilt_median_deg": 17.905675114170716
+  },
+  "flatness_residual_kd0": {
+   "n": 450,
+   "median_deg": 9.14057116337682,
+   "mean_deg": 8.69393955015202,
+   "trimmed_rmse_5pct_deg": 8.85866865399,
+   "trimmed_rmse_10pct_deg": 8.674063055351048,
+   "rmse_deg": 9.047731555127433,
+   "p75_deg": 10.657178507659975,
+   "p90_deg": 11.435316666364065,
+   "p99_deg": 12.323314302392628,
+   "frac_over_10_deg": 0.37333333333333335,
+   "frac_over_20_deg": 0.0
+  }
+ },
+ {
+  "seq": "outdoor_forward_3",
+  "rig": "outdoor_forward",
+  "environment": "outdoor",
+  "n_frames_used": 450,
+  "n_frames_in_recording": 2224,
+  "fps_measured": 15.070908625044014,
+  "truth_span_s": 85.69799999999987,
+  "truth_rows": 42850,
+  "truth_dt_s": 0.0019999999999527063,
+  "clock": {
+   "offset_gt_minus_imu_s": 0.006194479979920543,
+   "offset_peak_corr": 0.9519550929543447,
+   "offset_minus_epoch_diff_s": null,
+   "drift_span_s": null,
+   "images_minus_imu_first_s": null
+  },
+  "clock_offset_applied_s": 0.0,
+  "kalibr_timeshift_cam_imu_s": -0.007999243205055177,
+  "quat_orthonormality_max_err": 8.881784197001252e-16,
+  "quat_convention": {
+   "body_to_world_median_residual_deg": 11.505479412824974,
+   "world_to_body_median_residual_deg": 27.324350097074515,
+   "reading_used": "body_to_world"
+  },
+  "world_frame": {
+   "up_world": [
+    0.003147358167980943,
+    1.6060857972617423e-06,
+    -0.9999950470547256
+   ],
+   "horizon_angle_deg": 179.81966933915683,
+   "median_residual_deg": 11.483399349252895,
+   "residual_median": 11.483399349252895
+  },
+  "world_frame_with_drag": {
+   "up_world": [
+    -0.0002089186763335909,
+    1.7830355506943203e-05,
+    -0.9999999780175323
+   ],
+   "horizon_angle_deg": 179.98798632571328,
+   "median_residual_deg": 1.6710871331978072,
+   "residual_median": 1.6710871331978072
+  },
+  "flatness_residual_kd0295": {
+   "n": 450,
+   "median_deg": 1.6768649487306264,
+   "mean_deg": 2.032446671123783,
+   "trimmed_rmse_5pct_deg": 1.943976801139188,
+   "trimmed_rmse_10pct_deg": 1.780029271578821,
+   "rmse_deg": 2.636150265284423,
+   "p75_deg": 2.4409516771566513,
+   "p90_deg": 3.3462799457422747,
+   "p99_deg": 9.089131739706387,
+   "frac_over_10_deg": 0.0,
+   "frac_over_20_deg": 0.0
+  },
+  "rest_segment": {
+   "n_frames": 5,
+   "tilt_deg_median": 8.95859955516582,
+   "accel_norm_median_mps2": 0.07625338248333427
+  },
+  "mount": {
+   "R_cb": [
+    [
+     -0.03179778293757218,
+     0.012827844120885779,
+     0.9994120008362244
+    ],
+    [
+     -0.9994933985910031,
+     0.0009515801497960164,
+     -0.03181258663210035
+    ],
+    [
+     -0.001359107523862424,
+     -0.9999172670328424,
+     0.012791087377928778
+    ]
+   ],
+   "t_cam_imu_m": [
+    0.021115239798621798,
+    -0.0008992998316121829,
+    -0.009491094814035777
+   ],
+   "optical_axis_elevation_deg": -0.7328953081325339
+  },
+  "kinematics": {
+   "speed_median_mps": 8.360404421400062,
+   "speed_p95_mps": 10.864887748563321,
+   "speed_max_mps": 11.28593214074271,
+   "implied_tilt_median_deg": 28.43594218804843,
+   "implied_tilt_p90_deg": 40.783645099509954,
+   "frac_implied_tilt_ge_10deg": 0.8266666666666667,
+   "body_tilt_median_deg": 30.98913106342691
+  },
+  "flatness_residual_kd0": {
+   "n": 450,
+   "median_deg": 11.505479412824974,
+   "mean_deg": 11.085756026514618,
+   "trimmed_rmse_5pct_deg": 11.391599044981225,
+   "trimmed_rmse_10pct_deg": 11.037516313724787,
+   "rmse_deg": 11.792426373908423,
+   "p75_deg": 14.066004800083537,
+   "p90_deg": 15.984024258332445,
+   "p99_deg": 18.263123146159124,
+   "frac_over_10_deg": 0.6222222222222222,
+   "frac_over_20_deg": 0.0044444444444444444
+  }
+ },
+ {
+  "seq": "outdoor_forward_5",
+  "rig": "outdoor_forward",
+  "environment": "outdoor",
+  "n_frames_used": 223,
+  "n_frames_in_recording": 445,
+  "fps_measured": 15.063369789089306,
+  "truth_span_s": 17.59800000000007,
+  "truth_rows": 8800,
+  "truth_dt_s": 0.0019999999999527063,
+  "clock": {
+   "offset_gt_minus_imu_s": 0.002407161007117943,
+   "offset_peak_corr": 0.8612655410868343,
+   "offset_minus_epoch_diff_s": null,
+   "drift_span_s": null,
+   "images_minus_imu_first_s": null
+  },
+  "clock_offset_applied_s": 0.0,
+  "kalibr_timeshift_cam_imu_s": -0.007999243205055177,
+  "quat_orthonormality_max_err": 6.661338147750939e-16,
+  "quat_convention": {
+   "body_to_world_median_residual_deg": 10.369194857022062,
+   "world_to_body_median_residual_deg": 37.865822614757626,
+   "reading_used": "body_to_world"
+  },
+  "world_frame": {
+   "up_world": [
+    -0.10213017258979186,
+    -0.00023848914080466533,
+    -0.9947710143393348
+   ],
+   "horizon_angle_deg": 174.13813542737626,
+   "median_residual_deg": 8.205152163413347,
+   "residual_median": 8.205152163413347
+  },
+  "world_frame_with_drag": {
+   "up_world": [
+    -0.024574018105980814,
+    8.509302292628598e-06,
+    -0.9996980131828405
+   ],
+   "horizon_angle_deg": 178.59187064408246,
+   "median_residual_deg": 2.7471814678338875,
+   "residual_median": 2.7471814678338875
+  },
+  "flatness_residual_kd0295": {
+   "n": 223,
+   "median_deg": 3.200563140570859,
+   "mean_deg": 4.309559059568963,
+   "trimmed_rmse_5pct_deg": 4.612603252762216,
+   "trimmed_rmse_10pct_deg": 4.1171833724715805,
+   "rmse_deg": 5.259793899854024,
+   "p75_deg": 5.396998390800132,
+   "p90_deg": 9.485170441062959,
+   "p99_deg": 12.51503819550508,
+   "frac_over_10_deg": 0.07623318385650224,
+   "frac_over_20_deg": 0.0
+  },
+  "rest_segment": {
+   "n_frames": 5,
+   "tilt_deg_median": 8.884268586847712,
+   "accel_norm_median_mps2": 0.6380980433387148
+  },
+  "mount": {
+   "R_cb": [
+    [
+     -0.03179778293757218,
+     0.012827844120885779,
+     0.9994120008362244
+    ],
+    [
+     -0.9994933985910031,
+     0.0009515801497960164,
+     -0.03181258663210035
+    ],
+    [
+     -0.001359107523862424,
+     -0.9999172670328424,
+     0.012791087377928778
+    ]
+   ],
+   "t_cam_imu_m": [
+    0.021115239798621798,
+    -0.0008992998316121829,
+    -0.009491094814035777
+   ],
+   "optical_axis_elevation_deg": -0.7328953081325339
+  },
+  "kinematics": {
+   "speed_median_mps": 7.617658135705233,
+   "speed_p95_mps": 16.117742428163833,
+   "speed_max_mps": 20.3553161575891,
+   "implied_tilt_median_deg": 19.17573711658787,
+   "implied_tilt_p90_deg": 35.31588574479921,
+   "frac_implied_tilt_ge_10deg": 0.7713004484304933,
+   "body_tilt_median_deg": 26.967087848069976
+  },
+  "flatness_residual_kd0": {
+   "n": 223,
+   "median_deg": 10.369194857022062,
+   "mean_deg": 14.089084596681666,
+   "trimmed_rmse_5pct_deg": 15.240275246394779,
+   "trimmed_rmse_10pct_deg": 13.326206750140386,
+   "rmse_deg": 18.306334086617806,
+   "p75_deg": 20.460353393474705,
+   "p90_deg": 31.545027683545516,
+   "p99_deg": 51.120700320688215,
+   "frac_over_10_deg": 0.5381165919282511,
+   "frac_over_20_deg": 0.26905829596412556
+  }
+ },
+ {
+  "seq": "indoor_45_2",
+  "rig": "indoor_45",
+  "environment": "indoor",
+  "n_frames_used": 450,
+  "n_frames_in_recording": 1265,
+  "fps_measured": 15.063178283624845,
+  "truth_span_s": 49.39800000000014,
+  "truth_rows": 24700,
+  "truth_dt_s": 0.0019999999999527063,
+  "clock": {
+   "offset_gt_minus_imu_s": 0.016619685009215103,
+   "offset_peak_corr": 0.9405347896418689,
+   "offset_minus_epoch_diff_s": null,
+   "drift_span_s": null,
+   "images_minus_imu_first_s": null
+  },
+  "clock_offset_applied_s": 0.0,
+  "kalibr_timeshift_cam_imu_s": -0.01484888826656275,
+  "quat_orthonormality_max_err": 8.881784197001252e-16,
+  "quat_convention": {
+   "body_to_world_median_residual_deg": 5.8850579024027425,
+   "world_to_body_median_residual_deg": 15.244841511978874,
+   "reading_used": "body_to_world"
+  },
+  "world_frame": {
+   "up_world": [
+    0.06361997818530316,
+    6.72568820508418e-05,
+    -0.9979741949831235
+   ],
+   "horizon_angle_deg": 176.35237826406967,
+   "median_residual_deg": 5.306627740459074,
+   "residual_median": 5.306627740459074
+  },
+  "world_frame_with_drag": {
+   "up_world": [
+    -0.005636160576284649,
+    2.3662435126023254e-05,
+    -0.99998411644088
+   ],
+   "horizon_angle_deg": 179.67706723060198,
+   "median_residual_deg": 1.9426700623380133,
+   "residual_median": 1.9426700623380133
+  },
+  "flatness_residual_kd0295": {
+   "n": 450,
+   "median_deg": 1.973227664231775,
+   "mean_deg": 2.196641978757648,
+   "trimmed_rmse_5pct_deg": 2.2260508088434654,
+   "trimmed_rmse_10pct_deg": 2.057931390965694,
+   "rmse_deg": 2.593702027267929,
+   "p75_deg": 2.7509051000072424,
+   "p90_deg": 3.8557548349909934,
+   "p99_deg": 6.942845253488796,
+   "frac_over_10_deg": 0.0,
+   "frac_over_20_deg": 0.0
+  },
+  "rest_segment": {
+   "n_frames": 5,
+   "tilt_deg_median": 1.1631940453108371,
+   "accel_norm_median_mps2": 0.11784523212437038
+  },
+  "mount": {
+   "R_cb": [
+    [
+     -0.027256691772188965,
+     -0.7139206120417471,
+     0.6996959571525168
+    ],
+    [
+     -0.9996260641688061,
+     0.017931469899155242,
+     -0.020644471939022302
+    ],
+    [
+     0.0021919370477445077,
+     -0.6999970157716363,
+     -0.714142404092339
+    ]
+   ],
+   "t_cam_imu_m": [
+    0.02422852666805565,
+    0.008974432843748055,
+    -0.000638971731537894
+   ],
+   "optical_axis_elevation_deg": 45.5729600860519
+  },
+  "kinematics": {
+   "speed_median_mps": 4.172072368177633,
+   "speed_p95_mps": 5.998559148793168,
+   "speed_max_mps": 6.929785608130114,
+   "implied_tilt_median_deg": 14.091864579948043,
+   "implied_tilt_p90_deg": 26.813297596760282,
+   "frac_implied_tilt_ge_10deg": 0.6533333333333333,
+   "body_tilt_median_deg": 15.817613547672991
+  },
+  "flatness_residual_kd0": {
+   "n": 450,
+   "median_deg": 5.8850579024027425,
+   "mean_deg": 5.55416236650966,
+   "trimmed_rmse_5pct_deg": 5.728282852783285,
+   "trimmed_rmse_10pct_deg": 5.5332632449980705,
+   "rmse_deg": 5.995411578156091,
+   "p75_deg": 7.115688962871384,
+   "p90_deg": 8.124493536702845,
+   "p99_deg": 10.454379145628888,
+   "frac_over_10_deg": 0.015555555555555555,
+   "frac_over_20_deg": 0.0
+  }
+ },
+ {
+  "seq": "indoor_45_4",
+  "rig": "indoor_45",
+  "environment": "indoor",
+  "n_frames_used": 450,
+  "n_frames_in_recording": 1154,
+  "fps_measured": 15.070593826294118,
+  "truth_span_s": 43.197999999999865,
+  "truth_rows": 21600,
+  "truth_dt_s": 0.0019999999999527063,
+  "clock": {
+   "offset_gt_minus_imu_s": 0.008963256007772182,
+   "offset_peak_corr": 0.920549523518708,
+   "offset_minus_epoch_diff_s": null,
+   "drift_span_s": null,
+   "images_minus_imu_first_s": null
+  },
+  "clock_offset_applied_s": 0.0,
+  "kalibr_timeshift_cam_imu_s": -0.01484888826656275,
+  "quat_orthonormality_max_err": 8.881784197001252e-16,
+  "quat_convention": {
+   "body_to_world_median_residual_deg": 5.285064594166059,
+   "world_to_body_median_residual_deg": 13.808794349931514,
+   "reading_used": "body_to_world"
+  },
+  "world_frame": {
+   "up_world": [
+    0.06626575488542652,
+    -0.0010574813030068953,
+    -0.997801448917949
+   ],
+   "horizon_angle_deg": 176.19998325054402,
+   "median_residual_deg": 4.004656489938309,
+   "residual_median": 4.004656489938309
+  },
+  "world_frame_with_drag": {
+   "up_world": [
+    -0.01435304609956955,
+    1.1568915823538941e-05,
+    -0.999896989661347
+   ],
+   "horizon_angle_deg": 179.17760252952658,
+   "median_residual_deg": 1.7627692583852799,
+   "residual_median": 1.7627692583852799
+  },
+  "flatness_residual_kd0295": {
+   "n": 450,
+   "median_deg": 1.8300704691495322,
+   "mean_deg": 1.9911804725453033,
+   "trimmed_rmse_5pct_deg": 2.001301643301636,
+   "trimmed_rmse_10pct_deg": 1.8723640129085,
+   "rmse_deg": 2.236839874992751,
+   "p75_deg": 2.4190663833312356,
+   "p90_deg": 3.2411064051187615,
+   "p99_deg": 5.060886599400164,
+   "frac_over_10_deg": 0.0,
+   "frac_over_20_deg": 0.0
+  },
+  "rest_segment": {
+   "n_frames": 5,
+   "tilt_deg_median": 1.1577552258040427,
+   "accel_norm_median_mps2": 0.06539635775262002
+  },
+  "mount": {
+   "R_cb": [
+    [
+     -0.027256691772188965,
+     -0.7139206120417471,
+     0.6996959571525168
+    ],
+    [
+     -0.9996260641688061,
+     0.017931469899155242,
+     -0.020644471939022302
+    ],
+    [
+     0.0021919370477445077,
+     -0.6999970157716363,
+     -0.714142404092339
+    ]
+   ],
+   "t_cam_imu_m": [
+    0.02422852666805565,
+    0.008974432843748055,
+    -0.000638971731537894
+   ],
+   "optical_axis_elevation_deg": 45.5729600860519
+  },
+  "kinematics": {
+   "speed_median_mps": 3.9713406417058055,
+   "speed_p95_mps": 5.6778388372628985,
+   "speed_max_mps": 5.884123661556972,
+   "implied_tilt_median_deg": 11.767333194721662,
+   "implied_tilt_p90_deg": 26.668572550401624,
+   "frac_implied_tilt_ge_10deg": 0.5888888888888889,
+   "body_tilt_median_deg": 14.104729070677564
+  },
+  "flatness_residual_kd0": {
+   "n": 450,
+   "median_deg": 5.285064594166059,
+   "mean_deg": 5.108651194048522,
+   "trimmed_rmse_5pct_deg": 5.275836961067771,
+   "trimmed_rmse_10pct_deg": 5.104359467506353,
+   "rmse_deg": 5.491406599573567,
+   "p75_deg": 6.611740124980128,
+   "p90_deg": 7.510318652168029,
+   "p99_deg": 8.706644591854875,
+   "frac_over_10_deg": 0.006666666666666667,
+   "frac_over_20_deg": 0.0
+  }
+ },
+ {
+  "seq": "indoor_45_9",
+  "rig": "indoor_45",
+  "environment": "indoor",
+  "n_frames_used": 290,
+  "n_frames_in_recording": 579,
+  "fps_measured": 15.07150736955874,
+  "truth_span_s": 21.39799999999991,
+  "truth_rows": 10700,
+  "truth_dt_s": 0.0019999999999527063,
+  "clock": {
+   "offset_gt_minus_imu_s": 0.01534695200878148,
+   "offset_peak_corr": 0.967231463472507,
+   "offset_minus_epoch_diff_s": null,
+   "drift_span_s": null,
+   "images_minus_imu_first_s": null
+  },
+  "clock_offset_applied_s": 0.0,
+  "kalibr_timeshift_cam_imu_s": -0.01484888826656275,
+  "quat_orthonormality_max_err": 8.881784197001252e-16,
+  "quat_convention": {
+   "body_to_world_median_residual_deg": 7.638621776537806,
+   "world_to_body_median_residual_deg": 30.235715815988527,
+   "reading_used": "body_to_world"
+  },
+  "world_frame": {
+   "up_world": [
+    0.120850044111355,
+    0.0027045930097067683,
+    -0.9926670902245804
+   ],
+   "horizon_angle_deg": 173.05708984454688,
+   "median_residual_deg": 6.126659425549443,
+   "residual_median": 6.126659425549443
+  },
+  "world_frame_with_drag": {
+   "up_world": [
+    -0.006747414327776601,
+    5.4818428991684626e-05,
+    -0.9999772344382791
+   ],
+   "horizon_angle_deg": 179.61338594401042,
+   "median_residual_deg": 2.3872275089833783,
+   "residual_median": 2.3872275089833783
+  },
+  "flatness_residual_kd0295": {
+   "n": 290,
+   "median_deg": 2.4674541876778413,
+   "mean_deg": 2.9021131006951677,
+   "trimmed_rmse_5pct_deg": 2.8259886768100477,
+   "trimmed_rmse_10pct_deg": 2.591963919563407,
+   "rmse_deg": 3.6518643872196064,
+   "p75_deg": 3.4122991302873547,
+   "p90_deg": 4.7453083442461885,
+   "p99_deg": 12.729132449790798,
+   "frac_over_10_deg": 0.020689655172413793,
+   "frac_over_20_deg": 0.0
+  },
+  "rest_segment": {
+   "n_frames": 5,
+   "tilt_deg_median": 1.8211298110588428,
+   "accel_norm_median_mps2": 0.6230629316191636
+  },
+  "mount": {
+   "R_cb": [
+    [
+     -0.027256691772188965,
+     -0.7139206120417471,
+     0.6996959571525168
+    ],
+    [
+     -0.9996260641688061,
+     0.017931469899155242,
+     -0.020644471939022302
+    ],
+    [
+     0.0021919370477445077,
+     -0.6999970157716363,
+     -0.714142404092339
+    ]
+   ],
+   "t_cam_imu_m": [
+    0.02422852666805565,
+    0.008974432843748055,
+    -0.000638971731537894
+   ],
+   "optical_axis_elevation_deg": 45.5729600860519
+  },
+  "kinematics": {
+   "speed_median_mps": 5.916438725841877,
+   "speed_p95_mps": 9.902321017741805,
+   "speed_max_mps": 10.360068804530957,
+   "implied_tilt_median_deg": 27.16540959237841,
+   "implied_tilt_p90_deg": 48.132616782402124,
+   "frac_implied_tilt_ge_10deg": 0.8827586206896552,
+   "body_tilt_median_deg": 30.363093440430553
+  },
+  "flatness_residual_kd0": {
+   "n": 290,
+   "median_deg": 7.638621776537806,
+   "mean_deg": 7.575147388641652,
+   "trimmed_rmse_5pct_deg": 7.727330861507829,
+   "trimmed_rmse_10pct_deg": 7.404272471722236,
+   "rmse_deg": 8.140129449766604,
+   "p75_deg": 9.528914578143917,
+   "p90_deg": 11.220152349550695,
+   "p99_deg": 14.737327550512145,
+   "frac_over_10_deg": 0.1896551724137931,
+   "frac_over_20_deg": 0.0
+  }
+ },
+ {
+  "seq": "indoor_45_13",
+  "rig": "indoor_45",
+  "environment": "indoor",
+  "n_frames_used": 450,
+  "n_frames_in_recording": 1037,
+  "fps_measured": 15.071829021329759,
+  "truth_span_s": 37.398000000000025,
+  "truth_rows": 18700,
+  "truth_dt_s": 0.0019999999999527063,
+  "clock": {
+   "offset_gt_minus_imu_s": 0.017083107006970168,
+   "offset_peak_corr": 0.9370365944692644,
+   "offset_minus_epoch_diff_s": null,
+   "drift_span_s": null,
+   "images_minus_imu_first_s": null
+  },
+  "clock_offset_applied_s": 0.0,
+  "kalibr_timeshift_cam_imu_s": -0.01484888826656275,
+  "quat_orthonormality_max_err": 8.881784197001252e-16,
+  "quat_convention": {
+   "body_to_world_median_residual_deg": 5.906231960053171,
+   "world_to_body_median_residual_deg": 21.048455019857748,
+   "reading_used": "body_to_world"
+  },
+  "world_frame": {
+   "up_world": [
+    0.054627272019799875,
+    0.0012770457815859699,
+    -0.9985059991335788
+   ],
+   "horizon_angle_deg": 176.8676726725784,
+   "median_residual_deg": 4.921578177363433,
+   "residual_median": 4.921578177363433
+  },
+  "world_frame_with_drag": {
+   "up_world": [
+    -0.010266789635827474,
+    -1.0758765609087256e-05,
+    -0.9999472950685064
+   ],
+   "horizon_angle_deg": 179.4117456270615,
+   "median_residual_deg": 1.872077455712387,
+   "residual_median": 1.872077455712387
+  },
+  "flatness_residual_kd0295": {
+   "n": 450,
+   "median_deg": 1.9742872100684616,
+   "mean_deg": 2.037881586257137,
+   "trimmed_rmse_5pct_deg": 2.0916258200858855,
+   "trimmed_rmse_10pct_deg": 1.9552922154425545,
+   "rmse_deg": 2.288126442960923,
+   "p75_deg": 2.556636434761005,
+   "p90_deg": 3.339903733916631,
+   "p99_deg": 4.941083491385342,
+   "frac_over_10_deg": 0.0,
+   "frac_over_20_deg": 0.0
+  },
+  "rest_segment": {
+   "n_frames": 5,
+   "tilt_deg_median": 0.3741330157651949,
+   "accel_norm_median_mps2": 0.10287130104437686
+  },
+  "mount": {
+   "R_cb": [
+    [
+     -0.027256691772188965,
+     -0.7139206120417471,
+     0.6996959571525168
+    ],
+    [
+     -0.9996260641688061,
+     0.017931469899155242,
+     -0.020644471939022302
+    ],
+    [
+     0.0021919370477445077,
+     -0.6999970157716363,
+     -0.714142404092339
+    ]
+   ],
+   "t_cam_imu_m": [
+    0.02422852666805565,
+    0.008974432843748055,
+    -0.000638971731537894
+   ],
+   "optical_axis_elevation_deg": 45.5729600860519
+  },
+  "kinematics": {
+   "speed_median_mps": 4.347266253885257,
+   "speed_p95_mps": 6.843293986659133,
+   "speed_max_mps": 7.718829133589866,
+   "implied_tilt_median_deg": 15.104171966008165,
+   "implied_tilt_p90_deg": 30.566334081726886,
+   "frac_implied_tilt_ge_10deg": 0.74,
+   "body_tilt_median_deg": 17.189966158760377
+  },
+  "flatness_residual_kd0": {
+   "n": 450,
+   "median_deg": 5.906231960053171,
+   "mean_deg": 5.792521544197076,
+   "trimmed_rmse_5pct_deg": 6.0049588694828975,
+   "trimmed_rmse_10pct_deg": 5.767237180427719,
+   "rmse_deg": 6.278955360515065,
+   "p75_deg": 7.588363733258702,
+   "p90_deg": 8.82249497972972,
+   "p99_deg": 10.406220797788858,
+   "frac_over_10_deg": 0.03111111111111111,
+   "frac_over_20_deg": 0.0
+  }
+ },
+ {
+  "seq": "outdoor_45_1",
+  "rig": "outdoor_45",
+  "environment": "outdoor",
+  "n_frames_used": 253,
+  "n_frames_in_recording": 506,
+  "fps_measured": 15.063916877182868,
+  "truth_span_s": 19.99799999999999,
+  "truth_rows": 10000,
+  "truth_dt_s": 0.0020000000000095497,
+  "clock": {
+   "offset_gt_minus_imu_s": -0.004403981990461513,
+   "offset_peak_corr": 0.8634320004298357,
+   "offset_minus_epoch_diff_s": null,
+   "drift_span_s": null,
+   "images_minus_imu_first_s": null
+  },
+  "clock_offset_applied_s": 0.0,
+  "kalibr_timeshift_cam_imu_s": -0.008637511810764048,
+  "quat_orthonormality_max_err": 8.881784197001252e-16,
+  "quat_convention": {
+   "body_to_world_median_residual_deg": 10.25291395716934,
+   "world_to_body_median_residual_deg": 33.51893466412709,
+   "reading_used": "body_to_world"
+  },
+  "world_frame": {
+   "up_world": [
+    -0.002336949953139956,
+    0.004652806614717518,
+    -0.9999864449358914
+   ],
+   "horizon_angle_deg": 179.70167550867805,
+   "median_residual_deg": 10.089800671495968,
+   "residual_median": 10.089800671495968
+  },
+  "world_frame_with_drag": {
+   "up_world": [
+    -0.016062129649670236,
+    0.0013299983449691426,
+    -0.9998701111121981
+   ],
+   "horizon_angle_deg": 179.07651822241763,
+   "median_residual_deg": 2.0562665057931095,
+   "residual_median": 2.0562665057931095
+  },
+  "flatness_residual_kd0295": {
+   "n": 253,
+   "median_deg": 2.331332025592844,
+   "mean_deg": 2.479051419802803,
+   "trimmed_rmse_5pct_deg": 2.6109071973886193,
+   "trimmed_rmse_10pct_deg": 2.441436543100469,
+   "rmse_deg": 2.815727349636891,
+   "p75_deg": 3.2534037977170183,
+   "p90_deg": 4.579155696274691,
+   "p99_deg": 5.4358652036627735,
+   "frac_over_10_deg": 0.0,
+   "frac_over_20_deg": 0.0
+  },
+  "rest_segment": {
+   "n_frames": 5,
+   "tilt_deg_median": 4.732437129139934,
+   "accel_norm_median_mps2": 0.09240569910014641
+  },
+  "mount": {
+   "R_cb": [
+    [
+     -0.024041523213909927,
+     -0.7184527320882621,
+     0.6951601807615744
+    ],
+    [
+     -0.9996640790624955,
+     0.010542697330412382,
+     -0.023676582632001453
+    ],
+    [
+     0.009681642096550924,
+     -0.6954958830129113,
+     -0.7184648512755534
+    ]
+   ],
+   "t_cam_imu_m": [
+    0.02023430742078562,
+    0.008311861463499775,
+    -0.026628438421085154
+   ],
+   "optical_axis_elevation_deg": 45.92788073403746
+  },
+  "kinematics": {
+   "speed_median_mps": 6.665072581160437,
+   "speed_p95_mps": 11.648432567597034,
+   "speed_max_mps": 11.87355300864727,
+   "implied_tilt_median_deg": 27.60297485130603,
+   "implied_tilt_p90_deg": 44.3005439150606,
+   "frac_implied_tilt_ge_10deg": 0.8379446640316206,
+   "body_tilt_median_deg": 30.939666536371718
+  },
+  "flatness_residual_kd0": {
+   "n": 253,
+   "median_deg": 10.25291395716934,
+   "mean_deg": 10.443682659754852,
+   "trimmed_rmse_5pct_deg": 10.761656072129073,
+   "trimmed_rmse_10pct_deg": 10.287622342199038,
+   "rmse_deg": 11.39046741637125,
+   "p75_deg": 13.556183816250224,
+   "p90_deg": 16.83520302550675,
+   "p99_deg": 20.393209017982954,
+   "frac_over_10_deg": 0.5296442687747036,
+   "frac_over_20_deg": 0.019762845849802372
+  }
+ }
+]

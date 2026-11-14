@@ -14,7 +14,7 @@ from src.depicted.sync import estimate_offset
 
 
 def _signals(tau_true: float, epoch_shift: float = 0.0, dur_imu: float = 60.0,
-             dur_gt: float = 20.0, seed: int = 0):
+             dur_gt: float = 20.0, seed: int = 0, dur_gt_frac: float = 1.0):
     """|omega| observed twice, on two clocks: random attitude bursts plus noise.
 
     Deliberately non-periodic — a periodic test signal makes the cross-correlation ambiguous
@@ -33,10 +33,18 @@ def _signals(tau_true: float, epoch_shift: float = 0.0, dur_imu: float = 60.0,
             out = out + a * np.exp(-0.5 * ((t - c) / w) ** 2)
         return out
 
+    def vec(t, phase=0.0):
+        """Three axes with different burst patterns, so the peak is unique."""
+        return np.column_stack([
+            om(t),
+            0.7 * om(t + 4.3) * np.cos(2.0 * t + phase),
+            0.4 * om(t + 11.7) * np.sin(1.3 * t + phase),
+        ])
+
     t_imu = np.arange(0.0, dur_imu, 1 / fs)
     t_gt = np.arange(5.0, 5.0 + dur_gt, 1 / fs)
-    imu = om(t_imu) + rng.normal(0, 0.02, len(t_imu))
-    gt = om(t_gt - tau_true) + rng.normal(0, 0.02, len(t_gt))
+    imu = vec(t_imu) + rng.normal(0, 0.02, (len(t_imu), 3))
+    gt = vec(t_gt - tau_true) + rng.normal(0, 0.02, (len(t_gt), 3))
     return t_imu, imu, t_gt + epoch_shift, gt
 
 
@@ -46,7 +54,9 @@ def test_recovers_known_offset():
     rec = estimate_offset(t_imu, imu, t_gt, gt)
     assert abs(rec["offset_s"] - tau) < 0.01, rec["offset_s"]
     assert rec["peak_corr"] > 0.5
-    assert rec["n_usable_bins"] >= 1
+    assert rec["identifiable"] and rec["overlap_s"] > 5.0
+    # the synthetic truth covers a third of the IMU span, so no drift bin is fully covered
+    # and the drift must come back as unmeasurable rather than as a number
     if rec["drift_span_s"] is not None:
         assert abs(rec["drift_span_s"]) < 0.05
 

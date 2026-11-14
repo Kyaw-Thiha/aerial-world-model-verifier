@@ -125,11 +125,17 @@ class UzhTruth:
         return published_mount(self.meta)[0]
 
     def up_cam_truth(self) -> np.ndarray:
-        """World up in camera coordinates from truth attitude and the published mount."""
-        return np.einsum("ij,nj->ni", self.R_cb(), self.up_body)
+        """World up in camera coordinates from truth attitude and the published mount.
+
+        ``R_cb`` maps camera->body, so ``up_body = R_cb @ up_cam`` and therefore
+        ``up_cam = R_cb^T @ up_body``. Getting this backwards puts a 90-180 deg error into
+        every per-frame angle while leaving the body-frame agreement untouched, so the
+        direction is asserted in `tests/test_depicted_uzh.py`.
+        """
+        return np.einsum("ji,nj->ni", self.R_cb(), self.up_body)
 
     def up_cam_truth_for(self, R_cb: np.ndarray) -> np.ndarray:
-        return np.einsum("ij,nj->ni", np.asarray(R_cb, dtype=np.float64), self.up_body)
+        return np.einsum("ji,nj->ni", np.asarray(R_cb, dtype=np.float64), self.up_body)
 
     def yaw(self) -> np.ndarray:
         return Rotation.from_matrix(self.R_bw).as_euler("ZYX")[:, 0]
