@@ -86,7 +86,29 @@ null edit must reproduce the real clip's per-axis gain within 5 % and its depict
 
 ## 2. Results
 
-Filled from `results/e_verdict_v3/`.
+### 2.1 The edit-validity gate (checked before any detection number)
+
+Per clip, null edit against real: per-axis gain within 5 %, depicted lean within 0.5 deg median.
+
+| sequence | pairs | pass | max gain deviation (gx / gy) | depicted-lean median |
+| --- | --- | --- | --- | --- |
+| indoor_forward_10 | 3 | 3/3 | 0.33 % / 0.10 % | 0.038 deg |
+| indoor_forward_5 | 3 | 3/3 | 0.75 % / 0.29 % | 0.032 deg |
+| indoor_forward_9 | 3 | 3/3 | 0.76 % / 0.47 % | 0.049 deg |
+| outdoor_forward_1 | 3 | **2/3** | **8.48 %** / 6.03 % | 0.111 deg |
+| outdoor_forward_3 | 3 | **2/3** | **5.04 %** / 0.03 % | 0.145 deg |
+
+**Indoor forward passes everywhere, by two orders of magnitude** (worst gain deviation 0.8 %,
+worst lean deviation 0.05 deg): the v3 fixed crop makes the null edit a resampled copy of exactly
+the same pixels, and the estimator returns the same answer. That is the property E02 lacked.
+
+**Two outdoor clips fail the gate, on the gain criterion only**, at 8.5 % and 5.0 % against a 5 %
+bound, while their depicted lean agrees to 0.12-0.18 deg. The pixels are therefore identical and
+the failures are gain-estimation noise (`|g|` is small on those clips, so a 5 % relative bound
+is a fraction of a standard error). Under the pre-registered rule they still count as failures:
+**no detection claim is made on any outdoor sequence**, and the rule is not renegotiated after
+seeing the numbers. Since the frozen confidence gate abstains on every outdoor clip anyway
+(§2.3), the practical cost is nil — but the invalidation is recorded rather than explained away.
 
 ## 3. Reporting contract
 

@@ -19,9 +19,9 @@ The v2 fields are added per window into separate trees, so the three windows can
 against the same clips without ambiguity:
 
     data/clips_v3/         the v3 clips as exported (v1 fields only)
-    data/clips_v2_w0.37/   + lean_req/vel_req/tilt_req_deg at a 0.37 s window   (headline)
-    data/clips_v2_w0.10/   + ... at 0.10 s                                     (sensitivity)
-    data/clips_v2_w0.185/  + ... at 0.185 s                                    (sensitivity)
+    data/clips_v2_w370ms/  + lean_req/vel_req/tilt_req_deg at a 0.37 s window  (headline)
+    data/clips_v2_w100ms/  + ... at 0.10 s                                     (sensitivity)
+    data/clips_v2_w185ms/  + ... at 0.185 s                                    (sensitivity)
 
     python experiments/e_clips_v2_official.py --clips data/clips_v3 --out-root data
 """
@@ -94,12 +94,20 @@ def dense_required(gt: np.ndarray, t_frame: np.ndarray, window_s: float,
             "window_samples": int(w), "dt_s": dt, "masked_frames": int(np.isnan(lean_n).sum())}
 
 
+def _ulp(lean: np.ndarray) -> np.ndarray:
+    """Lean back to a unit up-vector, for angle comparisons."""
+    from src.depicted.clips import up_body_from_lean
+
+    u = up_body_from_lean(lean)
+    return u / np.maximum(np.linalg.norm(u, axis=1, keepdims=True), 1e-12)
+
+
 def build(clips_root: Path, out_root: Path, window_s: float, uzh_root: Path) -> dict:
-    tag = f"clips_v2_w{window_s:g}"
+    tag = f"clips_v2_w{int(round(window_s * 1000))}ms"
     out = out_root / tag
     if out.exists():
         shutil.rmtree(out)
-    made, rejected = 0, []
+    made, rejected, gaps = 0, [], []
     seqs = sorted({p.parent.name for p in clips_root.glob("*/*.npz")})
     for seq in seqs:
         tz = np.load(uzh_root / seq / "truth.npz")
@@ -113,14 +121,35 @@ def build(clips_root: Path, out_root: Path, window_s: float, uzh_root: Path) -> 
             d = np.load(npz)
             offset = float(meta.get("clock_offset_applied_s", 0.0))
             t_first_unix = float(tz["t_unix"][meta["index"][0]])
-            t_rel = np.asarray(d["t"], dtype=np.float64)          # already relative to frame 0
-            # the dense grid on the same relative clock as the clip
-            gt_rel = gt.copy()
-            gt_rel[:, 0] = gt[:, 0] - (t_first_unix + offset)
-            rec = dense_required(gt_rel, t_rel, window_s)
+            # The dense grid is put on the clock of the CLIP's first frame, and the frame times
+            # are then measured on that same origin. Sampling with d["t"] against a table whose
+            # origin is the start of the whole recording silently reads the wrong slice of
+            # trajectory for every clip after the first (caught by comparing lean_req against
+            # the truth-attitude lean: 18.6 deg apart instead of the 2-6 deg flatness residual).
+            # ``dense_required`` measures its own time from gt[0, 0], so the frame times must be
+            # expressed on that same origin: (clip start on the truth clock) - (table start).
+            t_frame = (t_first_unix + offset - float(gt[0, 0])) + np.asarray(d["t"], dtype=np.float64)
+            rec = dense_required(gt, t_frame, window_s)
             if np.isnan(rec["lean_req"]).all():
                 rejected.append(npz.name)
                 continue
+            # Guard against a mis-sampled path side: on a real clip the required lean must sit
+            # within the drag-free flatness residual of the truth attitude. E01 measured that
+            # residual at 4.0-11.5 deg on these sequences, so 15 deg is a generous ceiling.
+            if meta["condition"] == "real":
+                import numpy as _np
+
+                from src.depicted.clips import lean_from_up_body as _lfu
+                from src.depicted.metrics import angle_deg as _ang
+                from src.depicted.uzh import load_truth as _lt
+                _tr = _lt(uzh_root, seq)
+                _lt_lean = _lfu(_tr.up_body)[meta["index"][0]:meta["index"][1]]
+                ok = _np.isfinite(rec["lean_req"]).all(axis=1) & _np.isfinite(_lt_lean).all(axis=1)
+                gap = float(_np.median(_ang(_ulp(rec["lean_req"][ok]), _ulp(_lt_lean[ok]))))
+                gaps.append({"seq": seq, "clip": npz.stem, "gap_deg": gap})
+                if gap > 15.0:
+                    raise RuntimeError(f"{seq}/{npz.stem}: lean_req is {gap:.1f} deg from the "
+                                       "truth-attitude lean; the path side is mis-sampled")
             np.savez_compressed(
                 out / seq / npz.name, t=d["t"], pos=d["pos"], yaw=d["yaw"],
                 depicted_lean=d["depicted_lean"], depicted_conf=d["depicted_conf"],
@@ -139,7 +168,11 @@ def build(clips_root: Path, out_root: Path, window_s: float, uzh_root: Path) -> 
             meta["depicted_side_interpolated"] = False
             (out / seq / npz.with_suffix(".meta.json").name).write_text(json.dumps(meta, indent=1))
             made += 1
-    return {"tree": str(out), "window_s": window_s, "clips": made, "rejected": rejected}
+    return {"tree": str(out), "window_s": window_s, "clips": made, "rejected": rejected,
+            "lean_req_vs_truth_attitude_deg": {
+                "n": len(gaps),
+                "median": float(np.median([g["gap_deg"] for g in gaps])) if gaps else None,
+                "max": float(np.max([g["gap_deg"] for g in gaps])) if gaps else None}}
 
 
 def main() -> int:

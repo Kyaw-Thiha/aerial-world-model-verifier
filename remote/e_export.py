@@ -84,6 +84,29 @@ def _run(model, camera_model, img, device, focal=None):
     return g, conf
 
 
+def centred_crop(mask, min_fraction: float = 0.25):
+    """Largest centred rectangle (same aspect) whose *actual slice* is fully inside ``mask``.
+
+    The fraction is found by scanning downwards, then the slice is shrunk one pixel at a time
+    until ``mask[sl]`` is true everywhere: rounding a fraction to a half-extent can otherwise
+    put the corners one pixel outside, which failed the export on four aggressive clips.
+    """
+    import numpy as np
+
+    h, w = mask.shape
+    cy, cx = int(round((h - 1) / 2.0)), int(round((w - 1) / 2.0))
+    f = 1.0
+    while f > min_fraction:
+        hh, ww = int(round(f * h)) // 2, int(round(f * w)) // 2
+        sl = (slice(cy - hh, cy + hh), slice(cx - ww, cx + ww))
+        if mask[sl].all():
+            return sl, float((sl[0].stop - sl[0].start) / h)
+        f -= 0.02
+    hh = ww = 2
+    sl = (slice(cy - hh, cy + hh), slice(cx - ww, cx + ww))
+    return sl, float((sl[0].stop - sl[0].start) / h)
+
+
 def centred_crop_fraction(mask, min_fraction: float = 0.3, step: float = 0.02) -> float:
     """Largest centred rectangle (same aspect as the frame) that lies fully inside ``mask``.
 
@@ -292,12 +315,8 @@ def export_sequence(seq: str, variant: str = "b", clip_seconds: float = 4.0,
                 for j in range(len(t_clip)):
                     m = inside_mask(per_cond[cond][j])
                     mask_all = m if mask_all is None else (mask_all & m)
-            crop_frac = centred_crop_fraction(mask_all)
-            hh = int(round(crop_frac * h)) // 2
-            ww = int(round(crop_frac * w)) // 2
-            cy, cx = int(round((h - 1) / 2.0)), int(round((w - 1) / 2.0))
-            crops = (slice(cy - hh, cy + hh), slice(cx - ww, cx + ww))
-            if mask_all[crops].mean() < 0.999:
+            crops, crop_frac = centred_crop(mask_all)
+            if not mask_all[crops].all():
                 raise RuntimeError(f"{seq}#{ci:02d}: fixed crop is not fully inside the mask")
 
         ups = {c: np.full((len(t_clip), 3), np.nan) for c in CONDITIONS}
