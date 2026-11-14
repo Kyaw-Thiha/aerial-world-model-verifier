@@ -396,16 +396,24 @@ python experiments/e_verdict.py --clips data/clips --tag primary     # Task 5
    check that the published 45-rig calibration is right — a Kalibr re-calibration from the
    released calibration bags, or a horizon check on a sequence where the camera sees the
    building's verticals. Neither was attempted here.
-2. A threshold that matches UZH's noise floor. T2's false-reject budget cannot be met with a
-   TII-frozen threshold given a 7.7 deg median real-clip score; the honest options are to
-   pre-register a per-dataset threshold with its own coverage accounting, or to report the
-   smallest violation detectable at the achieved false-reject rate instead of a fixed budget.
-   Both are Track D's call, not Track E's.
-3. Track D's gain statistic (5b) is unrun: `track-d-verdict-stat` publishes neither
-   `configs/gain_frozen.yaml` nor `scripts/score_clip.py`. The clips, the schema and the index
-   are in R2 (`track-e/clips/`, 589 objects) ready for it.
-4. The shared schema needs a denser `pos` (or the required axis) for T6 to be satisfiable
-   without a 6 deg penalty; see the T6 section.
+2. **For Track D, a decision rather than an experiment: what does T2's "false reject at most
+   15 %" mean across datasets?** Two statistics now fail it the same way on UZH — the median
+   residual at 0.333 and the gain band at 0.964 — and both fail for the same reason, that the
+   band or threshold was frozen on footage whose depicted-tilt error is half of UZH's. The
+   evidence for the choice is: (i) refitting on UZH makes the test blind (LOSO detection
+   0.07-0.12); (ii) enabling the mount-offset nuisance gets the median residual to 0.19 but
+   costs detection; (iii) restricting to forward-facing footage gives 0.06-0.11 false reject and
+   0.78-0.89 detection with the TII threshold untouched. A per-dataset threshold with its own
+   coverage accounting, or a per-rig eligibility rule with the abstention reported, both follow
+   from (iii); a single frozen number across datasets does not.
+3. **The shared schema needs a denser `pos`** (or the required thrust axis itself, or a fixed
+   differentiator and window). Measured twice, from two sides: scoring from 15 Hz `pos` raises
+   the median-residual floor from 1.54 to 7.40 deg, and the required axis from 15 Hz `pos`
+   disagrees with the dense-truth one by a median 9.7 deg (up to 21 deg), which is what
+   attenuates Track D's lean-regression gain to 0.2 against their TII band. Track D owns the
+   schema; both measurements are in this report for that decision.
+4. Track D's 5b is no longer outstanding: it was run on this clip set and failed (0.964 false
+   reject). What remains for Track D is 2 and 3.
 
 ## Removing the "is it the mount or the estimator?" ambiguity: an estimator-free attempt
 
