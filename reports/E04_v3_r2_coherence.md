@@ -119,10 +119,13 @@ seeing the numbers. Since the frozen confidence gate abstains on every outdoor c
 | scored | 147 | |
 | **R2 / coherence, testable real clips** | **9 clips, 4 sequences** (indoor_forward_3, _5, _9, _10) | outdoor contributes **zero**: the frozen gate abstains on every outdoor clip |
 | **(a) median residual, testable real clips** | **18 clips, 7 sequences** (4 indoor + 3 outdoor) | (a) does not use the gate |
-| excluded | `indoor_forward_7` (3 clips) | its v3 export is broken — one of 60 frames evaluated, real clips score 13.6/30.6/44.5 deg on a sequence whose per-frame error is 1.66 deg. It fails the validity gate (1.13 deg lean) and its clips then fail the ≥12-signal-frame rule, so they never enter a denominator. Recorded as an export failure, not a result |
+| excluded | `indoor_forward_7` (3 clips, 21 files) | its v3 export is broken — one of 60 frames evaluated, real clips score 13.6/30.6/44.5 deg on a sequence whose per-frame error is 1.66 deg. It fails the validity gate (1.13 deg lean) and its clips then fail the ≥12-signal-frame rule, so they never enter a denominator. Recorded as an export failure, not a result |
 
-So the headline is **indoor forward, 4 sequences, 9 testable real clips** for Track D's statistics and
-**7 sequences, 18 clips** for the median residual. Those counts are repeated beside every number.
+**Seven sequences reach the statistic** (indoor_forward_3, _5, _9, _10; outdoor_forward_1, _3, _5):
+`indoor_forward_6` lost all three clips to the insufficient-field rule and `indoor_forward_7` is
+excluded. So the headline is **indoor forward, 4 sequences, 9 testable real clips** for Track D's
+statistics and **7 sequences, 18 clips** for the median residual. Those counts are repeated beside
+every number.
 
 ### 2.3 Track D's statistics and the median residual, forward rigs, 0.37 s headline
 
@@ -136,7 +139,8 @@ has to be read beside it.
 | **(b2) coherence tier** | **0.111** (1/9) | 0.111 (1/9) | 0.143 (1/7) | **1.000** (10) | **1.000** (8) | 0.200 (10) | 0.250 (8) |
 | **(a) median residual, 14.73 deg** | **0.000** (0/18) | 0.000 (0/18) | 0.000 (0/18) | **0.722** (13/18) | **0.778** (14/18) | 0.056 (18) | 0.167 (18) |
 
-Sequence-clustered 95 % intervals over the 8 scored sequences (9 forward minus the excluded one):
+Sequence-clustered 95 % intervals over the 7 scored sequences (9 forward, minus the one whose export
+is excluded, minus the one that lost every clip to the field rule):
 
 | statistic | real | tilt removal | mirror |
 | --- | --- | --- | --- |
@@ -169,6 +173,7 @@ predicts ("a positive scale leaves the correlation unchanged"). They are reporte
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | **0.37 s (headline)** | **0.556** | 0.111 | 1.000 | 1.000 | 0.000 | 0.722 | 0.778 |
 | 0.185 s | 0.444 | 0.111 | 1.000 | 1.000 | 0.000 | 0.722 | 0.778 |
+| _same population check_ | all three windows score **126 clips over 7 sequences**, 21 files excluded, 42 dropped | | | | | | |
 | 0.10 s | **0.000** | 0.111 | 1.000 | 1.000 | 0.000 | 0.722 | 0.778 |
 
 **The gain band is the only statistic that moves with the window**, and it moves monotonically from
