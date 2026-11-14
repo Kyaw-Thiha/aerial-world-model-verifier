@@ -198,3 +198,38 @@ evaluation:
     - track flights separately (they must not dominate pooled numbers)
     - fitted drag per clip against the Phase 0 value (~0.30) and by flight type
     - first-run numbers kept beside revised ones
+
+# ----------------------------------------------------------------- amendment 1 (v2)
+# Committed BEFORE any edited clip is scored with the v2 required lean.  The change is
+# an input improvement requested by the user after the D01 freeze; no rule, nuisance,
+# abstention bound, calibration or selection criterion changes.
+version: 2
+amendment_1:
+  date: 2026-11-14
+  reason: >
+    The D01 required lean was differentiated on the stored 12 Hz frame grid, where the
+    0.37 s Phase 0 window is 5 samples.  The commanded path is known at 274.73 Hz.  The
+    dense differentiation is now carried in the shared clip schema as lean_req/vel_req
+    (sampled at the frame times), so the scorer no longer differentiates the coarse grid.
+  change:
+    required_lean_primary: lean_req
+    velocity_regressor_primary: vel_req
+    fallback: pos and yaw (schema v1); recorded in GainResult.method.required_source
+    provenance: pos and yaw remain in the clip and are never removed
+  dense_parameters:
+    native_rate_hz: 274.73
+    window_s: 0.37
+    polyorder: 3
+    sample_at: frame times
+    edge_policy: NaN outside the native SG interior, never extrapolated
+  unchanged:
+    statistic: l_dep = G1*l_req0 + G2*w + b
+    variants: [drag fitted/fixed/free, intercept free/zero, lag on/off, OLS/Huber,
+               smoothing, confidence weights]
+    decision_rules: [R1_scalar_g1, R2_axis_gains, R3_scalar_or_axis]
+    selection: inner LOFO, highest mean removal/mirror detection at FRR <= 0.10, ties
+               to the simpler rule
+    abstention: unchanged
+    calibration: two-sided conformal, LOFO, alpha 0.05
+  schema: docs/verdict_clip_schema_v2.md
+  made_before_v2_scoring: true
