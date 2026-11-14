@@ -1,0 +1,51 @@
+version: 1
+date: '2026-11-14'
+status: frozen
+source_run: results/d_eval/d02/coherence
+commit: 1df4084295c4e765011e37b1caa9d2059fc4fcba
+rule:
+  correlation: flag if 1 - min(r_x, r_y) > tau_correlation
+  sign: flag if 1 - min(s_x, s_y) > tau_sign
+thresholds:
+  tau_correlation: 0.619653015661502
+  tau_sign: 0.2921099290780138
+  n_real: 57
+per_fold:
+  flight-01a-ellipse:
+    tau_correlation: 0.5757539653579208
+    tau_sign: 0.27256205673758865
+    n_fit: 55
+  flight-04a-ellipse:
+    tau_correlation: 0.6210406635017424
+    tau_sign: 0.24166666666666653
+    n_fit: 55
+  flight-07a-lemniscate:
+    tau_correlation: 0.619653015661502
+    tau_sign: 0.2921099290780138
+    n_fit: 57
+  flight-13a-trackRATM:
+    tau_correlation: 0.619653015661502
+    tau_sign: 0.2921099290780138
+    n_fit: 57
+  flight-01p-ellipse:
+    tau_correlation: 0.5483115562153473
+    tau_sign: 0.3153812056737588
+    n_fit: 31
+  flight-07p-lemniscate:
+    tau_correlation: 0.6224283113419827
+    tau_sign: 0.3708333333333333
+    n_fit: 33
+  flight-13p-trackRATM:
+    tau_correlation: 0.6210406635017424
+    tau_sign: 0.2998670212765955
+    n_fit: 55
+  flight-16p-trackRATM:
+    tau_correlation: 0.6203468395816223
+    tau_sign: 0.2959884751773049
+    n_fit: 56
+inputs:
+  schema: verdict_clip v2
+  lag: from the gain fit
+no_recalibration: true
+note: 'x0.5/x1.5 are expected to sit at chance: a positive scale leaves the correlation
+  unchanged. Track flights are not validated (4 testable clips).'

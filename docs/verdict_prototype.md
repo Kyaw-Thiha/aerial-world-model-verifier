@@ -1,34 +1,43 @@
 # The gain-test verdict prototype
 
-Status: frozen 2026-11-13 on branch `track-d-verdict-stat`. Frozen statistic:
-`configs/gain_frozen.yaml` (rule `R1_scalar_g1`, band [0.5277, 0.9477] on `G1`, alpha
-0.05, n = 57 real clips). Evidence: `reports/D01_gain_test.md`,
-`results/d_eval/d01/metrics.json`.
+Status: frozen 2026-11-14 on branch `track-d-verdict-stat`, schema v2, dense required lean.
+Frozen gain statistic: `configs/gain_frozen.yaml` (rule **R2_axis_gains**, axis joint band
+`gx` center 0.8137 / scale 0.2654, `gy` center 0.7181 / scale 0.0735, tau 2.1922, alpha
+0.05, n=57). Frozen coherence tier: `configs/coherence_frozen.yaml` (tau_corr 0.6197,
+tau_sign 0.2921). Evidence: `reports/D02_gain_test_v2.md`,
+`results/d_eval/d02/metrics.json`, `results/d_coherence/d01/metrics.json`.
 
 ## What it is
 
 A quadrotor can only thrust along its body z-axis, so the tilt its path requires is fixed
 by the path and the tilt its pixels depict is measurable. The gain test compares them per
-clip by a regression rather than by a median residual:
+clip by a regression:
 
 ```
-l_dep = G1 * l_req0 + G2 * (Rz(-yaw) v / g) + b
+l_dep = G1 * lean_req + G2 * vel_req + b
 ```
 
-- `l_req0` is the **drag-free required lean**, the horizontal part of the unit thrust axis
-  `normalize(a + g e3)` in the yaw-aligned frame, with `a` and `v` from Savitzky-Golay
-  differentiation of the commanded path (`pos`, `yaw`).
+- `lean_req` is the **drag-free required lean**: the horizontal part of
+  `normalize(a + g e3)` in the yaw-aligned frame, from the **dense** commanded path
+  (274.73 Hz on TII) with a 0.37 s / poly-3 Savitzky-Golay window, sampled at the frame
+  times.
+- `vel_req = Rz(-yaw) v_h / g` is the velocity regressor (units 1/s when multiplied by a
+  drag coefficient).
 - `l_dep` is the **depicted lean**, the horizontal part of the body z-axis reconstructed
   from the per-frame gravity estimate through the camera-to-body mount.
-- `G1` is the acceleration gain the verdict tests. A real flight gives a positive value
-  (0.745 median on TII, not 1: the estimator under-reads tilt and the regressor carries
-  noise, so the band is calibrated on real flights). Tilt removal gives ~0, a 50 % scale
-  gives ~0.5, a 1.5 scale ~1.5, and a mirrored roll flips the sign of the roll-axis gain.
-- `G2` is a drag nuisance (1/s); the free intercept `b` absorbs the mount offset.
+- `G1` is the acceleration gain, `G2` the drag nuisance, `b` a free 2-D intercept that
+  absorbs the mount offset. Per-axis gains `gx` (pitch/forward) and `gy` (roll/lateral)
+  are fitted separately; the frozen rule tests the pair jointly.
+- A real flight gives a positive gain (real `G1` median **0.758**, IQR 0.714-0.818; `gy`
+  0.718, IQR 0.665-0.754), not 1: the pixel estimator **shrinks** the depicted tilt by
+  about 0.83 (report D02 §1). The band is therefore calibrated on real flights.
+- Tilt removal gives ~0, a 50 % scale ~0.5, a 1.5 scale ~1.5, and a mirrored roll flips
+  the sign of `gy` while leaving `gx` positive.
 
-Decision: flag if `G1` is outside the frozen two-sided conformal band. The richer axis
-rule (a joint band on `gx, gy`) was pre-registered and lost selection by one false-reject
-point; it is available in `src/verdict/decide.py` if a later round re-opens the protocol.
+The **coherence tier** is a scale-free complement: per-axis Pearson correlation and sign
+agreement between depicted and required lean. It catches shape/sign violations (removal
+AUROC 0.999, mirror 1.000) and is at chance for pure scaling (x0.5 0.706, x1.5 0.622),
+so it does not replace the gain. It is reported, not part of the frozen flag.
 
 ## Score one clip
 
@@ -36,26 +45,32 @@ point; it is available in `src/verdict/decide.py` if a later round re-opens the 
 PYTHONPATH=. pixi run python scripts/score_clip.py PATH --config configs/gain_frozen.yaml --json
 ```
 
-`PATH` is a directory holding `verdict_clip.npz` and `meta.json`, or the `.npz` itself.
-The output is graded, not pass/fail:
+`PATH` is a directory holding `verdict_clip.npz` (schema v2) and `meta.json`, or the
+`.npz` itself. The output is graded, not pass/fail:
 
 | field | meaning |
 | --- | --- |
-| `gain_g1`, `gain_g1_ci95`, `gain_g1_half_width` | the tested gain and its block-bootstrap interval |
-| `axis_gains`, `axis_ci95` | roll (`gy`) and pitch (`gx`) gains, fitted separately |
+| `gain_g1`, `gain_g1_ci95`, `gain_g1_half_width` | scalar gain and its block-bootstrap interval |
+| `axis_gains`, `axis_ci95` | roll (`gy`) and pitch (`gx`) gains, fitted separately; the frozen rule uses these |
 | `drag_coefficient`, `drag_ci95` | the fitted nuisance; **not** the airframe drag (see below) |
 | `intercept` | the absorbed mount offset |
 | `r_squared`, `lag_ms`, `condition_number` | fit diagnostics |
 | `required_tilt_deg`, `depicted_tilt_deg` | median tilts of the two sides |
 | `testable`, `abstention_reasons` | whether the clip can answer the question, and why not |
-| `flagged` | `true`/`false` when testable and a band is configured, otherwise `null` |
+| `flagged` | `true`/`false` when testable and bands are configured, otherwise `null` |
 | `gate_kept` | the frozen S3 confidence decision |
 
-A clip is **not testable** (abstains) when any of the pre-registered rules fires: fewer
-than 24 frames, fewer than 50 % usable depicted frames, fewer than 12 frames or 20 % of
-the clip above 10 deg of required tilt, principal spread of the required lean below 2 deg,
-design condition number above 1000, bootstrap half-width of `G1` above 0.35, or the frozen
+A clip is **not testable** (abstains) when any pre-registered rule fires: fewer than 24
+frames, fewer than 50 % usable depicted frames, fewer than 12 frames or 20 % of the clip
+above 10 deg of required tilt, principal spread of the required lean below 2 deg, design
+condition number above 1000, bootstrap half-width of `G1` above 0.35, or the frozen
 confidence gate. Abstention is not a failure; it means the clip carries no answer.
+
+**Paired evaluation note.** In the reported tests, testability is decided on the **real**
+clip and inherited by its edits. A mirror clip scored standalone can abstain on the `G1`
+interval (the frozen abstention is on `G1`, while the decision uses `gx`/`gy`); the paired
+protocol does not, because the real clip is testable. This is a property of the
+pre-registered abstention, not a change to it.
 
 ## What a result means
 
@@ -63,53 +78,70 @@ confidence gate. Abstention is not a failure; it means the clip carries no answe
   clip. It does **not** mean the flight is physically consistent, and it does not certify
   the airframe, the drag, or the path beyond the commanded path supplied.
 - **Flagged**: the depicted lean's relationship to the required lean is outside the
-  real-flight band. On TII this detects a full tilt removal 100 % of the time and a
-  mirrored roll 96.5 % of the time at an 8.8 % false-reject rate; a 50 % change is
-  detected 86-100 % of the time in a synthetic sweep, a 25 % change only 28-42 %.
-- **Abstained**: no answer. Most autonomous and track clips abstain on this data.
+  real-flight band. On TII v2 R2 this detects full tilt removal **100 %**, mirrored roll
+  **100 %**, x0.5 **100 %** and x1.5 **96.5 %** at a **5.3 %** false-reject rate (n=57;
+  nested selection 5.3 %). A synthetic 50 % gain change is detected 94.7-100 %; a 25 %
+  change 60-72 %.
+- **Abstained**: no answer. 43 % of TII real clips abstain; most autonomous and track
+  clips do.
 
-The minimum detectable change is between 25 % and 50 % of the tilt, dependent on
-excitation. The yaw-only control is flagged 22.8 % against 8.8 % of real clips: the
-estimator's view dependence is the floor under the statistic, not a property of the
-flight.
+**Yaw-control rate beside every detection.** A yaw rotation cannot change the tilt, yet
+the yaw-only control is flagged **28.1 %** under the frozen R2 rule (19.3 % under R1)
+against **5.3 %** of real clips. The coherence tier flags it **10.5 %** against 8.8 %.
+This is the estimator's view dependence and is the floor under the statistic: a violation
+that shifts the gain by less than this artifact cannot be separated from it.
+
+**Track flights are not validated.** Only 3 track clips are testable under v2; one real
+clip is falsely rejected, one x1.5 edit is missed, and the yaw-control flag rate is
+66.7 % on three clips. The pooled 5.3 % is a piloted-flight number. Autonomous is four
+testable clips with a 25 % false-reject rate. Do not quote pooled numbers as racing or
+autonomous performance.
 
 ## The drag coefficient is a nuisance, not an estimate
 
-The fitted `G2` is 0.139 1/s median on TII against Phase 0's mocap-only 0.295. It is about
-half because the same errors-in-variables attenuation that puts the real gain at 0.745
-also attenuates the velocity coefficient (inferred). Fixing `G2` at 0.295 is measurably
-worse (x0.5 detection 37 % against 98 %), so it is fitted; it must not be quoted as the
-airframe's drag coefficient.
+The verdict's fitted `G2` is **0.158 1/s** median (v2) against Phase 0's mocap-only
+**0.295**. The decomposition shows why: truth attitude on the required path gives 0.239
+with a fitted drag, 1.048 with drag fixed at 0.295, and 0.755 drag-free; the dominant loss
+in the verdict is estimator shrinkage (0.83), not differentiation. Do not quote `0.158` as
+the airframe drag coefficient.
 
-## The shared clip schema
+## The shared clip schema (v2)
 
 `verdict_clip.npz` with `t` (N,), `pos` (N,3, commanded path, world z-up), `yaw` (N,),
-`depicted_lean` (N,2, NaN where the estimator failed), `depicted_conf` (N,), and a sibling
-`meta.json` (dataset, sequence/flight, clip id, condition, fps, mount source and uptilt,
-estimator and variant, truth-frame notes). Only `pos` and `yaw` carry path truth; the
-required lean is recomputed from them. `src/verdict/schema.py` validates the file;
-`scripts/score_clip.py` is the only entry point a consumer needs.
+`depicted_lean` (N,2, NaN where the estimator failed), `depicted_conf` (N,), `lean_req`
+(N,2), `vel_req` (N,2), optional `tilt_req_deg` (N,), and a sibling `meta.json`. Only
+`pos`/`yaw` carry path truth; `lean_req`/`vel_req` are derived from them at dense rate.
+Full definition and export instructions: `docs/verdict_clip_schema_v2.md`.
+`src/verdict/schema.py` validates the file; `scripts/score_clip.py` is the consumer entry
+point. A v1 clip (no `lean_req`) still loads and falls back to differentiating `pos`.
 
-Handoff to Track E (UZH-FPV): read the frozen file and the scorer with
+Handoff to Track E (UZH-FPV):
 
 ```
 git show track-d-verdict-stat:configs/gain_frozen.yaml
+git show track-d-verdict-stat:configs/coherence_frozen.yaml
+git show track-d-verdict-stat:docs/verdict_clip_schema_v2.md
 git show track-d-verdict-stat:scripts/score_clip.py
 ```
 
-build UZH clips in the schema above, score them with the frozen config unchanged, and
-report false-reject and detection of removal/mirror with Wilson intervals. Do not
-recalibrate the band on UZH: that would make T2 unmeasurable.
+Re-export UZH clips in schema v2, score with the frozen configs unchanged, and report
+false-reject and detection of removal/mirror **with the yaw-control rate beside them** and
+track marked not validated. Do not recalibrate either threshold on UZH: that would make
+T2 unmeasurable.
 
 ## Reproducing the TII result
 
 ```
 PYTHONPATH=. pixi run python experiments/d_build_clips.py
-PYTHONPATH=. pixi run python experiments/d_repro_baseline.py
-PYTHONPATH=. pixi run python experiments/d_eval.py --tag d01
+PYTHONPATH=. pixi run python experiments/d_decompose.py
+PYTHONPATH=. pixi run python experiments/d_eval.py --tag d02
+PYTHONPATH=. pixi run python experiments/d_coherence.py --run results/d_eval/d02
+PYTHONPATH=. pixi run python experiments/d_deming.py
+PYTHONPATH=. pixi run python experiments/d_freeze.py --run results/d_eval/d02
 PYTHONPATH=. pixi run pytest -q
 ```
 
 The clips are derived from `data/processed/p3a/p3a_v1` and `results/gate_a2/tii`
-(gitignored/rebuildable); the fitted per-clip table and metrics are committed under
-`results/d_eval/d01/`.
+(gitignored/rebuildable); metrics, tables and plots are committed under
+`results/d_eval/d02/`, `results/d_decomposition/d01/`, `results/d_coherence/d01/` and
+`results/d_deming/d01/`.

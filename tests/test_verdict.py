@@ -249,3 +249,126 @@ def test_joint_axis_band_catches_a_mirror():
     mirrored = _fit(_synthetic_clip(gain=0.8, drag=0.3, mirror_roll=True, noise=0.002))
     assert band.flag(mirrored)
     assert not band.flag(real[0])
+
+
+# ------------------------------------------------------------------ coherence tier
+def _coherence_clip(l_dep, l_req):
+    n = len(l_dep)
+    t = np.arange(n) / 12.0
+    pos = np.zeros((n, 3))
+    return Clip(t=t, pos=pos, yaw=np.zeros(n), depicted_lean=np.asarray(l_dep),
+                depicted_conf=np.ones(n), meta={"condition": "real"},
+                lean_req=np.asarray(l_req), vel_req=np.zeros((n, 2)))
+
+
+def test_coherence_identical_series_scores_zero():
+    from src.verdict import coherence
+    rng = np.random.default_rng(0)
+    l = rng.normal(0, 0.1, (60, 2))
+    c = coherence(_coherence_clip(l, l))
+    assert c.r_min == pytest.approx(1.0, abs=1e-12)
+    assert c.s_min == pytest.approx(1.0, abs=1e-12)
+    assert c.correlation_score == pytest.approx(0.0, abs=1e-12)
+
+
+def test_coherence_is_scale_free():
+    from src.verdict import coherence
+    rng = np.random.default_rng(1)
+    l_req = rng.normal(0, 0.1, (60, 2))
+    c = coherence(_coherence_clip(2.0 * l_req, l_req))
+    assert c.r_min == pytest.approx(1.0, abs=1e-12)
+    assert c.s_min == pytest.approx(1.0, abs=1e-12)
+
+
+def test_coherence_mirror_flips_roll_only():
+    from src.verdict import coherence
+    rng = np.random.default_rng(2)
+    l_req = rng.normal(0, 0.1, (60, 2))
+    l_dep = l_req.copy()
+    l_dep[:, 1] *= -1.0
+    c = coherence(_coherence_clip(l_dep, l_req))
+    assert c.r_x == pytest.approx(1.0, abs=1e-12)
+    assert c.r_y == pytest.approx(-1.0, abs=1e-12)
+    assert c.s_y == pytest.approx(0.0, abs=1e-12)
+    assert c.correlation_score == pytest.approx(2.0, abs=1e-12)
+
+
+def test_coherence_removal_has_no_relation():
+    from src.verdict import coherence
+    rng = np.random.default_rng(3)
+    l_req = rng.normal(0, 0.1, (200, 2))
+    noise = rng.normal(0, 0.01, (200, 2))
+    c = coherence(_coherence_clip(noise, l_req))
+    assert abs(c.r_min) < 0.2
+    assert c.correlation_score > 0.8
+
+
+def test_coherence_needs_v2_lean():
+    from src.verdict import coherence
+    clip = _synthetic_clip()
+    with pytest.raises(ValueError, match="lean_req"):
+        coherence(clip)
+
+
+# ------------------------------------------------------------------ Deming
+def test_deming_recovers_slope_with_x_noise_that_attenuates_ols():
+    from src.verdict.deming import deming_gain
+    rng = np.random.default_rng(7)
+    n = 400
+    x = rng.normal(0, 0.1, (n, 2))
+    w = rng.normal(0, 1.0, (n, 2))
+    y = 0.8 * x + 0.05 + 0.0 * w
+    x_obs = x + rng.normal(0, 0.05, (n, 2))       # sigma_x = 0.05
+    d = deming_gain(y, x_obs, w, sigma_x=0.05, sigma_y=0.0)
+    assert abs(d.gain_ols - 0.8) > 0.05           # OLS is attenuated
+    assert abs(d.gain - 0.8) < 0.03               # Deming corrects it
+
+
+def test_deming_with_both_sides_noisy():
+    from src.verdict.deming import deming_gain
+    rng = np.random.default_rng(9)
+    n = 2000
+    x = rng.normal(0, 0.1, (n, 2))
+    y = 0.8 * x + 0.02 + rng.normal(0, 0.03, (n, 2))
+    x_obs = x + rng.normal(0, 0.05, (n, 2))
+    d = deming_gain(y, x_obs, np.zeros((n, 2)), sigma_x=0.05, sigma_y=0.03)
+    assert abs(d.gain - 0.8) < 0.02
+
+
+def test_deming_approaches_ols_when_x_is_exact():
+    from src.verdict.deming import deming_gain
+    rng = np.random.default_rng(8)
+    n = 300
+    x = rng.normal(0, 0.1, (n, 2))
+    y = 0.8 * x + 0.02
+    d = deming_gain(y, x, np.zeros((n, 2)), sigma_x=1e-6, sigma_y=0.03)
+    assert abs(d.gain - d.gain_ols) < 1e-6
+
+
+# ------------------------------------------------------------------ schema v2
+def test_schema_v2_round_trip_and_fit_uses_lean_req(tmp_path):
+    rng = np.random.default_rng(11)
+    n = 48
+    t = np.arange(n) / 12.0
+    lean_req = rng.normal(0, 0.1, (n, 2))
+    vel_req = rng.normal(0, 0.2, (n, 2))
+    depicted = 0.8 * lean_req + 0.2 * vel_req + np.array([0.01, -0.02])
+    clip = Clip(t=t, pos=np.zeros((n, 3)), yaw=np.zeros(n), depicted_lean=depicted,
+                depicted_conf=np.ones(n), meta={"condition": "real"},
+                lean_req=lean_req, vel_req=vel_req,
+                tilt_req_deg=np.degrees(np.arcsin(np.linalg.norm(lean_req, axis=1))))
+    save_clip(tmp_path / "v2", clip)
+    back = load_clip(tmp_path / "v2")
+    assert np.allclose(back.lean_req, lean_req)
+    assert np.allclose(back.vel_req, vel_req)
+    r = fit_gain(back, FitOptions(lag_search=False, bootstrap=False))
+    assert r.gain == pytest.approx(0.8, abs=1e-9)
+    assert r.drag == pytest.approx(0.2, abs=1e-9)
+    assert r.method["required_source"] == "lean_req"
+
+
+def test_schema_v2_rejects_lean_without_velocity(tmp_path):
+    clip = _synthetic_clip()
+    clip.lean_req = np.zeros((len(clip.t), 2))
+    with pytest.raises(ValueError, match="together"):
+        validate_clip(clip)

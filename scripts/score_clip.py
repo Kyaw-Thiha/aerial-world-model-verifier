@@ -29,8 +29,8 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from src.verdict import (  # noqa: E402
-    Bands, FitOptions, JointBand, ScalarBand, assess, fit_gain, flag, gate_kept_from_conf,
-    load_clip,
+    Bands, FitOptions, JointBand, ScalarBand, assess, coherence, fit_gain, flag,
+    gate_kept_from_conf, load_clip,
 )
 
 
@@ -91,6 +91,7 @@ def main() -> int:
     ap.add_argument("--config", default=None)
     ap.add_argument("--json", action="store_true")
     ap.add_argument("--no-gate", action="store_true")
+    ap.add_argument("--coherence-config", default="configs/coherence_frozen.yaml")
     args = ap.parse_args()
 
     cfg = load_config(Path(args.config) if args.config else None)
@@ -107,6 +108,24 @@ def main() -> int:
     flagged = None
     if ab.testable and (bands.scalar or bands.axis or bands.joint):
         flagged = flag(result, rule, bands)
+
+    coh_out = None
+    if clip.lean_req is not None:
+        coh = coherence(clip, lag_ms=result.lag_ms)
+        coh_cfg = load_config(Path(args.coherence_config)) if args.coherence_config else {}
+        tau_c = (coh_cfg.get("thresholds") or {}).get("tau_correlation")
+        tau_s = (coh_cfg.get("thresholds") or {}).get("tau_sign")
+        coh_out = {
+            "r_x": coh.r_x, "r_y": coh.r_y, "s_x": coh.s_x, "s_y": coh.s_y,
+            "r_min": coh.r_min, "s_min": coh.s_min,
+            "correlation_score": coh.correlation_score,
+            "sign_score": coh.sign_score,
+            "tau_correlation": tau_c, "tau_sign": tau_s,
+            "flagged_correlation": (None if tau_c is None or not ab.testable
+                                    else bool(coh.correlation_score > tau_c)),
+            "flagged_sign": (None if tau_s is None or not ab.testable
+                             else bool(coh.sign_score > tau_s)),
+        }
 
     out = {
         "clip": str(args.clip),
@@ -134,6 +153,7 @@ def main() -> int:
         "gate_kept": gate_kept,
         "rule": rule if flagged is not None else None,
         "flagged": flagged,
+        "coherence": coh_out,
         "note": ("A pass means no violation of the tested size on a clip with enough "
                  "excitation; it is not proof of physical consistency."),
     }

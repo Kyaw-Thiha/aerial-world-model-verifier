@@ -1,0 +1,6278 @@
+{
+ "run": "d02",
+ "git": "1df4084",
+ "prereg": {
+  "path": "configs/gain_prereg.yaml",
+  "sha256": "504555f9f0eb0a809cf49ea9e783b7210c02d51661f5068076b94d7f70fb5d36"
+ },
+ "n_clip_files": 1000,
+ "n_testable_real": 57,
+ "candidates": {
+  "R1_scalar_g1": {
+   "frr": 0.10526315789473684,
+   "frr_wilson": [
+    0.04914398953912691,
+    0.21123049107939723
+   ],
+   "n_real": 57,
+   "det_tilt_removal": 1.0,
+   "det_scale_0.5": 1.0,
+   "det_scale_1.5": 0.9824561403508771,
+   "det_mirror_roll": 0.9824561403508771,
+   "det_yaw_control": 0.19298245614035087,
+   "det_tilt_removal_wilson": [
+    0.936858991216536,
+    0.9999999999999999
+   ],
+   "det_scale_0.5_wilson": [
+    0.936858991216536,
+    0.9999999999999999
+   ],
+   "det_scale_1.5_wilson": [
+    0.9070903306173727,
+    0.9968964152933198
+   ],
+   "det_mirror_roll_wilson": [
+    0.9070903306173727,
+    0.9968964152933198
+   ],
+   "det_yaw_control_wilson": [
+    0.11132633377760481,
+    0.3134093733701362
+   ],
+   "n_tilt_removal": 57,
+   "n_scale_0.5": 57,
+   "n_scale_1.5": 57,
+   "n_mirror_roll": 57,
+   "n_yaw_control": 57,
+   "by_flight": {
+    "flight-01a-ellipse": {
+     "frr": 0.0,
+     "n_real": 2,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 1.0,
+     "n_tilt_removal": 2,
+     "n_scale_0.5": 2,
+     "n_scale_1.5": 2,
+     "n_mirror_roll": 2,
+     "n_yaw_control": 2
+    },
+    "flight-04a-ellipse": {
+     "frr": 0.0,
+     "n_real": 2,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 0.5,
+     "det_yaw_control": 0.5,
+     "n_tilt_removal": 2,
+     "n_scale_0.5": 2,
+     "n_scale_1.5": 2,
+     "n_mirror_roll": 2,
+     "n_yaw_control": 2
+    },
+    "flight-07a-lemniscate": {
+     "frr": NaN,
+     "n_real": 0,
+     "det_tilt_removal": NaN,
+     "det_scale_0.5": NaN,
+     "det_scale_1.5": NaN,
+     "det_mirror_roll": NaN,
+     "det_yaw_control": NaN,
+     "n_tilt_removal": 0,
+     "n_scale_0.5": 0,
+     "n_scale_1.5": 0,
+     "n_mirror_roll": 0,
+     "n_yaw_control": 0
+    },
+    "flight-13a-trackRATM": {
+     "frr": NaN,
+     "n_real": 0,
+     "det_tilt_removal": NaN,
+     "det_scale_0.5": NaN,
+     "det_scale_1.5": NaN,
+     "det_mirror_roll": NaN,
+     "det_yaw_control": NaN,
+     "n_tilt_removal": 0,
+     "n_scale_0.5": 0,
+     "n_scale_1.5": 0,
+     "n_mirror_roll": 0,
+     "n_yaw_control": 0
+    },
+    "flight-01p-ellipse": {
+     "frr": 0.07692307692307693,
+     "n_real": 26,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.038461538461538464,
+     "n_tilt_removal": 26,
+     "n_scale_0.5": 26,
+     "n_scale_1.5": 26,
+     "n_mirror_roll": 26,
+     "n_yaw_control": 26
+    },
+    "flight-07p-lemniscate": {
+     "frr": 0.041666666666666664,
+     "n_real": 24,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.16666666666666666,
+     "n_tilt_removal": 24,
+     "n_scale_0.5": 24,
+     "n_scale_1.5": 24,
+     "n_mirror_roll": 24,
+     "n_yaw_control": 24
+    },
+    "flight-13p-trackRATM": {
+     "frr": 1.0,
+     "n_real": 2,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 0.5,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 1.0,
+     "n_tilt_removal": 2,
+     "n_scale_0.5": 2,
+     "n_scale_1.5": 2,
+     "n_mirror_roll": 2,
+     "n_yaw_control": 2
+    },
+    "flight-16p-trackRATM": {
+     "frr": 1.0,
+     "n_real": 1,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 1.0,
+     "n_tilt_removal": 1,
+     "n_scale_0.5": 1,
+     "n_scale_1.5": 1,
+     "n_mirror_roll": 1,
+     "n_yaw_control": 1
+    }
+   },
+   "selection_inner": {
+    "selected": "R2_axis_gains",
+    "scores": {
+     "R1_scalar_g1": {
+      "frr": 0.10526315789473684,
+      "n_frr": 57,
+      "det_tilt_removal": 1.0,
+      "det_scale_0.5": 1.0,
+      "det_scale_1.5": 0.9824561403508771,
+      "det_mirror_roll": 0.9824561403508771,
+      "det_yaw_control": 0.19298245614035087
+     },
+     "R2_axis_gains": {
+      "frr": 0.05263157894736842,
+      "n_frr": 57,
+      "det_tilt_removal": 1.0,
+      "det_scale_0.5": 1.0,
+      "det_scale_1.5": 0.9649122807017544,
+      "det_mirror_roll": 1.0,
+      "det_yaw_control": 0.2807017543859649
+     },
+     "R3_scalar_or_axis": {
+      "frr": 0.12280701754385964,
+      "n_frr": 57,
+      "det_tilt_removal": 1.0,
+      "det_scale_0.5": 1.0,
+      "det_scale_1.5": 1.0,
+      "det_mirror_roll": 1.0,
+      "det_yaw_control": 0.3157894736842105
+     }
+    }
+   }
+  },
+  "R2_axis_gains": {
+   "frr": 0.05263157894736842,
+   "frr_wilson": [
+    0.01805996809628102,
+    0.14369777660471303
+   ],
+   "n_real": 57,
+   "det_tilt_removal": 1.0,
+   "det_scale_0.5": 1.0,
+   "det_scale_1.5": 0.9649122807017544,
+   "det_mirror_roll": 1.0,
+   "det_yaw_control": 0.2807017543859649,
+   "det_tilt_removal_wilson": [
+    0.936858991216536,
+    0.9999999999999999
+   ],
+   "det_scale_0.5_wilson": [
+    0.936858991216536,
+    0.9999999999999999
+   ],
+   "det_scale_1.5_wilson": [
+    0.8807899619581051,
+    0.9903245386467442
+   ],
+   "det_mirror_roll_wilson": [
+    0.936858991216536,
+    0.9999999999999999
+   ],
+   "det_yaw_control_wilson": [
+    0.18079248284972227,
+    0.40830445082723554
+   ],
+   "n_tilt_removal": 57,
+   "n_scale_0.5": 57,
+   "n_scale_1.5": 57,
+   "n_mirror_roll": 57,
+   "n_yaw_control": 57,
+   "by_flight": {
+    "flight-01a-ellipse": {
+     "frr": 0.5,
+     "n_real": 2,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 0.5,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 1.0,
+     "n_tilt_removal": 2,
+     "n_scale_0.5": 2,
+     "n_scale_1.5": 2,
+     "n_mirror_roll": 2,
+     "n_yaw_control": 2
+    },
+    "flight-04a-ellipse": {
+     "frr": 0.0,
+     "n_real": 2,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 1.0,
+     "n_tilt_removal": 2,
+     "n_scale_0.5": 2,
+     "n_scale_1.5": 2,
+     "n_mirror_roll": 2,
+     "n_yaw_control": 2
+    },
+    "flight-07a-lemniscate": {
+     "frr": NaN,
+     "n_real": 0,
+     "det_tilt_removal": NaN,
+     "det_scale_0.5": NaN,
+     "det_scale_1.5": NaN,
+     "det_mirror_roll": NaN,
+     "det_yaw_control": NaN,
+     "n_tilt_removal": 0,
+     "n_scale_0.5": 0,
+     "n_scale_1.5": 0,
+     "n_mirror_roll": 0,
+     "n_yaw_control": 0
+    },
+    "flight-13a-trackRATM": {
+     "frr": NaN,
+     "n_real": 0,
+     "det_tilt_removal": NaN,
+     "det_scale_0.5": NaN,
+     "det_scale_1.5": NaN,
+     "det_mirror_roll": NaN,
+     "det_yaw_control": NaN,
+     "n_tilt_removal": 0,
+     "n_scale_0.5": 0,
+     "n_scale_1.5": 0,
+     "n_mirror_roll": 0,
+     "n_yaw_control": 0
+    },
+    "flight-01p-ellipse": {
+     "frr": 0.038461538461538464,
+     "n_real": 26,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 0.9615384615384616,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.07692307692307693,
+     "n_tilt_removal": 26,
+     "n_scale_0.5": 26,
+     "n_scale_1.5": 26,
+     "n_mirror_roll": 26,
+     "n_yaw_control": 26
+    },
+    "flight-07p-lemniscate": {
+     "frr": 0.0,
+     "n_real": 24,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.3333333333333333,
+     "n_tilt_removal": 24,
+     "n_scale_0.5": 24,
+     "n_scale_1.5": 24,
+     "n_mirror_roll": 24,
+     "n_yaw_control": 24
+    },
+    "flight-13p-trackRATM": {
+     "frr": 0.5,
+     "n_real": 2,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 1.0,
+     "n_tilt_removal": 2,
+     "n_scale_0.5": 2,
+     "n_scale_1.5": 2,
+     "n_mirror_roll": 2,
+     "n_yaw_control": 2
+    },
+    "flight-16p-trackRATM": {
+     "frr": 0.0,
+     "n_real": 1,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.0,
+     "n_tilt_removal": 1,
+     "n_scale_0.5": 1,
+     "n_scale_1.5": 1,
+     "n_mirror_roll": 1,
+     "n_yaw_control": 1
+    }
+   },
+   "selection_inner": {
+    "selected": "R2_axis_gains",
+    "scores": {
+     "R1_scalar_g1": {
+      "frr": 0.10526315789473684,
+      "n_frr": 57,
+      "det_tilt_removal": 1.0,
+      "det_scale_0.5": 1.0,
+      "det_scale_1.5": 0.9824561403508771,
+      "det_mirror_roll": 0.9824561403508771,
+      "det_yaw_control": 0.19298245614035087
+     },
+     "R2_axis_gains": {
+      "frr": 0.05263157894736842,
+      "n_frr": 57,
+      "det_tilt_removal": 1.0,
+      "det_scale_0.5": 1.0,
+      "det_scale_1.5": 0.9649122807017544,
+      "det_mirror_roll": 1.0,
+      "det_yaw_control": 0.2807017543859649
+     },
+     "R3_scalar_or_axis": {
+      "frr": 0.12280701754385964,
+      "n_frr": 57,
+      "det_tilt_removal": 1.0,
+      "det_scale_0.5": 1.0,
+      "det_scale_1.5": 1.0,
+      "det_mirror_roll": 1.0,
+      "det_yaw_control": 0.3157894736842105
+     }
+    }
+   }
+  },
+  "R3_scalar_or_axis": {
+   "frr": 0.12280701754385964,
+   "frr_wilson": [
+    0.060779830035075005,
+    0.2324668958892925
+   ],
+   "n_real": 57,
+   "det_tilt_removal": 1.0,
+   "det_scale_0.5": 1.0,
+   "det_scale_1.5": 1.0,
+   "det_mirror_roll": 1.0,
+   "det_yaw_control": 0.3157894736842105,
+   "det_tilt_removal_wilson": [
+    0.936858991216536,
+    0.9999999999999999
+   ],
+   "det_scale_0.5_wilson": [
+    0.936858991216536,
+    0.9999999999999999
+   ],
+   "det_scale_1.5_wilson": [
+    0.936858991216536,
+    0.9999999999999999
+   ],
+   "det_mirror_roll_wilson": [
+    0.936858991216536,
+    0.9999999999999999
+   ],
+   "det_yaw_control_wilson": [
+    0.2100412363168152,
+    0.44480018797182935
+   ],
+   "n_tilt_removal": 57,
+   "n_scale_0.5": 57,
+   "n_scale_1.5": 57,
+   "n_mirror_roll": 57,
+   "n_yaw_control": 57,
+   "by_flight": {
+    "flight-01a-ellipse": {
+     "frr": 0.5,
+     "n_real": 2,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 1.0,
+     "n_tilt_removal": 2,
+     "n_scale_0.5": 2,
+     "n_scale_1.5": 2,
+     "n_mirror_roll": 2,
+     "n_yaw_control": 2
+    },
+    "flight-04a-ellipse": {
+     "frr": 0.0,
+     "n_real": 2,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.5,
+     "n_tilt_removal": 2,
+     "n_scale_0.5": 2,
+     "n_scale_1.5": 2,
+     "n_mirror_roll": 2,
+     "n_yaw_control": 2
+    },
+    "flight-07a-lemniscate": {
+     "frr": NaN,
+     "n_real": 0,
+     "det_tilt_removal": NaN,
+     "det_scale_0.5": NaN,
+     "det_scale_1.5": NaN,
+     "det_mirror_roll": NaN,
+     "det_yaw_control": NaN,
+     "n_tilt_removal": 0,
+     "n_scale_0.5": 0,
+     "n_scale_1.5": 0,
+     "n_mirror_roll": 0,
+     "n_yaw_control": 0
+    },
+    "flight-13a-trackRATM": {
+     "frr": NaN,
+     "n_real": 0,
+     "det_tilt_removal": NaN,
+     "det_scale_0.5": NaN,
+     "det_scale_1.5": NaN,
+     "det_mirror_roll": NaN,
+     "det_yaw_control": NaN,
+     "n_tilt_removal": 0,
+     "n_scale_0.5": 0,
+     "n_scale_1.5": 0,
+     "n_mirror_roll": 0,
+     "n_yaw_control": 0
+    },
+    "flight-01p-ellipse": {
+     "frr": 0.07692307692307693,
+     "n_real": 26,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.11538461538461539,
+     "n_tilt_removal": 26,
+     "n_scale_0.5": 26,
+     "n_scale_1.5": 26,
+     "n_mirror_roll": 26,
+     "n_yaw_control": 26
+    },
+    "flight-07p-lemniscate": {
+     "frr": 0.041666666666666664,
+     "n_real": 24,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.375,
+     "n_tilt_removal": 24,
+     "n_scale_0.5": 24,
+     "n_scale_1.5": 24,
+     "n_mirror_roll": 24,
+     "n_yaw_control": 24
+    },
+    "flight-13p-trackRATM": {
+     "frr": 1.0,
+     "n_real": 2,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 1.0,
+     "n_tilt_removal": 2,
+     "n_scale_0.5": 2,
+     "n_scale_1.5": 2,
+     "n_mirror_roll": 2,
+     "n_yaw_control": 2
+    },
+    "flight-16p-trackRATM": {
+     "frr": 1.0,
+     "n_real": 1,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 1.0,
+     "n_tilt_removal": 1,
+     "n_scale_0.5": 1,
+     "n_scale_1.5": 1,
+     "n_mirror_roll": 1,
+     "n_yaw_control": 1
+    }
+   },
+   "selection_inner": {
+    "selected": "R2_axis_gains",
+    "scores": {
+     "R1_scalar_g1": {
+      "frr": 0.10526315789473684,
+      "n_frr": 57,
+      "det_tilt_removal": 1.0,
+      "det_scale_0.5": 1.0,
+      "det_scale_1.5": 0.9824561403508771,
+      "det_mirror_roll": 0.9824561403508771,
+      "det_yaw_control": 0.19298245614035087
+     },
+     "R2_axis_gains": {
+      "frr": 0.05263157894736842,
+      "n_frr": 57,
+      "det_tilt_removal": 1.0,
+      "det_scale_0.5": 1.0,
+      "det_scale_1.5": 0.9649122807017544,
+      "det_mirror_roll": 1.0,
+      "det_yaw_control": 0.2807017543859649
+     },
+     "R3_scalar_or_axis": {
+      "frr": 0.12280701754385964,
+      "n_frr": 57,
+      "det_tilt_removal": 1.0,
+      "det_scale_0.5": 1.0,
+      "det_scale_1.5": 1.0,
+      "det_mirror_roll": 1.0,
+      "det_yaw_control": 0.3157894736842105
+     }
+    }
+   }
+  }
+ },
+ "selected_pooled": "R2_axis_gains",
+ "lofo_selection": {
+  "fold_rules": [
+   {
+    "held_out": "flight-01a-ellipse",
+    "rule": "R1_scalar_g1",
+    "inner": {
+     "R1_scalar_g1": {
+      "frr": 0.10909090909090909,
+      "n_frr": 55,
+      "det_tilt_removal": 1.0,
+      "det_scale_0.5": 1.0,
+      "det_scale_1.5": 0.9818181818181818,
+      "det_mirror_roll": 0.9818181818181818,
+      "det_yaw_control": 0.16363636363636364
+     },
+     "R2_axis_gains": {
+      "frr": 0.12727272727272726,
+      "n_frr": 55,
+      "det_tilt_removal": 1.0,
+      "det_scale_0.5": 1.0,
+      "det_scale_1.5": 1.0,
+      "det_mirror_roll": 1.0,
+      "det_yaw_control": 0.32727272727272727
+     },
+     "R3_scalar_or_axis": {
+      "frr": 0.14545454545454545,
+      "n_frr": 55,
+      "det_tilt_removal": 1.0,
+      "det_scale_0.5": 1.0,
+      "det_scale_1.5": 1.0,
+      "det_mirror_roll": 1.0,
+      "det_yaw_control": 0.34545454545454546
+     }
+    }
+   },
+   {
+    "held_out": "flight-04a-ellipse",
+    "rule": "R2_axis_gains",
+    "inner": {
+     "R1_scalar_g1": {
+      "frr": 0.10909090909090909,
+      "n_frr": 55,
+      "det_tilt_removal": 1.0,
+      "det_scale_0.5": 1.0,
+      "det_scale_1.5": 0.9818181818181818,
+      "det_mirror_roll": 1.0,
+      "det_yaw_control": 0.18181818181818182
+     },
+     "R2_axis_gains": {
+      "frr": 0.05454545454545454,
+      "n_frr": 55,
+      "det_tilt_removal": 1.0,
+      "det_scale_0.5": 1.0,
+      "det_scale_1.5": 0.9636363636363636,
+      "det_mirror_roll": 1.0,
+      "det_yaw_control": 0.2545454545454545
+     },
+     "R3_scalar_or_axis": {
+      "frr": 0.12727272727272726,
+      "n_frr": 55,
+      "det_tilt_removal": 1.0,
+      "det_scale_0.5": 1.0,
+      "det_scale_1.5": 1.0,
+      "det_mirror_roll": 1.0,
+      "det_yaw_control": 0.2727272727272727
+     }
+    }
+   },
+   {
+    "held_out": "flight-07a-lemniscate",
+    "rule": "R2_axis_gains",
+    "inner": {
+     "R1_scalar_g1": {
+      "frr": 0.10526315789473684,
+      "n_frr": 57,
+      "det_tilt_removal": 1.0,
+      "det_scale_0.5": 1.0,
+      "det_scale_1.5": 0.9824561403508771,
+      "det_mirror_roll": 0.9824561403508771,
+      "det_yaw_control": 0.19298245614035087
+     },
+     "R2_axis_gains": {
+      "frr": 0.05263157894736842,
+      "n_frr": 57,
+      "det_tilt_removal": 1.0,
+      "det_scale_0.5": 1.0,
+      "det_scale_1.5": 0.9649122807017544,
+      "det_mirror_roll": 1.0,
+      "det_yaw_control": 0.2807017543859649
+     },
+     "R3_scalar_or_axis": {
+      "frr": 0.12280701754385964,
+      "n_frr": 57,
+      "det_tilt_removal": 1.0,
+      "det_scale_0.5": 1.0,
+      "det_scale_1.5": 1.0,
+      "det_mirror_roll": 1.0,
+      "det_yaw_control": 0.3157894736842105
+     }
+    }
+   },
+   {
+    "held_out": "flight-13a-trackRATM",
+    "rule": "R2_axis_gains",
+    "inner": {
+     "R1_scalar_g1": {
+      "frr": 0.10526315789473684,
+      "n_frr": 57,
+      "det_tilt_removal": 1.0,
+      "det_scale_0.5": 1.0,
+      "det_scale_1.5": 0.9824561403508771,
+      "det_mirror_roll": 0.9824561403508771,
+      "det_yaw_control": 0.19298245614035087
+     },
+     "R2_axis_gains": {
+      "frr": 0.05263157894736842,
+      "n_frr": 57,
+      "det_tilt_removal": 1.0,
+      "det_scale_0.5": 1.0,
+      "det_scale_1.5": 0.9649122807017544,
+      "det_mirror_roll": 1.0,
+      "det_yaw_control": 0.2807017543859649
+     },
+     "R3_scalar_or_axis": {
+      "frr": 0.12280701754385964,
+      "n_frr": 57,
+      "det_tilt_removal": 1.0,
+      "det_scale_0.5": 1.0,
+      "det_scale_1.5": 1.0,
+      "det_mirror_roll": 1.0,
+      "det_yaw_control": 0.3157894736842105
+     }
+    }
+   },
+   {
+    "held_out": "flight-01p-ellipse",
+    "rule": "R2_axis_gains",
+    "inner": {
+     "R1_scalar_g1": {
+      "frr": 0.42857142857142855,
+      "n_frr": 7,
+      "det_tilt_removal": 1.0,
+      "det_scale_0.5": 1.0,
+      "det_scale_1.5": 0.8571428571428571,
+      "det_mirror_roll": 0.8571428571428571,
+      "det_yaw_control": 0.8571428571428571
+     },
+     "R2_axis_gains": {
+      "frr": 0.42857142857142855,
+      "n_frr": 7,
+      "det_tilt_removal": 1.0,
+      "det_scale_0.5": 1.0,
+      "det_scale_1.5": 0.8571428571428571,
+      "det_mirror_roll": 1.0,
+      "det_yaw_control": 0.5714285714285714
+     },
+     "R3_scalar_or_axis": {
+      "frr": 0.5714285714285714,
+      "n_frr": 7,
+      "det_tilt_removal": 1.0,
+      "det_scale_0.5": 1.0,
+      "det_scale_1.5": 1.0,
+      "det_mirror_roll": 1.0,
+      "det_yaw_control": 0.8571428571428571
+     }
+    }
+   },
+   {
+    "held_out": "flight-07p-lemniscate",
+    "rule": "R2_axis_gains",
+    "inner": {
+     "R1_scalar_g1": {
+      "frr": 0.42857142857142855,
+      "n_frr": 7,
+      "det_tilt_removal": 1.0,
+      "det_scale_0.5": 1.0,
+      "det_scale_1.5": 0.8571428571428571,
+      "det_mirror_roll": 0.8571428571428571,
+      "det_yaw_control": 0.8571428571428571
+     },
+     "R2_axis_gains": {
+      "frr": 0.14285714285714285,
+      "n_frr": 7,
+      "det_tilt_removal": 1.0,
+      "det_scale_0.5": 1.0,
+      "det_scale_1.5": 0.8571428571428571,
+      "det_mirror_roll": 1.0,
+      "det_yaw_control": 0.7142857142857143
+     },
+     "R3_scalar_or_axis": {
+      "frr": 0.5714285714285714,
+      "n_frr": 7,
+      "det_tilt_removal": 1.0,
+      "det_scale_0.5": 1.0,
+      "det_scale_1.5": 1.0,
+      "det_mirror_roll": 1.0,
+      "det_yaw_control": 0.8571428571428571
+     }
+    }
+   },
+   {
+    "held_out": "flight-13p-trackRATM",
+    "rule": "R1_scalar_g1",
+    "inner": {
+     "R1_scalar_g1": {
+      "frr": 0.09090909090909091,
+      "n_frr": 55,
+      "det_tilt_removal": 1.0,
+      "det_scale_0.5": 1.0,
+      "det_scale_1.5": 1.0,
+      "det_mirror_roll": 1.0,
+      "det_yaw_control": 0.2
+     },
+     "R2_axis_gains": {
+      "frr": 0.05454545454545454,
+      "n_frr": 55,
+      "det_tilt_removal": 1.0,
+      "det_scale_0.5": 1.0,
+      "det_scale_1.5": 0.9636363636363636,
+      "det_mirror_roll": 1.0,
+      "det_yaw_control": 0.2545454545454545
+     },
+     "R3_scalar_or_axis": {
+      "frr": 0.12727272727272726,
+      "n_frr": 55,
+      "det_tilt_removal": 1.0,
+      "det_scale_0.5": 1.0,
+      "det_scale_1.5": 1.0,
+      "det_mirror_roll": 1.0,
+      "det_yaw_control": 0.2909090909090909
+     }
+    }
+   },
+   {
+    "held_out": "flight-16p-trackRATM",
+    "rule": "R2_axis_gains",
+    "inner": {
+     "R1_scalar_g1": {
+      "frr": 0.08928571428571429,
+      "n_frr": 56,
+      "det_tilt_removal": 1.0,
+      "det_scale_0.5": 1.0,
+      "det_scale_1.5": 0.9821428571428571,
+      "det_mirror_roll": 0.9821428571428571,
+      "det_yaw_control": 0.19642857142857142
+     },
+     "R2_axis_gains": {
+      "frr": 0.05357142857142857,
+      "n_frr": 56,
+      "det_tilt_removal": 1.0,
+      "det_scale_0.5": 1.0,
+      "det_scale_1.5": 0.9642857142857143,
+      "det_mirror_roll": 1.0,
+      "det_yaw_control": 0.2857142857142857
+     },
+     "R3_scalar_or_axis": {
+      "frr": 0.10714285714285714,
+      "n_frr": 56,
+      "det_tilt_removal": 1.0,
+      "det_scale_0.5": 1.0,
+      "det_scale_1.5": 1.0,
+      "det_mirror_roll": 1.0,
+      "det_yaw_control": 0.30357142857142855
+     }
+    }
+   }
+  ],
+  "frr": [
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   true,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   true,
+   true,
+   false
+  ],
+  "det": {
+   "tilt_removal": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "scale_0.5": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "scale_1.5": [
+    true,
+    true,
+    true,
+    true,
+    false,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    false,
+    true
+   ],
+   "mirror_roll": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "yaw_control": [
+    true,
+    true,
+    true,
+    true,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    true,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    true,
+    false,
+    false,
+    false,
+    true,
+    true,
+    false,
+    true,
+    false,
+    false,
+    false,
+    false,
+    false,
+    true,
+    false,
+    true,
+    false,
+    false,
+    false,
+    true,
+    false,
+    true,
+    false,
+    false,
+    false,
+    true,
+    false,
+    true,
+    true,
+    false
+   ]
+  }
+ },
+ "nested_summary": {
+  "frr": 0.05263157894736842,
+  "frr_wilson": [
+   0.01805996809628102,
+   0.14369777660471303
+  ],
+  "n_real": 57,
+  "det_tilt_removal": 1.0,
+  "det_scale_0.5": 1.0,
+  "det_scale_1.5": 0.9649122807017544,
+  "det_mirror_roll": 1.0,
+  "det_yaw_control": 0.2807017543859649,
+  "det_tilt_removal_wilson": [
+   0.936858991216536,
+   0.9999999999999999
+  ],
+  "det_scale_0.5_wilson": [
+   0.936858991216536,
+   0.9999999999999999
+  ],
+  "det_scale_1.5_wilson": [
+   0.8807899619581051,
+   0.9903245386467442
+  ],
+  "det_mirror_roll_wilson": [
+   0.936858991216536,
+   0.9999999999999999
+  ],
+  "det_yaw_control_wilson": [
+   0.18079248284972227,
+   0.40830445082723554
+  ],
+  "n_tilt_removal": 57,
+  "n_scale_0.5": 57,
+  "n_scale_1.5": 57,
+  "n_mirror_roll": 57,
+  "n_yaw_control": 57
+ },
+ "selected_summary": {
+  "frr": 0.05263157894736842,
+  "frr_wilson": [
+   0.01805996809628102,
+   0.14369777660471303
+  ],
+  "n_real": 57,
+  "det_tilt_removal": 1.0,
+  "det_scale_0.5": 1.0,
+  "det_scale_1.5": 0.9649122807017544,
+  "det_mirror_roll": 1.0,
+  "det_yaw_control": 0.2807017543859649,
+  "det_tilt_removal_wilson": [
+   0.936858991216536,
+   0.9999999999999999
+  ],
+  "det_scale_0.5_wilson": [
+   0.936858991216536,
+   0.9999999999999999
+  ],
+  "det_scale_1.5_wilson": [
+   0.8807899619581051,
+   0.9903245386467442
+  ],
+  "det_mirror_roll_wilson": [
+   0.936858991216536,
+   0.9999999999999999
+  ],
+  "det_yaw_control_wilson": [
+   0.18079248284972227,
+   0.40830445082723554
+  ],
+  "n_tilt_removal": 57,
+  "n_scale_0.5": 57,
+  "n_scale_1.5": 57,
+  "n_mirror_roll": 57,
+  "n_yaw_control": 57,
+  "by_flight": {
+   "flight-01a-ellipse": {
+    "frr": 0.5,
+    "n_real": 2,
+    "det_tilt_removal": 1.0,
+    "det_scale_0.5": 1.0,
+    "det_scale_1.5": 0.5,
+    "det_mirror_roll": 1.0,
+    "det_yaw_control": 1.0,
+    "n_tilt_removal": 2,
+    "n_scale_0.5": 2,
+    "n_scale_1.5": 2,
+    "n_mirror_roll": 2,
+    "n_yaw_control": 2
+   },
+   "flight-04a-ellipse": {
+    "frr": 0.0,
+    "n_real": 2,
+    "det_tilt_removal": 1.0,
+    "det_scale_0.5": 1.0,
+    "det_scale_1.5": 1.0,
+    "det_mirror_roll": 1.0,
+    "det_yaw_control": 1.0,
+    "n_tilt_removal": 2,
+    "n_scale_0.5": 2,
+    "n_scale_1.5": 2,
+    "n_mirror_roll": 2,
+    "n_yaw_control": 2
+   },
+   "flight-07a-lemniscate": {
+    "frr": NaN,
+    "n_real": 0,
+    "det_tilt_removal": NaN,
+    "det_scale_0.5": NaN,
+    "det_scale_1.5": NaN,
+    "det_mirror_roll": NaN,
+    "det_yaw_control": NaN,
+    "n_tilt_removal": 0,
+    "n_scale_0.5": 0,
+    "n_scale_1.5": 0,
+    "n_mirror_roll": 0,
+    "n_yaw_control": 0
+   },
+   "flight-13a-trackRATM": {
+    "frr": NaN,
+    "n_real": 0,
+    "det_tilt_removal": NaN,
+    "det_scale_0.5": NaN,
+    "det_scale_1.5": NaN,
+    "det_mirror_roll": NaN,
+    "det_yaw_control": NaN,
+    "n_tilt_removal": 0,
+    "n_scale_0.5": 0,
+    "n_scale_1.5": 0,
+    "n_mirror_roll": 0,
+    "n_yaw_control": 0
+   },
+   "flight-01p-ellipse": {
+    "frr": 0.038461538461538464,
+    "n_real": 26,
+    "det_tilt_removal": 1.0,
+    "det_scale_0.5": 1.0,
+    "det_scale_1.5": 0.9615384615384616,
+    "det_mirror_roll": 1.0,
+    "det_yaw_control": 0.07692307692307693,
+    "n_tilt_removal": 26,
+    "n_scale_0.5": 26,
+    "n_scale_1.5": 26,
+    "n_mirror_roll": 26,
+    "n_yaw_control": 26
+   },
+   "flight-07p-lemniscate": {
+    "frr": 0.0,
+    "n_real": 24,
+    "det_tilt_removal": 1.0,
+    "det_scale_0.5": 1.0,
+    "det_scale_1.5": 1.0,
+    "det_mirror_roll": 1.0,
+    "det_yaw_control": 0.3333333333333333,
+    "n_tilt_removal": 24,
+    "n_scale_0.5": 24,
+    "n_scale_1.5": 24,
+    "n_mirror_roll": 24,
+    "n_yaw_control": 24
+   },
+   "flight-13p-trackRATM": {
+    "frr": 0.5,
+    "n_real": 2,
+    "det_tilt_removal": 1.0,
+    "det_scale_0.5": 1.0,
+    "det_scale_1.5": 1.0,
+    "det_mirror_roll": 1.0,
+    "det_yaw_control": 1.0,
+    "n_tilt_removal": 2,
+    "n_scale_0.5": 2,
+    "n_scale_1.5": 2,
+    "n_mirror_roll": 2,
+    "n_yaw_control": 2
+   },
+   "flight-16p-trackRATM": {
+    "frr": 0.0,
+    "n_real": 1,
+    "det_tilt_removal": 1.0,
+    "det_scale_0.5": 1.0,
+    "det_scale_1.5": 1.0,
+    "det_mirror_roll": 1.0,
+    "det_yaw_control": 0.0,
+    "n_tilt_removal": 1,
+    "n_scale_0.5": 1,
+    "n_scale_1.5": 1,
+    "n_mirror_roll": 1,
+    "n_yaw_control": 1
+   }
+  }
+ },
+ "baseline": {
+  "frr": 0.034482758620689655,
+  "frr_wilson": [
+   0.009507728866485675,
+   0.11729364755327057
+  ],
+  "n_real": 58,
+  "det_tilt_removal": 0.6724137931034483,
+  "det_scale_0.5": 0.1724137931034483,
+  "det_scale_1.5": 0.2413793103448276,
+  "det_mirror_roll": 0.9482758620689655,
+  "det_yaw_control": 0.08620689655172414,
+  "det_tilt_removal_wilson": [
+   0.5442381364257336,
+   0.779168761196579
+  ],
+  "det_scale_0.5_wilson": [
+   0.09644189395085108,
+   0.2890850005667552
+  ],
+  "det_scale_1.5_wilson": [
+   0.14958739726966278,
+   0.3653022562968685
+  ],
+  "det_mirror_roll_wilson": [
+   0.8586037466498081,
+   0.9822541871682043
+  ],
+  "det_yaw_control_wilson": [
+   0.03738483193379338,
+   0.18643861377265664
+  ],
+  "n_tilt_removal": 58,
+  "n_scale_0.5": 58,
+  "n_scale_1.5": 58,
+  "n_mirror_roll": 58,
+  "n_yaw_control": 58,
+  "abstention": 0.42000000000000004,
+  "by_flight": {
+   "flight-01a-ellipse": {
+    "frr": 0.5,
+    "n_real": 2,
+    "det_tilt_removal": 1.0,
+    "det_scale_0.5": 1.0,
+    "det_scale_1.5": 1.0,
+    "det_mirror_roll": 1.0,
+    "det_yaw_control": 0.5,
+    "n_tilt_removal": 2,
+    "n_scale_0.5": 2,
+    "n_scale_1.5": 2,
+    "n_mirror_roll": 2,
+    "n_yaw_control": 2
+   },
+   "flight-04a-ellipse": {
+    "frr": 0.0,
+    "n_real": 2,
+    "det_tilt_removal": 1.0,
+    "det_scale_0.5": 1.0,
+    "det_scale_1.5": 1.0,
+    "det_mirror_roll": 1.0,
+    "det_yaw_control": 1.0,
+    "n_tilt_removal": 2,
+    "n_scale_0.5": 2,
+    "n_scale_1.5": 2,
+    "n_mirror_roll": 2,
+    "n_yaw_control": 2
+   },
+   "flight-07a-lemniscate": {
+    "frr": NaN,
+    "n_real": 0,
+    "det_tilt_removal": NaN,
+    "det_scale_0.5": NaN,
+    "det_scale_1.5": NaN,
+    "det_mirror_roll": NaN,
+    "det_yaw_control": NaN,
+    "n_tilt_removal": 0,
+    "n_scale_0.5": 0,
+    "n_scale_1.5": 0,
+    "n_mirror_roll": 0,
+    "n_yaw_control": 0
+   },
+   "flight-13a-trackRATM": {
+    "frr": NaN,
+    "n_real": 0,
+    "det_tilt_removal": NaN,
+    "det_scale_0.5": NaN,
+    "det_scale_1.5": NaN,
+    "det_mirror_roll": NaN,
+    "det_yaw_control": NaN,
+    "n_tilt_removal": 0,
+    "n_scale_0.5": 0,
+    "n_scale_1.5": 0,
+    "n_mirror_roll": 0,
+    "n_yaw_control": 0
+   },
+   "flight-01p-ellipse": {
+    "frr": 0.0,
+    "n_real": 26,
+    "det_tilt_removal": 0.4230769230769231,
+    "det_scale_0.5": 0.0,
+    "det_scale_1.5": 0.2692307692307692,
+    "det_mirror_roll": 0.9230769230769231,
+    "det_yaw_control": 0.0,
+    "n_tilt_removal": 26,
+    "n_scale_0.5": 26,
+    "n_scale_1.5": 26,
+    "n_mirror_roll": 26,
+    "n_yaw_control": 26
+   },
+   "flight-07p-lemniscate": {
+    "frr": 0.0,
+    "n_real": 24,
+    "det_tilt_removal": 0.8333333333333334,
+    "det_scale_0.5": 0.125,
+    "det_scale_1.5": 0.0,
+    "det_mirror_roll": 1.0,
+    "det_yaw_control": 0.0,
+    "n_tilt_removal": 24,
+    "n_scale_0.5": 24,
+    "n_scale_1.5": 24,
+    "n_mirror_roll": 24,
+    "n_yaw_control": 24
+   },
+   "flight-13p-trackRATM": {
+    "frr": 0.0,
+    "n_real": 3,
+    "det_tilt_removal": 1.0,
+    "det_scale_0.5": 0.6666666666666666,
+    "det_scale_1.5": 0.6666666666666666,
+    "det_mirror_roll": 0.6666666666666666,
+    "det_yaw_control": 0.3333333333333333,
+    "n_tilt_removal": 3,
+    "n_scale_0.5": 3,
+    "n_scale_1.5": 3,
+    "n_mirror_roll": 3,
+    "n_yaw_control": 3
+   },
+   "flight-16p-trackRATM": {
+    "frr": 1.0,
+    "n_real": 1,
+    "det_tilt_removal": 1.0,
+    "det_scale_0.5": 1.0,
+    "det_scale_1.5": 1.0,
+    "det_mirror_roll": 1.0,
+    "det_yaw_control": 1.0,
+    "n_tilt_removal": 1,
+    "n_scale_0.5": 1,
+    "n_scale_1.5": 1,
+    "n_mirror_roll": 1,
+    "n_yaw_control": 1
+   }
+  }
+ },
+ "matched_false_reject": {
+  "tilt_removal": {
+   "gain_at_own_operating_point": 1.0,
+   "gain_frr": 0.05263157894736842,
+   "baseline_at_gain_frr": {
+    "min": 0.6724137931034483,
+    "max": 0.6724137931034483,
+    "n_points": 1
+   },
+   "gain_at_baseline_frr": {
+    "min": 0.9824561403508771,
+    "max": 1.0,
+    "n_points": 3
+   },
+   "baseline_frr": 0.034482758620689655,
+   "baseline_own_operating_point": 0.6724137931034483
+  },
+  "mirror_roll": {
+   "gain_at_own_operating_point": 1.0,
+   "gain_frr": 0.05263157894736842,
+   "baseline_at_gain_frr": {
+    "min": 0.9482758620689655,
+    "max": 0.9482758620689655,
+    "n_points": 1
+   },
+   "gain_at_baseline_frr": {
+    "min": 0.9824561403508771,
+    "max": 1.0,
+    "n_points": 3
+   },
+   "baseline_frr": 0.034482758620689655,
+   "baseline_own_operating_point": 0.9482758620689655
+  },
+  "scale_0.5": {
+   "gain_at_own_operating_point": 1.0,
+   "gain_frr": 0.05263157894736842,
+   "baseline_at_gain_frr": {
+    "min": 0.1724137931034483,
+    "max": 0.1724137931034483,
+    "n_points": 1
+   },
+   "gain_at_baseline_frr": {
+    "min": 0.07017543859649122,
+    "max": 1.0,
+    "n_points": 3
+   },
+   "baseline_frr": 0.034482758620689655,
+   "baseline_own_operating_point": 0.1724137931034483
+  },
+  "scale_1.5": {
+   "gain_at_own_operating_point": 0.9649122807017544,
+   "gain_frr": 0.05263157894736842,
+   "baseline_at_gain_frr": {
+    "min": 0.2413793103448276,
+    "max": 0.2413793103448276,
+    "n_points": 1
+   },
+   "gain_at_baseline_frr": {
+    "min": 0.07017543859649122,
+    "max": 0.9649122807017544,
+    "n_points": 3
+   },
+   "baseline_frr": 0.034482758620689655,
+   "baseline_own_operating_point": 0.2413793103448276
+  }
+ },
+ "operating_curves": {
+  "R1_scalar_g1": {
+   "rows": [
+    {
+     "alpha": 0.0,
+     "frr": 0.03508771929824561,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 0.9824561403508771,
+     "det_scale_1.5": 0.9649122807017544,
+     "det_mirror_roll": 0.9649122807017544,
+     "det_yaw_control": 0.15789473684210525
+    },
+    {
+     "alpha": 0.025,
+     "frr": 0.08771929824561403,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 0.9824561403508771,
+     "det_scale_1.5": 0.9824561403508771,
+     "det_mirror_roll": 0.9649122807017544,
+     "det_yaw_control": 0.17543859649122806
+    },
+    {
+     "alpha": 0.05,
+     "frr": 0.10526315789473684,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 0.9824561403508771,
+     "det_mirror_roll": 0.9824561403508771,
+     "det_yaw_control": 0.19298245614035087
+    },
+    {
+     "alpha": 0.075,
+     "frr": 0.17543859649122806,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 0.9824561403508771,
+     "det_mirror_roll": 0.9824561403508771,
+     "det_yaw_control": 0.2631578947368421
+    },
+    {
+     "alpha": 0.1,
+     "frr": 0.17543859649122806,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 0.9824561403508771,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.3157894736842105
+    },
+    {
+     "alpha": 0.125,
+     "frr": 0.19298245614035087,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 0.9824561403508771,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.3157894736842105
+    },
+    {
+     "alpha": 0.15,
+     "frr": 0.19298245614035087,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 0.9824561403508771,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.3157894736842105
+    },
+    {
+     "alpha": 0.175,
+     "frr": 0.21052631578947367,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 0.9824561403508771,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.3333333333333333
+    },
+    {
+     "alpha": 0.2,
+     "frr": 0.24561403508771928,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 0.9824561403508771,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.40350877192982454
+    },
+    {
+     "alpha": 0.225,
+     "frr": 0.2631578947368421,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.42105263157894735
+    },
+    {
+     "alpha": 0.25,
+     "frr": 0.2807017543859649,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.43859649122807015
+    },
+    {
+     "alpha": 0.275,
+     "frr": 0.2982456140350877,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.45614035087719296
+    },
+    {
+     "alpha": 0.3,
+     "frr": 0.2982456140350877,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.47368421052631576
+    },
+    {
+     "alpha": 0.325,
+     "frr": 0.3508771929824561,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.5087719298245614
+    },
+    {
+     "alpha": 0.35,
+     "frr": 0.3508771929824561,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.5614035087719298
+    },
+    {
+     "alpha": 0.375,
+     "frr": 0.38596491228070173,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.6140350877192983
+    },
+    {
+     "alpha": 0.4,
+     "frr": 0.43859649122807015,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.6491228070175439
+    },
+    {
+     "alpha": 0.425,
+     "frr": 0.47368421052631576,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.6666666666666666
+    },
+    {
+     "alpha": 0.45,
+     "frr": 0.5263157894736842,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.7017543859649122
+    },
+    {
+     "alpha": 0.475,
+     "frr": 0.543859649122807,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.7192982456140351
+    },
+    {
+     "alpha": 0.5,
+     "frr": 0.5614035087719298,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.7719298245614035
+    }
+   ]
+  },
+  "R2_axis_gains": {
+   "rows": [
+    {
+     "alpha": 0.0,
+     "frr": 0.017543859649122806,
+     "det_tilt_removal": 0.9824561403508771,
+     "det_scale_0.5": 0.07017543859649122,
+     "det_scale_1.5": 0.07017543859649122,
+     "det_mirror_roll": 0.9824561403508771,
+     "det_yaw_control": 0.05263157894736842
+    },
+    {
+     "alpha": 0.025,
+     "frr": 0.017543859649122806,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 0.9298245614035088,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.15789473684210525
+    },
+    {
+     "alpha": 0.05,
+     "frr": 0.05263157894736842,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 0.9649122807017544,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.2807017543859649
+    },
+    {
+     "alpha": 0.075,
+     "frr": 0.07017543859649122,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 0.9824561403508771,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.3157894736842105
+    },
+    {
+     "alpha": 0.1,
+     "frr": 0.08771929824561403,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 0.9824561403508771,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.3333333333333333
+    },
+    {
+     "alpha": 0.125,
+     "frr": 0.08771929824561403,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 0.9824561403508771,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.3684210526315789
+    },
+    {
+     "alpha": 0.15,
+     "frr": 0.12280701754385964,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 0.9824561403508771,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.3684210526315789
+    },
+    {
+     "alpha": 0.175,
+     "frr": 0.21052631578947367,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 0.9824561403508771,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.42105263157894735
+    },
+    {
+     "alpha": 0.2,
+     "frr": 0.24561403508771928,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 0.9824561403508771,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.42105263157894735
+    },
+    {
+     "alpha": 0.225,
+     "frr": 0.24561403508771928,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 0.9824561403508771,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.43859649122807015
+    },
+    {
+     "alpha": 0.25,
+     "frr": 0.2807017543859649,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.49122807017543857
+    },
+    {
+     "alpha": 0.275,
+     "frr": 0.2807017543859649,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.5087719298245614
+    },
+    {
+     "alpha": 0.3,
+     "frr": 0.2982456140350877,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.5087719298245614
+    },
+    {
+     "alpha": 0.325,
+     "frr": 0.3333333333333333,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.5263157894736842
+    },
+    {
+     "alpha": 0.35,
+     "frr": 0.3333333333333333,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.5789473684210527
+    },
+    {
+     "alpha": 0.375,
+     "frr": 0.3508771929824561,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.5964912280701754
+    },
+    {
+     "alpha": 0.4,
+     "frr": 0.3508771929824561,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.5964912280701754
+    },
+    {
+     "alpha": 0.425,
+     "frr": 0.40350877192982454,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.631578947368421
+    },
+    {
+     "alpha": 0.45,
+     "frr": 0.40350877192982454,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.7017543859649122
+    },
+    {
+     "alpha": 0.475,
+     "frr": 0.43859649122807015,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.7017543859649122
+    },
+    {
+     "alpha": 0.5,
+     "frr": 0.49122807017543857,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.7368421052631579
+    }
+   ]
+  },
+  "R3_scalar_or_axis": {
+   "rows": [
+    {
+     "alpha": 0.0,
+     "frr": 0.05263157894736842,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 0.9824561403508771,
+     "det_scale_1.5": 0.9649122807017544,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.15789473684210525
+    },
+    {
+     "alpha": 0.025,
+     "frr": 0.10526315789473684,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.21052631578947367
+    },
+    {
+     "alpha": 0.05,
+     "frr": 0.12280701754385964,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.3157894736842105
+    },
+    {
+     "alpha": 0.075,
+     "frr": 0.19298245614035087,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.42105263157894735
+    },
+    {
+     "alpha": 0.1,
+     "frr": 0.21052631578947367,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.43859649122807015
+    },
+    {
+     "alpha": 0.125,
+     "frr": 0.22807017543859648,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.45614035087719296
+    },
+    {
+     "alpha": 0.15,
+     "frr": 0.24561403508771928,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.45614035087719296
+    },
+    {
+     "alpha": 0.175,
+     "frr": 0.2807017543859649,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.45614035087719296
+    },
+    {
+     "alpha": 0.2,
+     "frr": 0.3157894736842105,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.543859649122807
+    },
+    {
+     "alpha": 0.225,
+     "frr": 0.3333333333333333,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.5614035087719298
+    },
+    {
+     "alpha": 0.25,
+     "frr": 0.38596491228070173,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.5789473684210527
+    },
+    {
+     "alpha": 0.275,
+     "frr": 0.42105263157894735,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.5964912280701754
+    },
+    {
+     "alpha": 0.3,
+     "frr": 0.42105263157894735,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.6140350877192983
+    },
+    {
+     "alpha": 0.325,
+     "frr": 0.45614035087719296,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.6491228070175439
+    },
+    {
+     "alpha": 0.35,
+     "frr": 0.45614035087719296,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.6666666666666666
+    },
+    {
+     "alpha": 0.375,
+     "frr": 0.47368421052631576,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.7192982456140351
+    },
+    {
+     "alpha": 0.4,
+     "frr": 0.543859649122807,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.7543859649122807
+    },
+    {
+     "alpha": 0.425,
+     "frr": 0.5789473684210527,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.7894736842105263
+    },
+    {
+     "alpha": 0.45,
+     "frr": 0.6140350877192983,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.8245614035087719
+    },
+    {
+     "alpha": 0.475,
+     "frr": 0.6491228070175439,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.8596491228070176
+    },
+    {
+     "alpha": 0.5,
+     "frr": 0.6666666666666666,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.9122807017543859
+    }
+   ]
+  }
+ },
+ "baseline_curve": {
+  "rows": [
+   {
+    "alpha": 0.0,
+    "frr": 0.0,
+    "det_tilt_removal": 0.0,
+    "det_scale_0.5": 0.0,
+    "det_scale_1.5": 0.0,
+    "det_mirror_roll": 0.0,
+    "det_yaw_control": 0.0
+   },
+   {
+    "alpha": 0.025,
+    "frr": 0.017241379310344827,
+    "det_tilt_removal": 0.13793103448275862,
+    "det_scale_0.5": 0.1206896551724138,
+    "det_scale_1.5": 0.1206896551724138,
+    "det_mirror_roll": 0.1206896551724138,
+    "det_yaw_control": 0.05172413793103448
+   },
+   {
+    "alpha": 0.05,
+    "frr": 0.034482758620689655,
+    "det_tilt_removal": 0.6724137931034483,
+    "det_scale_0.5": 0.1724137931034483,
+    "det_scale_1.5": 0.2413793103448276,
+    "det_mirror_roll": 0.9482758620689655,
+    "det_yaw_control": 0.08620689655172414
+   },
+   {
+    "alpha": 0.075,
+    "frr": 0.08620689655172414,
+    "det_tilt_removal": 0.8275862068965517,
+    "det_scale_0.5": 0.20689655172413793,
+    "det_scale_1.5": 0.5172413793103449,
+    "det_mirror_roll": 0.9655172413793104,
+    "det_yaw_control": 0.10344827586206896
+   },
+   {
+    "alpha": 0.1,
+    "frr": 0.08620689655172414,
+    "det_tilt_removal": 0.8793103448275862,
+    "det_scale_0.5": 0.29310344827586204,
+    "det_scale_1.5": 0.7241379310344828,
+    "det_mirror_roll": 0.9827586206896551,
+    "det_yaw_control": 0.10344827586206896
+   },
+   {
+    "alpha": 0.125,
+    "frr": 0.08620689655172414,
+    "det_tilt_removal": 0.9137931034482759,
+    "det_scale_0.5": 0.3448275862068966,
+    "det_scale_1.5": 0.8793103448275862,
+    "det_mirror_roll": 0.9827586206896551,
+    "det_yaw_control": 0.10344827586206896
+   },
+   {
+    "alpha": 0.15,
+    "frr": 0.08620689655172414,
+    "det_tilt_removal": 0.9137931034482759,
+    "det_scale_0.5": 0.3620689655172414,
+    "det_scale_1.5": 0.9310344827586207,
+    "det_mirror_roll": 0.9827586206896551,
+    "det_yaw_control": 0.15517241379310345
+   },
+   {
+    "alpha": 0.175,
+    "frr": 0.08620689655172414,
+    "det_tilt_removal": 0.9482758620689655,
+    "det_scale_0.5": 0.5689655172413793,
+    "det_scale_1.5": 0.9482758620689655,
+    "det_mirror_roll": 0.9827586206896551,
+    "det_yaw_control": 0.29310344827586204
+   },
+   {
+    "alpha": 0.2,
+    "frr": 0.1724137931034483,
+    "det_tilt_removal": 0.9827586206896551,
+    "det_scale_0.5": 0.6724137931034483,
+    "det_scale_1.5": 0.9655172413793104,
+    "det_mirror_roll": 0.9827586206896551,
+    "det_yaw_control": 0.603448275862069
+   },
+   {
+    "alpha": 0.225,
+    "frr": 0.20689655172413793,
+    "det_tilt_removal": 0.9827586206896551,
+    "det_scale_0.5": 0.6724137931034483,
+    "det_scale_1.5": 0.9655172413793104,
+    "det_mirror_roll": 0.9827586206896551,
+    "det_yaw_control": 0.603448275862069
+   },
+   {
+    "alpha": 0.25,
+    "frr": 0.22413793103448276,
+    "det_tilt_removal": 0.9827586206896551,
+    "det_scale_0.5": 0.6724137931034483,
+    "det_scale_1.5": 0.9655172413793104,
+    "det_mirror_roll": 0.9827586206896551,
+    "det_yaw_control": 0.603448275862069
+   },
+   {
+    "alpha": 0.275,
+    "frr": 0.22413793103448276,
+    "det_tilt_removal": 0.9827586206896551,
+    "det_scale_0.5": 0.7241379310344828,
+    "det_scale_1.5": 0.9655172413793104,
+    "det_mirror_roll": 0.9827586206896551,
+    "det_yaw_control": 0.6206896551724138
+   },
+   {
+    "alpha": 0.3,
+    "frr": 0.22413793103448276,
+    "det_tilt_removal": 0.9827586206896551,
+    "det_scale_0.5": 0.7241379310344828,
+    "det_scale_1.5": 0.9655172413793104,
+    "det_mirror_roll": 0.9827586206896551,
+    "det_yaw_control": 0.6206896551724138
+   },
+   {
+    "alpha": 0.325,
+    "frr": 0.2413793103448276,
+    "det_tilt_removal": 0.9827586206896551,
+    "det_scale_0.5": 0.7413793103448276,
+    "det_scale_1.5": 0.9827586206896551,
+    "det_mirror_roll": 0.9827586206896551,
+    "det_yaw_control": 0.6724137931034483
+   },
+   {
+    "alpha": 0.35,
+    "frr": 0.2413793103448276,
+    "det_tilt_removal": 0.9827586206896551,
+    "det_scale_0.5": 0.7586206896551724,
+    "det_scale_1.5": 0.9827586206896551,
+    "det_mirror_roll": 0.9827586206896551,
+    "det_yaw_control": 0.7068965517241379
+   },
+   {
+    "alpha": 0.375,
+    "frr": 0.2413793103448276,
+    "det_tilt_removal": 0.9827586206896551,
+    "det_scale_0.5": 0.7586206896551724,
+    "det_scale_1.5": 0.9827586206896551,
+    "det_mirror_roll": 0.9827586206896551,
+    "det_yaw_control": 0.7241379310344828
+   },
+   {
+    "alpha": 0.4,
+    "frr": 0.3448275862068966,
+    "det_tilt_removal": 0.9827586206896551,
+    "det_scale_0.5": 0.7586206896551724,
+    "det_scale_1.5": 0.9827586206896551,
+    "det_mirror_roll": 0.9827586206896551,
+    "det_yaw_control": 0.7758620689655172
+   },
+   {
+    "alpha": 0.425,
+    "frr": 0.41379310344827586,
+    "det_tilt_removal": 0.9827586206896551,
+    "det_scale_0.5": 0.8275862068965517,
+    "det_scale_1.5": 0.9827586206896551,
+    "det_mirror_roll": 0.9827586206896551,
+    "det_yaw_control": 0.7758620689655172
+   },
+   {
+    "alpha": 0.45,
+    "frr": 0.41379310344827586,
+    "det_tilt_removal": 0.9827586206896551,
+    "det_scale_0.5": 0.8275862068965517,
+    "det_scale_1.5": 0.9827586206896551,
+    "det_mirror_roll": 0.9827586206896551,
+    "det_yaw_control": 0.7758620689655172
+   },
+   {
+    "alpha": 0.475,
+    "frr": 0.4482758620689655,
+    "det_tilt_removal": 0.9827586206896551,
+    "det_scale_0.5": 0.8275862068965517,
+    "det_scale_1.5": 0.9827586206896551,
+    "det_mirror_roll": 0.9827586206896551,
+    "det_yaw_control": 0.8103448275862069
+   },
+   {
+    "alpha": 0.5,
+    "frr": 0.4482758620689655,
+    "det_tilt_removal": 0.9827586206896551,
+    "det_scale_0.5": 0.8275862068965517,
+    "det_scale_1.5": 0.9827586206896551,
+    "det_mirror_roll": 0.9827586206896551,
+    "det_yaw_control": 0.8103448275862069
+   }
+  ]
+ },
+ "synthetic_sweep": [
+  {
+   "flight": "flight-01a-ellipse",
+   "clip_id": "flight-01a-ellipse#02",
+   "k": 0.0,
+   "gain": 1.199472589384608e-16,
+   "gx": -7.480299811057674e-17,
+   "gy": 9.632507491017118e-18,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01a-ellipse",
+   "clip_id": "flight-01a-ellipse#02",
+   "k": 0.25,
+   "gain": 0.16301279202981667,
+   "gx": 0.168628426287323,
+   "gy": 0.16350960000492015,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01a-ellipse",
+   "clip_id": "flight-01a-ellipse#02",
+   "k": 0.5,
+   "gain": 0.3260255840596339,
+   "gx": 0.33725685257464616,
+   "gy": 0.3270192000098403,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01a-ellipse",
+   "clip_id": "flight-01a-ellipse#02",
+   "k": 0.75,
+   "gain": 0.4890383760894507,
+   "gx": 0.5058852788619691,
+   "gy": 0.4905288000147605,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01a-ellipse",
+   "clip_id": "flight-01a-ellipse#02",
+   "k": 1.25,
+   "gain": 0.8150639601490847,
+   "gx": 0.8431421314366152,
+   "gy": 0.8175480000246007,
+   "flagged": false
+  },
+  {
+   "flight": "flight-01a-ellipse",
+   "clip_id": "flight-01a-ellipse#02",
+   "k": 1.5,
+   "gain": 0.9780767521789019,
+   "gx": 1.0117705577239382,
+   "gy": 0.9810576000295208,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01a-ellipse",
+   "clip_id": "flight-01a-ellipse#02",
+   "k": 2.0,
+   "gain": 1.304102336238535,
+   "gx": 1.349027410298584,
+   "gy": 1.3080768000393612,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01a-ellipse",
+   "clip_id": "flight-01a-ellipse#03",
+   "k": 0.0,
+   "gain": -1.3700492927996719e-17,
+   "gx": 2.563454623971872e-17,
+   "gy": 1.2159798748720924e-17,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01a-ellipse",
+   "clip_id": "flight-01a-ellipse#03",
+   "k": 0.25,
+   "gain": 0.15966929806110391,
+   "gx": 0.1651689270704097,
+   "gy": 0.32805389156506104,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01a-ellipse",
+   "clip_id": "flight-01a-ellipse#03",
+   "k": 0.5,
+   "gain": 0.31933859612220783,
+   "gx": 0.33033785414081923,
+   "gy": 0.6561077831301221,
+   "flagged": false
+  },
+  {
+   "flight": "flight-01a-ellipse",
+   "clip_id": "flight-01a-ellipse#03",
+   "k": 0.75,
+   "gain": 0.4790078941833117,
+   "gx": 0.4955067812112289,
+   "gy": 0.9841616746951836,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01a-ellipse",
+   "clip_id": "flight-01a-ellipse#03",
+   "k": 1.25,
+   "gain": 0.7983464903055197,
+   "gx": 0.8258446353520487,
+   "gy": 1.6402694578253059,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01a-ellipse",
+   "clip_id": "flight-01a-ellipse#03",
+   "k": 1.5,
+   "gain": 0.958015788366624,
+   "gx": 0.991013562422458,
+   "gy": 1.968323349390367,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01a-ellipse",
+   "clip_id": "flight-01a-ellipse#03",
+   "k": 2.0,
+   "gain": 1.2773543844888309,
+   "gx": 1.3213514165632774,
+   "gy": 2.6244311325204888,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#00",
+   "k": 0.0,
+   "gain": 2.0227611409266736e-16,
+   "gx": -1.5466837182174876e-17,
+   "gy": -9.371915766943303e-17,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#00",
+   "k": 0.25,
+   "gain": 0.21990233986277652,
+   "gx": 0.2195566064237843,
+   "gy": 0.15120133491668106,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#00",
+   "k": 0.5,
+   "gain": 0.43980467972555265,
+   "gx": 0.43911321284756805,
+   "gy": 0.3024026698333625,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#00",
+   "k": 0.75,
+   "gain": 0.6597070195883286,
+   "gx": 0.6586698192713523,
+   "gy": 0.4536040047500436,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#00",
+   "k": 1.25,
+   "gain": 1.099511699313881,
+   "gx": 1.09778303211892,
+   "gy": 0.756006674583406,
+   "flagged": false
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#00",
+   "k": 1.5,
+   "gain": 1.3194140391766576,
+   "gx": 1.317339638542705,
+   "gy": 0.9072080095000871,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#00",
+   "k": 2.0,
+   "gain": 1.7592187189022106,
+   "gx": 1.7564528513902729,
+   "gy": 1.2096106793334493,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#01",
+   "k": 0.0,
+   "gain": 3.511616753165248e-17,
+   "gx": -1.4370932128396655e-16,
+   "gy": 5.1046865090402296e-18,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#01",
+   "k": 0.25,
+   "gain": 0.21041738144728084,
+   "gx": 0.2414041873607198,
+   "gy": 0.18363511931409746,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#01",
+   "k": 0.5,
+   "gain": 0.420834762894562,
+   "gx": 0.48280837472143967,
+   "gy": 0.3672702386281949,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#01",
+   "k": 0.75,
+   "gain": 0.631252144341843,
+   "gx": 0.724212562082159,
+   "gy": 0.5509053579422923,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#01",
+   "k": 1.25,
+   "gain": 1.0520869072364045,
+   "gx": 1.2070209368035976,
+   "gy": 0.9181755965704873,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#01",
+   "k": 1.5,
+   "gain": 1.2625042886836852,
+   "gx": 1.4484251241643178,
+   "gy": 1.1018107158845847,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#01",
+   "k": 2.0,
+   "gain": 1.6833390515782471,
+   "gx": 1.9312334988857571,
+   "gy": 1.469080954512779,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#02",
+   "k": 0.0,
+   "gain": -1.0202023017695773e-16,
+   "gx": 1.2350430729915702e-16,
+   "gy": -1.1796028153526504e-18,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#02",
+   "k": 0.25,
+   "gain": 0.18687013235705607,
+   "gx": 0.17776919530686727,
+   "gy": 0.18949487068520174,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#02",
+   "k": 0.5,
+   "gain": 0.37374026471411215,
+   "gx": 0.3555383906137342,
+   "gy": 0.3789897413704035,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#02",
+   "k": 0.75,
+   "gain": 0.5606103970711677,
+   "gx": 0.5333075859206011,
+   "gy": 0.5684846120556053,
+   "flagged": false
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#02",
+   "k": 1.25,
+   "gain": 0.9343506617852795,
+   "gx": 0.8888459765343355,
+   "gy": 0.9474743534260086,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#02",
+   "k": 1.5,
+   "gain": 1.1212207941423358,
+   "gx": 1.0666151718412025,
+   "gy": 1.1369692241112106,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#02",
+   "k": 2.0,
+   "gain": 1.4949610588564477,
+   "gx": 1.4221535624549362,
+   "gy": 1.5159589654816141,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#03",
+   "k": 0.0,
+   "gain": -1.784617275454729e-17,
+   "gx": -3.058381939366801e-16,
+   "gy": -1.9706773375573068e-18,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#03",
+   "k": 0.25,
+   "gain": 0.18955264310815492,
+   "gx": 0.18123419533332663,
+   "gy": 0.1836221888193188,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#03",
+   "k": 0.5,
+   "gain": 0.37910528621631,
+   "gx": 0.36246839066665376,
+   "gy": 0.3672443776386375,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#03",
+   "k": 0.75,
+   "gain": 0.5686579293244649,
+   "gx": 0.5437025859999801,
+   "gy": 0.5508665664579563,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#03",
+   "k": 1.25,
+   "gain": 0.9477632155407747,
+   "gx": 0.906170976666633,
+   "gy": 0.918110944096594,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#03",
+   "k": 1.5,
+   "gain": 1.13731585864893,
+   "gx": 1.0874051719999605,
+   "gy": 1.1017331329159126,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#03",
+   "k": 2.0,
+   "gain": 1.5164211448652398,
+   "gx": 1.4498735626666122,
+   "gy": 1.46897751055455,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#04",
+   "k": 0.0,
+   "gain": 6.16928826956253e-17,
+   "gx": 1.4862027731761931e-16,
+   "gy": 0.0,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#04",
+   "k": 0.25,
+   "gain": 0.19637777592253805,
+   "gx": 0.2894686598526348,
+   "gy": 0.19447278474676347,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#04",
+   "k": 0.5,
+   "gain": 0.39275555184507577,
+   "gx": 0.5789373197052691,
+   "gy": 0.388945569493527,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#04",
+   "k": 0.75,
+   "gain": 0.5891333277676136,
+   "gx": 0.868405979557904,
+   "gy": 0.5834183542402905,
+   "flagged": false
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#04",
+   "k": 1.25,
+   "gain": 0.9818888796126894,
+   "gx": 1.4473432992631734,
+   "gy": 0.9723639237338174,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#04",
+   "k": 1.5,
+   "gain": 1.1782666555352272,
+   "gx": 1.7368119591158084,
+   "gy": 1.1668367084805806,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#04",
+   "k": 2.0,
+   "gain": 1.571022207380303,
+   "gx": 2.3157492788210767,
+   "gy": 1.555782277974108,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#05",
+   "k": 0.0,
+   "gain": 7.783821800310509e-17,
+   "gx": -1.3098939120171121e-17,
+   "gy": 3.431720694611821e-18,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#05",
+   "k": 0.25,
+   "gain": 0.19259885459685253,
+   "gx": 0.22833677793062837,
+   "gy": 0.1703937695045407,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#05",
+   "k": 0.5,
+   "gain": 0.38519770919370483,
+   "gx": 0.4566735558612572,
+   "gy": 0.3407875390090816,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#05",
+   "k": 0.75,
+   "gain": 0.5777965637905581,
+   "gx": 0.6850103337918856,
+   "gy": 0.5111813085136223,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#05",
+   "k": 1.25,
+   "gain": 0.9629942729842624,
+   "gx": 1.1416838896531427,
+   "gy": 0.8519688475227037,
+   "flagged": false
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#05",
+   "k": 1.5,
+   "gain": 1.155593127581115,
+   "gx": 1.370020667583771,
+   "gy": 1.0223626170272446,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#05",
+   "k": 2.0,
+   "gain": 1.5407908367748204,
+   "gx": 1.8266942234450287,
+   "gy": 1.3631501560363264,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#06",
+   "k": 0.0,
+   "gain": 2.2968452628187204e-16,
+   "gx": 0.0,
+   "gy": 5.298651495679912e-18,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#06",
+   "k": 0.25,
+   "gain": 0.1963826042887235,
+   "gx": 0.26378174337211774,
+   "gy": 0.18386824680894487,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#06",
+   "k": 0.5,
+   "gain": 0.3927652085774471,
+   "gx": 0.5275634867442351,
+   "gy": 0.3677364936178898,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#06",
+   "k": 0.75,
+   "gain": 0.589147812866171,
+   "gx": 0.7913452301163527,
+   "gy": 0.5516047404268345,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#06",
+   "k": 1.25,
+   "gain": 0.9819130214436188,
+   "gx": 1.318908716860588,
+   "gy": 0.9193412340447245,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#06",
+   "k": 1.5,
+   "gain": 1.1782956257323423,
+   "gx": 1.5826904602327052,
+   "gy": 1.1032094808536692,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#06",
+   "k": 2.0,
+   "gain": 1.5710608343097903,
+   "gx": 2.11025394697694,
+   "gy": 1.4709459744715587,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#07",
+   "k": 0.0,
+   "gain": 2.635334613384006e-16,
+   "gx": 2.8317647778834847e-16,
+   "gy": -2.0324712679904095e-17,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#07",
+   "k": 0.25,
+   "gain": 0.1760051697626501,
+   "gx": 0.056067982753957586,
+   "gy": 0.18216426987734377,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#07",
+   "k": 0.5,
+   "gain": 0.3520103395252999,
+   "gx": 0.11213596550791544,
+   "gy": 0.36432853975468765,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#07",
+   "k": 0.75,
+   "gain": 0.5280155092879499,
+   "gx": 0.1682039482618734,
+   "gy": 0.5464928096320312,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#07",
+   "k": 1.25,
+   "gain": 0.8800258488132502,
+   "gx": 0.28033991376978984,
+   "gy": 0.9108213493867187,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#07",
+   "k": 1.5,
+   "gain": 1.0560310185759003,
+   "gx": 0.3364078965237469,
+   "gy": 1.0929856192640626,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#07",
+   "k": 2.0,
+   "gain": 1.4080413581012015,
+   "gx": 0.44854386203166385,
+   "gy": 1.4573141590187502,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#08",
+   "k": 0.0,
+   "gain": -1.3620165237381865e-17,
+   "gx": -6.199758586235628e-17,
+   "gy": 4.751923069583709e-17,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#08",
+   "k": 0.25,
+   "gain": 0.22080837715190418,
+   "gx": 0.2017216530928534,
+   "gy": 0.21814128450147158,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#08",
+   "k": 0.5,
+   "gain": 0.4416167543038085,
+   "gx": 0.403443306185706,
+   "gy": 0.43628256900294327,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#08",
+   "k": 0.75,
+   "gain": 0.6624251314557136,
+   "gx": 0.6051649592785601,
+   "gy": 0.6544238535044148,
+   "flagged": false
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#08",
+   "k": 1.25,
+   "gain": 1.1040418857595216,
+   "gx": 1.0086082654642652,
+   "gy": 1.090706422507358,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#08",
+   "k": 1.5,
+   "gain": 1.3248502629114265,
+   "gx": 1.2103299185571195,
+   "gy": 1.3088477070088298,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#08",
+   "k": 2.0,
+   "gain": 1.7664670172152357,
+   "gx": 1.6137732247428256,
+   "gy": 1.7451302760117733,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#09",
+   "k": 0.0,
+   "gain": -3.841180102890065e-17,
+   "gx": 8.526787834611844e-18,
+   "gy": 4.1812615617182554e-17,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#09",
+   "k": 0.25,
+   "gain": 0.18871183549084355,
+   "gx": 0.22445256582458856,
+   "gy": 0.1847419578877272,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#09",
+   "k": 0.5,
+   "gain": 0.37742367098168694,
+   "gx": 0.4489051316491773,
+   "gy": 0.3694839157754546,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#09",
+   "k": 0.75,
+   "gain": 0.5661355064725303,
+   "gx": 0.6733576974737662,
+   "gy": 0.5542258736631819,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#09",
+   "k": 1.25,
+   "gain": 0.9435591774542174,
+   "gx": 1.1222628291229433,
+   "gy": 0.9237097894386364,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#09",
+   "k": 1.5,
+   "gain": 1.1322710129450613,
+   "gx": 1.3467153949475317,
+   "gy": 1.1084517473263635,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#09",
+   "k": 2.0,
+   "gain": 1.5096946839267478,
+   "gx": 1.7956205265967091,
+   "gy": 1.4779356631018181,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#10",
+   "k": 0.0,
+   "gain": 2.772709479393382e-17,
+   "gx": -1.0159642657430002e-16,
+   "gy": 1.7370255332862946e-17,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#10",
+   "k": 0.25,
+   "gain": 0.19985236632665082,
+   "gx": 0.17343905920175098,
+   "gy": 0.1652694414007333,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#10",
+   "k": 0.5,
+   "gain": 0.3997047326533014,
+   "gx": 0.3468781184035018,
+   "gy": 0.33053888280146665,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#10",
+   "k": 0.75,
+   "gain": 0.599557098979952,
+   "gx": 0.5203171776052528,
+   "gy": 0.49580832420219995,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#10",
+   "k": 1.25,
+   "gain": 0.9992618316332533,
+   "gx": 0.867195296008755,
+   "gy": 0.8263472070036666,
+   "flagged": false
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#10",
+   "k": 1.5,
+   "gain": 1.1991141979599031,
+   "gx": 1.040634355210506,
+   "gy": 0.9916166484043999,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#10",
+   "k": 2.0,
+   "gain": 1.5988189306132048,
+   "gx": 1.3875124736140083,
+   "gy": 1.3221555312058666,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#11",
+   "k": 0.0,
+   "gain": 6.674327580754598e-17,
+   "gx": -2.7867786012284996e-16,
+   "gy": 4.627698662100882e-18,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#11",
+   "k": 0.25,
+   "gain": 0.17732878016929265,
+   "gx": 0.19415254804001114,
+   "gy": 0.17474055074287254,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#11",
+   "k": 0.5,
+   "gain": 0.35465756033858525,
+   "gx": 0.38830509608002245,
+   "gy": 0.3494811014857452,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#11",
+   "k": 0.75,
+   "gain": 0.531986340507878,
+   "gx": 0.5824576441200336,
+   "gy": 0.5242216522286178,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#11",
+   "k": 1.25,
+   "gain": 0.8866439008464633,
+   "gx": 0.9707627402000562,
+   "gy": 0.8737027537143629,
+   "flagged": false
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#11",
+   "k": 1.5,
+   "gain": 1.0639726810157557,
+   "gx": 1.1649152882400677,
+   "gy": 1.0484433044572359,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#11",
+   "k": 2.0,
+   "gain": 1.418630241354341,
+   "gx": 1.5532203843200898,
+   "gy": 1.397924405942981,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#12",
+   "k": 0.0,
+   "gain": 8.064976379440151e-17,
+   "gx": -2.0719270770218056e-16,
+   "gy": 4.552422105322304e-18,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#12",
+   "k": 0.25,
+   "gain": 0.1909828460334965,
+   "gx": 0.19791067688412894,
+   "gy": 0.16892820714388143,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#12",
+   "k": 0.5,
+   "gain": 0.3819656920669932,
+   "gx": 0.3958213537682581,
+   "gy": 0.33785641428776303,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#12",
+   "k": 0.75,
+   "gain": 0.5729485381004895,
+   "gx": 0.5937320306523872,
+   "gy": 0.5067846214316444,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#12",
+   "k": 1.25,
+   "gain": 0.9549142301674826,
+   "gx": 0.9895533844206452,
+   "gy": 0.8446410357194073,
+   "flagged": false
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#12",
+   "k": 1.5,
+   "gain": 1.1458970762009797,
+   "gx": 1.187464061304774,
+   "gy": 1.0135692428632888,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#12",
+   "k": 2.0,
+   "gain": 1.527862768267972,
+   "gx": 1.5832854150730329,
+   "gy": 1.3514256571510515,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#13",
+   "k": 0.0,
+   "gain": -9.0501315550876e-17,
+   "gx": -1.0098169015671873e-16,
+   "gy": -3.726514579025785e-19,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#13",
+   "k": 0.25,
+   "gain": 0.1988000772662853,
+   "gx": 0.19807808335978597,
+   "gy": 0.20085851517973277,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#13",
+   "k": 0.5,
+   "gain": 0.3976001545325708,
+   "gx": 0.3961561667195717,
+   "gy": 0.40171703035946554,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#13",
+   "k": 0.75,
+   "gain": 0.5964002317988563,
+   "gx": 0.5942342500793579,
+   "gy": 0.6025755455391982,
+   "flagged": false
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#13",
+   "k": 1.25,
+   "gain": 0.9940003863314281,
+   "gx": 0.990390416798929,
+   "gy": 1.0042925758986634,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#13",
+   "k": 1.5,
+   "gain": 1.1928004635977134,
+   "gx": 1.188468500158714,
+   "gy": 1.2051510910783965,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#13",
+   "k": 2.0,
+   "gain": 1.5904006181302848,
+   "gx": 1.5846246668782862,
+   "gy": 1.6068681214378617,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#14",
+   "k": 0.0,
+   "gain": 9.431384908214225e-18,
+   "gx": -2.0580739097735792e-16,
+   "gy": 1.0988328294641023e-17,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#14",
+   "k": 0.25,
+   "gain": 0.1864439762868985,
+   "gx": 0.14958327733902954,
+   "gy": 0.18413864892589665,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#14",
+   "k": 0.5,
+   "gain": 0.3728879525737966,
+   "gx": 0.29916655467805964,
+   "gy": 0.3682772978517932,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#14",
+   "k": 0.75,
+   "gain": 0.5593319288606954,
+   "gx": 0.44874983201708946,
+   "gy": 0.5524159467776898,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#14",
+   "k": 1.25,
+   "gain": 0.9322198814344922,
+   "gx": 0.747916386695149,
+   "gy": 0.9206932446294829,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#14",
+   "k": 1.5,
+   "gain": 1.1186638577213897,
+   "gx": 0.8974996640341796,
+   "gy": 1.1048318935553794,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#14",
+   "k": 2.0,
+   "gain": 1.4915518102951872,
+   "gx": 1.1966662187122379,
+   "gy": 1.4731091914071734,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#15",
+   "k": 0.0,
+   "gain": -2.073188963446386e-17,
+   "gx": 4.0922919480468077e-17,
+   "gy": -3.159520622341397e-18,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#15",
+   "k": 0.25,
+   "gain": 0.2298255316336106,
+   "gx": 0.27633750094531195,
+   "gy": 0.1662187351692945,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#15",
+   "k": 0.5,
+   "gain": 0.4596510632672214,
+   "gx": 0.552675001890624,
+   "gy": 0.3324374703385891,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#15",
+   "k": 0.75,
+   "gain": 0.6894765949008322,
+   "gx": 0.8290125028359352,
+   "gy": 0.49865620550788364,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#15",
+   "k": 1.25,
+   "gain": 1.1491276581680527,
+   "gx": 1.38168750472656,
+   "gy": 0.831093675846473,
+   "flagged": false
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#15",
+   "k": 1.5,
+   "gain": 1.3789531898016645,
+   "gx": 1.6580250056718726,
+   "gy": 0.9973124110157676,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#15",
+   "k": 2.0,
+   "gain": 1.8386042530688855,
+   "gx": 2.210700007562496,
+   "gy": 1.3297498813543567,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#16",
+   "k": 0.0,
+   "gain": -9.940927949249992e-17,
+   "gx": -1.292353169935732e-17,
+   "gy": 7.072698921775631e-18,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#16",
+   "k": 0.25,
+   "gain": 0.18730472486649008,
+   "gx": 0.19327143352338086,
+   "gy": 0.19216894675475915,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#16",
+   "k": 0.5,
+   "gain": 0.37460944973297994,
+   "gx": 0.3865428670467617,
+   "gy": 0.3843378935095183,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#16",
+   "k": 0.75,
+   "gain": 0.5619141745994699,
+   "gx": 0.5798143005701427,
+   "gy": 0.5765068402642775,
+   "flagged": false
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#16",
+   "k": 1.25,
+   "gain": 0.93652362433245,
+   "gx": 0.9663571676169046,
+   "gy": 0.9608447337737956,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#16",
+   "k": 1.5,
+   "gain": 1.12382834919894,
+   "gx": 1.1596286011402854,
+   "gy": 1.153013680528555,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#16",
+   "k": 2.0,
+   "gain": 1.4984377989319213,
+   "gx": 1.546171468187048,
+   "gy": 1.5373515740380732,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#17",
+   "k": 0.0,
+   "gain": 2.2053732761212047e-17,
+   "gx": 6.213104451005032e-17,
+   "gy": -3.100825883097376e-19,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#17",
+   "k": 0.25,
+   "gain": 0.21458129677451557,
+   "gx": 0.2531778908343616,
+   "gy": 0.1827549488689238,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#17",
+   "k": 0.5,
+   "gain": 0.4291625935490309,
+   "gx": 0.5063557816687235,
+   "gy": 0.3655098977378476,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#17",
+   "k": 0.75,
+   "gain": 0.6437438903235472,
+   "gx": 0.7595336725030852,
+   "gy": 0.5482648466067713,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#17",
+   "k": 1.25,
+   "gain": 1.0729064838725784,
+   "gx": 1.265889454171809,
+   "gy": 0.9137747443446191,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#17",
+   "k": 1.5,
+   "gain": 1.2874877806470937,
+   "gx": 1.5190673450061705,
+   "gy": 1.0965296932135429,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#17",
+   "k": 2.0,
+   "gain": 1.7166503741961252,
+   "gx": 2.025423126674895,
+   "gy": 1.4620395909513901,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#18",
+   "k": 0.0,
+   "gain": -2.924473479653883e-17,
+   "gx": 1.6189471649401042e-16,
+   "gy": 1.384655284177905e-18,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#18",
+   "k": 0.25,
+   "gain": 0.20826831985901623,
+   "gx": 0.17443948118192526,
+   "gy": 0.2108198244065709,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#18",
+   "k": 0.5,
+   "gain": 0.4165366397180324,
+   "gx": 0.34887896236385046,
+   "gy": 0.421639648813142,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#18",
+   "k": 0.75,
+   "gain": 0.6248049595770484,
+   "gx": 0.5233184435457758,
+   "gy": 0.632459473219713,
+   "flagged": false
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#18",
+   "k": 1.25,
+   "gain": 1.0413415992950812,
+   "gx": 0.8721974059096254,
+   "gy": 1.0540991220328548,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#18",
+   "k": 1.5,
+   "gain": 1.2496099191540968,
+   "gx": 1.0466368870915508,
+   "gy": 1.2649189464394257,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#18",
+   "k": 2.0,
+   "gain": 1.6661465588721291,
+   "gx": 1.3955158494554019,
+   "gy": 1.6865585952525675,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#19",
+   "k": 0.0,
+   "gain": -1.759603307807307e-16,
+   "gx": 4.1893976295835614e-16,
+   "gy": -4.9111569085940295e-19,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#19",
+   "k": 0.25,
+   "gain": 0.19639443341975937,
+   "gx": 0.23762219472025342,
+   "gy": 0.16797439574918901,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#19",
+   "k": 0.5,
+   "gain": 0.3927888668395187,
+   "gx": 0.4752443894405068,
+   "gy": 0.3359487914983778,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#19",
+   "k": 0.75,
+   "gain": 0.589183300259278,
+   "gx": 0.7128665841607593,
+   "gy": 0.5039231872475672,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#19",
+   "k": 1.25,
+   "gain": 0.9819721670987973,
+   "gx": 1.1881109736012652,
+   "gy": 0.8398719787459457,
+   "flagged": false
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#19",
+   "k": 1.5,
+   "gain": 1.1783666005185571,
+   "gx": 1.4257331683215189,
+   "gy": 1.0078463744951347,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#19",
+   "k": 2.0,
+   "gain": 1.5711554673580754,
+   "gx": 1.9009775577620267,
+   "gy": 1.343795165993513,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#20",
+   "k": 0.0,
+   "gain": -1.0254155952540858e-16,
+   "gx": -5.041765115318434e-16,
+   "gy": 9.429408717299466e-18,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#20",
+   "k": 0.25,
+   "gain": 0.20506468322908575,
+   "gx": 0.3391707313281731,
+   "gy": 0.18859192224356466,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#20",
+   "k": 0.5,
+   "gain": 0.4101293664581711,
+   "gx": 0.6783414626563454,
+   "gy": 0.3771838444871294,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#20",
+   "k": 0.75,
+   "gain": 0.6151940496872568,
+   "gx": 1.0175121939845175,
+   "gy": 0.5657757667306939,
+   "flagged": false
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#20",
+   "k": 1.25,
+   "gain": 1.025323416145428,
+   "gx": 1.6958536566408628,
+   "gy": 0.9429596112178231,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#20",
+   "k": 1.5,
+   "gain": 1.230388099374514,
+   "gx": 2.035024387969036,
+   "gy": 1.1315515334613884,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#20",
+   "k": 2.0,
+   "gain": 1.640517465832685,
+   "gx": 2.7133658506253817,
+   "gy": 1.5087353779485175,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#21",
+   "k": 0.0,
+   "gain": -1.1562359665440369e-16,
+   "gx": -4.029420115164187e-17,
+   "gy": 2.000355282573302e-17,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#21",
+   "k": 0.25,
+   "gain": 0.18635264734588156,
+   "gx": 0.20342550341623408,
+   "gy": 0.18086379237296438,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#21",
+   "k": 0.5,
+   "gain": 0.3727052946917628,
+   "gx": 0.40685100683246794,
+   "gy": 0.3617275847459288,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#21",
+   "k": 0.75,
+   "gain": 0.559057942037644,
+   "gx": 0.6102765102487017,
+   "gy": 0.5425913771188932,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#21",
+   "k": 1.25,
+   "gain": 0.9317632367294068,
+   "gx": 1.017127517081169,
+   "gy": 0.9043189618648222,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#21",
+   "k": 1.5,
+   "gain": 1.1181158840752887,
+   "gx": 1.220553020497403,
+   "gy": 1.0851827542377863,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#21",
+   "k": 2.0,
+   "gain": 1.4908211787670511,
+   "gx": 1.627404027329871,
+   "gy": 1.446910338983715,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#22",
+   "k": 0.0,
+   "gain": 1.3312165938901013e-17,
+   "gx": 1.4110178732115043e-16,
+   "gy": -5.4345245411130825e-18,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#22",
+   "k": 0.25,
+   "gain": 0.2187088997622645,
+   "gx": 0.30262851105207333,
+   "gy": 0.17603071105565138,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#22",
+   "k": 0.5,
+   "gain": 0.437417799524529,
+   "gx": 0.6052570221041467,
+   "gy": 0.3520614221113029,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#22",
+   "k": 0.75,
+   "gain": 0.6561266992867933,
+   "gx": 0.9078855331562201,
+   "gy": 0.5280921331669544,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#22",
+   "k": 1.25,
+   "gain": 1.093544498811322,
+   "gx": 1.5131425552603668,
+   "gy": 0.8801535552782571,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#22",
+   "k": 1.5,
+   "gain": 1.3122533985735865,
+   "gx": 1.8157710663124405,
+   "gy": 1.056184266333909,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#22",
+   "k": 2.0,
+   "gain": 1.7496711980981157,
+   "gx": 2.4210280884165876,
+   "gy": 1.4082456884452117,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#23",
+   "k": 0.0,
+   "gain": -2.149771241079134e-16,
+   "gx": 5.737074001669287e-16,
+   "gy": -3.963136543078123e-17,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#23",
+   "k": 0.25,
+   "gain": 0.1785327955058938,
+   "gx": 0.16266345375963098,
+   "gy": 0.17487794460495298,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#23",
+   "k": 0.5,
+   "gain": 0.3570655910117874,
+   "gx": 0.3253269075192621,
+   "gy": 0.3497558892099061,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#23",
+   "k": 0.75,
+   "gain": 0.535598386517681,
+   "gx": 0.48799036127889195,
+   "gy": 0.524633833814859,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#23",
+   "k": 1.25,
+   "gain": 0.8926639775294682,
+   "gx": 0.8133172687981538,
+   "gy": 0.874389723024765,
+   "flagged": false
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#23",
+   "k": 1.5,
+   "gain": 1.0711967730353613,
+   "gx": 0.975980722557784,
+   "gy": 1.049267667629718,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#23",
+   "k": 2.0,
+   "gain": 1.428262364047149,
+   "gx": 1.3013076300770448,
+   "gy": 1.3990235568396239,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#24",
+   "k": 0.0,
+   "gain": -6.180504852530125e-17,
+   "gx": -5.701523307568037e-17,
+   "gy": 2.989392718878001e-17,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#24",
+   "k": 0.25,
+   "gain": 0.23695015101793623,
+   "gx": 0.2431695034232917,
+   "gy": 0.20144200433791348,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#24",
+   "k": 0.5,
+   "gain": 0.47390030203587247,
+   "gx": 0.4863390068465831,
+   "gy": 0.4028840086758269,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#24",
+   "k": 0.75,
+   "gain": 0.7108504530538086,
+   "gx": 0.7295085102698744,
+   "gy": 0.6043260130137406,
+   "flagged": false
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#24",
+   "k": 1.25,
+   "gain": 1.1847507550896814,
+   "gx": 1.2158475171164576,
+   "gy": 1.0072100216895676,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#24",
+   "k": 1.5,
+   "gain": 1.4217009061076178,
+   "gx": 1.4590170205397492,
+   "gy": 1.208652026027481,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#24",
+   "k": 2.0,
+   "gain": 1.8956012081434905,
+   "gx": 1.9453560273863328,
+   "gy": 1.6115360347033079,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#25",
+   "k": 0.0,
+   "gain": 1.0083618661117847e-17,
+   "gx": -1.0518695029930429e-18,
+   "gy": -3.296819047231468e-19,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#25",
+   "k": 0.25,
+   "gain": 0.20192442491718746,
+   "gx": 0.22037991783153654,
+   "gy": 0.1699165727483142,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#25",
+   "k": 0.5,
+   "gain": 0.403848849834375,
+   "gx": 0.4407598356630731,
+   "gy": 0.3398331454966286,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#25",
+   "k": 0.75,
+   "gain": 0.6057732747515627,
+   "gx": 0.6611397534946093,
+   "gy": 0.5097497182449425,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#25",
+   "k": 1.25,
+   "gain": 1.0096221245859374,
+   "gx": 1.1018995891576826,
+   "gy": 0.8495828637415709,
+   "flagged": false
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#25",
+   "k": 1.5,
+   "gain": 1.211546549503125,
+   "gx": 1.3222795069892184,
+   "gy": 1.0194994364898853,
+   "flagged": true
+  },
+  {
+   "flight": "flight-01p-ellipse",
+   "clip_id": "flight-01p-ellipse#25",
+   "k": 2.0,
+   "gain": 1.6153953993375,
+   "gx": 1.7630393426522912,
+   "gy": 1.3593325819865136,
+   "flagged": true
+  },
+  {
+   "flight": "flight-04a-ellipse",
+   "clip_id": "flight-04a-ellipse#03",
+   "k": 0.0,
+   "gain": -7.743082876241065e-17,
+   "gx": -1.9327405764497788e-16,
+   "gy": 5.164763832059142e-18,
+   "flagged": true
+  },
+  {
+   "flight": "flight-04a-ellipse",
+   "clip_id": "flight-04a-ellipse#03",
+   "k": 0.25,
+   "gain": 0.14765619530483906,
+   "gx": 0.14059465290282214,
+   "gy": 0.21276319650563064,
+   "flagged": true
+  },
+  {
+   "flight": "flight-04a-ellipse",
+   "clip_id": "flight-04a-ellipse#03",
+   "k": 0.5,
+   "gain": 0.29531239060967807,
+   "gx": 0.28118930580564416,
+   "gy": 0.4255263930112613,
+   "flagged": true
+  },
+  {
+   "flight": "flight-04a-ellipse",
+   "clip_id": "flight-04a-ellipse#03",
+   "k": 0.75,
+   "gain": 0.442968585914517,
+   "gx": 0.4217839587084663,
+   "gy": 0.6382895895168919,
+   "flagged": false
+  },
+  {
+   "flight": "flight-04a-ellipse",
+   "clip_id": "flight-04a-ellipse#03",
+   "k": 1.25,
+   "gain": 0.738280976524195,
+   "gx": 0.7029732645141102,
+   "gy": 1.0638159825281528,
+   "flagged": true
+  },
+  {
+   "flight": "flight-04a-ellipse",
+   "clip_id": "flight-04a-ellipse#03",
+   "k": 1.5,
+   "gain": 0.8859371718290343,
+   "gx": 0.843567917416932,
+   "gy": 1.2765791790337837,
+   "flagged": true
+  },
+  {
+   "flight": "flight-04a-ellipse",
+   "clip_id": "flight-04a-ellipse#03",
+   "k": 2.0,
+   "gain": 1.181249562438712,
+   "gx": 1.1247572232225767,
+   "gy": 1.7021055720450449,
+   "flagged": true
+  },
+  {
+   "flight": "flight-04a-ellipse",
+   "clip_id": "flight-04a-ellipse#04",
+   "k": 0.0,
+   "gain": 5.64294147568786e-17,
+   "gx": 2.703160008158927e-17,
+   "gy": 2.6515539410467116e-18,
+   "flagged": true
+  },
+  {
+   "flight": "flight-04a-ellipse",
+   "clip_id": "flight-04a-ellipse#04",
+   "k": 0.25,
+   "gain": 0.16951300780537532,
+   "gx": 0.1559975683380623,
+   "gy": 0.15399592877386914,
+   "flagged": true
+  },
+  {
+   "flight": "flight-04a-ellipse",
+   "clip_id": "flight-04a-ellipse#04",
+   "k": 0.5,
+   "gain": 0.33902601561075024,
+   "gx": 0.3119951366761248,
+   "gy": 0.3079918575477384,
+   "flagged": true
+  },
+  {
+   "flight": "flight-04a-ellipse",
+   "clip_id": "flight-04a-ellipse#04",
+   "k": 0.75,
+   "gain": 0.5085390234161256,
+   "gx": 0.4679927050141873,
+   "gy": 0.4619877863216075,
+   "flagged": true
+  },
+  {
+   "flight": "flight-04a-ellipse",
+   "clip_id": "flight-04a-ellipse#04",
+   "k": 1.25,
+   "gain": 0.8475650390268764,
+   "gx": 0.7799878416903122,
+   "gy": 0.7699796438693456,
+   "flagged": false
+  },
+  {
+   "flight": "flight-04a-ellipse",
+   "clip_id": "flight-04a-ellipse#04",
+   "k": 1.5,
+   "gain": 1.0170780468322511,
+   "gx": 0.9359854100283744,
+   "gy": 0.923975572643215,
+   "flagged": true
+  },
+  {
+   "flight": "flight-04a-ellipse",
+   "clip_id": "flight-04a-ellipse#04",
+   "k": 2.0,
+   "gain": 1.3561040624430014,
+   "gx": 1.2479805467044993,
+   "gy": 1.2319674301909525,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#01",
+   "k": 0.0,
+   "gain": -3.301353038451394e-17,
+   "gx": -2.8927299030966366e-17,
+   "gy": 4.826535869563213e-18,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#01",
+   "k": 0.25,
+   "gain": 0.18832950300670376,
+   "gx": 0.2060518300523092,
+   "gy": 0.16858397892196633,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#01",
+   "k": 0.5,
+   "gain": 0.37665900601340757,
+   "gx": 0.4121036601046188,
+   "gy": 0.33716795784393266,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#01",
+   "k": 0.75,
+   "gain": 0.564988509020112,
+   "gx": 0.6181554901569283,
+   "gy": 0.5057519367658991,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#01",
+   "k": 1.25,
+   "gain": 0.9416475150335194,
+   "gx": 1.0302591502615472,
+   "gy": 0.8429198946098313,
+   "flagged": false
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#01",
+   "k": 1.5,
+   "gain": 1.1299770180402233,
+   "gx": 1.2363109803138561,
+   "gy": 1.0115038735317976,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#01",
+   "k": 2.0,
+   "gain": 1.5066360240536312,
+   "gx": 1.6484146404184747,
+   "gy": 1.34867183137573,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#02",
+   "k": 0.0,
+   "gain": -1.6273570182741297e-16,
+   "gx": 1.2517024523456081e-16,
+   "gy": -2.0362396752705697e-17,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#02",
+   "k": 0.25,
+   "gain": 0.20452680983878643,
+   "gx": 0.3050829224253838,
+   "gy": 0.1861799426362409,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#02",
+   "k": 0.5,
+   "gain": 0.40905361967757264,
+   "gx": 0.6101658448507675,
+   "gy": 0.3723598852724819,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#02",
+   "k": 0.75,
+   "gain": 0.6135804295163589,
+   "gx": 0.9152487672761511,
+   "gy": 0.558539827908723,
+   "flagged": false
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#02",
+   "k": 1.25,
+   "gain": 1.0226340491939319,
+   "gx": 1.5254146121269196,
+   "gy": 0.9308997131812047,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#02",
+   "k": 1.5,
+   "gain": 1.2271608590327179,
+   "gx": 1.830497534552303,
+   "gy": 1.1170796558174454,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#02",
+   "k": 2.0,
+   "gain": 1.63621447871029,
+   "gx": 2.4406633794030714,
+   "gy": 1.4894395410899273,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#03",
+   "k": 0.0,
+   "gain": 1.6265519161256244e-16,
+   "gx": 1.5275927706880493e-16,
+   "gy": -6.95730849011435e-17,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#03",
+   "k": 0.25,
+   "gain": 0.21026311079503257,
+   "gx": 0.22365270804957293,
+   "gy": 0.19873024289624694,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#03",
+   "k": 0.5,
+   "gain": 0.42052622159006536,
+   "gx": 0.44730541609914576,
+   "gy": 0.3974604857924939,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#03",
+   "k": 0.75,
+   "gain": 0.6307893323850977,
+   "gx": 0.6709581241487188,
+   "gy": 0.5961907286887409,
+   "flagged": false
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#03",
+   "k": 1.25,
+   "gain": 1.0513155539751635,
+   "gx": 1.1182635402478647,
+   "gy": 0.9936512144812352,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#03",
+   "k": 1.5,
+   "gain": 1.2615786647701965,
+   "gx": 1.3419162482974374,
+   "gy": 1.1923814573774814,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#03",
+   "k": 2.0,
+   "gain": 1.6821048863602615,
+   "gx": 1.7892216643965835,
+   "gy": 1.589841943169976,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#04",
+   "k": 0.0,
+   "gain": 1.6834425848376794e-16,
+   "gx": 1.1712618658149748e-16,
+   "gy": -3.3663759825944234e-17,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#04",
+   "k": 0.25,
+   "gain": 0.2426006117138199,
+   "gx": 0.27393060267905844,
+   "gy": 0.20381743695190352,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#04",
+   "k": 0.5,
+   "gain": 0.48520122342764,
+   "gx": 0.5478612053581171,
+   "gy": 0.40763487390380704,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#04",
+   "k": 0.75,
+   "gain": 0.7278018351414604,
+   "gx": 0.8217918080371756,
+   "gy": 0.6114523108557108,
+   "flagged": false
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#04",
+   "k": 1.25,
+   "gain": 1.2130030585690998,
+   "gx": 1.3696530133952942,
+   "gy": 1.0190871847595169,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#04",
+   "k": 1.5,
+   "gain": 1.4556036702829196,
+   "gx": 1.6435836160743513,
+   "gy": 1.2229046217114203,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#04",
+   "k": 2.0,
+   "gain": 1.94080489371056,
+   "gx": 2.1914448214324684,
+   "gy": 1.6305394956152288,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#05",
+   "k": 0.0,
+   "gain": -2.6936523067613966e-17,
+   "gx": 2.5002479544469056e-17,
+   "gy": -8.29178691066679e-17,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#05",
+   "k": 0.25,
+   "gain": 0.20054579760520005,
+   "gx": 0.21066074875161656,
+   "gy": 0.16598894310895296,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#05",
+   "k": 0.5,
+   "gain": 0.40109159521040033,
+   "gx": 0.42132149750323294,
+   "gy": 0.33197788621790647,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#05",
+   "k": 0.75,
+   "gain": 0.6016373928156007,
+   "gx": 0.6319822462548497,
+   "gy": 0.4979668293268595,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#05",
+   "k": 1.25,
+   "gain": 1.0027289880260017,
+   "gx": 1.053303743758083,
+   "gy": 0.8299447155447649,
+   "flagged": false
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#05",
+   "k": 1.5,
+   "gain": 1.2032747856312023,
+   "gx": 1.2639644925096993,
+   "gy": 0.9959336586537187,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#05",
+   "k": 2.0,
+   "gain": 1.6043663808416027,
+   "gx": 1.6852859900129324,
+   "gy": 1.3279115448716245,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#06",
+   "k": 0.0,
+   "gain": 5.845661380263298e-17,
+   "gx": 3.5617182031848503e-16,
+   "gy": 0.0,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#06",
+   "k": 0.25,
+   "gain": 0.21128010375008466,
+   "gx": 0.3275132243985573,
+   "gy": 0.19312991555852882,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#06",
+   "k": 0.5,
+   "gain": 0.4225602075001701,
+   "gx": 0.6550264487971146,
+   "gy": 0.3862598311170576,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#06",
+   "k": 0.75,
+   "gain": 0.6338403112502549,
+   "gx": 0.9825396731956718,
+   "gy": 0.5793897466755865,
+   "flagged": false
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#06",
+   "k": 1.25,
+   "gain": 1.0564005187504242,
+   "gx": 1.637566121992785,
+   "gy": 0.9656495777926439,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#06",
+   "k": 1.5,
+   "gain": 1.2676806225005088,
+   "gx": 1.9650793463913443,
+   "gy": 1.1587794933511726,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#06",
+   "k": 2.0,
+   "gain": 1.69024083000068,
+   "gx": 2.6201057951884583,
+   "gy": 1.5450393244682306,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#07",
+   "k": 0.0,
+   "gain": 6.57103486265743e-17,
+   "gx": 1.7564347164619158e-16,
+   "gy": 2.7720313339966507e-17,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#07",
+   "k": 0.25,
+   "gain": 0.19335730973922616,
+   "gx": 0.21426517475568574,
+   "gy": 0.17951541083893016,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#07",
+   "k": 0.5,
+   "gain": 0.38671461947845226,
+   "gx": 0.4285303495113721,
+   "gy": 0.35903082167786043,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#07",
+   "k": 0.75,
+   "gain": 0.5800719292176785,
+   "gx": 0.6427955242670583,
+   "gy": 0.5385462325167907,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#07",
+   "k": 1.25,
+   "gain": 0.9667865486961312,
+   "gx": 1.0713258737784306,
+   "gy": 0.8975770541946514,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#07",
+   "k": 1.5,
+   "gain": 1.1601438584353576,
+   "gx": 1.2855910485341167,
+   "gy": 1.0770924650335816,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#07",
+   "k": 2.0,
+   "gain": 1.5468584779138104,
+   "gx": 1.714121398045489,
+   "gy": 1.4361232867114417,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#08",
+   "k": 0.0,
+   "gain": -1.652921481779246e-16,
+   "gx": -9.745564671502639e-16,
+   "gy": 5.874952138777551e-17,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#08",
+   "k": 0.25,
+   "gain": 0.16295743656606873,
+   "gx": 0.21847248717831197,
+   "gy": 0.1478628454409987,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#08",
+   "k": 0.5,
+   "gain": 0.3259148731321374,
+   "gx": 0.4369449743566232,
+   "gy": 0.2957256908819974,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#08",
+   "k": 0.75,
+   "gain": 0.48887230969820605,
+   "gx": 0.6554174615349339,
+   "gy": 0.44358853632299616,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#08",
+   "k": 1.25,
+   "gain": 0.8147871828303436,
+   "gx": 1.0923624358915536,
+   "gy": 0.7393142272049937,
+   "flagged": false
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#08",
+   "k": 1.5,
+   "gain": 0.9777446193964131,
+   "gx": 1.3108349230698664,
+   "gy": 0.8871770726459921,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#08",
+   "k": 2.0,
+   "gain": 1.303659492528551,
+   "gx": 1.7477798974264884,
+   "gy": 1.1829027635279896,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#09",
+   "k": 0.0,
+   "gain": -9.259934037567756e-17,
+   "gx": 2.2875349251601075e-16,
+   "gy": -2.2385278393164157e-17,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#09",
+   "k": 0.25,
+   "gain": 0.17942887974814614,
+   "gx": 0.20844666301820802,
+   "gy": 0.1345835574793127,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#09",
+   "k": 0.5,
+   "gain": 0.35885775949629156,
+   "gx": 0.4168933260364163,
+   "gy": 0.2691671149586251,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#09",
+   "k": 0.75,
+   "gain": 0.538286639244437,
+   "gx": 0.6253399890546241,
+   "gy": 0.4037506724379376,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#09",
+   "k": 1.25,
+   "gain": 0.8971443987407284,
+   "gx": 1.0422333150910403,
+   "gy": 0.6729177873965622,
+   "flagged": false
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#09",
+   "k": 1.5,
+   "gain": 1.076573278488874,
+   "gx": 1.2506799781092472,
+   "gy": 0.8075013448758749,
+   "flagged": false
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#09",
+   "k": 2.0,
+   "gain": 1.4354310379851654,
+   "gx": 1.6675733041456642,
+   "gy": 1.0766684598344998,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#10",
+   "k": 0.0,
+   "gain": -1.3289278057372248e-16,
+   "gx": 1.7658687928399752e-15,
+   "gy": -1.2269128215523223e-16,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#10",
+   "k": 0.25,
+   "gain": 0.1513668702428641,
+   "gx": 0.2780344165533092,
+   "gy": 0.14311361419028978,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#10",
+   "k": 0.5,
+   "gain": 0.3027337404857272,
+   "gx": 0.5560688331066178,
+   "gy": 0.28622722838057957,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#10",
+   "k": 0.75,
+   "gain": 0.45410061072859154,
+   "gx": 0.8341032496599271,
+   "gy": 0.4293408425708693,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#10",
+   "k": 1.25,
+   "gain": 0.756834351214319,
+   "gx": 1.3901720827665434,
+   "gy": 0.7155680709514488,
+   "flagged": false
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#10",
+   "k": 1.5,
+   "gain": 0.9082012214571834,
+   "gx": 1.668206499319851,
+   "gy": 0.8586816851417386,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#10",
+   "k": 2.0,
+   "gain": 1.2109349619429088,
+   "gx": 2.2242753324264726,
+   "gy": 1.1449089135223178,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#11",
+   "k": 0.0,
+   "gain": 2.075263295764323e-16,
+   "gx": -2.48858273811682e-17,
+   "gy": 7.01820687328903e-17,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#11",
+   "k": 0.25,
+   "gain": 0.1812649072231881,
+   "gx": 0.19382117296298287,
+   "gy": 0.14514730779621618,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#11",
+   "k": 0.5,
+   "gain": 0.3625298144463767,
+   "gx": 0.387642345925965,
+   "gy": 0.29029461559243247,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#11",
+   "k": 0.75,
+   "gain": 0.5437947216695646,
+   "gx": 0.5814635188889481,
+   "gy": 0.4354419233886488,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#11",
+   "k": 1.25,
+   "gain": 0.9063245361159413,
+   "gx": 0.9691058648149129,
+   "gy": 0.7257365389810811,
+   "flagged": false
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#11",
+   "k": 1.5,
+   "gain": 1.0875894433391293,
+   "gx": 1.1629270377778955,
+   "gy": 0.8708838467772972,
+   "flagged": false
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#11",
+   "k": 2.0,
+   "gain": 1.4501192577855064,
+   "gx": 1.5505693837038605,
+   "gy": 1.1611784623697294,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#12",
+   "k": 0.0,
+   "gain": 4.250504004541961e-17,
+   "gx": 5.785731814898141e-16,
+   "gy": -8.97145910680352e-18,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#12",
+   "k": 0.25,
+   "gain": 0.18141736846937254,
+   "gx": 0.3072593304946004,
+   "gy": 0.16690203729912256,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#12",
+   "k": 0.5,
+   "gain": 0.3628347369387451,
+   "gx": 0.6145186609892009,
+   "gy": 0.33380407459824524,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#12",
+   "k": 0.75,
+   "gain": 0.5442521054081174,
+   "gx": 0.9217779914838005,
+   "gy": 0.5007061118973678,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#12",
+   "k": 1.25,
+   "gain": 0.9070868423468633,
+   "gx": 1.536296652473002,
+   "gy": 0.8345101864956127,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#12",
+   "k": 1.5,
+   "gain": 1.0885042108162348,
+   "gx": 1.8435559829676016,
+   "gy": 1.0014122237947356,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#12",
+   "k": 2.0,
+   "gain": 1.4513389477549803,
+   "gx": 2.4580746439568024,
+   "gy": 1.3352162983929805,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#13",
+   "k": 0.0,
+   "gain": 1.2695382061589233e-16,
+   "gx": 2.2241590509437697e-16,
+   "gy": -1.2811571265491542e-17,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#13",
+   "k": 0.25,
+   "gain": 0.1869228216075697,
+   "gx": 0.20750285718444303,
+   "gy": 0.16385430934459566,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#13",
+   "k": 0.5,
+   "gain": 0.3738456432151397,
+   "gx": 0.4150057143688858,
+   "gy": 0.3277086186891912,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#13",
+   "k": 0.75,
+   "gain": 0.5607684648227097,
+   "gx": 0.6225085715533288,
+   "gy": 0.4915629280337868,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#13",
+   "k": 1.25,
+   "gain": 0.9346141080378491,
+   "gx": 1.0375142859222148,
+   "gy": 0.819271546722978,
+   "flagged": false
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#13",
+   "k": 1.5,
+   "gain": 1.121536929645419,
+   "gx": 1.2450171431066575,
+   "gy": 0.9831258560675734,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#13",
+   "k": 2.0,
+   "gain": 1.495382572860558,
+   "gx": 1.6600228574755438,
+   "gy": 1.3108344747567653,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#14",
+   "k": 0.0,
+   "gain": 2.944107241696269e-16,
+   "gx": -3.902962692584076e-17,
+   "gy": -3.971844196517629e-17,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#14",
+   "k": 0.25,
+   "gain": 0.2140980906166594,
+   "gx": 0.2728495672773391,
+   "gy": 0.16426801386974516,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#14",
+   "k": 0.5,
+   "gain": 0.4281961812333184,
+   "gx": 0.5456991345546778,
+   "gy": 0.32853602773949026,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#14",
+   "k": 0.75,
+   "gain": 0.6422942718499774,
+   "gx": 0.8185487018320162,
+   "gy": 0.4928040416092356,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#14",
+   "k": 1.25,
+   "gain": 1.0704904530832964,
+   "gx": 1.3642478363866932,
+   "gy": 0.8213400693487257,
+   "flagged": false
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#14",
+   "k": 1.5,
+   "gain": 1.2845885436999558,
+   "gx": 1.6370974036640313,
+   "gy": 0.9856080832184712,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#14",
+   "k": 2.0,
+   "gain": 1.7127847249332733,
+   "gx": 2.1827965382187093,
+   "gy": 1.3141441109579617,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#15",
+   "k": 0.0,
+   "gain": -6.940007871385103e-17,
+   "gx": -3.1319578315767276e-16,
+   "gy": -2.499071042816393e-17,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#15",
+   "k": 0.25,
+   "gain": 0.18473148376940013,
+   "gx": 0.22347903593772103,
+   "gy": 0.15585735045136145,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#15",
+   "k": 0.5,
+   "gain": 0.3694629675388005,
+   "gx": 0.4469580718754421,
+   "gy": 0.31171470090272296,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#15",
+   "k": 0.75,
+   "gain": 0.5541944513082011,
+   "gx": 0.6704371078131628,
+   "gy": 0.4675720513540844,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#15",
+   "k": 1.25,
+   "gain": 0.9236574188470019,
+   "gx": 1.1173951796886046,
+   "gy": 0.7792867522568074,
+   "flagged": false
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#15",
+   "k": 1.5,
+   "gain": 1.1083889026164022,
+   "gx": 1.3408742156263256,
+   "gy": 0.935144102708169,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#15",
+   "k": 2.0,
+   "gain": 1.4778518701552028,
+   "gx": 1.787832287501767,
+   "gy": 1.2468588036108919,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#16",
+   "k": 0.0,
+   "gain": -7.845454633825551e-17,
+   "gx": -1.9266884484501101e-16,
+   "gy": 1.3794170428250882e-17,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#16",
+   "k": 0.25,
+   "gain": 0.19257334373555718,
+   "gx": 0.14051898348255626,
+   "gy": 0.18180271196417505,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#16",
+   "k": 0.5,
+   "gain": 0.38514668747111436,
+   "gx": 0.28103796696511274,
+   "gy": 0.3636054239283501,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#16",
+   "k": 0.75,
+   "gain": 0.5777200312066718,
+   "gx": 0.4215569504476692,
+   "gy": 0.545408135892525,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#16",
+   "k": 1.25,
+   "gain": 0.9628667186777863,
+   "gx": 0.702594917412782,
+   "gy": 0.9090135598208753,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#16",
+   "k": 1.5,
+   "gain": 1.1554400624133432,
+   "gx": 0.8431139008953388,
+   "gy": 1.09081627178505,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#16",
+   "k": 2.0,
+   "gain": 1.540586749884458,
+   "gx": 1.1241518678604512,
+   "gy": 1.4544216957134004,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#17",
+   "k": 0.0,
+   "gain": -5.789579509462064e-17,
+   "gx": -5.3497109325408835e-17,
+   "gy": 3.577218576045831e-17,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#17",
+   "k": 0.25,
+   "gain": 0.1936043670742074,
+   "gx": 0.19263732268287492,
+   "gy": 0.1965686990327206,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#17",
+   "k": 0.5,
+   "gain": 0.38720873414841483,
+   "gx": 0.38527464536574896,
+   "gy": 0.3931373980654414,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#17",
+   "k": 0.75,
+   "gain": 0.5808131012226226,
+   "gx": 0.5779119680486241,
+   "gy": 0.5897060970981619,
+   "flagged": false
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#17",
+   "k": 1.25,
+   "gain": 0.9680218353710373,
+   "gx": 0.9631866134143721,
+   "gy": 0.9828434951636034,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#17",
+   "k": 1.5,
+   "gain": 1.1616262024452453,
+   "gx": 1.1558239360972469,
+   "gy": 1.179412194196324,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#17",
+   "k": 2.0,
+   "gain": 1.5488349365936585,
+   "gx": 1.5410985814629958,
+   "gy": 1.572549592261765,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#18",
+   "k": 0.0,
+   "gain": 1.3866190557519756e-17,
+   "gx": 1.1079653713363974e-16,
+   "gy": 8.379378059070902e-19,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#18",
+   "k": 0.25,
+   "gain": 0.1831978176171532,
+   "gx": 0.1950932798206412,
+   "gy": 0.18364102207379412,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#18",
+   "k": 0.5,
+   "gain": 0.36639563523430585,
+   "gx": 0.3901865596412826,
+   "gy": 0.3672820441475882,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#18",
+   "k": 0.75,
+   "gain": 0.5495934528514586,
+   "gx": 0.5852798394619236,
+   "gy": 0.5509230662213825,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#18",
+   "k": 1.25,
+   "gain": 0.9159890880857643,
+   "gx": 0.9754663991032064,
+   "gy": 0.9182051103689705,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#18",
+   "k": 1.5,
+   "gain": 1.0991869057029173,
+   "gx": 1.170559678923847,
+   "gy": 1.101846132442765,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#18",
+   "k": 2.0,
+   "gain": 1.465582540937223,
+   "gx": 1.5607462385651298,
+   "gy": 1.4691281765903532,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#19",
+   "k": 0.0,
+   "gain": -1.480384224218208e-16,
+   "gx": -4.551051399306771e-16,
+   "gy": -2.5340965639114198e-18,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#19",
+   "k": 0.25,
+   "gain": 0.17108400041411723,
+   "gx": 0.20334640083627784,
+   "gy": 0.18372423355630968,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#19",
+   "k": 0.5,
+   "gain": 0.3421680008282346,
+   "gx": 0.40669280167255645,
+   "gy": 0.3674484671126194,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#19",
+   "k": 0.75,
+   "gain": 0.5132520012423519,
+   "gx": 0.6100392025088334,
+   "gy": 0.551172700668929,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#19",
+   "k": 1.25,
+   "gain": 0.8554200020705868,
+   "gx": 1.0167320041813899,
+   "gy": 0.9186211677815481,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#19",
+   "k": 1.5,
+   "gain": 1.026504002484704,
+   "gx": 1.220078405017668,
+   "gy": 1.1023454013378582,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#19",
+   "k": 2.0,
+   "gain": 1.368672003312938,
+   "gx": 1.6267712066902245,
+   "gy": 1.4697938684504772,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#20",
+   "k": 0.0,
+   "gain": 1.1231459648172743e-16,
+   "gx": 1.7013536865577404e-17,
+   "gy": -8.188216584165556e-19,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#20",
+   "k": 0.25,
+   "gain": 0.19227816454524305,
+   "gx": 0.16374426928900793,
+   "gy": 0.19040658481609574,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#20",
+   "k": 0.5,
+   "gain": 0.384556329090486,
+   "gx": 0.32748853857801596,
+   "gy": 0.3808131696321915,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#20",
+   "k": 0.75,
+   "gain": 0.5768344936357289,
+   "gx": 0.49123280786702406,
+   "gy": 0.5712197544482873,
+   "flagged": false
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#20",
+   "k": 1.25,
+   "gain": 0.9613908227262147,
+   "gx": 0.8187213464450397,
+   "gy": 0.9520329240804786,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#20",
+   "k": 1.5,
+   "gain": 1.153668987271458,
+   "gx": 0.9824656157340483,
+   "gy": 1.1424395088965746,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#20",
+   "k": 2.0,
+   "gain": 1.5382253163619435,
+   "gx": 1.3099541543120634,
+   "gy": 1.523252678528766,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#21",
+   "k": 0.0,
+   "gain": 0.0,
+   "gx": 1.3162076058930322e-16,
+   "gy": -1.3230337334830184e-17,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#21",
+   "k": 0.25,
+   "gain": 0.18484033838179525,
+   "gx": 0.20200656881635545,
+   "gy": 0.1783364164296054,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#21",
+   "k": 0.5,
+   "gain": 0.36968067676359045,
+   "gx": 0.40401313763271185,
+   "gy": 0.3566728328592108,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#21",
+   "k": 0.75,
+   "gain": 0.5545210151453861,
+   "gx": 0.6060197064490672,
+   "gy": 0.5350092492888162,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#21",
+   "k": 1.25,
+   "gain": 0.9242016919089769,
+   "gx": 1.0100328440817792,
+   "gy": 0.8916820821480271,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#21",
+   "k": 1.5,
+   "gain": 1.1090420302907724,
+   "gx": 1.2120394128981353,
+   "gy": 1.0700184985776326,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#21",
+   "k": 2.0,
+   "gain": 1.478722707054363,
+   "gx": 1.6160525505308467,
+   "gy": 1.4266913314368432,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#22",
+   "k": 0.0,
+   "gain": -1.5185379053471625e-16,
+   "gx": -5.970353731289488e-16,
+   "gy": -5.822892413814676e-18,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#22",
+   "k": 0.25,
+   "gain": 0.16835251596859907,
+   "gx": 0.15096982952476115,
+   "gy": 0.17802553356655754,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#22",
+   "k": 0.5,
+   "gain": 0.3367050319371974,
+   "gx": 0.3019396590495225,
+   "gy": 0.356051067133115,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#22",
+   "k": 0.75,
+   "gain": 0.5050575479057964,
+   "gx": 0.452909488574283,
+   "gy": 0.5340766006996727,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#22",
+   "k": 1.25,
+   "gain": 0.8417625798429937,
+   "gx": 0.7548491476238052,
+   "gy": 0.8901276678327873,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#22",
+   "k": 1.5,
+   "gain": 1.0101150958115925,
+   "gx": 0.9058189771485664,
+   "gy": 1.0681532013993453,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#22",
+   "k": 2.0,
+   "gain": 1.3468201277487895,
+   "gx": 1.2077586361980888,
+   "gy": 1.4242042685324603,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#23",
+   "k": 0.0,
+   "gain": -8.924539745866582e-18,
+   "gx": -2.8915627412074835e-17,
+   "gy": 3.306136815314438e-17,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#23",
+   "k": 0.25,
+   "gain": 0.20582847705770016,
+   "gx": 0.21819119447101132,
+   "gy": 0.18842853562894518,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#23",
+   "k": 0.5,
+   "gain": 0.4116569541153999,
+   "gx": 0.4363823889420223,
+   "gy": 0.37685707125789014,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#23",
+   "k": 0.75,
+   "gain": 0.6174854311731002,
+   "gx": 0.6545735834130335,
+   "gy": 0.5652856068868354,
+   "flagged": false
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#23",
+   "k": 1.25,
+   "gain": 1.0291423852884993,
+   "gx": 1.090955972355055,
+   "gy": 0.9421426781447255,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#23",
+   "k": 1.5,
+   "gain": 1.2349708623461992,
+   "gx": 1.3091471668260668,
+   "gy": 1.1305712137736708,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#23",
+   "k": 2.0,
+   "gain": 1.6466278164615995,
+   "gx": 1.7455295557680879,
+   "gy": 1.507428285031561,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#24",
+   "k": 0.0,
+   "gain": -2.287544138617677e-17,
+   "gx": -4.5248993124756487e-17,
+   "gy": 2.5148728694397546e-17,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#24",
+   "k": 0.25,
+   "gain": 0.1765803356875258,
+   "gx": 0.1933144605045458,
+   "gy": 0.17699538989980407,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#24",
+   "k": 0.5,
+   "gain": 0.35316067137505186,
+   "gx": 0.38662892100909213,
+   "gy": 0.3539907797996082,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#24",
+   "k": 0.75,
+   "gain": 0.5297410070625777,
+   "gx": 0.5799433815136381,
+   "gy": 0.5309861696994123,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#24",
+   "k": 1.25,
+   "gain": 0.8829016784376299,
+   "gx": 0.9665723025227301,
+   "gy": 0.8849769494990205,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#24",
+   "k": 1.5,
+   "gain": 1.0594820141251562,
+   "gx": 1.1598867630272762,
+   "gy": 1.0619723393988243,
+   "flagged": true
+  },
+  {
+   "flight": "flight-07p-lemniscate",
+   "clip_id": "flight-07p-lemniscate#24",
+   "k": 2.0,
+   "gain": 1.4126426855002077,
+   "gx": 1.5465156840363683,
+   "gy": 1.4159631191984328,
+   "flagged": true
+  },
+  {
+   "flight": "flight-13p-trackRATM",
+   "clip_id": "flight-13p-trackRATM#01",
+   "k": 0.0,
+   "gain": -4.5895170572647454e-17,
+   "gx": 1.4596228520104607e-16,
+   "gy": 6.616836125861318e-18,
+   "flagged": true
+  },
+  {
+   "flight": "flight-13p-trackRATM",
+   "clip_id": "flight-13p-trackRATM#01",
+   "k": 0.25,
+   "gain": 0.13650900654260928,
+   "gx": 0.10170379135825688,
+   "gy": 0.14570302953341668,
+   "flagged": true
+  },
+  {
+   "flight": "flight-13p-trackRATM",
+   "clip_id": "flight-13p-trackRATM#01",
+   "k": 0.5,
+   "gain": 0.2730180130852186,
+   "gx": 0.20340758271651355,
+   "gy": 0.2914060590668332,
+   "flagged": true
+  },
+  {
+   "flight": "flight-13p-trackRATM",
+   "clip_id": "flight-13p-trackRATM#01",
+   "k": 0.75,
+   "gain": 0.4095270196278281,
+   "gx": 0.30511137407477024,
+   "gy": 0.43710908860024994,
+   "flagged": true
+  },
+  {
+   "flight": "flight-13p-trackRATM",
+   "clip_id": "flight-13p-trackRATM#01",
+   "k": 1.25,
+   "gain": 0.6825450327130467,
+   "gx": 0.5085189567912837,
+   "gy": 0.7285151476670833,
+   "flagged": false
+  },
+  {
+   "flight": "flight-13p-trackRATM",
+   "clip_id": "flight-13p-trackRATM#01",
+   "k": 1.5,
+   "gain": 0.8190540392556559,
+   "gx": 0.6102227481495406,
+   "gy": 0.8742181772005,
+   "flagged": false
+  },
+  {
+   "flight": "flight-13p-trackRATM",
+   "clip_id": "flight-13p-trackRATM#01",
+   "k": 2.0,
+   "gain": 1.0920720523408751,
+   "gx": 0.8136303308660544,
+   "gy": 1.1656242362673335,
+   "flagged": true
+  },
+  {
+   "flight": "flight-13p-trackRATM",
+   "clip_id": "flight-13p-trackRATM#09",
+   "k": 0.0,
+   "gain": -1.3556500654972766e-17,
+   "gx": -2.6147752053015063e-16,
+   "gy": -1.066387419311292e-17,
+   "flagged": true
+  },
+  {
+   "flight": "flight-13p-trackRATM",
+   "clip_id": "flight-13p-trackRATM#09",
+   "k": 0.25,
+   "gain": 0.13523348077366795,
+   "gx": 0.05841714867313331,
+   "gy": 0.169456298679371,
+   "flagged": true
+  },
+  {
+   "flight": "flight-13p-trackRATM",
+   "clip_id": "flight-13p-trackRATM#09",
+   "k": 0.5,
+   "gain": 0.27046696154733596,
+   "gx": 0.11683429734626623,
+   "gy": 0.33891259735874196,
+   "flagged": true
+  },
+  {
+   "flight": "flight-13p-trackRATM",
+   "clip_id": "flight-13p-trackRATM#09",
+   "k": 0.75,
+   "gain": 0.40570044232100416,
+   "gx": 0.1752514460193998,
+   "gy": 0.5083688960381131,
+   "flagged": true
+  },
+  {
+   "flight": "flight-13p-trackRATM",
+   "clip_id": "flight-13p-trackRATM#09",
+   "k": 1.25,
+   "gain": 0.6761674038683403,
+   "gx": 0.2920857433656659,
+   "gy": 0.8472814933968548,
+   "flagged": false
+  },
+  {
+   "flight": "flight-13p-trackRATM",
+   "clip_id": "flight-13p-trackRATM#09",
+   "k": 1.5,
+   "gain": 0.8114008846420088,
+   "gx": 0.35050289203879914,
+   "gy": 1.0167377920762262,
+   "flagged": true
+  },
+  {
+   "flight": "flight-13p-trackRATM",
+   "clip_id": "flight-13p-trackRATM#09",
+   "k": 2.0,
+   "gain": 1.0818678461893454,
+   "gx": 0.4673371893850659,
+   "gy": 1.3556503894349679,
+   "flagged": true
+  },
+  {
+   "flight": "flight-16p-trackRATM",
+   "clip_id": "flight-16p-trackRATM#00",
+   "k": 0.0,
+   "gain": -9.82674737794293e-17,
+   "gx": -1.060239766180575e-16,
+   "gy": -2.7726272085497526e-17,
+   "flagged": true
+  },
+  {
+   "flight": "flight-16p-trackRATM",
+   "clip_id": "flight-16p-trackRATM#00",
+   "k": 0.25,
+   "gain": 0.12736573870677992,
+   "gx": 0.060552412860943164,
+   "gy": 0.1567866846379549,
+   "flagged": true
+  },
+  {
+   "flight": "flight-16p-trackRATM",
+   "clip_id": "flight-16p-trackRATM#00",
+   "k": 0.5,
+   "gain": 0.2547314774135596,
+   "gx": 0.12110482572188605,
+   "gy": 0.3135733692759098,
+   "flagged": true
+  },
+  {
+   "flight": "flight-16p-trackRATM",
+   "clip_id": "flight-16p-trackRATM#00",
+   "k": 0.75,
+   "gain": 0.38209721612033953,
+   "gx": 0.18165723858282923,
+   "gy": 0.47036005391386465,
+   "flagged": true
+  },
+  {
+   "flight": "flight-16p-trackRATM",
+   "clip_id": "flight-16p-trackRATM#00",
+   "k": 1.25,
+   "gain": 0.6368286935338991,
+   "gx": 0.30276206430471525,
+   "gy": 0.7839334231897742,
+   "flagged": false
+  },
+  {
+   "flight": "flight-16p-trackRATM",
+   "clip_id": "flight-16p-trackRATM#00",
+   "k": 1.5,
+   "gain": 0.7641944322406796,
+   "gx": 0.3633144771656583,
+   "gy": 0.9407201078277293,
+   "flagged": true
+  },
+  {
+   "flight": "flight-16p-trackRATM",
+   "clip_id": "flight-16p-trackRATM#00",
+   "k": 2.0,
+   "gain": 1.0189259096542398,
+   "gx": 0.48441930288754426,
+   "gy": 1.254293477103639,
+   "flagged": true
+  }
+ ],
+ "ablations": [
+  {
+   "variant": "primary",
+   "rule": "R1_scalar_g1",
+   "frr": 0.10526315789473684,
+   "n_frr": 57,
+   "det_tilt_removal": 1.0,
+   "det_scale_0.5": 1.0,
+   "det_scale_1.5": 0.9824561403508771,
+   "det_mirror_roll": 0.9824561403508771,
+   "det_yaw_control": 0.19298245614035087,
+   "n_tilt_removal": 57,
+   "n_scale_0.5": 57,
+   "n_scale_1.5": 57,
+   "n_mirror_roll": 57,
+   "n_yaw_control": 57
+  },
+  {
+   "variant": "primary",
+   "rule": "R3_scalar_or_axis",
+   "frr": 0.12280701754385964,
+   "n_frr": 57,
+   "det_tilt_removal": 1.0,
+   "det_scale_0.5": 1.0,
+   "det_scale_1.5": 1.0,
+   "det_mirror_roll": 1.0,
+   "det_yaw_control": 0.3157894736842105,
+   "n_tilt_removal": 57,
+   "n_scale_0.5": 57,
+   "n_scale_1.5": 57,
+   "n_mirror_roll": 57,
+   "n_yaw_control": 57
+  },
+  {
+   "variant": "drag_free",
+   "rule": "R1_scalar_g1",
+   "frr": 0.07017543859649122,
+   "n_frr": 57,
+   "det_tilt_removal": 1.0,
+   "det_scale_0.5": 0.9473684210526315,
+   "det_scale_1.5": 0.8771929824561403,
+   "det_mirror_roll": 0.9649122807017544,
+   "det_yaw_control": 0.14035087719298245,
+   "n_tilt_removal": 57,
+   "n_scale_0.5": 57,
+   "n_scale_1.5": 57,
+   "n_mirror_roll": 57,
+   "n_yaw_control": 57
+  },
+  {
+   "variant": "drag_free",
+   "rule": "R3_scalar_or_axis",
+   "frr": 0.10526315789473684,
+   "n_frr": 57,
+   "det_tilt_removal": 1.0,
+   "det_scale_0.5": 0.9824561403508771,
+   "det_scale_1.5": 0.8771929824561403,
+   "det_mirror_roll": 1.0,
+   "det_yaw_control": 0.17543859649122806,
+   "n_tilt_removal": 57,
+   "n_scale_0.5": 57,
+   "n_scale_1.5": 57,
+   "n_mirror_roll": 57,
+   "n_yaw_control": 57
+  },
+  {
+   "variant": "drag_fixed_0.295",
+   "rule": "R1_scalar_g1",
+   "frr": 0.10526315789473684,
+   "n_frr": 57,
+   "det_tilt_removal": 0.9649122807017544,
+   "det_scale_0.5": 0.45614035087719296,
+   "det_scale_1.5": 0.9824561403508771,
+   "det_mirror_roll": 0.9473684210526315,
+   "det_yaw_control": 0.22807017543859648,
+   "n_tilt_removal": 57,
+   "n_scale_0.5": 57,
+   "n_scale_1.5": 57,
+   "n_mirror_roll": 57,
+   "n_yaw_control": 57
+  },
+  {
+   "variant": "drag_fixed_0.295",
+   "rule": "R3_scalar_or_axis",
+   "frr": 0.12280701754385964,
+   "n_frr": 57,
+   "det_tilt_removal": 1.0,
+   "det_scale_0.5": 0.6140350877192983,
+   "det_scale_1.5": 1.0,
+   "det_mirror_roll": 1.0,
+   "det_yaw_control": 0.24561403508771928,
+   "n_tilt_removal": 57,
+   "n_scale_0.5": 57,
+   "n_scale_1.5": 57,
+   "n_mirror_roll": 57,
+   "n_yaw_control": 57
+  },
+  {
+   "variant": "no_intercept",
+   "rule": "R1_scalar_g1",
+   "frr": 0.2807017543859649,
+   "n_frr": 57,
+   "det_tilt_removal": 1.0,
+   "det_scale_0.5": 0.8245614035087719,
+   "det_scale_1.5": 0.9824561403508771,
+   "det_mirror_roll": 0.9824561403508771,
+   "det_yaw_control": 0.5263157894736842,
+   "n_tilt_removal": 57,
+   "n_scale_0.5": 57,
+   "n_scale_1.5": 57,
+   "n_mirror_roll": 57,
+   "n_yaw_control": 57
+  },
+  {
+   "variant": "no_intercept",
+   "rule": "R3_scalar_or_axis",
+   "frr": 0.2982456140350877,
+   "n_frr": 57,
+   "det_tilt_removal": 1.0,
+   "det_scale_0.5": 0.8596491228070176,
+   "det_scale_1.5": 0.9824561403508771,
+   "det_mirror_roll": 1.0,
+   "det_yaw_control": 0.5614035087719298,
+   "n_tilt_removal": 57,
+   "n_scale_0.5": 57,
+   "n_scale_1.5": 57,
+   "n_mirror_roll": 57,
+   "n_yaw_control": 57
+  },
+  {
+   "variant": "huber",
+   "rule": "R1_scalar_g1",
+   "frr": 0.08771929824561403,
+   "n_frr": 57,
+   "det_tilt_removal": 1.0,
+   "det_scale_0.5": 1.0,
+   "det_scale_1.5": 0.9473684210526315,
+   "det_mirror_roll": 0.9824561403508771,
+   "det_yaw_control": 0.19298245614035087,
+   "n_tilt_removal": 57,
+   "n_scale_0.5": 57,
+   "n_scale_1.5": 57,
+   "n_mirror_roll": 57,
+   "n_yaw_control": 57
+  },
+  {
+   "variant": "huber",
+   "rule": "R3_scalar_or_axis",
+   "frr": 0.12280701754385964,
+   "n_frr": 57,
+   "det_tilt_removal": 1.0,
+   "det_scale_0.5": 1.0,
+   "det_scale_1.5": 1.0,
+   "det_mirror_roll": 1.0,
+   "det_yaw_control": 0.3508771929824561,
+   "n_tilt_removal": 57,
+   "n_scale_0.5": 57,
+   "n_scale_1.5": 57,
+   "n_mirror_roll": 57,
+   "n_yaw_control": 57
+  },
+  {
+   "variant": "smoothing_0.25s",
+   "rule": "R1_scalar_g1",
+   "frr": 0.12280701754385964,
+   "n_frr": 57,
+   "det_tilt_removal": 1.0,
+   "det_scale_0.5": 0.9824561403508771,
+   "det_scale_1.5": 0.9824561403508771,
+   "det_mirror_roll": 1.0,
+   "det_yaw_control": 0.19298245614035087,
+   "n_tilt_removal": 57,
+   "n_scale_0.5": 57,
+   "n_scale_1.5": 57,
+   "n_mirror_roll": 57,
+   "n_yaw_control": 57
+  },
+  {
+   "variant": "smoothing_0.25s",
+   "rule": "R3_scalar_or_axis",
+   "frr": 0.17543859649122806,
+   "n_frr": 57,
+   "det_tilt_removal": 1.0,
+   "det_scale_0.5": 1.0,
+   "det_scale_1.5": 1.0,
+   "det_mirror_roll": 1.0,
+   "det_yaw_control": 0.3508771929824561,
+   "n_tilt_removal": 57,
+   "n_scale_0.5": 57,
+   "n_scale_1.5": 57,
+   "n_mirror_roll": 57,
+   "n_yaw_control": 57
+  },
+  {
+   "variant": "no_lag_search",
+   "rule": "R1_scalar_g1",
+   "frr": 0.14035087719298245,
+   "n_frr": 57,
+   "det_tilt_removal": 1.0,
+   "det_scale_0.5": 1.0,
+   "det_scale_1.5": 0.9824561403508771,
+   "det_mirror_roll": 0.9649122807017544,
+   "det_yaw_control": 0.24561403508771928,
+   "n_tilt_removal": 57,
+   "n_scale_0.5": 57,
+   "n_scale_1.5": 57,
+   "n_mirror_roll": 57,
+   "n_yaw_control": 57
+  },
+  {
+   "variant": "no_lag_search",
+   "rule": "R3_scalar_or_axis",
+   "frr": 0.15789473684210525,
+   "n_frr": 57,
+   "det_tilt_removal": 1.0,
+   "det_scale_0.5": 1.0,
+   "det_scale_1.5": 1.0,
+   "det_mirror_roll": 1.0,
+   "det_yaw_control": 0.3333333333333333,
+   "n_tilt_removal": 57,
+   "n_scale_0.5": 57,
+   "n_scale_1.5": 57,
+   "n_mirror_roll": 57,
+   "n_yaw_control": 57
+  }
+ ],
+ "abstention": {
+  "overall": 0.43000000000000005,
+  "by_flight": {
+   "flight-01a-ellipse": {
+    "n": 5,
+    "testable": 2
+   },
+   "flight-04a-ellipse": {
+    "n": 7,
+    "testable": 2
+   },
+   "flight-07a-lemniscate": {
+    "n": 7,
+    "testable": 0
+   },
+   "flight-13a-trackRATM": {
+    "n": 11,
+    "testable": 0
+   },
+   "flight-01p-ellipse": {
+    "n": 26,
+    "testable": 26
+   },
+   "flight-07p-lemniscate": {
+    "n": 26,
+    "testable": 24
+   },
+   "flight-13p-trackRATM": {
+    "n": 11,
+    "testable": 2
+   },
+   "flight-16p-trackRATM": {
+    "n": 7,
+    "testable": 1
+   }
+  },
+  "reasons": {
+   "signal_frames": 18,
+   "signal_fraction": 17,
+   "excitation": 14,
+   "condition_number": 11,
+   "gain_ci_half_width": 17,
+   "confidence_gate": 28
+  }
+ },
+ "drag_summary": {
+  "all": {
+   "n": 57,
+   "median": 0.15832426075309056,
+   "iqr": [
+    0.11513141243421982,
+    0.19546401488529405
+   ]
+  },
+  "trackratm": {
+   "n": 3,
+   "median": 0.058328128542421975,
+   "iqr": [
+    0.033026938045112114,
+    0.06441960958192297
+   ]
+  },
+  "non_trackratm": {
+   "n": 54,
+   "median": 0.15942200909530402,
+   "iqr": [
+    0.11835853916499857,
+    0.19850280493762823
+   ]
+  },
+  "piloted": {
+   "n": 53,
+   "median": 0.1557133313290444,
+   "iqr": [
+    0.11513141243421982,
+    0.1907810672301551
+   ]
+  },
+  "autonomous": {
+   "n": 4,
+   "median": 0.19287282927831817,
+   "iqr": [
+    0.13966787356295368,
+    0.25184565507587825
+   ]
+  }
+ }
+}

@@ -1,9 +1,9 @@
 version: 1
-date: '2026-11-13'
+date: '2026-11-14'
 status: frozen
-source_run: results/d_eval/d01
-commit: 17510f7dded39ff7464ce068bc51ee5a78358621
-rule: R1_scalar_g1
+source_run: results/d_eval/d02
+commit: 1df4084295c4e765011e37b1caa9d2059fc4fcba
+rule: R2_axis_gains
 statistic: per-clip regression of depicted lean on required lean; l_dep = G1*l_req0
   + G2*(R_yaw v/g) + b
 options:
@@ -75,58 +75,130 @@ gate:
   direction: drop when signal > tau
   application: pair_level in evaluation; per clip when scoring one clip
 bands:
-  scalar:
-    lo: 0.5277408648616264
-    hi: 0.9477204858311644
+  axis:
+    keys:
+    - gx
+    - gy
+    center:
+      gx: 0.8137020136649358
+      gy: 0.718061643355721
+    scale:
+      gx: 0.2654494004986912
+      gy: 0.07353363027599477
+    threshold: 2.192179566480552
     alpha: 0.05
     n: 57
 bands_per_fold:
   flight-01a-ellipse:
-    scalar:
-      lo: 0.5265839525448975
-      hi: 0.9498205463055891
+    axis:
+      keys:
+      - gx
+      - gy
+      center:
+        gx: 0.8242073202092377
+        gy: 0.718061643355721
+      scale:
+        gx: 0.266591704482965
+        gy: 0.069650621753669
+      threshold: 2.2160793607477283
       alpha: 0.05
       n: 55
   flight-04a-ellipse:
-    scalar:
-      lo: 0.527162408703262
-      hi: 0.9487705160683768
+    axis:
+      keys:
+      - gx
+      - gy
+      center:
+        gx: 0.8242073202092377
+        gy: 0.718061643355721
+      scale:
+        gx: 0.266591704482965
+        gy: 0.07321772093458405
+      threshold: 2.2257171346366125
       alpha: 0.05
-      n: 56
+      n: 55
   flight-07a-lemniscate:
-    scalar:
-      lo: 0.5277408648616264
-      hi: 0.9477204858311644
+    axis:
+      keys:
+      - gx
+      - gy
+      center:
+        gx: 0.8137020136649358
+        gy: 0.718061643355721
+      scale:
+        gx: 0.2654494004986912
+        gy: 0.07353363027599477
+      threshold: 2.192179566480552
       alpha: 0.05
       n: 57
   flight-13a-trackRATM:
-    scalar:
-      lo: 0.5277408648616264
-      hi: 0.9477204858311644
+    axis:
+      keys:
+      - gx
+      - gy
+      center:
+        gx: 0.8137020136649358
+        gy: 0.718061643355721
+      scale:
+        gx: 0.2654494004986912
+        gy: 0.07353363027599477
+      threshold: 2.192179566480552
       alpha: 0.05
       n: 57
   flight-01p-ellipse:
-    scalar:
-      lo: 0.5130807246533011
-      hi: 0.901568111360114
+    axis:
+      keys:
+      - gx
+      - gy
+      center:
+        gx: 0.8133856033451126
+        gy: 0.7079815595992164
+      scale:
+        gx: 0.25745327260877454
+        gy: 0.10265792883463547
+      threshold: 2.2351492154127994
       alpha: 0.05
       n: 31
   flight-07p-lemniscate:
-    scalar:
-      lo: 0.5141616929882
-      hi: 0.9309200020357657
+    axis:
+      keys:
+      - gx
+      - gy
+      center:
+        gx: 0.791642707536516
+        gy: 0.7286570795093752
+      scale:
+        gx: 0.25713228532448473
+        gy: 0.09185931844302167
+      threshold: 2.2010944310620393
       alpha: 0.05
       n: 33
   flight-13p-trackRATM:
-    scalar:
-      lo: 0.5467016008808107
-      hi: 0.9508705765428015
+    axis:
+      keys:
+      - gx
+      - gy
+      center:
+        gx: 0.8242073202092377
+        gy: 0.7234551694918578
+      scale:
+        gx: 0.23661596832006582
+        gy: 0.07391178239853392
+      threshold: 2.473156435573641
       alpha: 0.05
-      n: 54
+      n: 55
   flight-16p-trackRATM:
-    scalar:
-      lo: 0.5474827990682626
-      hi: 0.9487705160683768
+    axis:
+      keys:
+      - gx
+      - gy
+      center:
+        gx: 0.8189546669370867
+        gy: 0.7207584064237894
+      scale:
+        gx: 0.25027385153522336
+        gy: 0.07372270633726435
+      threshold: 2.347968973023241
       alpha: 0.05
       n: 56
 n_real_testable: 57

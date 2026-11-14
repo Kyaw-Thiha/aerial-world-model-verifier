@@ -1,5 +1,10 @@
 # Report D01 — The gain test on TII (Track D)
 
+> **Superseded for the frozen statistic by `reports/D02_gain_test_v2.md`.** D01 is the
+> schema-v1 first run (rule R1, 12 Hz required lean); D02 adds the dense `lean_req`, the
+> R2 axis rule and the coherence tier. The numbers here are kept as the first-run record
+> and are not rewritten. Track flights were **not validated** in D01 either.
+
 Written 2026-11-13. Pre-registration `configs/gain_prereg.yaml` (commit `613a102`),
 acceptance spec `configs/prototype_acceptance_spec.yaml` (same commit). Run
 `results/d_eval/d01/metrics.json`; frozen statistic `configs/gain_frozen.yaml`.
@@ -128,7 +133,7 @@ reported and the difference is one real clip.
 | T1 false-reject, testable real, overall | <= 10 % | **8.8 %** [3.8, 18.9], n=57 (nested 10.5 %) | **met at the pooled rule, borderline under nested selection; upper interval above 10 %** |
 | T1 detection, full tilt removal | >= 90 % | **100 %** [93.7, 100] | **met** |
 | T1 detection, mirrored roll | >= 90 % | **96.5 %** [88.1, 99.0] | **met** |
-| T1 per flight type | report | piloted 9.3 % FRR / 100 / 98.1; autonomous 0 / 100 / 66.7 (n=3); track **50 % FRR** / 100 / 100 (n=4) | **not met on track; track is not validated** |
+| T1 per flight type | report | piloted 9.3 % FRR / 100 / 98.1; autonomous 0 / 100 / 66.7 (n=3); **track 50 % FRR / 100 / 100 (n=4), not validated** | **not met on track; track is not validated** |
 | T2 transfer to UZH-FPV | FRR <= 15 %, detection >= 80 % | not run (Track E) | **open** |
 | T3 x0.5 detection | report | **98.2 %** [90.7, 99.7] | **materially better than baseline at every matched rate** |
 | T3 x1.5 detection | report | **96.5 %** [88.1, 99.0] | **materially better at low false-reject; marginal at the baseline's 8.6 % point (52-95 %)** |
@@ -165,6 +170,9 @@ At the **gain's 8.8 % false-reject** (baseline at 8.6 %):
 | mirror | 96.5 % | 96.6-98.3 % |
 | x0.5 | 98.2 % | 20.7-56.9 % |
 | x1.5 | 96.5 % | 51.7-94.8 % |
+
+Yaw-control rate at the same operating point (beside every detection): gain **22.8 %**,
+baseline **8.6 %**. Track flights are **not validated** (4 testable clips).
 
 The median-residual statistic is close on the mirror and, at the top of its range, on
 x1.5; it is far behind on removal and x0.5. The gain is not merely a re-parameterisation

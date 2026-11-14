@@ -1,0 +1,73 @@
+{
+ "run": "20261114T200003Z",
+ "git": "1df4084",
+ "expected": {
+  "threshold": 14.733,
+  "fold_min": 13.5,
+  "fold_max": 16.46,
+  "acceptance": 0.966,
+  "n": 58,
+  "tilt_removal": 0.5,
+  "mirror_roll": 0.961,
+  "yaw_control": 0.038
+ },
+ "measured": {
+  "threshold_pooled": 14.732514900359874,
+  "threshold_per_fold": [
+   13.501131354985883,
+   16.46427037279193,
+   14.732514900359874,
+   14.732514900359874,
+   16.46427037279193,
+   14.732514900359874,
+   14.732514900359874,
+   13.501131354985883
+  ],
+  "threshold_fold_min": 13.501131354985883,
+  "threshold_fold_max": 16.46427037279193,
+  "acceptance": 0.9655172413793104,
+  "acceptance_wilson95": [
+   0.8827063524467295,
+   0.9904922711335143
+  ],
+  "n": 58,
+  "families": {
+   "tilt_k0": {
+    "n": 8,
+    "rejection_rate": 0.5,
+    "auroc": 0.96875
+   },
+   "tilt_k05": {
+    "n": 35,
+    "rejection_rate": 0.05714285714285714,
+    "auroc": 0.7322448979591837
+   },
+   "tilt_k15": {
+    "n": 55,
+    "rejection_rate": 0.2,
+    "auroc": 0.9603305785123967
+   },
+   "mirror_roll": {
+    "n": 51,
+    "rejection_rate": 0.9607843137254902,
+    "auroc": 0.9988465974625144
+   },
+   "yaw_control": {
+    "n": 52,
+    "rejection_rate": 0.038461538461538464,
+    "auroc": 0.7585059171597633
+   }
+  }
+ },
+ "reproduced": {
+  "threshold": true,
+  "fold_min": true,
+  "fold_max": true,
+  "acceptance": true,
+  "n": true,
+  "tilt_removal": true,
+  "mirror_roll": true,
+  "yaw_control": true
+ },
+ "all_reproduced": true
+}
