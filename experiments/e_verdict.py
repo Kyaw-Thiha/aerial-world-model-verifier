@@ -159,15 +159,24 @@ def main() -> int:
                                                    / max(sum(1 for r in rows if r["cond"] == c), 1))
                                                for c in ("real",) + FAMILIES}}
 
-    # paired detection: edit rejected while its own real clip was accepted
-    real_by_clip = {r["clip"]: r for r in rows if r["cond"] == "real"}
+    # Paired detection: an edit is "detected" when it is rejected while its own real clip was
+    # accepted. Clip ids carry the condition as a suffix, so pair on the stem, not the id.
+    def pair_key(row: dict) -> str:
+        """``<seq>_<clipindex>``: the clip id without its condition suffix.
+
+        Condition names contain underscores (``tilt_removal``), so the suffix has to be
+        stripped by its own length rather than by splitting on the last underscore.
+        """
+        return row["clip"][: -(len(row["cond"]) + 1)]
+
+    real_by_clip = {pair_key(r): r for r in rows if r["cond"] == "real"}
     paired = {}
     for cond in FAMILIES:
         n = k = 0
         for r in rows:
             if r["cond"] != cond or not r["testable"] or r["score"] is None:
                 continue
-            base = real_by_clip.get(r["clip"])
+            base = real_by_clip.get(pair_key(r))
             if base is None or not base["testable"] or base["score"] is None:
                 continue
             n += 1
@@ -193,12 +202,14 @@ def main() -> int:
             "drop_rate": len(drop) / max(len(sel), 1),
             "rejection_after_gate": rejection(kept, cond, thr),
         }
-    real_gate = {r["clip"]: (np.isfinite(r.get("conf_median", np.nan))
-                             and -r["conf_median"] > tau) for r in rows if r["cond"] == "real"}
+    real_gate = {pair_key(r): (np.isfinite(r.get("conf_median", np.nan))
+                               and -r["conf_median"] > tau)
+                 for r in rows if r["cond"] == "real"}
     pair_gate = {}
     for cond in FAMILIES:
         sel = [r for r in rows if r["cond"] == cond and r["testable"] and r["score"] is not None
-               and not real_gate.get(r["clip"], True) and r["clip"] in real_gate]
+               and not real_gate.get(pair_key(r), True)
+               and pair_key(r) in real_gate]
         n = len(sel)
         k = sum(1 for r in sel if r["score"] > thr)
         lo, hi = wilson(k, n)
