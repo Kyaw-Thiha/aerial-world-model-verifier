@@ -246,11 +246,43 @@ and the testable flag. It does **not** produce a gain with an interval or a drag
 those belong to Track D's gain statistic, which is not published yet (see below). No number in
 this report is a gain.
 
-### Track D's statistic (5b)
+### Track D's statistic (5b): published, run, and it does not transfer
 
-`track-d-verdict-stat` is at the same commit as `track-a2-gate` and has no
-`configs/gain_frozen.yaml` and no `scripts/score_clip.py`, so 5b is **not run**. The exported
-clips are the input for it: they are in the shared schema, validated, and uploaded to R2.
+Track D published `configs/gain_frozen.yaml` and `scripts/score_clip.py` during this session
+(rule `R1_scalar_g1`: a per-clip regression of depicted lean on required lean, per-clip 95 % band
+on the scalar gain, **0.528-0.948 from 57 real TII clips**). `experiments/e_verdict_trackd.py`
+runs it **unmodified** on the 294 exported clips through a read-only checkout of
+`track-d-verdict-stat`, importing their `src.verdict` rather than reimplementing it.
+
+| condition | testable | flagged by the frozen band | median gain |
+| --- | --- | --- | --- |
+| real | 28 | **27 (0.964**, 0.82-0.99) | 0.158 |
+| null edit | 25 | 25 | 0.143 |
+| yaw control | 23 | 22 | 0.186 |
+| tilt removal | 23 | 23 | 0.007 |
+| mirrored roll | 26 | 26 | -0.092 |
+| tilt x0.5 | 25 | 25 | 0.110 |
+| tilt x1.5 | 22 | 20 | 0.075 |
+
+Per rig on the real clips: indoor forward gain 0.366 (R² 0.46, 14/15 flagged), indoor-45 0.158
+(R² 0.10, 8/8), outdoor forward 0.080 (R² 0.16, 2/2), outdoor-45 0.145 (R² 0.08, 3/3). Their own
+abstention rule drops 33 % of real clips, mostly on the gain-CI bound (48 of the abstentions) and
+the frozen gate (82).
+
+**It fails far harder than statistic (a)**: false reject 0.96 against (a)'s 0.33, and every
+control flags too, which is the signature of a scale failure rather than of a violation. The
+mechanism is measurable and partly mine to own: the median gain of 0.17 says the depicted lean
+follows only a sixth of the required lean, and on the cleanest indoor clips the direct OLS slope
+of my `depicted_lean` against the *dense-truth* required lean is 0.54-0.91 with correlation
+0.83-0.99 — i.e. even the good case sits below unity, and the clips they see inherit a regressor
+built from the schema's 15 Hz `pos`, which disagrees with the dense-truth required axis by a
+**median 9.7 deg** (up to 21 deg) on the clips measured. Both facts push the fitted gain down;
+separating how much is their regressor and how much is my depicted side would need a run of their
+statistic on a clip set carrying a dense `pos`, which the schema does not have.
+
+What is not in doubt: **a gain band frozen on TII does not transfer to UZH**, and it is a worse
+transfer than the median-residual threshold, not a better one. 5b is therefore reported as
+failed, not as "outstanding".
 
 ### The black-fill border invalidated the first clip family (measured, then fixed)
 
