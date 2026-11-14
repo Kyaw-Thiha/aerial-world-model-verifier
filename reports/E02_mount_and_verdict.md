@@ -158,3 +158,27 @@ inside the common mask, instead of black-filling the rest. Every pixel the estim
 then a real pixel, all conditions share the crop, and the crop is applied to the null edit
 identically. GeoCalib receives no intrinsics for variant b, so a centred crop costs nothing but
 resolution. This is the version all Task 5 numbers below come from.
+
+### T6: can a scorer reproduce this from the shared schema alone?
+
+The schema carries `pos` (60 samples at 15 Hz per 4 s clip) and `yaw`, not the 500 Hz truth
+table, so a scorer that only sees `verdict_clip.npz` must differentiate `pos` twice to recover
+the required thrust axis. Doing exactly that (`--path-source schema`) changes the picture:
+
+| condition | path side from the 500 Hz truth | path side from the clip's own `pos` |
+| --- | --- | --- |
+| real | 1.54 deg | **7.40 deg** |
+| null edit | 1.54 | 7.43 |
+| yaw control | 1.19 | 6.68 |
+| tilt removal | 12.33 | 14.78 |
+| mirrored roll | 10.63 | 12.61 |
+| tilt x0.5 | 6.22 | 11.13 |
+
+Two things follow. **The ranking survives** — the controls sit at the floor in both readings,
+and the edits sit above it — so the schema is sufficient in principle. But the **floor rises by
+about 6 deg**, because a second derivative of 15 Hz positions with a 0.46 s window carries much
+more noise than the 500 Hz truth does with a 0.10 s window. Against a 14.73 deg threshold that
+is the difference between a usable test and a marginal one. Recommendation to whoever owns the
+shared schema (Track D): either carry a denser `pos` (or the required axis itself) in the npz,
+or fix the path-side window in the schema. Track E reports every headline number on the dense
+truth and quotes this as the schema-only sensitivity.

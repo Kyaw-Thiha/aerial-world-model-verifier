@@ -22,7 +22,8 @@ from pathlib import Path
 
 import numpy as np
 
-from src.depicted.clips import path_side_with_gt, up_body_from_lean
+from src.depicted.clips import (path_side_from_pos, path_side_with_gt,
+                                up_body_from_lean)
 from src.depicted.metrics import wilson
 from src.depicted.stat_a2 import FROZEN_THRESHOLD_DEG, score_clip_upb
 from src.depicted.uzh import all_sequences, load_truth
@@ -37,13 +38,16 @@ def load_clip(npz_path: Path, meta_path: Path) -> dict:
     meta = json.loads(meta_path.read_text())
     return {"name": meta["clip_id"], "seq": meta["sequence"], "cond": meta["condition"],
             "index": meta["index"], "rig": meta.get("rig", ""), "meta": meta,
+            "conf_median": float(np.nanmedian(d["depicted_conf"]))
+            if np.isfinite(d["depicted_conf"]).any() else float("nan"),
             "t": d["t"], "pos": d["pos"], "yaw": d["yaw"],
             "lean": d["depicted_lean"], "conf": d["depicted_conf"],
             "valid_frac": d["valid_frac"] if "valid_frac" in d.files else np.ones(len(d["t"]))}
 
 
 def score_all(clips_dir: Path, root: Path, uptilt_offsets=(0.0,),
-              lag_grid_ms: np.ndarray | None = None) -> list[dict]:
+              lag_grid_ms: np.ndarray | None = None,
+              path_source: str = "dense") -> list[dict]:
     path_cache: dict[str, dict] = {}
     rows = []
     for seq in all_sequences():
@@ -59,9 +63,14 @@ def score_all(clips_dir: Path, root: Path, uptilt_offsets=(0.0,),
                 continue
             clip = load_clip(npz, meta_path)
             lo, hi = clip["index"]
-            if seq not in path_cache:
-                path_cache[seq] = path_side_with_gt(truth, gt, k_d=0.0)
-            path = path_cache[seq]
+            if path_source == "schema":
+                # T6: rebuild the path side from the clip's own pos/t only
+                path = path_side_from_pos(clip["pos"], clip["t"], k_d=0.0)
+                lo, hi = 0, len(clip["t"])
+            else:
+                if seq not in path_cache:
+                    path_cache[seq] = path_side_with_gt(truth, gt, k_d=0.0)
+                path = path_cache[seq]
             up_b = up_body_from_lean(clip["lean"])
             valid = np.asarray(clip["valid_frac"]) >= 0.5
             res = score_clip_upb(
@@ -70,7 +79,8 @@ def score_all(clips_dir: Path, root: Path, uptilt_offsets=(0.0,),
                 implied_tilt_deg=path["required_tilt_deg"][lo:hi], valid=valid,
                 uptilt_offsets_deg=uptilt_offsets, lag_grid_ms=lag_grid_ms)
             rows.append({"seq": seq, "rig": truth.rig, "env": truth.env, "clip": clip["name"],
-                         "cond": clip["cond"], "index": [lo, hi], **res})
+                         "cond": clip["cond"], "index": [lo, hi],
+                         "conf_median": clip["conf_median"], **res})
     return rows
 
 
@@ -102,6 +112,8 @@ def main() -> int:
     ap.add_argument("--uptilt-offsets", default="0",
                     help="comma list, degrees; '0' is the pre-registered primary (published mount)")
     ap.add_argument("--gate", action="store_true", help="post-hoc: gate by depicted_conf")
+    ap.add_argument("--path-source", default="dense", choices=("dense", "schema"),
+                    help="'dense' uses the 500 Hz truth table; 'schema' uses the clip's own pos")
     args = ap.parse_args()
     clips_dir = Path(args.clips)
     root = Path(args.root)
@@ -109,7 +121,8 @@ def main() -> int:
     out.mkdir(parents=True, exist_ok=True)
     offsets = tuple(float(x) for x in args.uptilt_offsets.split(",") if x)
 
-    rows = score_all(clips_dir, root, uptilt_offsets=offsets)
+    rows = score_all(clips_dir, root, uptilt_offsets=offsets,
+                     path_source=args.path_source)
     if not rows:
         print("no clips found")
         return 1
@@ -117,7 +130,7 @@ def main() -> int:
     thr = FROZEN_THRESHOLD_DEG
     summary: dict = {
         "tag": args.tag, "threshold_deg": thr, "threshold_source": "A2 pooled drag-free lag-only",
-        "uptilt_offsets_deg": offsets, "n_rows": len(rows),
+        "uptilt_offsets_deg": offsets, "n_rows": len(rows), "path_source": args.path_source,
         "by_condition": {}, "per_rig": {}, "per_env": {}, "abstention": {},
     }
     for cond in ("real",) + FAMILIES:
@@ -164,6 +177,36 @@ def main() -> int:
         paired[cond] = {"n": n, "detected": k, "rate": (k / n) if n else None,
                         "wilson_lo": lo, "wilson_hi": hi}
     summary["paired"] = paired
+
+    # frozen S3 gate, applied two ways (A2's pre-registered per-condition rule and the
+    # pair-level variant it reports as analysis)
+    tau = -0.0016656352350220922
+    gated = {}
+    for cond in ("real",) + FAMILIES:
+        sel = [r for r in rows if r["cond"] == cond]
+        drop = [r for r in sel if np.isfinite(r.get("conf_median", np.nan))
+                and -r["conf_median"] > tau]
+        drop_ids = {id(r) for r in drop}
+        kept = [r for r in sel if id(r) not in drop_ids]
+        gated[cond] = {
+            "n": len(sel), "n_dropped": len(drop),
+            "drop_rate": len(drop) / max(len(sel), 1),
+            "rejection_after_gate": rejection(kept, cond, thr),
+        }
+    real_gate = {r["clip"]: (np.isfinite(r.get("conf_median", np.nan))
+                             and -r["conf_median"] > tau) for r in rows if r["cond"] == "real"}
+    pair_gate = {}
+    for cond in FAMILIES:
+        sel = [r for r in rows if r["cond"] == cond and r["testable"] and r["score"] is not None
+               and not real_gate.get(r["clip"], True) and r["clip"] in real_gate]
+        n = len(sel)
+        k = sum(1 for r in sel if r["score"] > thr)
+        lo, hi = wilson(k, n)
+        pair_gate[cond] = {"n": n, "detected": k, "rate": (k / n) if n else None,
+                           "wilson_lo": lo, "wilson_hi": hi,
+                           "note": "real clip passes the frozen gate; edits inherit the decision"}
+    summary["gate_s3"] = {"tau": tau, "per_condition": gated, "pair_level": pair_gate}
+    summary["gate_s3"]["real_clips_dropped"] = sum(1 for v in real_gate.values() if v)
 
     # leave-one-sequence-out threshold sensitivity
     real_scores = {}

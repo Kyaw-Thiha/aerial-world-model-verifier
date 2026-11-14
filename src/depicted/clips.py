@@ -115,3 +115,30 @@ def up_body_from_lean(lean: np.ndarray) -> np.ndarray:
     cx = np.sqrt(np.maximum(0.0, 1.0 - sx ** 2))
     out[ok] = np.column_stack([-sx, sy * cx, cy * cx])
     return out
+
+
+def path_side_from_pos(pos: np.ndarray, t: np.ndarray, k_d: float = 0.0,
+                       window_s: float = 0.46, poly: int = 3) -> dict:
+    """Path side computed from the clip's own positions (shared-schema only).
+
+    Needed for T6: a scorer that only has ``verdict_clip.npz`` must be able to rebuild the
+    required thrust axis from ``pos`` and ``t``. Coming from ~15 Hz samples rather than the
+    500 Hz truth table, the double differentiation is noisier, so this is reported beside the
+    dense-truth version rather than replacing it.
+    """
+    from scipy.signal import savgol_filter
+
+    pos = np.asarray(pos, dtype=np.float64)
+    t = np.asarray(t, dtype=np.float64)
+    n = len(t)
+    dt = float(np.median(np.diff(t)))
+    w = max(5, int(round(window_s / dt)))
+    if w % 2 == 0:
+        w += 1
+    w = min(w, n if n % 2 else n - 1)
+    v = np.column_stack([savgol_filter(pos[:, k], w, poly, deriv=1, delta=dt) for k in range(3)])
+    a = np.column_stack([savgol_filter(pos[:, k], w, poly, deriv=2, delta=dt) for k in range(3)])
+    tilt, axis, ok = required_tilt_deg(a, v, k_d=k_d, g=G0)
+    return {"accel": a, "vel": v, "required_tilt_deg": tilt, "required_axis": axis,
+            "ok": ok, "speed": np.linalg.norm(v, axis=1), "k_d": k_d,
+            "kin_window_s": w * dt}
