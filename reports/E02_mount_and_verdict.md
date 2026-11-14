@@ -329,3 +329,44 @@ table shows independently: a fitted rotation on the outdoor rig does not general
 
 This is offered as the most likely explanation with the evidence that makes it plausible, not as
 a proven diagnosis of another agent's code — that code was not re-run here.
+
+## Cost, reproduction, and what is left
+
+**Cost (measured from container wall time).** Task 2 GeoCalib on 14 sequences x 3 variants:
+about 71 GPU-minutes = **US$1.3**. Clip export, three times: black-fill family (discarded)
+US$1.5, cropped family US$1.4, cropped re-export of 7 sequences US$0.8; validation and test
+runs US$0.3. **Total about US$5.3**, i.e. slightly over the "about US$5" approval line, because
+two clip families were thrown away after the controls exposed them. Everything else (truth
+audit, clock alignment, mount checks, verdict scoring) ran on CPU locally.
+
+**Reproduction.**
+
+```
+pixi run modal run remote/e_sync.py                 # clocks (or experiments/e_clock.py locally)
+pixi run modal run remote/e_prepare.py              # frames + truth -> awmv-e-data
+pixi run modal run remote/e_geocalib.py --parallel  # Task 2, three variants
+python experiments/e_uzh_audit.py                   # Task 1 audit
+python experiments/e_perframe.py --tag v1_all       # Task 2 tables
+python experiments/e_mount.py --perframe results/e_perframe/v1_all   # Task 3
+pixi run modal run remote/e_export.py --variant b --max-clips 3 --parallel   # Task 4
+python scripts/export_verdict_clips.py --clips data/clips --r2       # validate + publish
+python experiments/e_verdict.py --clips data/clips --tag primary     # Task 5
+```
+
+**Open items, in the order they would matter.**
+
+1. The 14 deg 45-rig discrepancy is the single largest unexplained number in this study. It
+   costs the whole 45-down rig in the verdict test. Resolving it needs an estimator-independent
+   check that the published 45-rig calibration is right — a Kalibr re-calibration from the
+   released calibration bags, or a horizon check on a sequence where the camera sees the
+   building's verticals. Neither was attempted here.
+2. A threshold that matches UZH's noise floor. T2's false-reject budget cannot be met with a
+   TII-frozen threshold given a 7.7 deg median real-clip score; the honest options are to
+   pre-register a per-dataset threshold with its own coverage accounting, or to report the
+   smallest violation detectable at the achieved false-reject rate instead of a fixed budget.
+   Both are Track D's call, not Track E's.
+3. Track D's gain statistic (5b) is unrun: `track-d-verdict-stat` publishes neither
+   `configs/gain_frozen.yaml` nor `scripts/score_clip.py`. The clips, the schema and the index
+   are in R2 (`track-e/clips/`, 589 objects) ready for it.
+4. The shared schema needs a denser `pos` (or the required axis) for T6 to be satisfiable
+   without a 6 deg penalty; see the T6 section.
