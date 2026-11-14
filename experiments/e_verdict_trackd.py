@@ -22,6 +22,10 @@ from pathlib import Path
 
 import numpy as np
 
+# Resolved before Track D's worktree is put on sys.path: after that, `src` would resolve to
+# their package and these helpers would disappear.
+from src.depicted.uzh import load_truth  # noqa: E402
+
 CONDITIONS = ("real", "null_edit", "tilt_removal", "scale_0.5", "scale_1.5", "mirror_roll",
               "yaw_control")
 
@@ -54,6 +58,63 @@ def clip_dirs(clips: Path, into: Path) -> list[Path]:
     return out
 
 
+def dense_variant(dirs: list[Path], clips_root: Path, uzh_root: Path) -> list[Path]:
+    """Provisional schema v2: a clip whose path side is the 500 Hz truth.
+
+    Track D's ``fit_gain`` differentiates ``clip.pos`` at the clip's own rate. To give it a dense
+    path side without editing their code, the clip is rebuilt on the 500 Hz truth grid: ``pos``
+    and ``yaw`` come from the dense truth, and ``depicted_lean``/``depicted_conf`` are linearly
+    interpolated from the 60 real frames. **The interpolation suppresses the depicted side's
+    noise, which can only push the fitted gain up**, so the result is an upper bound on what a
+    real schema v2 would give, not an estimate.
+    """
+    import numpy as np
+
+    out_root = Path("/tmp/e_clips_dense")
+    out_root.mkdir(parents=True, exist_ok=True)
+    out = []
+    cache: dict[str, dict] = {}
+    for d in dirs:
+        meta = json.loads((d / "meta.json").read_text())
+        seq = meta["sequence"]
+        lo, hi = meta["index"]
+        if seq not in cache:
+            truth = load_truth(uzh_root, seq)
+            gt = np.load(uzh_root / seq / "truth.npz")["gt"]
+            cache[seq] = {"truth": truth, "gt": gt}
+        truth, gt = cache[seq]["truth"], cache[seq]["gt"]
+        t0 = truth.t_unix[lo] + truth.offset_s
+        t1 = truth.t_unix[hi - 1] + truth.offset_s
+        sel = (gt[:, 0] >= t0) & (gt[:, 0] <= t1)
+        g = gt[sel]
+        if len(g) < 50:
+            continue
+        t_dense = g[:, 0] - g[0, 0]
+        pos_dense = g[:, 1:4]
+        from scipy.spatial.transform import Rotation
+
+        q = g[:, 4:8] / np.linalg.norm(g[:, 4:8], axis=1, keepdims=True)
+        yaw_dense = np.unwrap(Rotation.from_quat(q).as_euler("ZYX")[:, 0])
+        src = np.load(d / "verdict_clip.npz")
+        t_src = src["t"] - src["t"][0]
+        lean_dense = np.column_stack([np.interp(t_dense, t_src, src["depicted_lean"][:, k])
+                                      for k in range(2)])
+        conf_dense = np.interp(t_dense, t_src, src["depicted_conf"])
+        out_d = out_root / d.name
+        out_d.mkdir(exist_ok=True)
+        np.savez_compressed(out_d / "verdict_clip.npz", t=t_dense, pos=pos_dense,
+                            yaw=yaw_dense, depicted_lean=lean_dense,
+                            depicted_conf=conf_dense)
+        m2 = dict(meta)
+        m2["schema_version"] = "2-provisional"
+        m2["dense_construction"] = ("path side = 500 Hz truth; depicted side linearly "
+                                    "interpolated from the exported frames")
+        (out_d / "meta.json").write_text(json.dumps(m2))
+        out.append(out_d)
+    print(f"dense variant built for {len(out)} clips (depicted side interpolated)", flush=True)
+    return out
+
+
 def wilson(k: int, n: int, z: float = 1.96) -> tuple[float, float]:
     if n == 0:
         return float("nan"), float("nan")
@@ -71,9 +132,19 @@ def main() -> int:
     ap.add_argument("--branch", default="track-d-verdict-stat")
     ap.add_argument("--out", default="results/e_verdict/trackd")
     ap.add_argument("--limit", type=int, default=0)
+    ap.add_argument("--dense", action="store_true",
+                    help="provisional schema v2: rebuild each clip on the 500 Hz truth with the "
+                         "depicted side interpolated (no new pixel information)")
+    ap.add_argument("--sg-window-s", type=float, default=None,
+                    help="override Track D's 0.37 s path-side window (sensitivity only)")
     args = ap.parse_args()
 
     d_wt = add_worktree(args.branch, Path(args.d_worktree))
+    # Track D's package is also called `src`, so the already-imported one has to be dropped from
+    # the module table before theirs is put on the path. Everything this script needs from the
+    # local package was bound at import time, so the bound functions stay valid.
+    for name in [m for m in list(sys.modules) if m == "src" or m.startswith("src.")]:
+        del sys.modules[name]
     sys.path.insert(0, str(d_wt))
     import yaml
 
@@ -84,6 +155,8 @@ def main() -> int:
     opts = {k: v for k, v in cfg["options"].items() if k in FitOptions.__dataclass_fields__}
     if "lag_bounds_ms" in opts:
         opts["lag_bounds_ms"] = tuple(opts["lag_bounds_ms"])
+    if args.sg_window_s is not None:
+        opts["sg_window_s"] = float(args.sg_window_s)
     options = FitOptions(**opts)
     b = cfg["bands"]["scalar"]
     bands = Bands(scalar=ScalarBand(float(b["lo"]), float(b["hi"]), float(b["alpha"]),
@@ -96,6 +169,8 @@ def main() -> int:
     rule = cfg.get("rule", "R1_scalar_g1")
 
     dirs = clip_dirs(Path(args.clips), Path("/tmp/e_clips_schema"))
+    if args.dense:
+        dirs = dense_variant(dirs, Path(args.clips), Path("data/uzh"))
     if args.limit:
         dirs = dirs[: args.limit]
     rows = []
@@ -150,6 +225,8 @@ def main() -> int:
 
     summary = {
         "source": {"branch": args.branch, "config": "configs/gain_frozen.yaml",
+                   "dense": bool(args.dense),
+                   "sg_window_s": args.sg_window_s,
                    "rule": rule,
                    "band_scalar": {"lo": b["lo"], "hi": b["hi"], "n": b["n"]},
                    "fitted_on": "TII, 57 real testable clips (Track D)"},

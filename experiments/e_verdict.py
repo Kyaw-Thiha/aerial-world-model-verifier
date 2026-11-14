@@ -33,6 +33,13 @@ FAMILIES = ("tilt_removal", "scale_0.5", "scale_1.5", "mirror_roll", "yaw_contro
             "null_edit")
 
 
+def axis_from_lean(lean: np.ndarray, yaw: np.ndarray) -> np.ndarray:
+    """World-frame thrust axis implied by a lean vector and a heading (ZYX reconstruction)."""
+    from src.depicted.stat_a2 import depicted_axis_from_up_body
+
+    return depicted_axis_from_up_body(up_body_from_lean(lean), yaw)
+
+
 def load_clip(npz_path: Path, meta_path: Path) -> dict:
     d = np.load(npz_path)
     meta = json.loads(meta_path.read_text())
@@ -42,7 +49,8 @@ def load_clip(npz_path: Path, meta_path: Path) -> dict:
             if np.isfinite(d["depicted_conf"]).any() else float("nan"),
             "t": d["t"], "pos": d["pos"], "yaw": d["yaw"],
             "lean": d["depicted_lean"], "conf": d["depicted_conf"],
-            "valid_frac": d["valid_frac"] if "valid_frac" in d.files else np.ones(len(d["t"]))}
+            "valid_frac": d["valid_frac"] if "valid_frac" in d.files else np.ones(len(d["t"])),
+            "lean_req": d["lean_req"] if "lean_req" in d.files else None}
 
 
 def score_all(clips_dir: Path, root: Path, uptilt_offsets=(0.0,),
@@ -63,7 +71,17 @@ def score_all(clips_dir: Path, root: Path, uptilt_offsets=(0.0,),
                 continue
             clip = load_clip(npz, meta_path)
             lo, hi = clip["index"]
-            if path_source == "schema":
+            if path_source == "v2":
+                # schema v2 (provisional): the clip carries its own required lean from the dense
+                # truth, so the path side is a clip field, not a recomputation from pos
+                if clip["lean_req"] is None:
+                    raise ValueError(f"{npz}: no lean_req (build the v2 set with "
+                                     "experiments/e_clips_v2.py)")
+                imp = axis_from_lean(clip["lean_req"], clip["yaw"])
+                tilt = np.degrees(np.arccos(np.clip(imp[:, 2], -1.0, 1.0)))
+                path = {"required_axis": imp, "required_tilt_deg": tilt}
+                lo, hi = 0, len(clip["t"])
+            elif path_source == "schema":
                 # T6: rebuild the path side from the clip's own pos/t only
                 path = path_side_from_pos(clip["pos"], clip["t"], k_d=0.0)
                 lo, hi = 0, len(clip["t"])
@@ -112,7 +130,7 @@ def main() -> int:
     ap.add_argument("--uptilt-offsets", default="0",
                     help="comma list, degrees; '0' is the pre-registered primary (published mount)")
     ap.add_argument("--gate", action="store_true", help="post-hoc: gate by depicted_conf")
-    ap.add_argument("--path-source", default="dense", choices=("dense", "schema"),
+    ap.add_argument("--path-source", default="dense", choices=("dense", "schema", "v2"),
                     help="'dense' uses the 500 Hz truth table; 'schema' uses the clip's own pos")
     args = ap.parse_args()
     clips_dir = Path(args.clips)
