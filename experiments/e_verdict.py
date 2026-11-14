@@ -179,12 +179,16 @@ def main() -> int:
             base = real_by_clip.get(pair_key(r))
             if base is None or not base["testable"] or base["score"] is None:
                 continue
+            # the population where a detection is meaningful: the real clip was accepted
+            if base["score"] > thr:
+                continue
             n += 1
-            if r["score"] > thr and base["score"] <= thr:
+            if r["score"] > thr:
                 k += 1
         lo, hi = wilson(k, n)
         paired[cond] = {"n": n, "detected": k, "rate": (k / n) if n else None,
-                        "wilson_lo": lo, "wilson_hi": hi}
+                        "wilson_lo": lo, "wilson_hi": hi,
+                        "population": "clips whose real condition was accepted"}
     summary["paired"] = paired
 
     # frozen S3 gate, applied two ways (A2's pre-registered per-condition rule and the
