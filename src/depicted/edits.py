@@ -35,8 +35,22 @@ class KB4Camera:
         self.k = np.asarray(k, dtype=np.float64).ravel()
         if self.k.size < 4:
             self.k = np.pad(self.k, (0, 4 - self.k.size))
-        self._theta = np.linspace(0.0, np.pi * 0.98, 4000)
-        self._theta_d = self._distort(self._theta)
+        # The KB4 polynomial is only invertible where theta_d is increasing. For several of
+        # these cameras it turns over inside the frame (indoor_45, outdoor_forward), and an
+        # inversion that ignores the turnover collapses the image onto a radial smear — which
+        # is what a null edit produced before this was fixed. The lookup is therefore built on
+        # the increasing branch only, and radii beyond it are declared outside the model.
+        theta = np.linspace(0.0, np.pi, 20001)
+        theta_d = self._distort(theta)
+        keep = np.ones(len(theta), bool)
+        dturn = np.diff(theta_d)
+        bad = np.flatnonzero(dturn <= 0)
+        if len(bad):
+            keep[bad[0] + 1:] = False
+        self._theta = theta[keep]
+        self._theta_d = theta_d[keep]
+        self.max_theta_rad = float(self._theta[-1])
+        self.max_theta_d = float(self._theta_d[-1])
 
     def _distort(self, theta: np.ndarray) -> np.ndarray:
         t2 = theta * theta
@@ -53,8 +67,15 @@ class KB4Camera:
         rd = self._distort(theta)
         return self.fx * rd * ca + self.cx, self.fy * rd * sa + self.cy
 
+    def pixels_from_rays_checked(self, x: np.ndarray):
+        """Pixels **and** an inside-the-model mask for (…, 3) rays."""
+        x = np.asarray(x, dtype=np.float64)
+        theta = np.arctan2(np.hypot(x[..., 0], x[..., 1]), x[..., 2])
+        u, v = self.pixels_from_rays(x)
+        return u, v, theta <= self.max_theta_rad
+
     def rays_from_pixels(self, u: np.ndarray, v: np.ndarray) -> np.ndarray:
-        """(u, v) pixel coordinates -> unit rays (…, 3)."""
+        """(u, v) pixel coordinates -> unit rays (…, 3); clamps at the model's limit."""
         a = (np.asarray(u, dtype=np.float64) - self.cx) / self.fx
         b = (np.asarray(v, dtype=np.float64) - self.cy) / self.fy
         rd = np.hypot(a, b)
@@ -100,8 +121,8 @@ def kb4_source_coords(M: np.ndarray, cam: KB4Camera, w: int, h: int):
     u, v = _pixel_grid(w, h)
     x_new = cam.rays_from_pixels(u, v)
     x_old = np.einsum("ij,hwj->hwi", np.asarray(M, dtype=np.float64), x_new)
-    su, sv = cam.pixels_from_rays(x_old)
-    ok = x_old[..., 2] > 1e-6
+    su, sv, inside_model = cam.pixels_from_rays_checked(x_old)
+    ok = (x_old[..., 2] > 1e-6) & inside_model
     return su, sv, ok
 
 
