@@ -184,25 +184,27 @@ angle) do not care. The pre-registered headline is 0.37 s and is not swapped for
 0.10 s; the sensitivity is reported as the finding that Track D's band is not window-robust on this
 dataset.
 
-### 2.5 Abstention, by Track D's reason order (real clips, forward)
+### 2.5 Abstention, by Track D's reason order (real clips, forward, final population)
 
-21 real clips reached the scorer, 12 abstained (**0.571**):
+14 real clips reach the scorer, **7 abstain (0.500)**:
 
 | reason | clips |
 | --- | --- |
-| confidence gate | **8** (all outdoor) |
+| confidence gate | **5** (all outdoor) |
 | `gain_ci_half_width` > 0.35 | 6 |
-| `usable_fraction` | 3 |
-| `signal_frames` / `signal_fraction` | 3 / 3 |
-| `excitation` | 3 |
-| `condition_number` > 1e3 | 3 |
-| bootstrap | 3 |
 
-(counts overlap: a clip can fail several rules). **The gate alone removes the entire outdoor
-rig** — 8 of the 9 outdoor real clips, and the ninth fails `gain_ci_half_width`. E01 predicted this
-(the gate drops 94 % of outdoor clips on the per-frame data); at clip level it is 100 %. So the
-"outdoor forward" column of every Track D statistic in this report is empty by construction, and the
-outdoor rig is measured only by the median residual, which does not use the gate.
+(counts overlap: one clip can fail both). On the earlier population, which still contained the
+broken `indoor_forward_7` clips, four further reasons fired — `usable_fraction`, `signal_frames`,
+`excitation`, `condition_number` and the bootstrap bound — three clips each. **Every one of those
+was the broken export**, which is why they vanish once that sequence is excluded: 21 files with one
+evaluated frame cannot carry 12 signal frames or a conditioned design matrix. Recording both sets
+rather than only the clean one, because the difference is diagnostic.
+
+**The gate alone removes the entire outdoor rig** — 5 of the outdoor real clips, with the rest
+failing `gain_ci_half_width`. E01 predicted this from the per-frame data (the gate drops 94 % of
+outdoor clips); at clip level it is total. So the "outdoor forward" column of every Track D statistic
+in this report is empty by construction, and the outdoor rig is measured only by the median residual,
+which does not use the gate.
 
 ### 2.6 The edit family, per rig
 
