@@ -86,12 +86,24 @@ Pre-registered bound: 2.0 deg median at every angle. The indoor sequence passes 
 with a factor of 1.4 to spare, and the null edit moves the estimate by 0.06 deg, so the warp
 itself contributes essentially nothing.
 
-**The same probe fails on `outdoor_forward_5` (the 20.7 m/s clip): 25.9 deg on the null edit
-and 23.6-24.1 deg at 5/10/20 deg.** A re-encode of the *same* frame that changes the estimate by
-26 deg is not an edit artefact, it is the estimator being unstable on that footage — the same
-sequence where 49% of frames are already more than 10 deg off (E01). Its clips are exported and
-scored, and they are the noisiest rows in the tables; this is recorded rather than hidden by
-dropping the sequence.
+**The same probe failed on `outdoor_forward_5` with 25.9 deg on the null edit**, and the first
+reading of that was "the estimator is unstable on fast footage". It was not: it was a bug in
+this task's own fisheye inversion. The Kannala-Brandt polynomial of *six* of the fourteen
+cameras is **non-monotone inside the frame** (θ_d turns over at 94 deg for the indoor-45 rig and
+at 102 deg for the outdoor-forward rig), and a lookup built over the whole range then folds
+radii back on themselves. The result is a radial smear, which the estimator reads as an
+arbitrary gravity. The tell was visual: the null edit of an indoor-45 clip was a radial blur, not
+the same picture.
+
+Fix (`src/depicted/edits.py`): build the inversion only on the increasing branch of θ_d and mark
+rays beyond it as outside the model. After the fix the identity warp round-trips to 0.000 px on
+all fourteen cameras. Seven sequences (4 indoor-45, 3 outdoor-forward) were re-exported; the
+seven others had monotone polynomials and are unchanged. Cost of the mistake: one discarded clip
+family (~US$1.5 of GPU) and the re-export (~US$0.8).
+
+This also means the claim "the estimator degrades outdoors" in E01 stands on its own evidence
+(the per-frame error, which never involved a warp) and is **not** the explanation for the control
+failure here.
 
 ### Border handling
 
