@@ -268,6 +268,10 @@ that control exists for:
 | tilt x0.5 | 0.62 | 20.35 deg |
 | tilt x1.5 | 0.62 | 17.51 deg |
 
+(The raw `metrics.json` of that family was overwritten by the cropped re-export; the numbers
+are quoted here so the negative result survives. The family is reproducible by reverting the
+crop in `remote/e_export.py`.)
+
 A null edit that changes the score by 13 deg is measuring the border, not the content: the mask
 is identical for every condition of a frame, so the border bias is a fixed offset that both
 controls inherit. Subtracting it gives a coherent picture (removal +9.3 deg, mirror +8.3, yaw
