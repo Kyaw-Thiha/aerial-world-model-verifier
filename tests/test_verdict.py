@@ -372,3 +372,15 @@ def test_schema_v2_rejects_lean_without_velocity(tmp_path):
     clip.lean_req = np.zeros((len(clip.t), 2))
     with pytest.raises(ValueError, match="together"):
         validate_clip(clip)
+
+
+def test_validation_status_rule():
+    from src.verdict import validation_status
+    assert validation_status({"flight_type": "piloted"}) == ("validated", True)
+    assert validation_status({"flight_type": "autonomous"}) == ("not_validated", False)
+    assert validation_status({"flight_type": "track"}) == ("not_validated", False)
+    assert validation_status({"control": "piloted"}) == ("validated", True)
+    assert validation_status({"control": "autonomous"}) == ("not_validated", False)
+    assert validation_status({"control": "piloted", "track": "trackRATM"}) == \
+        ("not_validated", False)
+    assert validation_status({}) == ("not_validated", False)

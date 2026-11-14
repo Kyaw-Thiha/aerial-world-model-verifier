@@ -233,3 +233,42 @@ amendment_1:
     calibration: two-sided conformal, LOFO, alpha 0.05
   schema: docs/verdict_clip_schema_v2.md
   made_before_v2_scoring: true
+
+# ----------------------------------------------------------------- amendment 2 (v3)
+# Governance rule only.  No threshold, band, nuisance, decision rule or abstention rule
+# changes; nothing is refitted.  Written after the per-type margin table was inspected
+# (the task asked for a decision from those distributions) and before the rule is used in
+# any output.
+version: 3
+amendment_2:
+  date: 2026-11-14
+  reason: >
+    The frozen R2 rule has 3 false rejects in 57 clips from 6 flights.  The false rejects
+    are one autonomous clip and two piloted clips, but the autonomous and track evidence
+    is 4 and 3 testable clips respectively, with 25 % and 33 % false-reject rates and
+    yaw-control flag rates of 100 % and 67 %.  A pooled rate is not a rate for those
+    flight types.
+  rule:
+    validated: piloted, non-track
+    not_validated: autonomous and track
+    unknown_type: not_validated
+  output:
+    fields: [validation_status, usable_as_evidence]
+    not_validated: a graded result is still produced; usable_as_evidence is false
+    abstain: no
+  rationale:
+    abstain_when: insufficient excitation, confidence or conditioning (unchanged)
+    not_validated_when: the statistic has no calibration evidence for the flight type
+    reason_not_abstain: >
+      the autonomous/track clips that survive have enough excitation; hiding a measurable
+      result as an abstention would be less honest than labelling it not validated.
+  does_not_change:
+    - statistic
+    - thresholds and conformal bands
+    - abstention rule
+    - coherence thresholds
+  made_after_distributions: true
+  no_refit: true
+  evidence:
+    - results/d_eval/d02/margins.csv
+    - reports/D03_distributions_and_window.md

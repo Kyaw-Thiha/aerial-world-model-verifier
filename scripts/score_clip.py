@@ -30,7 +30,7 @@ if str(ROOT) not in sys.path:
 
 from src.verdict import (  # noqa: E402
     Bands, FitOptions, JointBand, ScalarBand, assess, coherence, fit_gain, flag,
-    gate_kept_from_conf, load_clip,
+    gate_kept_from_conf, load_clip, validation_status,
 )
 
 
@@ -127,6 +127,7 @@ def main() -> int:
                              else bool(coh.sign_score > tau_s)),
         }
 
+    vstatus, usable = validation_status(clip.meta)
     out = {
         "clip": str(args.clip),
         "clip_id": clip.clip_id,
@@ -150,6 +151,8 @@ def main() -> int:
         "condition_number": result.cond_number,
         "testable": ab.testable,
         "abstention_reasons": ab.reasons,
+        "validation_status": vstatus,
+        "usable_as_evidence": bool(usable and ab.testable),
         "gate_kept": gate_kept,
         "rule": rule if flagged is not None else None,
         "flagged": flagged,

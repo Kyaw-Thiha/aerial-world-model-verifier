@@ -16,7 +16,7 @@ from .dense import DenseRequired, dense_required_lean, truth_lean
 from .coherence import CoherenceResult, coherence
 from .deming import DemingFit, deming_gain
 from .fit import FitOptions, GainResult, fit_gain
-from .abstain import Abstention, assess, gate_kept_from_conf
+from .abstain import Abstention, assess, gate_kept_from_conf, validation_status
 from .decide import (Bands, JointBand, ScalarBand, conformal_band, fit_bands,
                      fit_joint_band, flag)
 
@@ -25,7 +25,7 @@ __all__ = [
     "principal_spread_deg", "required_lean", "roll_pitch_to_lean",
     "world_to_yaw_frame", "CONDITIONS", "Clip", "load_clip", "save_clip",
     "validate_clip", "DenseRequired", "dense_required_lean", "truth_lean",
-    "CoherenceResult", "coherence", "DemingFit", "deming_gain", "FitOptions", "GainResult", "fit_gain", "Abstention", "assess",
+    "CoherenceResult", "coherence", "DemingFit", "deming_gain", "FitOptions", "GainResult", "fit_gain", "Abstention", "assess", "validation_status",
     "gate_kept_from_conf", "Bands", "JointBand", "ScalarBand", "conformal_band",
     "fit_bands", "fit_joint_band", "flag",
 ]

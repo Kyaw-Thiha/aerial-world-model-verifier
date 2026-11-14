@@ -149,6 +149,9 @@ def main() -> int:
                 "truth_frames": "mocap position and yaw; no other mocap quantity enters",
                 "track": clip["track"],
                 "control": clip["control"],
+                "flight_type": ("track" if "trackRATM" in flight else
+                                ("piloted" if clip["control"] == "piloted"
+                                 else "autonomous")),
                 "speed_median_mps": float(clip["speed_median"]),
                 "depicted_conf_meaning": (
                     "GeoCalib latitude_confidence_mean per frame; higher is better; the "

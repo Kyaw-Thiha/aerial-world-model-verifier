@@ -93,3 +93,25 @@ def gate_kept_from_conf(depicted_conf: np.ndarray, gate_config: dict) -> bool:
     if gate_config.get("direction", "drop when signal > tau") != "drop when signal > tau":
         raise ValueError("unsupported gate direction")
     return bool(signal <= float(gate_config["tau"]))
+
+
+def validation_status(meta: dict) -> tuple[str, bool]:
+    """Whether the statistic is validated for this flight type.
+
+    The rule is governance, not a threshold: piloted, non-track flights are validated;
+    autonomous and track flights are **not validated** because the calibration evidence
+    is a handful of clips (4 autonomous, 3 track on TII).  A not-validated clip still gets
+    a graded result; it must not be used as evidence for or against a flight.
+    """
+    ft = str(meta.get("flight_type", "")).strip().lower()
+    if not ft:
+        track = bool(meta.get("trackratm")) or "trackratm" in str(
+            meta.get("track", "")).lower()
+        control = str(meta.get("control", "")).strip().lower()
+        if track:
+            ft = "track"
+        elif control in ("piloted", "autonomous"):
+            ft = control
+    if ft == "piloted":
+        return "validated", True
+    return "not_validated", False
