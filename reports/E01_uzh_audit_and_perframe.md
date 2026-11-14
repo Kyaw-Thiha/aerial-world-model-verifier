@@ -177,7 +177,7 @@ camera frame**, using the published mount. No clip, no path, no nuisance fit.
 By rig (variant b): **indoor forward 3.28 deg median** (n = 2365), **outdoor forward 9.68 deg**
 (n = 1123). By rig (variant a): 1.00 and 8.35 deg.
 
-### What drives the error: speed and blur, not the estimator's input choice
+### What drives the error: rig, then blur (not speed on its own)
 
 Median error by truth speed (variant b / variant a): 0-5 m/s 3.32 / 1.09; 5-10 5.66 / 2.54;
 10-15 5.14 / 4.14; 15-20 11.74 / 9.87. The outdoor sequences are the fast ones, and they also
@@ -186,6 +186,11 @@ quintile 1 (blurriest) 6.69 deg against quintile 5 (sharpest) 3.37 deg for varia
 5.56 against 1.11 for variant a. **Blur is a first-order driver of the tail**, and it is
 concentrated outdoors. All three variants degrade together outdoors, so this is not an
 artefact of which camera model was given.
+
+**Caveat on the speed reading, added after E02:** the speed bins mix the rigs (the fast frames
+are all outdoor), and *within* the indoor rig the per-frame residual does not track speed
+(Spearman between -0.27 and +0.30 with no consistent sign). The bin trend is therefore a rig
+effect, not a demonstrated speed effect.
 
 ### Temporal smoothing
 
