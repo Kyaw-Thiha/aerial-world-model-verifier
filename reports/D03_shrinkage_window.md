@@ -30,8 +30,9 @@ By truth-tilt bin, **piloted** (the only type with enough frames below 45°):
 | 45-90° | 41 | 1.075 | 1.009 | 0.897 |
 
 **Diagnosis: linear, axis-specific shrinkage, not saturation and not (on piloted flights)
-noise.** The pitch/forward axis is unbiased (slope 1.00 across every populated bin); the
-roll/lateral axis is compressed by about 0.76-0.79 with no monotone decline with tilt.
+noise.** The pitch/forward axis is unbiased (0.91-1.08 across the populated bins, no
+trend); the roll/lateral axis is compressed by 0.66-0.79 across the populated bins (0.76-
+0.79 over the 10-45° bulk) with no monotone decline with tilt.
 The scalar R² is 0.988 and only 1.2 % of the variance is residual noise. Autonomous and
 track are a different regime: their testable clips sit at high tilt, their slope is lower
 and 25-27 % of their variance is noise, so compression and noise cannot be separated with
