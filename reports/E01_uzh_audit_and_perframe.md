@@ -22,10 +22,13 @@ Artifacts: `results/e_audit/audit.json`, `results/e_audit/sync_summary.json`,
    per-frame gravity error is **1.53 deg** (undistorted pinhole with the published focal),
    **4.62 deg** (raw fisheye with `simple_divisional`, the TII-best setting) and **2.06 deg**
    (pinhole, focal estimated). TII's own reference is 3.96 deg. Gate E1 passes for all three.
-5. **But it transfers unevenly.** Indoor forward is 1.0-3.3 deg median; **outdoor forward is
-   8.4-9.7 deg on every variant**, with error growing with speed and with motion blur. That is
-   the first place the verifier's coverage will be limited, and it is a property of the
-   footage, not of the mount.
+5. **But it transfers unevenly, and only on forward-facing cameras.** Indoor forward is
+   1.0-3.3 deg median; **outdoor forward is 8.4-9.7 deg on every variant**; the
+   **45-degree-down rigs are 10.6 deg (indoor) and 31.9 deg (outdoor)**, where a 10 deg
+   violation is inside the estimator's own error. Of the 14 sequences, 13 get worse as the
+   footage gets faster and blurrier; the 45-down outdoor sequence is the worst at 31.9 deg
+   with 97% of frames over 10 deg. That is where the verifier's coverage will be limited, and
+   it is a property of the footage and the view geometry, not of the mount.
 
 So the previous agent's 86-89 deg verdict numbers on UZH were **not** the estimator failing:
 the per-frame error is 1-5 deg. Something in that pilot's verdict plumbing was wrong (mount
@@ -176,6 +179,34 @@ camera frame**, using the published mount. No clip, no path, no nuisance fit.
 
 By rig (variant b): **indoor forward 3.28 deg median** (n = 2365), **outdoor forward 9.68 deg**
 (n = 1123). By rig (variant a): 1.00 and 8.35 deg.
+
+### The 45-degree-down rigs: applied as published, they do not transfer
+
+| rig | variant | n | median | trimmed RMSE 10% | > 10 deg |
+| --- | --- | --- | --- | --- | --- |
+| indoor_45 (4 sequences) | b | 1640 | **10.55** | 14.94 | 0.51 |
+| indoor_45 | a | 1640 | 12.49 | 37.66 | 0.58 |
+| outdoor_45 (1 sequence) | b | 253 | **31.86** | 31.53 | 0.97 |
+| outdoor_45 | a | 253 | 69.72 | 66.12 | 0.99 |
+
+Per sequence (variant b): indoor_45_2 9.91, indoor_45_4 9.24, indoor_45_13 9.76,
+**indoor_45_9 35.42**, **outdoor_45_1 31.86**. So there are two separate failures: a
+cluster of three indoor sequences at about 9.5 deg, and two sequences at 32-35 deg.
+
+The 9.5 deg cluster is **half explained by a constant rotation**: a 14.2 deg rotation fitted on
+`indoor_45_2` alone reduces the other three 45-down sequences from 9.2-9.8 to 4.1-5.5 deg and
+also reduces `outdoor_45_1` from 31.9 to 24.7, while hurting the forward rigs
+(indoor_forward_5: 1.28 -> 9.30). Whether that 14.2 deg is a mount error in the published
+45-rig calibration or a GeoCalib bias on 45-degree-down imagery **cannot be separated with
+these data**: both explanations predict exactly this pattern. It is reported as open, with the
+published mount used for every headline number (the mount is an input, and the alternative is a
+fit) and the fitted-mount variant as a labelled sensitivity.
+
+`indoor_45_9` and `outdoor_45_1` are not explained by any constant rotation (25.9 and 24.7 deg
+remain). `indoor_45_9` is the sequence Track C had already flagged as anomalous
+(speed correlation 0.31 against truth). Its truth pairing is now verified correct, so what
+remains is either an estimator failure on that footage or a residual truth problem this audit
+did not find; the verifier will abstain on it rather than report a verdict.
 
 ### What drives the error: rig, then blur (not speed on its own)
 
