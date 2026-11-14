@@ -110,6 +110,106 @@ is a fraction of a standard error). Under the pre-registered rule they still cou
 seeing the numbers. Since the frozen confidence gate abstains on every outdoor clip anyway
 (§2.3), the practical cost is nil — but the invalidation is recorded rather than explained away.
 
+### 2.2 Populations actually scored (this matters for every number below)
+
+| step | clips | note |
+| --- | --- | --- |
+| exported, 9 forward sequences x 3 clips x 7 conditions | 189 | v3 fixed crop |
+| dropped, crop width < 25 % of the frame | **-42** | 6 clips: `indoor_forward_3#02`, `indoor_forward_6#00/#01/#02`, `outdoor_forward_5#00/#01` — the mirror-roll edit at 60-70 deg of bank is a 120-140 deg rotation, which leaves a sliver of the source frame. Not scorable, not shrunk into the statistics |
+| scored | 147 | |
+| **R2 / coherence, testable real clips** | **9 clips, 4 sequences** (indoor_forward_3, _5, _9, _10) | outdoor contributes **zero**: the frozen gate abstains on every outdoor clip |
+| **(a) median residual, testable real clips** | **18 clips, 7 sequences** (4 indoor + 3 outdoor) | (a) does not use the gate |
+| excluded | `indoor_forward_7` (3 clips) | its v3 export is broken — one of 60 frames evaluated, real clips score 13.6/30.6/44.5 deg on a sequence whose per-frame error is 1.66 deg. It fails the validity gate (1.13 deg lean) and its clips then fail the ≥12-signal-frame rule, so they never enter a denominator. Recorded as an export failure, not a result |
+
+So the headline is **indoor forward, 4 sequences, 9 testable real clips** for Track D's statistics and
+**7 sequences, 18 clips** for the median residual. Those counts are repeated beside every number.
+
+### 2.3 Track D's statistics and the median residual, forward rigs, 0.37 s headline
+
+Every rate is printed with its two controls. A "detection" is a flag on an edited clip; a "false
+reject" is a flag on a real clip; the null-edit and yaw-control rates are the artefact floor that
+has to be read beside it.
+
+| statistic | real (false reject) | null edit | yaw control | tilt removal | mirror | x0.5 | x1.5 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| **(b1) R2 axis-gain band** (tau 2.1922) | **0.556** (5/9) | 0.556 (5/9) | 0.286 (2/7) | 1.000 (10) | 1.000 (8) | 1.000 (10) | 1.000 (8) |
+| **(b2) coherence tier** | **0.111** (1/9) | 0.111 (1/9) | 0.143 (1/7) | **1.000** (10) | **1.000** (8) | 0.200 (10) | 0.250 (8) |
+| **(a) median residual, 14.73 deg** | **0.000** (0/18) | 0.000 (0/18) | 0.000 (0/18) | **0.722** (13/18) | **0.778** (14/18) | 0.056 (18) | 0.167 (18) |
+
+Sequence-clustered 95 % intervals over the 8 scored sequences (9 forward minus the excluded one):
+
+| statistic | real | tilt removal | mirror |
+| --- | --- | --- | --- |
+| R2 band | 0.50-0.63 | 1.00-1.00 | 1.00-1.00 |
+| coherence | 0.00-0.375 | 1.00-1.00 | 1.00-1.00 |
+| median residual | 0.00-0.00 | 0.10-1.00 | 0.60-1.00 |
+
+**Three readings, and they disagree, which is the result.**
+
+1. **The gain band does not transfer** (false reject 0.556, clustered interval 0.50-0.63). Its
+   detection of 1.000 is therefore uninformative: everything is flagged. The mechanism is visible
+   in the calibration: UZH per-clip axis gains spread far wider than TII's, and the band's `gy`
+   scale is only 0.0735, so a clip whose `gy` is 0.1 away from centre is already flagged. A band
+   fitted on 57 TII clips cannot carry a dataset whose per-clip gain spread is an order of
+   magnitude larger.
+2. **The coherence tier transfers** (false reject 0.111, inside the 0.15 budget; detection 1.000
+   for removal and 1.000 for mirror, with both controls at 0.111-0.143). This is the scale-free
+   statistic doing what it was designed for, and it is the only one of the three that meets T2's
+   requirement on this data.
+3. **The median residual** has a perfect false-reject rate (0/18) but detection 0.722/0.778 — just
+   under the 0.80 bound, with a clustered interval as wide as 0.10-1.00 for removal because 13 of
+   18 clips carry it and they sit in 4-5 sequences.
+
+`x0.5` and `x1.5` sit at 0.20/0.25 under coherence, i.e. at chance, exactly as Track D's own note
+predicts ("a positive scale leaves the correlation unchanged"). They are reported, not tuned.
+
+### 2.4 Window sensitivity (pre-registered; the headline stays 0.37 s)
+
+| window | R2 real | coherence real | coherence removal | coherence mirror | (a) real | (a) removal | (a) mirror |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| **0.37 s (headline)** | **0.556** | 0.111 | 1.000 | 1.000 | 0.000 | 0.722 | 0.778 |
+| 0.185 s | 0.444 | 0.111 | 1.000 | 1.000 | 0.000 | 0.722 | 0.778 |
+| 0.10 s | **0.000** | 0.111 | 1.000 | 1.000 | 0.000 | 0.722 | 0.778 |
+
+**The gain band is the only statistic that moves with the window**, and it moves monotonically from
+failing to passing as the window shortens. The coherence tier and the median residual are
+invariant. That is a property of the gain: it is a *ratio* of depicted to required variation, so
+smoothing the required side changes its scale, while coherence (a correlation) and the residual (an
+angle) do not care. The pre-registered headline is 0.37 s and is not swapped for the favourable
+0.10 s; the sensitivity is reported as the finding that Track D's band is not window-robust on this
+dataset.
+
+### 2.5 Abstention, by Track D's reason order (real clips, forward)
+
+21 real clips reached the scorer, 12 abstained (**0.571**):
+
+| reason | clips |
+| --- | --- |
+| confidence gate | **8** (all outdoor) |
+| `gain_ci_half_width` > 0.35 | 6 |
+| `usable_fraction` | 3 |
+| `signal_frames` / `signal_fraction` | 3 / 3 |
+| `excitation` | 3 |
+| `condition_number` > 1e3 | 3 |
+| bootstrap | 3 |
+
+(counts overlap: a clip can fail several rules). **The gate alone removes the entire outdoor
+rig** — 8 of the 9 outdoor real clips, and the ninth fails `gain_ci_half_width`. E01 predicted this
+(the gate drops 94 % of outdoor clips on the per-frame data); at clip level it is 100 %. So the
+"outdoor forward" column of every Track D statistic in this report is empty by construction, and the
+outdoor rig is measured only by the median residual, which does not use the gate.
+
+### 2.6 The edit family, per rig
+
+| rig | clips scored | validity gate | R2 false reject | coherence false reject | (a) false reject |
+| --- | --- | --- | --- | --- | --- |
+| indoor forward | 98 | **passes on 4 of 5 sequences** (indoor_forward_7 excluded, its export broken) | 0.556 | 0.111 | 0.000 |
+| outdoor forward | 49 | **fails on both sequences tested** (gain 5.0 % and 8.5 % against the 5 % bound; lean 0.12-0.18 deg) | n/a (gate abstains) | n/a | 0.000 |
+
+The outdoor validity failure is gain-only and its lean agreement is 0.12-0.18 deg, so the edits are
+faithful and the gain estimate is noisy; but the pre-registered rule is the rule, so **no detection
+claim is made for outdoor** anywhere in this report.
+
 ## 3. Reporting contract
 
 Every rate in §2 is printed with the statistic it belongs to ((b1) R2 axis band, (b2) coherence,

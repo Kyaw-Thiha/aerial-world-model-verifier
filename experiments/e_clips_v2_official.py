@@ -133,23 +133,29 @@ def build(clips_root: Path, out_root: Path, window_s: float, uzh_root: Path) -> 
             if np.isnan(rec["lean_req"]).all():
                 rejected.append(npz.name)
                 continue
-            # Guard against a mis-sampled path side: on a real clip the required lean must sit
-            # within the drag-free flatness residual of the truth attitude. E01 measured that
-            # residual at 4.0-11.5 deg on these sequences, so 15 deg is a generous ceiling.
+            # Guard against a mis-sampled path side, by *consistency* rather than magnitude:
+            # the same required lean computed through the independent path side must agree.
+            # (An absolute bound does not work: at 20 m/s the drag-free required lean legitimately
+            # sits 20-25 deg from the truth attitude, while a mis-sampled clip is far from the
+            # independent computation too.)
             if meta["condition"] == "real":
-                import numpy as _np
-
-                from src.depicted.clips import lean_from_up_body as _lfu
-                from src.depicted.metrics import angle_deg as _ang
+                from src.depicted.clips import (lean_from_axis,
+                                               path_side_with_gt as _pswt)
+                from src.depicted.metrics import angle_deg as angle_between
                 from src.depicted.uzh import load_truth as _lt
-                _tr = _lt(uzh_root, seq)
-                _lt_lean = _lfu(_tr.up_body)[meta["index"][0]:meta["index"][1]]
-                ok = _np.isfinite(rec["lean_req"]).all(axis=1) & _np.isfinite(_lt_lean).all(axis=1)
-                gap = float(_np.median(_ang(_ulp(rec["lean_req"][ok]), _ulp(_lt_lean[ok]))))
-                gaps.append({"seq": seq, "clip": npz.stem, "gap_deg": gap})
-                if gap > 15.0:
-                    raise RuntimeError(f"{seq}/{npz.stem}: lean_req is {gap:.1f} deg from the "
-                                       "truth-attitude lean; the path side is mis-sampled")
+
+                _ps = _pswt(_lt(uzh_root, seq), gt, k_d=0.0, window_s=window_s)
+                lo_, hi_ = meta["index"]
+                _indep = lean_from_axis(_ps["required_axis"][lo_:hi_], d["yaw"])
+                okc = (np.isfinite(rec["lean_req"]).all(axis=1)
+                       & np.isfinite(_indep).all(axis=1))
+                cons = float(np.median(angle_between(_ulp(rec["lean_req"][okc]),
+                                                     _ulp(_indep[okc]))))
+                gaps.append({"seq": seq, "clip": npz.stem, "consistency_deg": cons})
+                if cons > 2.0:
+                    raise RuntimeError(f"{seq}/{npz.stem}: lean_req disagrees with the "
+                                       f"independent path side by {cons:.1f} deg; the sampling "
+                                       "is misaligned")
             np.savez_compressed(
                 out / seq / npz.name, t=d["t"], pos=d["pos"], yaw=d["yaw"],
                 depicted_lean=d["depicted_lean"], depicted_conf=d["depicted_conf"],
@@ -169,10 +175,10 @@ def build(clips_root: Path, out_root: Path, window_s: float, uzh_root: Path) -> 
             (out / seq / npz.with_suffix(".meta.json").name).write_text(json.dumps(meta, indent=1))
             made += 1
     return {"tree": str(out), "window_s": window_s, "clips": made, "rejected": rejected,
-            "lean_req_vs_truth_attitude_deg": {
+            "lean_req_consistency_deg": {
                 "n": len(gaps),
-                "median": float(np.median([g["gap_deg"] for g in gaps])) if gaps else None,
-                "max": float(np.max([g["gap_deg"] for g in gaps])) if gaps else None}}
+                "median": float(np.median([g["consistency_deg"] for g in gaps])) if gaps else None,
+                "max": float(np.max([g["consistency_deg"] for g in gaps])) if gaps else None}}
 
 
 def main() -> int:

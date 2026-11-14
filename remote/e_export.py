@@ -84,6 +84,42 @@ def _run(model, camera_model, img, device, focal=None):
     return g, conf
 
 
+def maximal_rectangle(mask):
+    """Largest axis-aligned all-true rectangle in a boolean mask (histogram/stack method).
+
+    A *centred* rectangle is not always available: intersecting the valid region of seven
+    conditions over a clip that manoeuvres hard can leave a valid area that is off-centre, and
+    `indoor_forward_7#01` had no centred rectangle above a quarter of the frame. The largest
+    rectangle anywhere is just as fixed per clip, and it is the one the estimator deserves.
+    """
+    import numpy as np
+
+    h, w = mask.shape
+    heights = np.zeros(w, dtype=np.int32)
+    best = (0, 0, 0, 0)  # area, x0, y0, x1, y1 through the tuple below
+    best_area = 0
+    best_rect = (0, 0, 0, 0)
+    for y in range(h):
+        heights = np.where(mask[y], heights + 1, 0)
+        stack: list[tuple[int, int]] = []
+        for x in range(w + 1):
+            cur = heights[x] if x < w else 0
+            start = x
+            while stack and stack[-1][1] >= cur:
+                sx, sh = stack.pop()
+                area = sh * (x - sx)
+                if area > best_area:
+                    best_area = area
+                    best_rect = (sx, y - sh + 1, x - 1, y)
+                start = sx
+            if cur > 0:
+                stack.append((start, cur))
+    x0, y0, x1, y1 = best_rect
+    # y1 is the last row of the rectangle and x1 the last column: both slices are inclusive
+    sl = (slice(y0, y1 + 1), slice(x0, x1 + 1))
+    return sl, float((y1 + 1 - y0) / h)
+
+
 def centred_crop(mask, min_fraction: float = 0.25):
     """Largest centred rectangle (same aspect) whose *actual slice* is fully inside ``mask``.
 
@@ -302,10 +338,57 @@ def export_sequence(seq: str, variant: str = "b", clip_seconds: float = 4.0,
             xs, ys, ok = source_coords(M, calib, w, h)
             return ok & (xs >= 0) & (xs <= w - 1) & (ys >= 0) & (ys <= h - 1)
 
+        # Fixed crop first. If the manoeuvre is so large that no single window is valid in
+        # every frame and condition (measured: indoor_forward_7), fall back to a fixed *size*
+        # with a per-frame offset — all conditions of a frame still share one window, and the
+        # field of view no longer jitters in scale, which was E02's defect.
+        fallback = False
+        if crop_mode == "fixed":
+            probe = None
+            for cond in CONDITIONS:
+                if cond == "real":
+                    continue
+                for j in range(len(t_clip)):
+                    m = inside_mask(per_cond[cond][j])
+                    probe = m if probe is None else (probe & m)
+            probe_frac = 0.0
+            if probe is not None:
+                probe_sl, probe_frac = maximal_rectangle(probe)
+            if probe is None or probe_frac < 0.15:
+                crop_mode = "fixed_size"
+                fallback = True
+                print(f"{seq}#{ci:02d}: no window is valid in every frame; "
+                      f"using a fixed size with a per-frame offset", flush=True)
+
         if crop_mode == "per_frame":
             crops = None
             mask_all = None
             crop_frac = None
+        elif crop_mode == "fixed_size":
+            # fixed size for the clip, offset per frame: intersect the conditions of each frame,
+            # take the smallest maximal rectangle over the frames, then centre it on the mask
+            sizes = []
+            for j in range(len(t_clip)):
+                m = None
+                for cond in CONDITIONS:
+                    if cond == "real":
+                        continue
+                    mm = inside_mask(per_cond[cond][j])
+                    m = mm if m is None else (m & mm)
+                sl, frac = maximal_rectangle(m)
+                sizes.append((sl[0].stop - sl[0].start, sl[1].stop - sl[1].start, m))
+            fh = min(x[0] for x in sizes)
+            fw = min(x[1] for x in sizes)
+            per_frame_windows = []
+            for j, (_, _, m) in enumerate(sizes):
+                ys, xs = np.nonzero(m)
+                cy = int(np.median(ys))
+                cx = int(np.median(xs))
+                y0 = min(max(0, cy - fh // 2), h - fh)
+                x0 = min(max(0, cx - fw // 2), w - fw)
+                per_frame_windows.append((slice(y0, y0 + fh), slice(x0, x0 + fw)))
+            crops = None
+            crop_frac = float(fh / h)
         else:
             # one crop for the whole clip: intersection over every frame and every condition
             mask_all = None
@@ -315,16 +398,44 @@ def export_sequence(seq: str, variant: str = "b", clip_seconds: float = 4.0,
                 for j in range(len(t_clip)):
                     m = inside_mask(per_cond[cond][j])
                     mask_all = m if mask_all is None else (mask_all & m)
-            crops, crop_frac = centred_crop(mask_all)
+            crops, crop_h_frac = maximal_rectangle(mask_all)
             if not mask_all[crops].all():
-                raise RuntimeError(f"{seq}#{ci:02d}: fixed crop is not fully inside the mask")
+                # cannot happen for a correct maximal rectangle; fall back rather than abort
+                crop_mode = "fixed_size"
+                fallback = True
+            else:
+                crop_frac = float((crops[1].stop - crops[1].start) / w)
 
         ups = {c: np.full((len(t_clip), 3), np.nan) for c in CONDITIONS}
         confs = {c: np.full(len(t_clip), np.nan) for c in CONDITIONS}
         valids = {c: np.full(len(t_clip), np.nan) for c in CONDITIONS}
         for j, fi in enumerate(range(lo, hi)):
             img = cv2.imread(str(files[fi]), cv2.IMREAD_GRAYSCALE)
-            if crop_mode == "per_frame":
+            # Fixed crop first. If the manoeuvre is so large that no single window is valid in
+        # every frame and condition (measured: indoor_forward_7), fall back to a fixed *size*
+        # with a per-frame offset — all conditions of a frame still share one window, and the
+        # field of view no longer jitters in scale, which was E02's defect.
+        fallback = False
+        if crop_mode == "fixed":
+            probe = None
+            for cond in CONDITIONS:
+                if cond == "real":
+                    continue
+                for j in range(len(t_clip)):
+                    m = inside_mask(per_cond[cond][j])
+                    probe = m if probe is None else (probe & m)
+            probe_frac = 0.0
+            if probe is not None:
+                probe_sl, probe_frac = maximal_rectangle(probe)
+            if probe is None or probe_frac < 0.15:
+                crop_mode = "fixed_size"
+                fallback = True
+                print(f"{seq}#{ci:02d}: no window is valid in every frame; "
+                      f"using a fixed size with a per-frame offset", flush=True)
+
+            if crop_mode == "fixed_size":
+                crop, frame_crop_frac = per_frame_windows[j], crop_frac
+            elif crop_mode == "per_frame":
                 inside = [inside_mask(per_cond[cond][j]) for cond in CONDITIONS
                           if cond != "real"]
                 mask = np.logical_and.reduce(inside)
@@ -380,11 +491,14 @@ def export_sequence(seq: str, variant: str = "b", clip_seconds: float = 4.0,
                            "no black fill" if crop_mode == "fixed" else
                            "per-frame centred crop (E02 behaviour, kept for comparison)"),
                 "crop_mode": crop_mode,
-                "crop_fraction": float(crop_frac) if crop_mode == "fixed" else None,
+                "crop_fallback_no_shared_window": bool(fallback),
+                "crop_fraction": float(crop_frac) if crop_mode in ("fixed", "fixed_size") else None,
+                      "crop_fallback_no_shared_window": bool(fallback),
                 "frames_dir": str(frames_out[cond])}, indent=1))
         index.append({"clip": f"{seq}#{ci:02d}", "index": [lo, hi], "testable": True,
                       "valid_frac_median": float(np.nanmedian(valids["tilt_removal"])),
-                      "crop_fraction": float(crop_frac) if crop_mode == "fixed" else None,
+                      "crop_fraction": float(crop_frac) if crop_mode in ("fixed", "fixed_size") else None,
+                      "crop_fallback_no_shared_window": bool(fallback),
                       "valid_frac_real_median": float(np.nanmedian(valids["real"])),
                       "conditions": list(CONDITIONS)})
         e_data.commit()

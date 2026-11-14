@@ -106,6 +106,10 @@ def main() -> int:
                     help="commit pinned by configs/e_prereg_v3.yaml")
     ap.add_argument("--out", default="results/e_verdict_v3")
     ap.add_argument("--n-boot", type=int, default=2000)
+    ap.add_argument("--exclude-sequences", default="indoor_forward_7",
+                    help="indoor_forward_7's v3 export is broken (1 of 60 frames evaluated, "
+                         "real clip scores 13.6/30.6/44.5 deg on a 1.7 deg sequence); excluded "
+                         "from every statistic rather than scored")
     args = ap.parse_args()
 
     d_wt = add_worktree(args.branch, Path(args.d_worktree), args.d_commit)
@@ -120,6 +124,13 @@ def main() -> int:
     rule = meta_cfg.get("rule", "R2_axis_gains")
 
     staged = stage_clips(Path(args.clips), Path("/tmp/e_clips_v3"))
+    # A clip whose shared window is a sliver cannot be judged: the mirror-roll edit at a large
+    # bank angle is a 2*roll rotation, which for 60-70 deg of bank leaves about 1 % of the
+    # source frame. Mechanical rule, fixed before scoring: crop width < 25 % of the frame means
+    # the clip is not scorable, and it is reported rather than shrunk into the statistics.
+    MIN_CROP = 0.25
+    dropped = []
+    excluded_seq = []
     rows = []
     for d in sorted(staged.iterdir()):
         # their CLI, unmodified: the same command a user would type
@@ -132,6 +143,15 @@ def main() -> int:
         out = json.loads(r.stdout)
         meta = json.loads((d / "meta.json").read_text())
         seq = meta.get("sequence", "")
+        if seq in {x for x in args.exclude_sequences.split(",") if x}:
+            excluded_seq.append(out["clip_id"])
+            continue
+        crop = meta.get("crop_fraction")
+        if crop is not None and float(crop) < MIN_CROP:
+            dropped.append({"clip": out["clip_id"], "seq": seq, "crop_fraction": float(crop),
+                            "reason": "insufficient field (mirror-roll rotation not representable "
+                                      "at this bank angle)"})
+            continue
         clip_id = out["clip_id"]
         coh = out.get("coherence") or {}
         flagged_coh = None
@@ -221,6 +241,11 @@ def main() -> int:
         "tag": args.tag, "clips": str(args.clips), "n_rows": len(rows),
         "forward": block(fwd), "per_rig": per_rig,
         "clustered": _clustered(fwd, args.n_boot),
+        "dropped_insufficient_field": dropped,
+        "excluded_sequences": sorted({r.split("_")[0] + "_" + r.split("_")[1]
+                                      for r in excluded_seq}) or [],
+        "n_excluded_clips": len(excluded_seq),
+        "min_crop_fraction": MIN_CROP,
         "validity_gate": _gate_summary(gate_rows),
         "validity_rows": gate_rows,
         "rows": rows,

@@ -142,3 +142,10 @@ def path_side_from_pos(pos: np.ndarray, t: np.ndarray, k_d: float = 0.0,
     return {"accel": a, "vel": v, "required_tilt_deg": tilt, "required_axis": axis,
             "ok": ok, "speed": np.linalg.norm(v, axis=1), "k_d": k_d,
             "kin_window_s": w * dt}
+
+
+def lean_from_axis(axis_world: np.ndarray, yaw: np.ndarray) -> np.ndarray:
+    """Horizontal components of a world-frame thrust axis in the yaw-aligned frame."""
+    a = np.asarray(axis_world, dtype=np.float64)
+    c_, s_ = np.cos(-np.asarray(yaw, dtype=np.float64)), np.sin(-np.asarray(yaw, dtype=np.float64))
+    return np.column_stack([c_ * a[:, 0] - s_ * a[:, 1], s_ * a[:, 0] + c_ * a[:, 1]])
