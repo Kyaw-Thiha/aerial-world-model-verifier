@@ -5,6 +5,31 @@ any edited clip was scored). Depends on `reports/E01` (data audit and per-frame 
 Artifacts: `results/e_mount/mount.json`, `results/e_clips/index.json`,
 `results/e_verdict/<tag>/metrics.json`.
 
+## Plain-language summary
+
+1. **The published mount is right for the forward-facing rigs** (fitted rotation 0.7-3.4 deg,
+   held-out residuals improve under the fit) and **wrong or view-biased by 14 deg for the
+   45-degree-down rigs**. A constant rotation fitted on the outdoor rig does not generalise,
+   which rules out "the mount explains everything" — the same conclusion that killed the
+   earlier attempt's fitted mount, now with numbers.
+2. **The clip pipeline works**: schema-validated 4 s clips, exact rotation edits, the null edit
+   reproduces the real clip, and the exported real clips agree with the independent per-frame run
+   to 0.046 deg. Getting there required finding three defects in this task's own code (a
+   clip-wide border mask, black-fill borders, and a broken fisheye inversion for 7 of the 14
+   cameras); each is documented with the number that exposed it.
+3. **T2 fails on false-reject**: 0.333 against a 0.15 budget, with detection at 0.881 for both
+   removal and mirrored roll against a 0.80 budget. **The failure is localised**: on the
+   forward-facing rigs the same frozen threshold gives 0.06-0.11 false reject and 0.78-0.89
+   detection; the 45-degree-down rigs are rejected wholesale (0.75 and 1.00) because the
+   estimator's own error there is as large as the threshold.
+4. **The cause is a scale mismatch, not a broken estimator.** Real UZH clips score a median of
+   7.72 deg in this mode where TII's score 2.47, so a threshold frozen at 14.73 deg sits at two
+   UZH standard deviations. Refitting the threshold on UZH (sensitivity) makes the test blind
+   (detection 0.07-0.12), and enabling A2's mount-offset nuisance only takes false reject to
+   0.19. A threshold frozen on TII is simply too tight for this dataset, and the honest reading
+   is that **the verifier transfers on forward-facing UZH footage and does not transfer as a
+   whole**.
+
 ## Task 3: is the published mount the right reading?
 
 The mount is published, so this is a **check**, not a calibration. The test is designed so that a
