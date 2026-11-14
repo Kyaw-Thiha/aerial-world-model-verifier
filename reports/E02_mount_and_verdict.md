@@ -65,7 +65,53 @@ outdoor — and not a within-rig speed effect. Corrected here rather than left a
 claim; the honest statement is "outdoor forward is worse and outdoors is fast", not "speed
 causes the error".
 
-## Task 4-5
+## Task 4: verdict clips
 
-Filled in below after the exports; see `results/e_verdict/<tag>/metrics.json` for the raw
-numbers.
+### Edit geometry, validated before any clip was scored
+
+Edits are exact pure rotations about the camera centre in the dataset's own KB4 geometry
+(`src/depicted/edits.py`), applied to the raw fisheye that variant b reads. The KB4 model is
+checked against OpenCV's own `fisheye.projectPoints`/`undistortPoints` on random rays (agreement
+better than 5e-3 px), the identity warp is pixel-exact, and a rotation followed by its inverse
+returns the original sampling coordinates to 1e-6 (`tests/test_depicted_edits.py`).
+
+The estimator-side check (`remote/e_export.py --validate`) applies a known rotation, runs
+GeoCalib again, and compares with the prediction `M^-1 u_before`:
+
+| sequence | 0 deg (null edit) | 5 deg | 10 deg | 20 deg |
+| --- | --- | --- | --- | --- |
+| indoor_forward_5 (84 estimates) | **0.06 deg** | **0.76** | **1.39** | **1.31** |
+
+Pre-registered bound: 2.0 deg median at every angle. The indoor sequence passes at every angle
+with a factor of 1.4 to spare, and the null edit moves the estimate by 0.06 deg, so the warp
+itself contributes essentially nothing.
+
+**The same probe fails on `outdoor_forward_5` (the 20.7 m/s clip): 25.9 deg on the null edit
+and 23.6-24.1 deg at 5/10/20 deg.** A re-encode of the *same* frame that changes the estimate by
+26 deg is not an edit artefact, it is the estimator being unstable on that footage — the same
+sequence where 49% of frames are already more than 10 deg off (E01). Its clips are exported and
+scored, and they are the noisiest rows in the tables; this is recorded rather than hidden by
+dropping the sequence.
+
+### Border handling
+
+Each frame gets **one mask shared by all its conditions, including the null edit**: the
+intersection of the conditions' valid regions for that frame, with black fill outside. The
+measured valid fraction of an edited frame is 0.77-0.80 on the clean indoor sequence, so the
+50%-valid usability rule rarely fires.
+
+An earlier version took the intersection across *all frames of the clip* as well as across
+conditions. A clip that manoeuvres through 45 deg then keeps 40% of the frame, every edited
+frame fails the usability rule, and every edit condition abstains — which is exactly what the
+first export produced and why it was discarded and rebuilt. Recorded because the failure is
+silent: the clips existed, looked well formed, and had no depicted estimate in them.
+
+### Pipeline consistency
+
+The exported `real` clip's depicted gravity agrees with the independent Task 2 per-frame run on
+the same frames to **0.046 deg median**, so the export pipeline does not perturb the estimate.
+(For comparison, Track A's identity edit reproduced its Phase 3 run to 0.13-0.16 deg.)
+
+## Task 5: the frozen-threshold transfer test
+
+Filled in from `results/e_verdict/<tag>/metrics.json`.

@@ -67,6 +67,7 @@ def _estimator(variant: str):
 
 def _run(model, camera_model, img, device, focal=None):
     import cv2
+    import numpy as np
     import torch
 
     feed = torch.from_numpy(cv2.cvtColor(img, cv2.COLOR_GRAY2RGB))
@@ -106,7 +107,7 @@ def _condition_rotations(name: str, R_bw, R_cb, yaw_deg: float):
 @app.function(image=image, gpu="A10G", volumes={E_DATA: e_data, A_DATA: a_data},
               timeout=3 * 3600)
 def validate_edits(seq: str, variant: str = "b", angles: str = "5,10,20",
-                   n_frames: int = 6) -> str:
+                   n_frames: int = 12) -> str:
     """Apply known rotations and check that the estimator's gravity follows them."""
     import json
     from pathlib import Path
@@ -127,7 +128,7 @@ def validate_edits(seq: str, variant: str = "b", angles: str = "5,10,20",
     calib = kb4_from_meta(meta) if geometry == "kb4" else pinhole_K(meta)
     folder = "frames_raw" if geometry == "kb4" else "frames_pinhole"
     files = sorted((clip / folder).glob("*.png"))
-    truth = load_truth(clip)
+    truth = load_truth(clip.parent, clip.name)
     step = max(1, len(files) // n_frames)
     model, cm = _estimator(variant)
     model = model.to(device)
@@ -182,7 +183,14 @@ def validate_edits(seq: str, variant: str = "b", angles: str = "5,10,20",
               timeout=3 * 3600)
 def export_sequence(seq: str, variant: str = "b", clip_seconds: float = 4.0,
                     max_clips: int = 4, yaw_deg: float = 20.0) -> str:
-    """Clip, warp, estimate and write one npz per clip and condition."""
+    """Clip, warp, estimate and write one npz per clip and condition.
+
+    Border handling: each frame gets one mask shared by all its conditions (the null edit
+    included), so border loss cannot be read as tilt. The mask is the intersection over the
+    *conditions of that frame*. Intersecting across the whole clip as well was a mistake made
+    and measured here: a clip that manoeuvres through 45 deg then keeps 40 percent of the frame
+    and every edited frame fails the 50 percent usability rule.
+    """
     import json
     import shutil
     from pathlib import Path
@@ -193,8 +201,8 @@ def export_sequence(seq: str, variant: str = "b", clip_seconds: float = 4.0,
 
     from src.depicted.clips import (clip_bounds, lean_from_up_body, path_side_with_gt,
                                     signal_mask)
-    from src.depicted.edits import (Condition, camera_maps, common_mask, kb4_from_meta,
-                                   pinhole_K, warp)
+    from src.depicted.edits import (kb4_from_meta, kb4_source_coords, pinhole_K,
+                                    pinhole_source_coords, warp)
     from src.depicted.uzh import load_truth
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -205,7 +213,7 @@ def export_sequence(seq: str, variant: str = "b", clip_seconds: float = 4.0,
     calib = kb4_from_meta(meta) if geometry == "kb4" else pinhole_K(meta)
     folder = "frames_raw" if geometry == "kb4" else "frames_pinhole"
     files = sorted((clip_dir / folder).glob("*.png"))
-    truth = load_truth(clip_dir)
+    truth = load_truth(clip_dir.parent, clip_dir.name)
     gt = np.load(clip_dir / "truth.npz")["gt"]
     path = path_side_with_gt(truth, gt, k_d=0.0)
     R_cb = truth.R_cb()
@@ -213,6 +221,7 @@ def export_sequence(seq: str, variant: str = "b", clip_seconds: float = 4.0,
     focal = float(meta["intrinsics_pinhole"]["fx"]) if variant == "a" else None
     model, cm = _estimator(variant)
     model = model.to(device)
+    source_coords = pinhole_source_coords if geometry == "pinhole" else kb4_source_coords
 
     fps = float(1.0 / np.median(np.diff(truth.t)))
     bounds = clip_bounds(len(files), clip_seconds, fps)
@@ -227,77 +236,74 @@ def export_sequence(seq: str, variant: str = "b", clip_seconds: float = 4.0,
             break
         sig = signal_mask(path["required_tilt_deg"][lo:hi])
         if not sig["testable"]:
-            index.append({"clip": f"{seq}#{ci:02d}", "index": [lo, hi],
-                          "testable": False, "reasons": sig["abstain_reasons"]})
+            index.append({"clip": f"{seq}#{ci:02d}", "index": [lo, hi], "testable": False,
+                          "reasons": sig["abstain_reasons"]})
             continue
         kept += 1
         R_bw_clip = truth.R_bw[lo:hi]
         t_clip = truth.t[lo:hi] - truth.t[lo]
-        per_cond = {}
+        per_cond = {c: _condition_rotations(c, R_bw_clip, R_cb, yaw_deg) for c in CONDITIONS}
+        h, w = cv2.imread(str(files[lo]), cv2.IMREAD_GRAYSCALE).shape
+        frames_out = {}
         for cond in CONDITIONS:
-            per_cond[cond] = _condition_rotations(cond, R_bw_clip, R_cb, yaw_deg)
+            d = out_root / f"{seq}_{ci:02d}_{cond}" / "frames"
+            d.mkdir(parents=True, exist_ok=True)
+            frames_out[cond] = d
 
-        # common mask over the warped conditions (real is the untouched footage)
-        masks = []
-        img0 = cv2.imread(str(files[lo]), cv2.IMREAD_GRAYSCALE)
-        h, w = img0.shape
-        for cond in CONDITIONS:
-            if cond == "real":
-                continue
-            masks.append(common_mask(list(per_cond[cond]), w, h, geometry, calib))
-        mask = np.logical_and.reduce(masks)
-
-        for cond in CONDITIONS:
-            up = np.full((len(t_clip), 3), np.nan)
-            conf = np.full(len(t_clip), np.nan)
-            valid_frac = np.full(len(t_clip), np.nan)
-            frames_out = out_root / f"{seq}_{ci:02d}_{cond}" / "frames"
-            frames_out.mkdir(parents=True, exist_ok=True)
-            for j, fi in enumerate(range(lo, hi)):
-                img = cv2.imread(str(files[fi]), cv2.IMREAD_GRAYSCALE)
+        ups = {c: np.full((len(t_clip), 3), np.nan) for c in CONDITIONS}
+        confs = {c: np.full(len(t_clip), np.nan) for c in CONDITIONS}
+        valids = {c: np.full(len(t_clip), np.nan) for c in CONDITIONS}
+        for j, fi in enumerate(range(lo, hi)):
+            img = cv2.imread(str(files[fi]), cv2.IMREAD_GRAYSCALE)
+            inside = []
+            for cond in CONDITIONS:
                 if cond == "real":
-                    warped, valid = img, np.ones_like(img, bool)
+                    continue
+                xs, ys, ok = source_coords(per_cond[cond][j], calib, w, h)
+                inside.append(ok & (xs >= 0) & (xs <= w - 1) & (ys >= 0) & (ys <= h - 1))
+            mask = np.logical_and.reduce(inside)
+            for cond in CONDITIONS:
+                if cond == "real":
+                    out_img, valid = img, np.ones(img.shape, bool)
                 else:
-                    warped, valid = warp(img, per_cond[cond][j], geometry, calib, mask=mask)
-                cv2.imwrite(str(frames_out / f"{j:05d}.png"), warped)
-                valid_frac[j] = float(valid.mean())
+                    out_img, valid = warp(img, per_cond[cond][j], geometry, calib, mask=mask)
+                cv2.imwrite(str(frames_out[cond] / f"{j:05d}.png"), out_img)
+                valids[cond][j] = float(valid.mean())
                 if valid.mean() < 0.5:
                     continue
-                g, c = _run(model, cm, warped, device, focal)
+                g, c = _run(model, cm, out_img, device, focal)
                 if g is None or not np.all(np.isfinite(g)) or np.linalg.norm(g) < 1e-6:
                     continue
-                up[j] = g / np.linalg.norm(g)
-                conf[j] = c
-            up_b = np.einsum("ij,nj->ni", R_cb, up)
-            lean = lean_from_up_body(up_b)
+                ups[cond][j] = g / np.linalg.norm(g)
+                confs[cond][j] = c
+
+        for cond in CONDITIONS:
+            up_b = np.einsum("ij,nj->ni", R_cb, ups[cond])
             name = f"{seq}_{ci:02d}_{cond}"
             np.savez_compressed(out_root / f"{name}.npz", t=t_clip,
                                 pos=truth.pos[lo:hi], yaw=yaw[lo:hi],
-                                depicted_lean=lean, depicted_conf=conf,
-                                valid_frac=valid_frac)
-            cmeta = {
-                "dataset": "uzh_fpv", "sequence": seq, "clip_id": name,
-                "condition": cond, "index": [lo, hi], "fps": fps,
-                "n_frames": int(hi - lo),
+                                depicted_lean=lean_from_up_body(up_b),
+                                depicted_conf=confs[cond], valid_frac=valids[cond])
+            (out_root / f"{name}.meta.json").write_text(json.dumps({
+                "dataset": "uzh_fpv", "sequence": seq, "clip_id": name, "condition": cond,
+                "index": [lo, hi], "fps": fps, "n_frames": int(hi - lo),
                 "mount_source": "published",
                 "mount_rotation_R_cb": R_cb.tolist(),
                 "mount_rotation_T_cam_imu": meta["kalibr_imu_cam0"]["T_cam_imu"],
                 "estimator": "geocalib", "estimator_commit": GEOCALIB_COMMIT,
-                "estimator_variant": variant,
-                "estimator_camera_model": cm,
+                "estimator_variant": variant, "estimator_camera_model": cm,
                 "depicted_conf_meaning": "mean of GeoCalib's latitude_confidence map",
                 "truth_frames": ("Leica MS60 total station, IMU frame of the Snapdragon "
                                  "Flight in a gravity-aligned world frame, nearest sample at "
                                  "the frame timestamp"),
-                "clock_offset_applied_s": truth.offset_s,
-                "k_d_path": 0.0, "yaw_control_deg": yaw_deg if cond == "yaw_control" else None,
+                "clock_offset_applied_s": truth.offset_s, "k_d_path": 0.0,
+                "yaw_control_deg": yaw_deg if cond == "yaw_control" else None,
                 "testability": sig,
-                "frames_dir": str(frames_out),
-            }
-            (out_root / f"{name}.meta.json").write_text(json.dumps(cmeta, indent=1))
+                "border": "black fill; per-frame common mask over conditions, null edit included",
+                "frames_dir": str(frames_out[cond])}, indent=1))
         index.append({"clip": f"{seq}#{ci:02d}", "index": [lo, hi], "testable": True,
-                      "valid_frac_median": float(np.nanmedian(
-                          np.load(out_root / f"{seq}_{ci:02d}_tilt_removal.npz")["valid_frac"])),
+                      "valid_frac_median": float(np.nanmedian(valids["tilt_removal"])),
+                      "valid_frac_real_median": float(np.nanmedian(valids["real"])),
                       "conditions": list(CONDITIONS)})
         e_data.commit()
 
@@ -305,9 +311,12 @@ def export_sequence(seq: str, variant: str = "b", clip_seconds: float = 4.0,
         {"sequence": seq, "variant": variant, "fps": fps, "clip_seconds": clip_seconds,
          "clips": index}, indent=1))
     e_data.commit()
-    rec = {"seq": seq, "variant": variant, "n_bounds": len(bounds), "n_exported": kept}
+    rec = {"seq": seq, "variant": variant, "n_bounds": len(bounds), "n_exported": kept,
+           "valid_frac_median": float(np.nanmedian([c.get("valid_frac_median", np.nan)
+                                                    for c in index]))}
     print(json.dumps(rec), flush=True)
     return json.dumps(rec)
+
 
 
 @app.local_entrypoint()
