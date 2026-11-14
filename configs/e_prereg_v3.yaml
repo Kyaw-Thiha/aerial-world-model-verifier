@@ -1,0 +1,134 @@
+# Track E pre-registration v3 — fixed-crop edits, official schema v2, Track D's frozen R2 + coherence
+# Written and committed BEFORE any v3 clip is scored or any GeoCalib re-run is launched.
+# Appending after this commit is an amendment with a stated reason; edits above are not allowed.
+track: E
+task: "v3 follow-up round"
+date: 2026-11-14
+supersedes: configs/e_verdict_prereg.yaml (Tasks 4-5, v1 schema, R1 band)
+track_d: {branch: track-d-verdict-stat, head: 851096c,
+          schema_doc: docs/verdict_clip_schema_v2.md,
+          gain_config: configs/gain_frozen.yaml, rule: R2_axis_gains,
+          coherence_config: configs/coherence_frozen.yaml, scorer: scripts/score_clip.py}
+
+## Compute estimate (stated first, per the project rule)
+
+Forward rigs only (6 `indoor_forward` + 3 `outdoor_forward`), 3 clips per sequence, 7 conditions
+per clip, about 60 frames per clip-condition:
+
+| item | estimates | GPU minutes at 4-6/s | cost at US$1.10/h |
+| --- | --- | --- | --- |
+| v3 clip export (GeoCalib per condition) | 9 x 3 x 7 x 60 = 11,340 | 32-47 | US$0.6-0.9 |
+| edit-validity probe (12 frames x 7 conditions x 9 sequences) | 756 | 3 | US$0.05 |
+| **total this round** | **12,096** | **35-50** | **US$0.7-1.0** |
+
+Under the US$5 per-round approval line, so it runs without stopping. **Cumulative for Track E is
+about US$6.3** after this round, which exceeds the project's US$5 line overall; that overshoot is
+carried by the three discarded clip families already documented in E02 and is stated here rather
+than hidden. The 45-degree rigs are not re-exported and not re-scored (out of scope, E03 §4).
+
+## 1. Edit pipeline v3 (the fix, before anything is scored)
+
+E02's exporter cropped **per frame**, so the field of view changed from frame to frame and the
+null edit's lean gain sat a third below the real clip's on identical pixels. v3 replaces it:
+
+* **One fixed crop per clip**: the largest centred rectangle that lies fully inside the valid
+  region of *every* frame and *every* condition of that clip. Applied identically to `real`,
+  `null_edit`, `yaw_control`, `tilt_removal`, `scale_0.5`, `scale_1.5`, `mirror_roll`. No black
+  fill survives inside the crop, and no condition is resampled into a different field.
+* Warps remain exact pure rotations about the camera centre in the dataset's own KB4 geometry
+  (monotone-branch inversion, E02 §4), mask = the fixed crop for all conditions.
+* The `real` condition is the **source crop** (no warp), so `null_edit` is a resampled copy of
+  exactly the same pixels — the control the user asked for, now literally true.
+
+**Validity gate (pre-registered, checked before any detection number is quoted).** On the
+`real`/`null_edit` pair of every exported clip, using the same regressor (`lean_req`) and the
+same per-clip OLS:
+
+* per-axis gain: |gx_null − gx_real| <= 5 % of |gx_real| and likewise for gy;
+* depicted lean: median angle between the two `depicted_lean` vectors <= 0.5 deg.
+
+If any sequence fails the gate, the edit family is **invalid**: detection claims stop, the failure
+is reported with the offending numbers, and only the real-clip statistics are quoted. The gate is
+applied per clip and summarised per sequence; a clip that fails is dropped from the paired
+analysis and the dropout is reported.
+
+## 2. Official schema v2 at frame times (no interpolation of the depicted side)
+
+Per `docs/verdict_clip_schema_v2.md`: `lean_req`, `vel_req`, `tilt_req_deg`, `schema_version: 2`,
+computed by differentiating the UZH ground truth **at its native 500 Hz** with Savitzky-Golay
+**0.37 s, polyorder 3**, then sampling at the camera frame times by linear interpolation, with
+frames outside the native SG interior set to NaN (never extrapolated). `depicted_lean` and
+`depicted_conf` are the v3 exported arrays, untouched — nothing is interpolated on the depicted
+side (E03's dense 5b variant did interpolate it and is superseded by this).
+
+**Headline window: 0.37 s.** Reasons, fixed now and independent of any UZH number:
+1. it is the schema owner's specification, inherited from Phase 0 (101 samples at TII's measured
+   274.73 Hz), and Track D's frozen R2 band and coherence thresholds were calibrated under it;
+2. scoring UZH with any other window would compare a clip definition against a statistic
+   calibrated under a different one, which is the defect this round exists to remove.
+
+**Pre-registered sensitivity windows: 0.10 s and 0.185 s**, reported beside the headline but never
+as the headline. 0.10 s is the window Track E's per-frame tables (E01/E02) used, so it keeps this
+round comparable with those reports; 0.185 s is half the headline window, a scale check that the
+window is not doing the work. The sensitivity exists to show how much the answer depends on the
+window; it is not a search for a favourable value, and no window other than these three is run.
+
+## 3. Statistics, thresholds unchanged
+
+1. **(b1) Track D's R2 axis-gain band**: flag when the Mahalanobis distance of (gx, gy) from
+   (0.8137, 0.7181) with scales (0.2654, 0.0735) exceeds 2.1922. Config, code and band used
+   unmodified through a read-only checkout of `track-d-verdict-stat` at `851096c`.
+2. **(b2) Track D's coherence tier**: flag when `1 − min(r_x, r_y) > 0.6197` or
+   `1 − min(s_x, s_y) > 0.2921`. Same provenance.
+3. **(a) The median axis residual** at 14.73 deg, drag-free path side, lag nuisance only, as in
+   E02 — reported for continuity, not as the headline.
+
+No threshold or band is refit on UZH. Every number says which statistic it belongs to.
+
+## 4. Populations and intervals
+
+* **Headline population: the forward rigs only** — 6 `indoor_forward` + 3 `outdoor_forward`
+  sequences. Every headline number states the rigs, the number of sequences and the number of
+  testable clips it covers.
+* The 45-degree rigs are out of scope (E03 §4): not re-exported, not scored, no number quoted.
+* **Leave-one-sequence-out, clustered by sequence**: thresholds are frozen, so "LOSO" here means
+  the *interval*, not a refit — a bootstrap that resamples the 9 forward sequences with
+  replacement and recomputes each rate within the resampled set (paired detection and per-family
+  rates). Wilson intervals are reported beside it as the frame-level view; where they disagree,
+  the clustered interval governs.
+* Abstention is reported by reason in Track D's own order: `min_frames`, `usable_fraction`,
+  `signal_frames`, `excitation`, `conditioning`, `ci_half_width`, confidence gate.
+
+## 5. Reporting contract
+
+Every detection rate is printed beside: false-reject on `real`, `null_edit` and `yaw_control`
+rates under the same statistic and threshold, the abstention rate with its reasons, and the n
+(clips, sequences) it covers. The frozen confidence gate is applied at pair level as Track D
+specifies, and its effect on `outdoor_forward` is reported separately (that rig is where the gate
+dropped 94 % of clips in E01).
+
+## 6. TII slope reconciliation (item 5 of the request)
+
+Two different metrics have been called "the slope". Both are reported, for both datasets:
+
+* **Definition 1, estimator calibration**: response = `depicted_lean`; regressor =
+  **truth-attitude** lean (from the recorded quaternion, no path); OLS with intercept; all usable
+  frames; reported **per flight/sequence** and **pooled by group** with n as weight.
+* **Definition 2, verdict gain**: response = `depicted_lean`; regressor = **required (path)
+  lean** plus the velocity nuisance; per-clip OLS with intercept and lag search (Track D's
+  `fit_gain`); reported as the per-clip median.
+
+Track D's published "piloted 0.83" is Definition 1 pooled over the four piloted flights (their
+report D02 §1: 0.828 overall, piloted 0.831, autonomous 0.587, track 0.558). Track E's E03
+figures (01p 1.010, 07p 0.937) are Definition 1 **per flight**. The reconciliation computes both
+per flight and both pooled, on both datasets, so the reader can see that the gap is aggregation
+rather than disagreement. If pooling does not reproduce 0.83 ± 0.05 the difference is reported as
+unexplained.
+
+## What would invalidate the round
+
+- The v3 validity gate fails on any forward sequence -> no detection claim anywhere; report the
+  real-clip statistics only.
+- `lean_req`/`vel_req` fail Track D's own loader validation -> the export is wrong, fix and re-run
+  the export only (no scoring).
+- Any scoring run that needs a threshold change -> not this round; report as not-run.
