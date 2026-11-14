@@ -186,7 +186,8 @@ dataset.
 
 ### 2.5 Abstention, by Track D's reason order (real clips, forward, final population)
 
-14 real clips reach the scorer, **7 abstain (0.500)**:
+18 real clips reach the scorer, **9 abstain (0.500)** (the 18 is the gate-independent population;
+5 of the abstentions are the gate, 6 the gain-CI rule, with two clips failing both):
 
 | reason | clips |
 | --- | --- |
