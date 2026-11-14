@@ -129,3 +129,32 @@ this report is a gain.
 `track-d-verdict-stat` is at the same commit as `track-a2-gate` and has no
 `configs/gain_frozen.yaml` and no `scripts/score_clip.py`, so 5b is **not run**. The exported
 clips are the input for it: they are in the shared schema, validated, and uploaded to R2.
+
+### The black-fill border invalidated the first clip family (measured, then fixed)
+
+The first complete export used black fill outside a per-frame common mask, the same border
+handling Track A used on TII. The **null-edit control caught it immediately**, which is what
+that control exists for:
+
+| condition (42 clips, 37 testable) | rejected at 14.73 deg | median score |
+| --- | --- | --- |
+| real | 0.14 | 5.65 deg |
+| **null edit (identity warp, same mask)** | **0.62** | **18.70 deg** |
+| yaw control (same mask, no tilt change) | 0.59 | 18.17 deg |
+| tilt removal | 0.89 | 28.04 deg |
+| mirrored roll | 0.89 | 27.02 deg |
+| tilt x0.5 | 0.62 | 20.35 deg |
+| tilt x1.5 | 0.62 | 17.51 deg |
+
+A null edit that changes the score by 13 deg is measuring the border, not the content: the mask
+is identical for every condition of a frame, so the border bias is a fixed offset that both
+controls inherit. Subtracting it gives a coherent picture (removal +9.3 deg, mirror +8.3, yaw
+control -0.5), but a statistic whose controls reject at 0.59-0.62 is invalid under the
+pre-registered invalidation clause ("null-edit or yaw control rejected above the real rate plus
+5 points: the pixel-edit family is declared invalid").
+
+Fix: **crop** every condition of a frame to the largest centred rectangle that lies fully
+inside the common mask, instead of black-filling the rest. Every pixel the estimator sees is
+then a real pixel, all conditions share the crop, and the crop is applied to the null edit
+identically. GeoCalib receives no intrinsics for variant b, so a centred crop costs nothing but
+resolution. This is the version all Task 5 numbers below come from.

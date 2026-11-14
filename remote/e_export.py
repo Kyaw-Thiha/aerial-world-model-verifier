@@ -84,6 +84,29 @@ def _run(model, camera_model, img, device, focal=None):
     return g, conf
 
 
+def centred_crop_fraction(mask, min_fraction: float = 0.3, step: float = 0.02) -> float:
+    """Largest centred rectangle (same aspect as the frame) that lies fully inside ``mask``.
+
+    Cropping beats black fill here: a black border over 20-50% of the frame shifts GeoCalib's
+    gravity by about 13 deg (measured through the null-edit control), which is larger than the
+    violations being tested. The crop leaves only real pixels and is applied identically to
+    every condition of the frame, including the null edit.
+    """
+    import numpy as np
+
+    h, w = mask.shape
+    cy, cx = (h - 1) / 2.0, (w - 1) / 2.0
+    f = 1.0
+    while f > min_fraction:
+        hh, ww = int(round(f * h)) // 2, int(round(f * w)) // 2
+        y0, y1 = int(round(cy)) - hh, int(round(cy)) + hh
+        x0, x1 = int(round(cx)) - ww, int(round(cx)) + ww
+        if y0 >= 0 and x0 >= 0 and y1 < h and x1 < w and mask[y0:y1 + 1, x0:x1 + 1].all():
+            return float((y1 - y0 + 1) / h)
+        f -= step
+    return float(min_fraction)
+
+
 def _condition_rotations(name: str, R_bw, R_cb, yaw_deg: float):
     import numpy as np
 
@@ -250,6 +273,7 @@ def export_sequence(seq: str, variant: str = "b", clip_seconds: float = 4.0,
             d.mkdir(parents=True, exist_ok=True)
             frames_out[cond] = d
 
+        crop_fractions = []
         ups = {c: np.full((len(t_clip), 3), np.nan) for c in CONDITIONS}
         confs = {c: np.full(len(t_clip), np.nan) for c in CONDITIONS}
         valids = {c: np.full(len(t_clip), np.nan) for c in CONDITIONS}
@@ -262,11 +286,18 @@ def export_sequence(seq: str, variant: str = "b", clip_seconds: float = 4.0,
                 xs, ys, ok = source_coords(per_cond[cond][j], calib, w, h)
                 inside.append(ok & (xs >= 0) & (xs <= w - 1) & (ys >= 0) & (ys <= h - 1))
             mask = np.logical_and.reduce(inside)
+            width_frac = centred_crop_fraction(mask)
+            hh, ww = int(round(width_frac * h)) // 2, int(round(width_frac * w)) // 2
+            cy, cx = int(round((h - 1) / 2.0)), int(round((w - 1) / 2.0))
+            crop = (slice(cy - hh, cy + hh), slice(cx - ww, cx + ww))
+            crop_fractions.append(width_frac)
             for cond in CONDITIONS:
                 if cond == "real":
                     out_img, valid = img, np.ones(img.shape, bool)
                 else:
                     out_img, valid = warp(img, per_cond[cond][j], geometry, calib, mask=mask)
+                out_img = out_img[crop]
+                valid = valid[crop]
                 cv2.imwrite(str(frames_out[cond] / f"{j:05d}.png"), out_img)
                 valids[cond][j] = float(valid.mean())
                 if valid.mean() < 0.5:
@@ -299,7 +330,9 @@ def export_sequence(seq: str, variant: str = "b", clip_seconds: float = 4.0,
                 "clock_offset_applied_s": truth.offset_s, "k_d_path": 0.0,
                 "yaw_control_deg": yaw_deg if cond == "yaw_control" else None,
                 "testability": sig,
-                "border": "black fill; per-frame common mask over conditions, null edit included",
+                "border": ("centred crop to the largest rectangle inside the per-frame common "
+                           "mask over conditions (null edit included); no black fill"),
+                "crop_fraction": float(np.median(crop_fractions)) if crop_fractions else None,
                 "frames_dir": str(frames_out[cond])}, indent=1))
         index.append({"clip": f"{seq}#{ci:02d}", "index": [lo, hi], "testable": True,
                       "valid_frac_median": float(np.nanmedian(valids["tilt_removal"])),
