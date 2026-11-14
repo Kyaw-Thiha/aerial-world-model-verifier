@@ -2,7 +2,7 @@
 
 R2 prefix: `track-d/`. Clips under `data/processed/track_d/clips/` are derived (1000 files, ~16 MB) and rebuildable by `experiments/d_build_clips.py`; they are not committed.
 
-Bundle: `track-d-verdict-stat.bundle` (all commits on the branch; the push failed).
+Bundle: `track-d-verdict-stat.bundle` (complete history of `track-d-verdict-stat`; the SSH push failed, so this is the backup). R2 key `track-d/track-d-verdict-stat.bundle`; the uploaded object's sha256 is recorded in the upload log. Size at creation: ~32 MB. The bundle is recreated after the final commit, so it contains this manifest commit as well.
 
 | file | bytes | sha256 |
 | --- | --- | --- |
