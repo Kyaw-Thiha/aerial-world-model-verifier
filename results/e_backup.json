@@ -1,9 +1,9 @@
 {
  "bundle": "track-e-depicted-uzh.bundle",
  "r2_key": "track-e/backup/track-e-depicted-uzh.bundle",
- "bytes": 29031386,
- "sha256": "5555cc4e1e8f573f925817371f90d49467c6f7060f5cb640a3cf726c28eed1ce",
- "head_commit": "5fee93cba5c40cdd20c7d04b156698a86ad60629",
+ "bytes": 29158309,
+ "sha256": "d8aea829720db8f3567ac3d9952d19ed10a114b7d528cbca7afcef0e14a47616",
+ "head_commit": "81ffc72ed55b600e8e700aea8f6b39b1d6df63b7",
  "branch": "track-e-depicted-uzh",
  "verify": "git bundle verify: records a complete history, is okay",
  "restore": "git clone track-e-depicted-uzh.bundle awmv-restore && git checkout -b track-e-depicted-uzh"
