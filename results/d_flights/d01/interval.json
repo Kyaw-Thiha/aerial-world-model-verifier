@@ -1,0 +1,48 @@
+{
+ "n_flights": 6,
+ "n_clips": 57,
+ "n_false_rejects": 3,
+ "pooled_frr": 0.05263157894736842,
+ "pooled_frr_cluster95": [
+  0.02857142857142857,
+  0.2
+ ],
+ "unweighted_mean_flight_rate": 0.09668803418803418,
+ "unweighted_cluster95": [
+  0.006410256410256411,
+  0.26282051282051283
+ ],
+ "flights_with_false_reject": 3,
+ "per_flight": {
+  "flight-01a-ellipse": {
+   "n": 2,
+   "k": 1,
+   "rate": 0.5
+  },
+  "flight-01p-ellipse": {
+   "n": 26,
+   "k": 1,
+   "rate": 0.038461538461538464
+  },
+  "flight-04a-ellipse": {
+   "n": 2,
+   "k": 0,
+   "rate": 0.0
+  },
+  "flight-07p-lemniscate": {
+   "n": 24,
+   "k": 1,
+   "rate": 0.041666666666666664
+  },
+  "flight-13p-trackRATM": {
+   "n": 2,
+   "k": 0,
+   "rate": 0.0
+  },
+  "flight-16p-trackRATM": {
+   "n": 1,
+   "k": 0,
+   "rate": 0.0
+  }
+ }
+}

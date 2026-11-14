@@ -17,7 +17,7 @@ statistic is allowed to read.
 | **`lean_req`** | (N, 2) | rad-equivalent | **drag-free required lean** `Rz(−yaw) [u0_x, u0_y]`, `u0 = normalize(a + g e3)` |
 | **`vel_req`** | (N, 2) | s | **velocity regressor** `Rz(−yaw) v_h / g` (multiply by a drag coefficient in 1/s) |
 | `tilt_req_deg` | (N,) | deg | optional required tilt `arccos(u0_z)`; recomputed from `lean_req` when absent |
-| `meta.json` | — | — | dataset, sequence/flight, clip id, condition, fps, mount source and uptilt, estimator and variant, truth-frame notes, `schema_version: 2`, `required_lean_source`, `required_window_samples`, `required_dt_s` |
+| `meta.json` | — | — | dataset, sequence/flight, clip id, condition, fps, mount source and uptilt, estimator and variant, truth-frame notes, `schema_version: 2`, `required_lean_source`, `required_window_samples`, `required_dt_s`, and **`flight_type`** (`piloted`/`autonomous`/`track`) for the validation-status rule |
 
 `lean_req` and `vel_req` must be supplied together.  They are **sampled at the frame times
 `t`**, so all arrays share `N`.  `tilt_req_deg` is optional because

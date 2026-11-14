@@ -57,6 +57,7 @@ PYTHONPATH=. pixi run python scripts/score_clip.py PATH --config configs/gain_fr
 | `r_squared`, `lag_ms`, `condition_number` | fit diagnostics |
 | `required_tilt_deg`, `depicted_tilt_deg` | median tilts of the two sides |
 | `testable`, `abstention_reasons` | whether the clip can answer the question, and why not |
+| `validation_status`, `usable_as_evidence` | whether the statistic is calibrated for this flight type (amendment 2) |
 | `flagged` | `true`/`false` when testable and bands are configured, otherwise `null` |
 | `gate_kept` | the frozen S3 confidence decision |
 
@@ -91,6 +92,13 @@ against **5.3 %** of real clips. The coherence tier flags it **10.5 %** against 
 This is the estimator's view dependence and is the floor under the statistic: a violation
 that shifts the gain by less than this artifact cannot be separated from it.
 
+**Validation status (amendment 2).** Piloted, non-track flights are `validated`.
+Autonomous and track flights are `not_validated`: a graded result is still produced, but
+`usable_as_evidence` is false. They do not abstain, because the surviving clips have
+enough excitation; what they lack is calibration evidence (4 and 3 testable clips, 25 %
+and 33 % false-reject). The status is written to `scripts/score_clip.py` output and
+requires `flight_type` in `meta.json`.
+
 **Track flights are not validated.** Only 3 track clips are testable under v2; one real
 clip is falsely rejected, one x1.5 edit is missed, and the yaw-control flag rate is
 66.7 % on three clips. The pooled 5.3 % is a piloted-flight number. Autonomous is four
@@ -104,6 +112,17 @@ The verdict's fitted `G2` is **0.158 1/s** median (v2) against Phase 0's mocap-o
 with a fitted drag, 1.048 with drag fixed at 0.295, and 0.755 drag-free; the dominant loss
 in the verdict is estimator shrinkage (0.83), not differentiation. Do not quote `0.158` as
 the airframe drag coefficient.
+
+## The required-lean window
+
+The frozen statistic uses a **0.37 s** Savitzky-Golay window on dense truth. The TII
+sensitivity (`reports/D03_shrinkage_window.md`) gives 5.3 % false-reject at 0.10/0.185/
+0.37 s, but 0.10 s loses partial-change detection (x0.5/x1.5 64.9 %) and 0.74 s raises
+false-reject to 12.3 %. 0.185 s keeps detection and lowers the yaw-control artifact from
+28.1 % to 21.1 %. The band does **not** transfer across windows (frozen 0.37 s band gives
+8.8-17.5 % false-reject at other windows). The proposal is `configs/window_amendment_proposal.yaml`:
+0.185 s with an 8-sample floor, **not applied**; 0.37 s remains frozen until the user
+approves. Do not switch windows in the field without that approval.
 
 ## The shared clip schema (v2)
 

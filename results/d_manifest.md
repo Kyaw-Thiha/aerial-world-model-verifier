@@ -2,7 +2,7 @@
 
 R2 prefix: `track-d/`. Clips under `data/processed/track_d/clips/` are derived (1000 files, ~16 MB) and rebuildable by `experiments/d_build_clips.py`; they are not committed.
 
-Bundle: `track-d-verdict-stat.bundle` (complete history of `track-d-verdict-stat`; the SSH push failed, so this is the backup). R2 key `track-d/track-d-verdict-stat.bundle`; the uploaded object's sha256 is recorded in the upload log. Size at creation: ~32 MB. The bundle is recreated after the final commit, so it contains this manifest commit as well.
+Bundle: `track-d-verdict-stat.bundle` (complete history of `track-d-verdict-stat`; the SSH push failed, so this is the backup). Created with `HEAD track-d-verdict-stat` so a plain `git clone` checks out the branch. R2 key `track-d/track-d-verdict-stat.bundle`; the uploaded object's sha256 is recorded in the upload log. Size at creation: ~33 MB.
 
 | file | bytes | sha256 |
 | --- | --- | --- |
@@ -23,6 +23,7 @@ Bundle: `track-d-verdict-stat.bundle` (complete history of `track-d-verdict-stat
 | results/d_eval/d02/drag_by_flight.png | 34313 | 94132763538e7f3c… |
 | results/d_eval/d02/gain_distributions.png | 49430 | e41a56c1d5ef4ab6… |
 | results/d_eval/d02/gain_table.csv | 312843 | 358ee192d17fe15b… |
+| results/d_eval/d02/margins.csv | 15732 | a7f9c2c57a013746… |
 | results/d_eval/d02/metrics.json | 144751 | c5f50e95b8d94a67… |
 | results/d_eval/d02/operating_curves.csv | 4284 | d711bbe658d3a7ab… |
 | results/d_eval/d02/operating_curves.png | 61790 | e4a962d938fccfa1… |
@@ -38,5 +39,20 @@ Bundle: `track-d-verdict-stat.bundle` (complete history of `track-d-verdict-stat
 | results/d_deming/d01/deming_table.csv | 75318 | c93f8e69c2669418… |
 | results/d_deming/d01/metrics.json | 8358 | 2dd017483810fb81… |
 | results/d_deming/d01/table.md | 987 | 5c2e2a1121c00801… |
+| results/d_shrinkage/d01/frames.csv | 408644 | 5033c05f54ff35a9… |
+| results/d_shrinkage/d01/per_clip_slopes.csv | 17047 | 41aa072e3ce2184a… |
+| results/d_shrinkage/d01/shrinkage.json | 12607 | 9dc4353c7abc4e32… |
+| results/d_shrinkage/d01/shrinkage_scatter.png | 163950 | d8b47d144039d145… |
+| results/d_shrinkage/d01/slope_by_tilt_bin.png | 75654 | 89e6125852a9cf97… |
+| results/d_shrinkage/d01/table.md | 1541 | c82f98ad8ba5d648… |
+| results/d_calibrate/d01/calibrate.json | 34948 | bb588754177781aa… |
+| results/d_calibrate/d01/table.md | 667 | e1c2bb1da8742290… |
+| results/d_window/d01/coherence_w0.100.csv | 44942 | 97b80f20d22d132e… |
+| results/d_window/d01/coherence_w0.185.csv | 44973 | 2a6b45c81051612f… |
+| results/d_window/d01/coherence_w0.370.csv | 44801 | 9eb7edf197cc8f51… |
+| results/d_window/d01/coherence_w0.740.csv | 44764 | 7beaff3a3db715cc… |
+| results/d_window/d01/metrics.json | 26667 | a39458cac071445b… |
+| results/d_window/d01/table.md | 740 | a977ebd80f4fda3c… |
+| results/d_flights/d01/interval.json | 788 | a4f0f9d6c892bd8b… |
 | results/d_repro_baseline/20261113T192340Z/metrics.json | 1466 | 38e4c909cd013b9a… |
 | results/d_repro_baseline/20261114T200003Z/metrics.json | 1466 | 354770068b72de0b… |
