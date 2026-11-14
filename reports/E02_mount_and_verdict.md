@@ -126,7 +126,92 @@ the same frames to **0.046 deg median**, so the export pipeline does not perturb
 
 ## Task 5: the frozen-threshold transfer test
 
-Filled in from `results/e_verdict/<tag>/metrics.json`.
+Statistic: Track A2's median axis residual, drag-free path side, one lag nuisance per clip
+(-150 to +150 ms, 25 ms steps), mount fixed at the published rotation, no uptilt offset.
+Threshold **14.73 deg**, A2's pooled drag-free lag-only operating point, **not refit on UZH**.
+42 clips (3 per sequence after the excitation rule), 294 files, schema-validated, all testable
+(abstention 0 because the excitation rule is applied at export time and the crop leaves every
+frame usable).
+
+### Per condition, unmatched
+
+| condition | n | rejected | rate | Wilson 95% | median score |
+| --- | --- | --- | --- | --- | --- |
+| real | 42 | 14 | **0.333** | 0.21-0.48 | 7.72 |
+| null edit | 42 | 14 | 0.333 | 0.21-0.48 | 8.34 |
+| yaw control | 42 | 15 | 0.357 | 0.23-0.51 | 9.16 |
+| tilt removal | 42 | 37 | **0.881** | 0.75-0.95 | 23.88 |
+| mirrored roll | 42 | 37 | **0.881** | 0.75-0.95 | 26.77 |
+| tilt x0.5 | 42 | 20 | 0.476 | 0.33-0.62 | 14.63 |
+| tilt x1.5 | 42 | 19 | 0.452 | 0.31-0.60 | 14.26 |
+
+### Paired (population: the 28 clips whose real condition was accepted)
+
+| condition | n | detected | rate | Wilson 95% |
+| --- | --- | --- | --- | --- |
+| tilt removal | 28 | 23 | **0.821** | 0.64-0.92 |
+| mirrored roll | 28 | 23 | **0.821** | 0.64-0.92 |
+| tilt x0.5 | 28 | 7 | 0.250 | 0.13-0.43 |
+| tilt x1.5 | 28 | 7 | 0.250 | 0.13-0.43 |
+| yaw control | 28 | 3 | 0.107 | 0.04-0.27 |
+| null edit | 28 | 1 | 0.036 | 0.01-0.18 |
+
+The two controls behave: the null edit rejects at exactly the real rate (14 of 42, median 8.34
+against 7.72), and the yaw control is within 2 points of it. Whatever remains above the real
+rate is resampling, not tilt, and it is reported rather than netted out.
+
+### Where the false rejects are
+
+| rig | real clips | false reject | removal | mirror | real-score median (all 14 sequences) |
+| --- | --- | --- | --- | --- | --- |
+| indoor_forward | 18 | **0.06** | 0.78 | 0.78 | 4.32 |
+| outdoor_forward | 9 | **0.11** | 0.89 | 0.89 | 5.43 |
+| indoor_45 | 12 | **0.75** | 1.00 | 1.00 | 17.81 |
+| outdoor_45 | 3 | **1.00** | 1.00 | 1.00 | 43.96 |
+
+The forward rigs read like a working verifier: 6-11% false reject against a 15% budget, 78-89%
+detection of removal and mirror. The 45-down rigs are rejected wholesale, which makes their
+100% detection meaningless — every condition is above the threshold there, including the null
+edit (median 18.05 and 43.02).
+
+### The verdict against T2
+
+**T2 fails: false reject 0.333 (budget 0.15); detection of removal 0.881 and of mirrored roll
+0.881 (budget 0.80).** Detection passes, false reject does not, and the failure is concentrated
+on the 45-degree-down rigs and on the noisiest outdoor sequence. On the forward-facing rigs the
+same frozen threshold gives 0.06-0.11 false reject and would pass.
+
+The reason is measurable rather than mysterious: on TII the real clips score a median of
+2.47 deg in this mode; on UZH they score 7.72 (4.32 indoors forward), so a 14.73 deg cut sits at
+about two of UZH's own standard deviations instead of four of TII's. The threshold was frozen on
+footage whose depicted-tilt error is half of UZH's.
+
+### Sensitivities (labelled, never the headline)
+
+* **Mount-pitch offset nuisance enabled**, A2's grid of -7 to +7 deg, 1 deg steps:
+  false reject 0.19, removal 0.69, mirror 0.86. Per rig, the fitted offset is 0 deg on both
+  forward rigs (false reject 0.00 on each) and pins at +7 deg on both 45 rigs (false reject 0.42
+  and 1.00). That is the 14 deg discrepancy of the mount section showing up again from an
+  independent direction: the forward mounts are right and the 45-degree ones are off by more
+  than the grid allows.
+* **Frozen S3 gate applied** (real clips gated, decision inherited by their edits): 10 of 42 real
+  clips dropped; on the surviving 32, removal 0.875 and mirror 0.875. The gate removes the
+  outdoor and 45-rig clips, i.e. it does its job, at a 24% coverage cost.
+* **Thresholds recalibrated on UZH** by leave-one-sequence-out (the sensitivity the handoff asks
+  for): detection falls to 0.071 (removal) and 0.119 (mirror). A UZH-fitted 95th percentile of
+  real scores is above 20 deg, so it hides the violations. Refitting does not rescue the test;
+  it makes it blind.
+* **Abstention**: 0 for every condition, against TII's 41%. T4 (abstention at most 10 points above
+  the current statistic's rate) is trivially satisfied, and that is itself a warning: with no
+  gate and every clip testable, the statistic's failures are rejections rather than abstentions.
+
+### Graded output (T5) coverage
+
+Per clip and condition the run emits required tilt (median), depicted tilt (median), the residual
+score, the fitted lag, a per-frame valid fraction, the depicted confidence, and the testable flag
+with its reasons — `results/e_verdict/<tag>/metrics.json`, field `rows`. It does **not** emit a
+gain with an interval or a drag estimate: those belong to Track D's gain statistic, which is not
+published (5b not run). No number in this report is a gain.
 
 ### Graded output (T5) coverage
 
