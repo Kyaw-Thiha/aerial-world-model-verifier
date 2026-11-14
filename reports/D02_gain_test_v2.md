@@ -37,7 +37,7 @@ reporting rule, not a caveat added at the end.
 
 ## 1. Decomposition of the real-flight gain (task 1)
 
-Same 57 testable real clips, dense mocap. (a) truth attitude on required lean with a
+Same 57 testable real clips as D01, dense mocap (the v2 testable set differs by one clip in each direction; see section 2). (a) truth attitude on required lean with a
 fitted drag nuisance and free intercept; (b) estimated lean on truth-attitude lean, free
 intercept, no drag; (c) the verdict gain, v1 (12 Hz required lean) and v2 (dense
 `lean_req`). Medians [flight-cluster bootstrap 95 % interval], disjoint flight types.
@@ -205,7 +205,7 @@ short because the estimator shrinks, not because the path regressor is noisy.
 
 - **Gain**: `configs/gain_frozen.yaml`, rule **R2_axis_gains**, v2 dense input. Joint band
   `gx` center 0.8137 / scale 0.2654, `gy` center 0.7181 / scale 0.0735, tau 2.1922,
-  alpha 0.05, n=57; per-fold bands included. Commit `1df4084`.
+  alpha 0.05, n=57; per-fold bands included. Commit `8b8b7a1`.
 - **Coherence**: `configs/coherence_frozen.yaml`, tau_corr 0.6197, tau_sign 0.2921,
   per-fold thresholds.
 - **Schema**: `docs/verdict_clip_schema_v2.md`; re-export UZH clips with `lean_req`,

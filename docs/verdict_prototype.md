@@ -5,7 +5,7 @@ Frozen gain statistic: `configs/gain_frozen.yaml` (rule **R2_axis_gains**, axis 
 `gx` center 0.8137 / scale 0.2654, `gy` center 0.7181 / scale 0.0735, tau 2.1922, alpha
 0.05, n=57). Frozen coherence tier: `configs/coherence_frozen.yaml` (tau_corr 0.6197,
 tau_sign 0.2921). Evidence: `reports/D02_gain_test_v2.md`,
-`results/d_eval/d02/metrics.json`, `results/d_coherence/d01/metrics.json`.
+`results/d_eval/d02/metrics.json`, `results/d_coherence/d01/metrics.json`; code commit `8b8b7a1`.
 
 ## What it is
 

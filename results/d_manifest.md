@@ -29,7 +29,7 @@ Bundle: `track-d-verdict-stat.bundle` (complete history of `track-d-verdict-stat
 | results/d_eval/d02/primary_results.json | 1233611 | 5c21a0f2a373c6d6… |
 | results/d_eval/d02/synthetic_sweep.csv | 44689 | 1ceb5f9fe6d9576a… |
 | results/d_eval/d02/synthetic_sweep.png | 29072 | e4f2699d4dd10560… |
-| results/d_eval/d02/table.md | 2004 | d223f4c1f89dfc87… |
+| results/d_eval/d02/table.md | 2115 | 81f2775473c5a86f… |
 | results/d_decomposition/d01/decomposition.csv | 29263 | dd2e3c42cd6a82e5… |
 | results/d_decomposition/d01/decomposition.json | 4956 | 59e4091ad189ec32… |
 | results/d_coherence/d01/coherence_table.csv | 82015 | 17816027f907c10a… |

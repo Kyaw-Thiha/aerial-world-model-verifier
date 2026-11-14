@@ -25,12 +25,14 @@ Pooled selection: **R2_axis_gains**
 
 ## Matched false-reject
 
-| family | gain @ own | baseline @ gain FRR | gain @ baseline FRR | baseline @ own |
-| --- | --- | --- | --- | --- |
-| tilt_removal | 100.0 | 67.2-67.2 | 98.2-100.0 | 67.2 |
-| mirror_roll | 100.0 | 94.8-94.8 | 98.2-100.0 | 94.8 |
-| scale_0.5 | 100.0 | 17.2-17.2 | 7.0-100.0 | 17.2 |
-| scale_1.5 | 96.5 | 24.1-24.1 | 7.0-96.5 | 24.1 |
+| family | gain @ own | baseline @ gain FRR | gain @ baseline FRR | baseline @ own | yaw control @ own |
+| --- | --- | --- | --- | --- | --- |
+| tilt_removal | 100.0 | 67.2-67.2 | 98.2-100.0 | 67.2 | 28.1 |
+| mirror_roll | 100.0 | 94.8-94.8 | 98.2-100.0 | 94.8 | 28.1 |
+| scale_0.5 | 100.0 | 17.2-17.2 | 7.0-100.0 | 17.2 | 28.1 |
+| scale_1.5 | 96.5 | 24.1-24.1 | 7.0-96.5 | 24.1 | 28.1 |
+
+Track flights are **not validated** in any table above.
 
 ## Abstention
 

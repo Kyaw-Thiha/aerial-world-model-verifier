@@ -713,16 +713,18 @@ def _table_md(m: dict) -> str:
                 "det_scale_1.5", "det_yaw_control"):
         lines.append(f"| {key} | {pct(s[key])} | {pct(n.get(key))} | {pct(b[key])} |")
     lines += ["", "## Matched false-reject", "",
-              "| family | gain @ own | baseline @ gain FRR | gain @ baseline FRR | baseline @ own |",
-              "| --- | --- | --- | --- | --- |"]
+              "| family | gain @ own | baseline @ gain FRR | gain @ baseline FRR | baseline @ own | yaw control @ own |",
+              "| --- | --- | --- | --- | --- | --- |"]
     for fam, v in m["matched_false_reject"].items():
         br = v["baseline_at_gain_frr"]
         gr = v["gain_at_baseline_frr"]
         lines.append(f"| {fam} | {pct(v['gain_at_own_operating_point'])} | "
                      f"{pct(br['min'])}-{pct(br['max'])} | "
                      f"{pct(gr['min'])}-{pct(gr['max'])} | "
-                     f"{pct(v['baseline_own_operating_point'])} |")
-    lines += ["", "## Abstention", ""]
+                     f"{pct(v['baseline_own_operating_point'])} | "
+                     f"{pct(m['selected_summary']['det_yaw_control'])} |")
+    lines += ["", "Track flights are **not validated** in any table above.", "",
+              "## Abstention", ""]
     a = m["abstention"]
     lines.append(f"overall {100 * a['overall']:.1f} % (baseline {100 * b['abstention']:.1f} %)")
     lines.append("")

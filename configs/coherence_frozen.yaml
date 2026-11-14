@@ -1,8 +1,8 @@
 version: 1
 date: '2026-11-14'
 status: frozen
-source_run: results/d_eval/d02/coherence
-commit: 1df4084295c4e765011e37b1caa9d2059fc4fcba
+source_run: results/d_coherence/d01
+commit: 8b8b7a1b3394a03229bcf25bf6b640032f8d5e24
 rule:
   correlation: flag if 1 - min(r_x, r_y) > tau_correlation
   sign: flag if 1 - min(s_x, s_y) > tau_sign

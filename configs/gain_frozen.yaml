@@ -2,7 +2,7 @@ version: 1
 date: '2026-11-14'
 status: frozen
 source_run: results/d_eval/d02
-commit: 1df4084295c4e765011e37b1caa9d2059fc4fcba
+commit: 8b8b7a1b3394a03229bcf25bf6b640032f8d5e24
 rule: R2_axis_gains
 statistic: per-clip regression of depicted lean on required lean; l_dep = G1*l_req0
   + G2*(R_yaw v/g) + b
