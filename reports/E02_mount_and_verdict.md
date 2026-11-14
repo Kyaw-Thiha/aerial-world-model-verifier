@@ -374,3 +374,40 @@ python experiments/e_verdict.py --clips data/clips --tag primary     # Task 5
    are in R2 (`track-e/clips/`, 589 objects) ready for it.
 4. The shared schema needs a denser `pos` (or the required axis) for T6 to be satisfiable
    without a 6 deg penalty; see the T6 section.
+
+## Removing the "is it the mount or the estimator?" ambiguity: an estimator-free attempt
+
+The 14 deg 45-rig discrepancy has two explanations that predict identical gravity residuals. So
+it was attacked along a route that contains **no gravity estimator at all**
+(`experiments/e_mount_imu.py`): two rigidly connected sensors see the same angular velocity, so
+the relative rotation between two frames can be derived twice — from the images (KLT tracks, a
+RANSAC homography between undistorted frames, projected onto SO(3)) and from the gyro
+integrated and rotated by the published `T_cam_imu` — and compared. A mount error `D` makes every
+pair's error rotation equal to `D`; flow noise makes them scatter around identity. The statistic
+is therefore the magnitude of the mean error rotation, with a bootstrap interval.
+
+| sequence | rig | pair rotation (median) | mean error rotation | 95% interval |
+| --- | --- | --- | --- | --- |
+| indoor_forward_9 | indoor_forward | 2.88 deg | **1.34 deg** | 1.11-1.86 |
+| indoor_forward_5 | indoor_forward | 1.57 | **3.23** | 2.77-3.74 |
+| indoor_forward_3 | indoor_forward | 3.77 | **5.71** | 4.78-6.79 |
+| indoor_45_2 | indoor_45 | 9.46 | **8.54** | 7.63-9.49 |
+| outdoor_45_1 | outdoor_45 | 6.72 | **4.25** | 3.62-5.01 |
+
+**This does not resolve the question, and the reason is in the first three rows.** Those three
+sequences share one physical mount, yet the method reports 1.3, 3.2 and 5.7 deg on them: the
+scatter between recordings of the same rig is larger than the gap between rigs. The floor is set
+by parallax (a homography cannot represent translation, and a downward-looking camera over a
+floor is the worst case) and by flow noise, not by the mount. So the test **excludes a gross
+misreading** — a transposed or wrongly-signed extrinsic, the failure mode that produced 90-118
+deg in this same task — but it has no power against a 14 deg error. Reported as a negative
+result rather than dressed up as confirmation.
+
+What would settle it, in increasing order of cost: (i) Perspective Fields on the 45-rig frames —
+a different architecture with different failure modes, and the pre-registered ladder already
+allows it for sequences above the 6 deg line, which the 45 rigs are (about US$0.35 of GPU);
+(ii) re-running Kalibr on the released 45-rig calibration bags (~1.3 GB each, CPU/GPU hours);
+(iii) a vanishing-point or plumb-line check from the building's verticals in
+`indoor_45_2`/`_4`/`_13`, which needs a manual line annotation. (i) was **not run**: the study
+was already about US$0.3 over the approval line when this came up, and the honest thing was to
+stop spending and report the bound rather than exceed the budget a second time.
