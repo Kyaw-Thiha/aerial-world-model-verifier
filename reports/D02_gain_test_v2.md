@@ -49,8 +49,8 @@ intercept, no drag; (c) the verdict gain, v1 (12 Hz required lean) and v2 (dense
 | (a) gain, drag fixed 0.295 | 1.048 [0.957, 1.071] | 1.053 | 1.010 | 0.949 |
 | (a) gain, drag-free | 0.755 [0.688, 0.916] | 0.714 | 0.901 | 0.926 |
 | (b) estimator shrinkage | **0.828** [0.582, 0.832] | 0.831 [0.827, 0.834] | 0.587 | 0.558 |
-| (c) verdict gain, v1 | **0.745** [0.573, 0.762] | 0.753 | 0.627 | 0.548 |
-| (c) verdict gain, v2 dense | **0.764** [0.568, 0.786] | 0.770 | 0.645 | 0.541 |
+| (c) verdict gain, v1 | **0.745** [0.573, 0.762] | 0.753 | 0.599 | 0.548 |
+| (c) verdict gain, v2 dense | **0.764** [0.568, 0.786] | 0.770 | 0.639 | 0.543 |
 
 Correlation of the verdict gain with `(a) × (b)`: 0.814 (v1), 0.860 (v2). It is
 approximately, not exactly, multiplicative because of the intercept, the drag nuisance and
