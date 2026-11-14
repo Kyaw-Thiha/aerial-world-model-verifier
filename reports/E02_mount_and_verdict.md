@@ -182,3 +182,28 @@ is the difference between a usable test and a marginal one. Recommendation to wh
 shared schema (Track D): either carry a denser `pos` (or the required axis itself) in the npz,
 or fix the path-side window in the schema. Track E reports every headline number on the dense
 truth and quotes this as the schema-only sensitivity.
+
+## Why the earlier UZH pilot read 86-89 deg
+
+The handoff left two candidates: the estimator does not transfer to UZH footage, or something
+in the truth, frames or mount handling is wrong. The measurements above settle it.
+
+* The estimator **does** transfer: 1.5-4.6 deg median per frame on the forward rigs (E01), and
+  the exported real clips score 1.5-5.6 deg against the frozen 14.73 deg threshold.
+* The mount **is** published, per rig, and the published reading is confirmed indoors to
+  0.7-3.4 deg.
+* Therefore a verdict residual of 86 deg cannot come from the depicted estimator.
+
+**The one transposition this pipeline is one line away from produces exactly that number.**
+While building this task the camera->body rotation was applied in the wrong direction
+(`R_cb @ up_body` instead of `R_cb^T @ up_body`) in one function. The body-frame agreement was
+unaffected (1.3-4.0 deg) and the camera-frame error jumped to **92-118 deg** — the same
+magnitude as the pilot's 86-89 deg, on the same dataset, with everything else correct. It was
+caught within one run because the same quantity was computed in the body frame as a cross-check
+(`tests/test_depicted_uzh.py` now asserts the direction). A pilot that (a) had no published
+mount, (b) fitted one from truth, and (c) reported a ~56 deg residual after the fit is
+consistent with a mount *convention* error that a fit cannot remove, which is what the E02 mount
+table shows independently: a fitted rotation on the outdoor rig does not generalise.
+
+This is offered as the most likely explanation with the evidence that makes it plausible, not as
+a proven diagnosis of another agent's code — that code was not re-run here.
