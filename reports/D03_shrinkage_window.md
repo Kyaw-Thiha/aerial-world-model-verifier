@@ -182,3 +182,22 @@ floor, re-fit the R2 band (`gx` 0.8176 / 0.2586, `gy` 0.7159 / 0.0726, tau 2.595
 re-freeze. It keeps detection, cuts the yaw artifact from 28.1 % to 21.1 % and adds two
 testable clips. 0.37 s remains frozen until approved.
 
+## 5. Bundle restore from R2
+
+The bundle was downloaded from R2, cloned into a scratch directory, and verified:
+
+```
+sync_r2 --get track-d/track-d-verdict-stat.bundle --dest /tmp/awmv-restore-final/
+cd /tmp/awmv-restore-final && git clone track-d-verdict-stat.bundle restored
+cd restored && git rev-parse HEAD          # 038aed7
+git rev-parse --abbrev-ref HEAD            # track-d-verdict-stat
+git fsck --full                            # clean
+pytest tests/test_verdict.py -q            # 41 passed
+```
+
+The R2 object's sha256 matched the local upload (`8cae4087…5f6e`). The bundle is created
+with `HEAD track-d-verdict-stat`, so a **plain `git clone`** checks out the branch; a
+bundle created without `HEAD` needs `git clone -b track-d-verdict-stat`. The final bundle
+is re-created after this report commit; the upload log records its sha256, and the chat
+reports the final HEAD. Push is still blocked by credentials, so this bundle is the
+recovery path.
