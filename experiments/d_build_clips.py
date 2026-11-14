@@ -23,6 +23,8 @@ from pathlib import Path
 import numpy as np
 from scipy.spatial.transform import Rotation
 
+from src.datasets.tii_video import flight_parts
+from src.verdict.dense import dense_required_lean
 from src.verdict.lean import depicted_lean_from_gravity
 from src.verdict.schema import Clip, save_clip
 
@@ -109,6 +111,9 @@ def main() -> int:
         uptilt = float(spec["uptilt_deg"])
         from src.perception.frames import camera_to_body_pitched
         R_cb = camera_to_body_pitched(np.deg2rad(uptilt))
+        control, _ = flight_parts(flight)
+        dense = dense_required_lean(
+            ROOT / f"data/raw/tii/{control}/mocap_{flight}.csv", t_all)
         manifest["inputs"][flight] = {
             "spec": str((specs_dir / f"{flight}.npz").relative_to(ROOT)),
             "spec_sha256": sha256(specs_dir / f"{flight}.npz")}
@@ -149,13 +154,22 @@ def main() -> int:
                     "GeoCalib latitude_confidence_mean per frame; higher is better; the "
                     "frozen S3 gate uses the negative clip median"),
                 "trackratm": "trackRATM" in flight,
+                "schema_version": 2,
+                "required_lean_source": (
+                    "lean_req/vel_req: dense mocap differentiated at 274.73 Hz with a "
+                    "0.37 s / poly-3 Savitzky-Golay window, sampled at the frame times"),
+                "required_window_samples": int(dense.window),
+                "required_dt_s": float(dense.dt_s),
             }
             for schema_cond in full:
                 lean_all, conf_all = full[schema_cond]
                 meta = dict(base_meta, condition=schema_cond, edited=schema_cond != "real")
                 clip_obj = Clip(t=t.copy(), pos=pos.copy(), yaw=yaw.copy(),
                                 depicted_lean=lean_all[sl].copy(),
-                                depicted_conf=conf_all[sl].copy(), meta=meta)
+                                depicted_conf=conf_all[sl].copy(), meta=meta,
+                                lean_req=dense.l_req0[sl].copy(),
+                                vel_req=dense.vel_req[sl].copy(),
+                                tilt_req_deg=dense.tilt_deg[sl].copy())
                 save_clip(out_root / flight / f"{clip['clip_id']}__{schema_cond}", clip_obj)
                 n_written += 1
 
@@ -168,7 +182,10 @@ def main() -> int:
             save_clip(out_root / flight / f"{clip['clip_id']}__null_edit",
                       Clip(t=t.copy(), pos=pos.copy(), yaw=yaw.copy(),
                            depicted_lean=lean_all[sl].copy(),
-                           depicted_conf=conf_all[sl].copy(), meta=meta))
+                           depicted_conf=conf_all[sl].copy(), meta=meta,
+                           lean_req=dense.l_req0[sl].copy(),
+                           vel_req=dense.vel_req[sl].copy(),
+                           tilt_req_deg=dense.tilt_deg[sl].copy()))
             n_written += 1
 
             lean_all, conf_all = full["real"]
@@ -180,7 +197,10 @@ def main() -> int:
                 save_clip(out_root / flight / f"{clip['clip_id']}__delay_ms_{delay}",
                           Clip(t=t.copy(), pos=pos.copy(), yaw=yaw.copy(),
                                depicted_lean=delayed,
-                               depicted_conf=conf_all[sl].copy(), meta=meta))
+                               depicted_conf=conf_all[sl].copy(), meta=meta,
+                               lean_req=dense.l_req0[sl].copy(),
+                               vel_req=dense.vel_req[sl].copy(),
+                               tilt_req_deg=dense.tilt_deg[sl].copy()))
                 n_written += 1
 
             manifest["clips"].append({"clip_id": clip["clip_id"], "flight": flight,

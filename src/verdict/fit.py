@@ -26,6 +26,35 @@ DRAG_FIXED_DEFAULT = 0.295
 
 
 @dataclass
+class _RequiredSide:
+    l_req0: np.ndarray
+    velocity_reg: np.ndarray
+    tilt_deg: np.ndarray
+    mask: np.ndarray
+    dt_s: float
+    window: int
+    source: str
+
+
+def _required_side(clip, opts: "FitOptions") -> _RequiredSide:
+    """Use the dense ``lean_req``/``vel_req`` when present, else differentiate pos."""
+    if clip.lean_req is not None:
+        lean = np.asarray(clip.lean_req, dtype=np.float64)
+        vel = np.asarray(clip.vel_req, dtype=np.float64)
+        dt_s = float(np.median(np.diff(clip.t)))
+        mask = np.isfinite(lean).all(axis=1) & np.isfinite(vel).all(axis=1)
+        if clip.tilt_req_deg is not None:
+            tilt = np.asarray(clip.tilt_req_deg, dtype=np.float64)
+        else:
+            tilt = np.degrees(np.arcsin(np.clip(np.linalg.norm(lean, axis=1), 0.0, 1.0)))
+        return _RequiredSide(lean, vel, tilt, mask, dt_s, 0, "lean_req")
+    req = required_lean(clip.pos, clip.yaw, clip.t, window_s=opts.sg_window_s,
+                        polyorder=opts.sg_polyorder)
+    return _RequiredSide(req.l_req0, req.velocity_reg, req.tilt_deg, req.mask,
+                         req.dt_s, req.window, "pos")
+
+
+@dataclass
 class FitOptions:
     drag: str = "fitted"            # "fitted" | "fixed" | "free"
     fixed_drag: float = DRAG_FIXED_DEFAULT
@@ -280,8 +309,7 @@ def fit_gain(clip, opts: FitOptions | None = None) -> GainResult:
     opts = opts or FitOptions()
     opts.validate()
 
-    req = required_lean(clip.pos, clip.yaw, clip.t, window_s=opts.sg_window_s,
-                        polyorder=opts.sg_polyorder)
+    req = _required_side(clip, opts)
     l_dep = np.asarray(clip.depicted_lean, dtype=np.float64).copy()
     if opts.smoothing_s > 0:
         window = max(1, int(round(opts.smoothing_s / req.dt_s)))
@@ -367,7 +395,8 @@ def fit_gain(clip, opts: FitOptions | None = None) -> GainResult:
                 "estimator": opts.estimator, "lag_search": opts.lag_search,
                 "smoothing_s": opts.smoothing_s,
                 "confidence_weights": opts.confidence_weights,
-                "sg_window_s": opts.sg_window_s, "sg_polyorder": opts.sg_polyorder},
+                "sg_window_s": opts.sg_window_s, "sg_polyorder": opts.sg_polyorder,
+                "required_source": req.source},
         bootstrap_ok=boot_ok,
     )
 
@@ -390,7 +419,8 @@ def _nan_result(clip, req, l_dep, ok, lag_s, opts, reason: str = "") -> GainResu
                 "smoothing_s": opts.smoothing_s,
                 "confidence_weights": opts.confidence_weights,
                 "sg_window_s": opts.sg_window_s, "sg_polyorder": opts.sg_polyorder,
-                "reason": reason}, bootstrap_ok=False)
+                "required_source": getattr(req, "source", "unknown"), "reason": reason},
+        bootstrap_ok=False)
 
 
 def lean_from_gravity(clip, uptilt_deg: float, mount_rotation: np.ndarray | None = None
