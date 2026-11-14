@@ -149,7 +149,7 @@ def _rig_from_seq(seq: str) -> str:
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--mode", choices=("perframe", "clips"), default="perframe")
+    ap.add_argument("--mode", choices=("perframe", "clips", "reconcile"), default="perframe")
     ap.add_argument("--tii-root", default="../aerial-world-model-verifier")
     ap.add_argument("--uzh-root", default="data/uzh")
     ap.add_argument("--perframe", default="results/e_perframe/v1_all")
@@ -161,6 +161,20 @@ def main() -> int:
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
 
+    if args.mode == "reconcile":
+        rec = reconcile(args)
+        (out / "reconcile.json").write_text(json.dumps(rec, indent=1))
+        print("Definition 1 (depicted lean on TRUTH-ATTITUDE lean), TII packed by group:")
+        for g, v in rec["tii"].items():
+            print(f"  {g:12s} n={v['n']:5d} slope={v['slope']:5.3f} gx={v['gx']:5.3f} "
+                  f"gy={v['gy']:5.3f} corr={v['corr']:5.3f} resid={v['residual_rms_deg']:5.2f} deg")
+        print("\nDefinition 1, UZH forward packed:")
+        for g in ("forward_pooled", "indoor_forward_pooled", "outdoor_forward_pooled"):
+            if g in rec["uzh"]:
+                v = rec["uzh"][g]
+                print(f"  {g:26s} n={v['n']:5d} slope={v['slope']:5.3f} gx={v['gx']:5.3f} "
+                      f"gy={v['gy']:5.3f} corr={v['corr']:5.3f} resid={v['residual_rms_deg']:5.2f} deg")
+        return 0
     if args.mode == "perframe":
         tii = perframe_tii(Path(args.tii_root))
         uzh = perframe_uzh(Path(args.uzh_root), Path(args.perframe), args.variant)
@@ -229,6 +243,73 @@ def _pool(recs: dict) -> dict:
             "intercept": float("nan"), "gx": float(gx), "gy": float(gy),
             "corr": float(corr), "corr_x": float("nan"), "corr_y": float("nan"),
             "residual_rms_deg": float(resid), "x_spread_deg": float(spread)}
+
+
+
+
+# --------------------------------------------------------------------------- reconciliation
+def reconcile(args) -> dict:
+    """Definition 1 per unit and pooled by group, on both datasets (item 5 of the request)."""
+    from src.perception.frames import camera_to_body_pitched
+
+    tii_root = Path(args.tii_root)
+    metrics = json.loads((tii_root / TII_RUN / "metrics.json").read_text())
+    groups = {
+        "piloted": ["flight-01p-ellipse", "flight-07p-lemniscate", "flight-13p-trackRATM",
+                    "flight-16p-trackRATM"],
+        "autonomous": ["flight-01a-ellipse", "flight-04a-ellipse", "flight-07a-lemniscate",
+                       "flight-13a-trackRATM"],
+        "track": ["flight-13a-trackRATM", "flight-13p-trackRATM", "flight-16p-trackRATM"],
+        "all": ["flight-01a-ellipse", "flight-04a-ellipse", "flight-07a-lemniscate",
+                "flight-13a-trackRATM", "flight-01p-ellipse", "flight-07p-lemniscate",
+                "flight-13p-trackRATM", "flight-16p-trackRATM"],
+    }
+    cache = {}
+    for f in sorted((tii_root / TII_RUN).glob("frames_flight-*.npz")):
+        flight = f.name.replace("frames_", "").replace(".npz", "")
+        d = np.load(f)
+        uptilt = metrics["flights"].get(flight, {}).get("uptilt_metadata_deg")
+        if uptilt is None:
+            continue
+        R_cb = camera_to_body_pitched(np.deg2rad(uptilt))
+        up_b_dep = np.einsum("ij,nj->ni", R_cb, d["est_up"])
+        up_b_true = np.einsum("ij,nj->ni", R_cb, d["true_up"])
+        cache[flight] = (lean_from_up_body(up_b_dep), lean_from_up_body(up_b_true))
+    out = {"tii": {}, "uzh": {}}
+    for g, flights in groups.items():
+        ys = [cache[f][0] for f in flights if f in cache]
+        xs = [cache[f][1] for f in flights if f in cache]
+        if not ys:
+            continue
+        out["tii"][g] = _regress(np.concatenate(ys), np.concatenate(xs))
+    uzh = perframe_uzh(Path(args.uzh_root), Path(args.perframe), args.variant)
+    out["uzh"]["per_sequence"] = {k: v for k, v in uzh.items() if v["forward"]}
+    ys = []
+    xs = []
+    for seq in all_sequences():
+        f = Path(args.perframe) / f"frames_{seq}__{args.variant}.npz"
+        if not f.exists() or not is_forward(seq):
+            continue
+        d = np.load(f)
+        truth = load_truth(Path(args.uzh_root), seq)
+        R_cb = d["R_cb"] if "R_cb" in d.files else truth.R_cb()
+        ys.append(lean_from_up_body(np.einsum("ij,nj->ni", R_cb, d["up_est"])))
+        xs.append(lean_from_up_body(truth.up_body))
+    out["uzh"]["forward_pooled"] = _regress(np.concatenate(ys), np.concatenate(xs))
+    for rig in ("indoor_forward", "outdoor_forward"):
+        ys, xs = [], []
+        for seq in all_sequences():
+            f = Path(args.perframe) / f"frames_{seq}__{args.variant}.npz"
+            if not f.exists() or rig_of(seq) != rig:
+                continue
+            d = np.load(f)
+            truth = load_truth(Path(args.uzh_root), seq)
+            R_cb = d["R_cb"] if "R_cb" in d.files else truth.R_cb()
+            ys.append(lean_from_up_body(np.einsum("ij,nj->ni", R_cb, d["up_est"])))
+            xs.append(lean_from_up_body(truth.up_body))
+        if ys:
+            out["uzh"][f"{rig}_pooled"] = _regress(np.concatenate(ys), np.concatenate(xs))
+    return out
 
 
 if __name__ == "__main__":

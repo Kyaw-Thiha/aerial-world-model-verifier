@@ -205,14 +205,16 @@ def validate_edits(seq: str, variant: str = "b", angles: str = "5,10,20",
 @app.function(image=image, gpu="A10G", volumes={E_DATA: e_data, A_DATA: a_data},
               timeout=3 * 3600)
 def export_sequence(seq: str, variant: str = "b", clip_seconds: float = 4.0,
-                    max_clips: int = 4, yaw_deg: float = 20.0) -> str:
+                    max_clips: int = 4, yaw_deg: float = 20.0,
+                    crop_mode: str = "fixed") -> str:
     """Clip, warp, estimate and write one npz per clip and condition.
 
-    Border handling: each frame gets one mask shared by all its conditions (the null edit
-    included), so border loss cannot be read as tilt. The mask is the intersection over the
-    *conditions of that frame*. Intersecting across the whole clip as well was a mistake made
-    and measured here: a clip that manoeuvres through 45 deg then keeps 40 percent of the frame
-    and every edited frame fails the 50 percent usability rule.
+    Border handling, v3 (`crop_mode="fixed"`, the pre-registered default): **one crop per clip**,
+    the largest centred rectangle inside the valid region of every frame and every condition,
+    applied to all seven conditions including the source crop for `real`. A per-frame crop
+    (`crop_mode="per_frame"`, the E02 behaviour kept for comparison) left the field of view
+    changing frame to frame and made the null edit's lean gain a third below the real clip's on
+    identical pixels; see reports/E02 and reports/E03.
     """
     import json
     import shutil
@@ -273,36 +275,60 @@ def export_sequence(seq: str, variant: str = "b", clip_seconds: float = 4.0,
             d.mkdir(parents=True, exist_ok=True)
             frames_out[cond] = d
 
-        crop_fractions = []
+        def inside_mask(M):
+            xs, ys, ok = source_coords(M, calib, w, h)
+            return ok & (xs >= 0) & (xs <= w - 1) & (ys >= 0) & (ys <= h - 1)
+
+        if crop_mode == "per_frame":
+            crops = None
+            mask_all = None
+            crop_frac = None
+        else:
+            # one crop for the whole clip: intersection over every frame and every condition
+            mask_all = None
+            for cond in CONDITIONS:
+                if cond == "real":
+                    continue
+                for j in range(len(t_clip)):
+                    m = inside_mask(per_cond[cond][j])
+                    mask_all = m if mask_all is None else (mask_all & m)
+            crop_frac = centred_crop_fraction(mask_all)
+            hh = int(round(crop_frac * h)) // 2
+            ww = int(round(crop_frac * w)) // 2
+            cy, cx = int(round((h - 1) / 2.0)), int(round((w - 1) / 2.0))
+            crops = (slice(cy - hh, cy + hh), slice(cx - ww, cx + ww))
+            if mask_all[crops].mean() < 0.999:
+                raise RuntimeError(f"{seq}#{ci:02d}: fixed crop is not fully inside the mask")
+
         ups = {c: np.full((len(t_clip), 3), np.nan) for c in CONDITIONS}
         confs = {c: np.full(len(t_clip), np.nan) for c in CONDITIONS}
         valids = {c: np.full(len(t_clip), np.nan) for c in CONDITIONS}
         for j, fi in enumerate(range(lo, hi)):
             img = cv2.imread(str(files[fi]), cv2.IMREAD_GRAYSCALE)
-            inside = []
-            for cond in CONDITIONS:
-                if cond == "real":
-                    continue
-                xs, ys, ok = source_coords(per_cond[cond][j], calib, w, h)
-                inside.append(ok & (xs >= 0) & (xs <= w - 1) & (ys >= 0) & (ys <= h - 1))
-            mask = np.logical_and.reduce(inside)
-            width_frac = centred_crop_fraction(mask)
-            hh, ww = int(round(width_frac * h)) // 2, int(round(width_frac * w)) // 2
-            cy, cx = int(round((h - 1) / 2.0)), int(round((w - 1) / 2.0))
-            crop = (slice(cy - hh, cy + hh), slice(cx - ww, cx + ww))
-            crop_fractions.append(width_frac)
+            if crop_mode == "per_frame":
+                inside = [inside_mask(per_cond[cond][j]) for cond in CONDITIONS
+                          if cond != "real"]
+                mask = np.logical_and.reduce(inside)
+                width_frac = centred_crop_fraction(mask)
+                hh = int(round(width_frac * h)) // 2
+                ww = int(round(width_frac * w)) // 2
+                cy, cx = int(round((h - 1) / 2.0)), int(round((w - 1) / 2.0))
+                crop = (slice(cy - hh, cy + hh), slice(cx - ww, cx + ww))
+                frame_crop_frac = width_frac
+            else:
+                crop, frame_crop_frac = crops, crop_frac
             for cond in CONDITIONS:
                 if cond == "real":
                     out_img, valid = img, np.ones(img.shape, bool)
                 else:
-                    out_img, valid = warp(img, per_cond[cond][j], geometry, calib, mask=mask)
+                    out_img, valid = warp(img, per_cond[cond][j], geometry, calib)
                 out_img = out_img[crop]
                 valid = valid[crop]
                 cv2.imwrite(str(frames_out[cond] / f"{j:05d}.png"), out_img)
                 valids[cond][j] = float(valid.mean())
                 if valid.mean() < 0.5:
                     continue
-                g, c = _run(model, cm, out_img, device, focal)
+                g, c = _run(model, cm, out_img, device)
                 if g is None or not np.all(np.isfinite(g)) or np.linalg.norm(g) < 1e-6:
                     continue
                 ups[cond][j] = g / np.linalg.norm(g)
@@ -330,12 +356,16 @@ def export_sequence(seq: str, variant: str = "b", clip_seconds: float = 4.0,
                 "clock_offset_applied_s": truth.offset_s, "k_d_path": 0.0,
                 "yaw_control_deg": yaw_deg if cond == "yaw_control" else None,
                 "testability": sig,
-                "border": ("centred crop to the largest rectangle inside the per-frame common "
-                           "mask over conditions (null edit included); no black fill"),
-                "crop_fraction": float(np.median(crop_fractions)) if crop_fractions else None,
+                "border": ("one fixed centred crop per clip, inside the valid region of every "
+                           "frame and every condition, applied to all conditions including real; "
+                           "no black fill" if crop_mode == "fixed" else
+                           "per-frame centred crop (E02 behaviour, kept for comparison)"),
+                "crop_mode": crop_mode,
+                "crop_fraction": float(crop_frac) if crop_mode == "fixed" else None,
                 "frames_dir": str(frames_out[cond])}, indent=1))
         index.append({"clip": f"{seq}#{ci:02d}", "index": [lo, hi], "testable": True,
                       "valid_frac_median": float(np.nanmedian(valids["tilt_removal"])),
+                      "crop_fraction": float(crop_frac) if crop_mode == "fixed" else None,
                       "valid_frac_real_median": float(np.nanmedian(valids["real"])),
                       "conditions": list(CONDITIONS)})
         e_data.commit()
@@ -354,14 +384,15 @@ def export_sequence(seq: str, variant: str = "b", clip_seconds: float = 4.0,
 
 @app.local_entrypoint()
 def main(seqs: str = "", variant: str = "b", max_clips: int = 4, validate: bool = False,
-         clip_seconds: float = 4.0, parallel: bool = True) -> None:
+         clip_seconds: float = 4.0, parallel: bool = True,
+         crop_mode: str = "fixed") -> None:
     import json
 
     from src.depicted.uzh import all_sequences
 
     wanted = [s for s in seqs.split(",") if s] or all_sequences()
     fn = validate_edits if validate else export_sequence
-    args = (variant,) if validate else (variant, clip_seconds, max_clips)
+    args = (variant,) if validate else (variant, clip_seconds, max_clips, 20.0, crop_mode)
     if parallel:
         handles = [(s, fn.spawn(s, *args)) for s in wanted]
         for s, h in handles:
