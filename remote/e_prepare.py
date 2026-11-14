@@ -304,15 +304,24 @@ def probe(seq: str) -> str:
 
 @app.local_entrypoint()
 def main(seqs: str = "", stride: int = 2, max_frames: int = 450, do_probe: bool = False,
-         offsets: str = "") -> None:
+         offsets: str = "", parallel: bool = True) -> None:
     """``offsets`` is ``seq=seconds,...`` for sequences whose clock offset is measured."""
     import json
 
     want = {kv.split("=")[0]: float(kv.split("=")[1])
             for kv in offsets.split(",") if "=" in kv}
     wanted = [s for s in seqs.split(",") if s] or list(SEQUENCES)
-    for s in wanted:
-        if do_probe:
+    if do_probe:
+        for s in wanted:
             print("probe", probe.remote(s), flush=True)
-        else:
+        return
+    if parallel:
+        handles = [(s, prepare.spawn(s, stride, max_frames, want.get(s, 0.0))) for s in wanted]
+        for s, h in handles:
+            try:
+                print("prepare", json.loads(h.get()), flush=True)
+            except Exception as exc:
+                print(f"FAILED {s}: {exc}", flush=True)
+    else:
+        for s in wanted:
             print("prepare", prepare.remote(s, stride, max_frames, want.get(s, 0.0)), flush=True)

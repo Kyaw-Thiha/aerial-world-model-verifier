@@ -155,7 +155,8 @@ def nearest_index(query: np.ndarray, grid: np.ndarray) -> np.ndarray:
     return np.where(left, idx - 1, idx)
 
 
-def load_truth(root: str | Path, seq: str, offset: float | None = None) -> UzhTruth:
+def load_truth(root: str | Path, seq: str, offset: float | None = None,
+               rig: str | None = None, env: str | None = None) -> UzhTruth:
     """Load one prepared sequence.
 
     Pairing happens once, in ``remote/e_prepare.py``, using the measured clock offset; this
@@ -180,7 +181,11 @@ def load_truth(root: str | Path, seq: str, offset: float | None = None) -> UzhTr
     if len(t_unix) != len(t):
         raise ValueError(f"{seq}: {len(t_unix)} image timestamps for {len(t)} poses")
     sync = (load_sync(root).get(seq) or {})
-    return UzhTruth(seq=seq, rig=SEQUENCE_RIG[seq], env=SEQUENCE_ENV[seq], t=t, t_unix=t_unix,
+    rig = rig or SEQUENCE_RIG.get(seq)
+    env = env or SEQUENCE_ENV.get(seq) or meta.get("environment")
+    if rig is None:
+        raise KeyError(f"{seq}: not in the rig table; pass rig= and env= explicitly")
+    return UzhTruth(seq=seq, rig=rig, env=env, t=t, t_unix=t_unix,
                     pos=pos, quat=quat, R_bw=R_bw, offset_s=applied,
                     offset_corr=sync.get("offset_peak_corr"), n_frames=int(len(t)), meta=meta)
 

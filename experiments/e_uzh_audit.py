@@ -98,6 +98,16 @@ def audit_sequence(root: Path, seq: str, sync: dict, k_d: float = 0.0,
     res_inv = np.degrees(np.arccos(np.clip(np.einsum("ij,ij->i", u_imp, z_inv), -1, 1)))
 
     fit = up_direction_fit(truth.R_bw, z_body, a, v, k_d=k_d)
+    # a drag term can absorb a tilted "gravity", so the same fit is repeated with the TII
+    # drag value: if the fitted tilt shrinks, the tilt was drag, not levelling error
+    fit_drag = up_direction_fit(truth.R_bw, z_body, a, v, k_d=0.295)
+    res_drag = np.degrees(np.arccos(np.clip(np.einsum(
+        "ij,ij->i", (a + 9.81 * np.array([0.0, 0.0, 1.0]) + 0.295 * v)
+        / np.maximum(np.linalg.norm(a + 9.81 * np.array([0.0, 0.0, 1.0]) + 0.295 * v,
+                                   axis=1, keepdims=True), 1e-9), z_body), -1, 1)))
+    rest = {"n_frames": int(min(5, len(truth.t))),
+            "tilt_deg_median": float(np.median(truth.tilt_deg[:5])),
+            "accel_norm_median_mps2": float(np.median(np.linalg.norm(a[:5], axis=1)))}
 
     R_cb, t_cam_imu = published_mount(truth.meta)
     rot_err = float(np.max(np.abs(np.einsum("nij,nkj->nik", truth.R_bw, truth.R_bw)
@@ -123,6 +133,9 @@ def audit_sequence(root: Path, seq: str, sync: dict, k_d: float = 0.0,
                             else "world_to_body",
         },
         "world_frame": fit,
+        "world_frame_with_drag": fit_drag,
+        "flatness_residual_kd0295": summarize(res_drag),
+        "rest_segment": rest,
         "mount": {
             "R_cb": R_cb.tolist(), "t_cam_imu_m": t_cam_imu.tolist(),
             "optical_axis_elevation_deg": optical_axis_elevation_deg(R_cb),
