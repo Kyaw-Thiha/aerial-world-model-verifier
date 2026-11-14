@@ -72,7 +72,10 @@ did not already have.
 
 ## 2. Per-flight-type real distributions and margins (frozen R2)
 
-Real, testable clips; `margin_R2 = T − tau` with `T = max(|gx−c_x|/s_x, |gy−c_y|/s_y)`,
+The rates below apply the **pooled frozen band**, which is what a deployment uses. The
+D02 per-type table used per-fold leave-one-flight-out bands and gives piloted **2.0 %**,
+autonomous 25 %, track **33.3 %**; both are reported because the track margins are within
+0.4 of the band and one clip flips the rate. `margin_R2 = T − tau` with `T = max(|gx−c_x|/s_x, |gy−c_y|/s_y)`,
 `c_x=0.8137, s_x=0.2654, c_y=0.7181, s_y=0.0735, tau=2.1922`; `margin_corr = (1−r_min) −
 0.6197`. Positive margin = flagged.
 
@@ -82,7 +85,8 @@ Real, testable clips; `margin_R2 = T − tau` with `T = max(|gx−c_x|/s_x, |gy�
 | autonomous | 4 | 0.645 (0.627-0.659) | 0.642 (0.609-0.664) | 0.753 (0.645-0.966) | 0.629 (0.564-0.642) | **25.0 %** | 0.0 % | −0.59 | −0.25 |
 | track | 3 | 0.541 (0.525-0.543) | **0.242** (0.238-0.325) | 0.627 (0.605-0.652) | 0.642 (0.581-0.659) | 0.0 % | 0.0 % | −0.04 | −0.26 |
 
-The pooled 5.3 % is 4.0 % on the 50 piloted clips. Track is **not validated**: its gx is
+The pooled-band rate is 4.0 % on the 50 piloted clips (LOFO: 2.0 %). Track is **not
+validated**: its gx is
 0.24 against a band centre of 0.81, but the band's pitch scale (0.265) lets it sit just
 inside (margins −0.007 to −0.35). That is fragility, not validation.
 
