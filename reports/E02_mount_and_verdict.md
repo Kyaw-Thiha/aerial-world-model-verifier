@@ -115,3 +115,17 @@ the same frames to **0.046 deg median**, so the export pipeline does not perturb
 ## Task 5: the frozen-threshold transfer test
 
 Filled in from `results/e_verdict/<tag>/metrics.json`.
+
+### Graded output (T5) coverage
+
+The statistic produces, per clip and condition: required tilt (median), depicted tilt
+(median), the residual score, the fitted lag, the depicted confidence, the abstention reason
+and the testable flag. It does **not** produce a gain with an interval or a drag estimate —
+those belong to Track D's gain statistic, which is not published yet (see below). No number in
+this report is a gain.
+
+### Track D's statistic (5b)
+
+`track-d-verdict-stat` is at the same commit as `track-a2-gate` and has no
+`configs/gain_frozen.yaml` and no `scripts/score_clip.py`, so 5b is **not run**. The exported
+clips are the input for it: they are in the shared schema, validated, and uploaded to R2.
