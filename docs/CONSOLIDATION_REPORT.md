@@ -88,20 +88,22 @@ Final file: 483 lines, 7 track sections plus 6 shared sections, conflict-marker 
 
 ## 3. Not merged, and why
 
-* **`report_tex.zip` (the LaTeX report sources).** Not present on disk when the consolidation ran,
-  despite the brief expecting it, and still absent after the user approved deleting it once
-  integrated. It is the only Phase 3 item that could not be done: `main.tex` and `sections/` are
-  absent, so the *full* report cannot be compiled here. `report/assets_test.tex` (the assets-only
-  document) is in the repository and compiles. The integration is the one open step; the zip's
-  deletion and that of `awmv-report-assets-2026-11-15.zip` both wait on it. See §4, item 5.
+* **`report_tex.zip` (the LaTeX report sources).** Never present on disk — not when the
+  consolidation ran and not afterwards. It is the only Phase 3 item that could not be done:
+  `main.tex` and `sections/` are absent, so the *full* report cannot be compiled here.
+  `report/assets_test.tex` (the assets-only document) is in the repository and compiles with zero
+  undefined references. The integration stays open; nothing was deleted in its name. See §4, item 5.
 * **Nothing from the report-assets zip was left behind**: its 203 members were audited one by one
   (127 already byte-identical on `main`, 3 pre-consolidation scripts still reachable at `59ca0b6`,
   73 committed to `docs/archive/report-assets-2026-11-15/`).
 * **Handoff briefs 02-10.** Never committed by the tracks and not found anywhere on the machine;
   `docs/handoffs/README.md` records their absence. Handoff 01 exists (as the first agent's
   condensed record) and handoff 11 (this brief) is now committed.
-* **Branches, worktrees, bundles, zips, R2 objects, Modal volumes.** Nothing was deleted or moved.
-  Removal is Phase 5 and waits for explicit approval (checkpoint 2).
+* **Branches, worktrees and bundles.** Nothing was deleted or moved. Removal is Phase 5 and waits
+  for explicit approval, which had not been given for these when this report was last updated.
+  The one deletion performed is the `awmv-report-assets-2026-11-15.zip` described in §5c, done on
+  the user's explicit instruction after proving its contents are on `main`. R2 objects and Modal
+  volumes were not touched.
 * **`temp.md`, `temp.py`, `temp_proj`** in `~/Documents/Projects` — out of scope, untouched. The
   user confirmed at checkpoint 1 to leave them untouched.
 * **Science.** No discrepancy in `report/CHECKS.md`'s "Known open discrepancies" was resolved, no
@@ -198,9 +200,11 @@ git checkout track-d-verdict-stat
 * `track-d-verdict-stat.bundle` (32 MB, sha256 `a38e33ec…454545`, contains `2a91765` and a complete
   history) — still at the original path; a copy is also on R2 at
   `track-d/track-d-verdict-stat.bundle` per the D report;
-* `awmv-report-assets-2026-11-15.zip` (795 KB, sha256 `10134d9e…cd6d19`) — verified byte-identical
-  to `report/` on the `report-assets` branch (only `__pycache__` extra), and its `source_reports/`
-  carries every track's markdown reports and decisions log;
+* `awmv-report-assets-2026-11-15.zip` — **deleted on the user's explicit instruction**, after a
+  member-by-member audit showed every one of its 203 members is on `main` (127 byte-identical,
+  3 pre-consolidation scripts still reachable at `59ca0b6`, 73 committed under
+  `docs/archive/report-assets-2026-11-15/`). It was 795 KB, sha256
+  `10134d9e2c10ad4361a4a7b91e28076480c869d3d83c069c4a12592c39cd6d19`; nothing in it is lost;
 * `awmv-archive/untracked/track-c/` — the single untracked file found
   (`intrinsics.json`, from `results/pathrec_calib/`) and Track C's 103 MB `data/` tree;
 * `awmv-archive/untracked/data-manifest.tsv` — 42,535 paths with sizes and mtimes for the 3.3 GB
@@ -269,7 +273,8 @@ awmv-archive/
   inventory/ (INVENTORY.md, merge_decisions.py)
 awmv-track-a/ awmv-track-a2/ awmv-track-b/ awmv-track-c/ awmv-track-d/ awmv-track-e/ awmv-report/
                                   the worktrees — still present, removable after approval
-awmv-report-assets-2026-11-15.zip  track-d-verdict-stat.bundle   (kept in place)
+track-d-verdict-stat.bundle       (kept in place)
+                                  (awmv-report-assets-2026-11-15.zip deleted with approval)
 temp.md  temp.py  temp_proj/       out of scope, untouched
 ```
 

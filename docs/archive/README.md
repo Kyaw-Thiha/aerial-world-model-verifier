@@ -51,8 +51,8 @@ Frozen configs are immutable and are not listed here at all: `configs/phase1.yam
   `~/Documents/Projects/awmv-archive/` (bundles, tags, untracked files, the data manifest).
 * `docs/archive/report-assets-2026-11-15/` — the unique part of `awmv-report-assets-2026-11-15.zip`
   (`source_reports/` and `MANIFEST.txt`, 73 files) is committed here, with a member-by-member audit
-  in its `README.md`. All 203 members of the zip are therefore on `main`; the zip is kept until the
-  user releases it (its deletion is conditioned on the LaTeX sources being integrated first).
+  in its `README.md`. All 203 members of the zip are therefore on `main`, and the **zip itself was
+  deleted** on the user's instruction on 2026-11-15 (sha256 recorded there).
 * `track-d-verdict-stat.bundle` stays at its original path; a copy is also on R2 at
   `track-d/track-d-verdict-stat.bundle`, and the branch it contains is reachable from `main` and
   from `archive/track-d-pre-consolidation`.

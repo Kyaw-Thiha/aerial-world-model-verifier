@@ -3,8 +3,11 @@
 The report-assets agent delivered a zip on 2026-11-15 (795 KB, sha256 `10134d9e2c10ad4361a4a7b91e28076480c869d3d83c069c4a12592c39cd6d19`,
 `MANIFEST.txt` inside it records git HEAD `02f4e72` on branch `report-assets`).
 
-This directory holds the part of that zip that is **not** already a file on `main`, so that the
-zip itself can be deleted without losing anything. Verified member by member (203 members):
+**The zip itself was deleted** on 2026-11-15, on the user's explicit instruction, after this audit
+was complete (sha256 `10134d9e2c10ad4361a4a7b91e28076480c869d3d83c069c4a12592c39cd6d19`).
+
+This directory holds the part of that zip that was **not** already a file on `main`, so that the
+deletion loses nothing. Verified member by member (203 members):
 
 | members | status on `main` |
 | --- | --- |
