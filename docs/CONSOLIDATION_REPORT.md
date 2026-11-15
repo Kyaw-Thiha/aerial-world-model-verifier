@@ -89,9 +89,14 @@ Final file: 483 lines, 7 track sections plus 6 shared sections, conflict-marker 
 ## 3. Not merged, and why
 
 * **`report_tex.zip` (the LaTeX report sources).** Not present on disk when the consolidation ran,
-  despite the brief expecting it. It is the only Phase 3 item that could not be done: `main.tex`
-  and `sections/` are absent, so the *full* report cannot be compiled here. `report/assets_test.tex`
-  (the assets-only document) is in the repository and compiles. See §4, item 5.
+  despite the brief expecting it, and still absent after the user approved deleting it once
+  integrated. It is the only Phase 3 item that could not be done: `main.tex` and `sections/` are
+  absent, so the *full* report cannot be compiled here. `report/assets_test.tex` (the assets-only
+  document) is in the repository and compiles. The integration is the one open step; the zip's
+  deletion and that of `awmv-report-assets-2026-11-15.zip` both wait on it. See §4, item 5.
+* **Nothing from the report-assets zip was left behind**: its 203 members were audited one by one
+  (127 already byte-identical on `main`, 3 pre-consolidation scripts still reachable at `59ca0b6`,
+  73 committed to `docs/archive/report-assets-2026-11-15/`).
 * **Handoff briefs 02-10.** Never committed by the tracks and not found anywhere on the machine;
   `docs/handoffs/README.md` records their absence. Handoff 01 exists (as the first agent's
   condensed record) and handoff 11 (this brief) is now committed.

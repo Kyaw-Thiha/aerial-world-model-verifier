@@ -49,5 +49,10 @@ Frozen configs are immutable and are not listed here at all: `configs/phase1.yam
 
 * The pre-consolidation copies live **outside** the repository, in
   `~/Documents/Projects/awmv-archive/` (bundles, tags, untracked files, the data manifest).
-* After user approval, `awmv-report-assets-2026-11-15.zip` and `track-d-verdict-stat.bundle` are
-  moved into `awmv-archive/backups/` (they are not part of the repository history).
+* `docs/archive/report-assets-2026-11-15/` — the unique part of `awmv-report-assets-2026-11-15.zip`
+  (`source_reports/` and `MANIFEST.txt`, 73 files) is committed here, with a member-by-member audit
+  in its `README.md`. All 203 members of the zip are therefore on `main`; the zip is kept until the
+  user releases it (its deletion is conditioned on the LaTeX sources being integrated first).
+* `track-d-verdict-stat.bundle` stays at its original path; a copy is also on R2 at
+  `track-d/track-d-verdict-stat.bundle`, and the branch it contains is reachable from `main` and
+  from `archive/track-d-pre-consolidation`.
