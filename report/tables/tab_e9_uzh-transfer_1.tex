@@ -1,0 +1,15 @@
+\footnotesize
+\begin{tabular}{lrrrrr}
+\toprule
+Data / variant & $n$ & median & trimmed RMSE & full RMSE & $>10^\circ$ \\
+ & & (deg) & (deg) & (deg) & (\%) \\
+\midrule
+TII reference, raw fisheye & 5007 & 3.96 & 4.80 & 22.32 & 12.7 \\
+\midrule
+UZH forward, (b) raw fisheye & 3488 & 4.62 & 5.83 & 11.10 & 19.2 \\
+UZH forward, (a) pinhole + focal prior & 3488 & 1.53 & 4.29 & 12.66 & 13.1 \\
+UZH forward, (c) pinhole, focal free & 3488 & 2.06 & 4.47 & 12.55 & 11.0 \\
+\midrule
+UZH 45$^\circ$-down, (b) & 5381 & 6.75 & 8.96 & 18.66 & 33.5 \\
+\bottomrule
+\end{tabular}

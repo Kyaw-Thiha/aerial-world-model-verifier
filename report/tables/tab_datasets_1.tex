@@ -1,0 +1,11 @@
+\footnotesize
+\begin{tabular}{lllll}
+\toprule
+Dataset & sensor & rate & truth source & used for \\
+\midrule
+TII racing & fisheye + mocap & mocap 274.73 Hz; camera 12.04 Hz & mocap pose & E1-E3, E8, E10 \\
+UZH-FPV & forward / 45$^\circ$-down cameras & truth 500 Hz; clips ~15 Hz & sensor ground truth & E7, E9, E10 \\
+ANWM & generated frames (224/512 px) & 1 s per step, 16 steps & commanded path & E4-E7 \\
+\bottomrule
+\multicolumn{5}{l}{\footnotesize Rates and truth sources from the source audits (phase0 floor, UZH audit, ANWM clip index).} \\
+\end{tabular}
