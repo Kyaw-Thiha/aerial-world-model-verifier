@@ -6,8 +6,17 @@ Every asset script:
     report/data/<asset>.src.json (paths, commit, sha256, script, notes),
   * writes a LaTeX table fragment and/or a vector PDF figure.
 
-Source worktrees are resolved from AWMV_SOURCES (default:
-/home/kevin/Documents/Projects) and the fixed branch checkout names.
+Source checkouts are resolved in this order, per track:
+
+  1. ``$AWMV_SOURCES/awmv-track-<track>`` (default ``AWMV_SOURCES`` is
+     /home/kevin/Documents/Projects) - the pre-consolidation per-branch worktrees;
+  2. this repository's own root - the consolidated layout, where every track's
+     ``results/`` and ``reports/`` live on one branch.
+
+Both layouts place the files at the same relative paths, so the assets are built
+from identical bytes either way. Provenance (``data/<asset>.src.json``) keeps the
+per-branch identity recorded in ``report/cutoff.json`` under layout 2, and
+re-reads it from git under layout 1.
 """
 from __future__ import annotations
 
@@ -25,14 +34,90 @@ TABLES = REPORT / "tables"
 FIGURES = REPORT / "figures"
 
 SOURCES = Path(os.environ.get("AWMV_SOURCES", "/home/kevin/Documents/Projects"))
-WORKTREES = {
-    "a": SOURCES / "awmv-track-a",
-    "a2": SOURCES / "awmv-track-a2",
-    "b": SOURCES / "awmv-track-b",
-    "c": SOURCES / "awmv-track-c",
-    "d": SOURCES / "awmv-track-d",
-    "e": SOURCES / "awmv-track-e",
+REPO_ROOT = REPORT.parent
+
+
+def _checkout(track: str) -> Path:
+    """Per-track worktree if it exists, else the consolidated repository root."""
+    d = SOURCES / f"awmv-track-{track}"
+    return d if d.is_dir() else REPO_ROOT
+
+
+WORKTREES = {t: _checkout(t) for t in ("a", "a2", "b", "c", "d", "e")}
+
+# Branch names and the per-branch HEADs recorded when the assets were last built
+# from the per-branch worktrees (report/cutoff.json). Used only under the
+# consolidated layout, where re-reading them from git would report the single
+# consolidation branch instead of the six source branches.
+TRACK_BRANCH = {
+    "a": "track-a-perception", "a2": "track-a2-gate", "b": "track-b-generation",
+    "c": "track-c-pathrec", "d": "track-d-verdict-stat", "e": "track-e-depicted-uzh",
 }
+
+# Pre-registration commit of each frozen config, as recorded in
+# report/tables/tab_frozen-configs_1.tex (the commit that last touched the file on
+# its own branch). Used only under the consolidated layout.
+FROZEN_CONFIG_COMMITS = {
+    "configs/phase1.yaml": "e4fd5d9",
+    "configs/verdict_preregistration.yaml": "0834204",
+    "configs/gate_frozen.yaml": "9e1656d",
+    "configs/pathrec_prereg.yaml": "6a16297",
+    "configs/gain_frozen.yaml": "7e8c42e",
+    "configs/coherence_frozen.yaml": "7e8c42e",
+    "configs/window_bandwidth_prereg.yaml": "c7af793",
+}
+
+_RECORDED = None
+
+
+def recorded_heads() -> dict:
+    """Per-branch head/date snapshot from report/cutoff.json (may be empty)."""
+    global _RECORDED
+    if _RECORDED is None:
+        try:
+            with open(REPORT / "cutoff.json", encoding="utf-8") as fh:
+                _RECORDED = json.load(fh).get("branches", {})
+        except (OSError, ValueError):
+            _RECORDED = {}
+    return _RECORDED
+
+
+def on_consolidated(track: str) -> bool:
+    """True when this track is read from the consolidated repository root."""
+    return WORKTREES[track] == REPO_ROOT
+
+
+def branch_name(track: str) -> str:
+    if on_consolidated(track):
+        return TRACK_BRANCH[track]
+    return subprocess.check_output(
+        ["git", "-C", str(WORKTREES[track]), "rev-parse", "--abbrev-ref", "HEAD"], text=True
+    ).strip()
+
+
+def commit_of(track: str) -> str:
+    if on_consolidated(track):
+        rec = recorded_heads().get(TRACK_BRANCH[track], {})
+        if rec.get("head"):
+            return rec["head"]
+    return subprocess.check_output(
+        ["git", "-C", str(WORKTREES[track]), "rev-parse", "HEAD"], text=True
+    ).strip()
+
+
+def head_short(track: str) -> str:
+    return commit_of(track)[:7]
+
+
+def head_date(track: str) -> str:
+    if on_consolidated(track):
+        rec = recorded_heads().get(TRACK_BRANCH[track], {})
+        if rec.get("head_date"):
+            return rec["head_date"][:10]
+    return subprocess.check_output(
+        ["git", "-C", str(WORKTREES[track]), "log", "-1", "--format=%ad", "--date=short"],
+        text=True,
+    ).strip()
 
 R2_PREFIXES = {
     "a": "track-a/",
@@ -65,9 +150,7 @@ def sha256(path: Path) -> str:
 
 
 def git_commit(track: str) -> str:
-    return subprocess.check_output(
-        ["git", "-C", str(WORKTREES[track]), "rev-parse", "HEAD"], text=True
-    ).strip()
+    return commit_of(track)
 
 
 def provenance(asset: str, sources, notes: str = "", derived: bool = False):
@@ -82,10 +165,7 @@ def provenance(asset: str, sources, notes: str = "", derived: bool = False):
         entries.append(
             {
                 "worktree": track,
-                "branch": subprocess.check_output(
-                    ["git", "-C", str(WORKTREES[track]), "rev-parse", "--abbrev-ref", "HEAD"],
-                    text=True,
-                ).strip(),
+                "branch": branch_name(track),
                 "commit": git_commit(track),
                 "path": rel,
                 "abs_path": str(p),

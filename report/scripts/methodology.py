@@ -38,7 +38,10 @@ def config_provenance(track, rel):
     p = C.WORKTREES[track] / rel
     if not p.exists():
         return None
-    commit = git(track, "log", "-1", "--format=%h", "--", rel)
+    if C.on_consolidated(track):
+        commit = C.FROZEN_CONFIG_COMMITS.get(rel, C.commit_of(track)[:7])
+    else:
+        commit = git(track, "log", "-1", "--format=%h", "--", rel)
     return commit, C.sha256(p)
 
 
@@ -80,8 +83,8 @@ def build():
     ]
     csv_rows = []
     for track, branch in BRANCHES.items():
-        head = git(track, "rev-parse", "--short", "HEAD")
-        headdate = git(track, "log", "-1", "--format=%ad", "--date=short")
+        head = C.head_short(track)
+        headdate = C.head_date(track)
         cfg = []
         for rel in CONFIGS[track]:
             pr = config_provenance(track, rel)

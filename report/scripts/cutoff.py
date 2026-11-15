@@ -28,10 +28,13 @@ def build():
     }
     for branch, track in BRANCHES.items():
         payload["branches"][branch] = {
-            "head": git(track, "rev-parse", "HEAD"),
-            "head_short": git(track, "rev-parse", "--short", "HEAD"),
-            "head_date": git(track, "log", "-1", "--format=%ad", "--date=iso"),
-            "worktree": str(C.WORKTREES[track]),
+            "head": C.commit_of(track),
+            "head_short": C.head_short(track),
+            "head_date": (C.recorded_heads().get(C.TRACK_BRANCH[track], {}).get("head_date")
+                          if C.on_consolidated(track)
+                          else git(track, "log", "-1", "--format=%ad", "--date=iso")),
+            "worktree": (C.recorded_heads().get(C.TRACK_BRANCH[track], {}).get("worktree")
+                         if C.on_consolidated(track) else str(C.WORKTREES[track])),
             "r2_prefix": C.R2_PREFIXES[track],
             "r2_object_count": None,
             "handoff_head_note": ("handoff ~59b3aaf; advanced during build" if track == "d" else
