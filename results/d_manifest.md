@@ -1,8 +1,8 @@
 # Track D artifact manifest
 
-R2 prefix: `track-d/`. Clips under `data/processed/track_d/clips/` are derived (1000 files, ~16 MB) and rebuildable by `experiments/d_build_clips.py`; they are not committed.
+R2 prefix: `track-d/`. Clips under `data/processed/track_d/clips/` and `data/processed/track_e_uzh/` are derived and rebuildable; they are not committed.
 
-Bundle: `track-d-verdict-stat.bundle` (complete history of `track-d-verdict-stat`; the SSH push failed, so this is the backup). Created with `HEAD track-d-verdict-stat` so a plain `git clone` checks out the branch. R2 key `track-d/track-d-verdict-stat.bundle`; the uploaded object's sha256 is recorded in the upload log. Size at creation: ~33 MB.
+Bundle: `track-d-verdict-stat.bundle` (complete history of `track-d-verdict-stat`; SSH push failed). Created with `HEAD track-d-verdict-stat` so a plain `git clone` checks out the branch. R2 key `track-d/track-d-verdict-stat.bundle`; the upload log records its sha256.
 
 | file | bytes | sha256 |
 | --- | --- | --- |
@@ -54,5 +54,13 @@ Bundle: `track-d-verdict-stat.bundle` (complete history of `track-d-verdict-stat
 | results/d_window/d01/metrics.json | 26667 | a39458cac071445b… |
 | results/d_window/d01/table.md | 740 | a977ebd80f4fda3c… |
 | results/d_flights/d01/interval.json | 788 | a4f0f9d6c892bd8b… |
+| results/d_bandwidth/d01/metrics.json | 7608 | 4141df86213df270… |
+| results/d_bandwidth/d01/table.md | 1459 | 449a44bca3c2ca78… |
+| results/d_bandwidth/d01/tii_windows.csv | 12667 | c5f4db6a66a8fbb8… |
+| results/d_bandwidth/d01/uzh_coherence.csv | 3123 | 6eec037a2272af62… |
+| results/d_bandwidth/d01/uzh_windows.csv | 4140 | 655c4a6d26768fed… |
+| results/d_uzh_v2/analysis.json | 1401 | 80cf7b1c08932a57… |
+| results/d_uzh_v2/loso_quick.json | 2637 | 81b7a842647409f2… |
+| results/d_uzh_v2/track_e_metrics_w370ms.json | 112514 | 5b7454c423d9c0ba… |
 | results/d_repro_baseline/20261113T192340Z/metrics.json | 1466 | 38e4c909cd013b9a… |
 | results/d_repro_baseline/20261114T200003Z/metrics.json | 1466 | 354770068b72de0b… |
