@@ -1,0 +1,51 @@
+# Proposal — minimum-viable path rule for coarse commanded paths (NOT APPLIED)
+
+Status: **proposed, not applied.** This is not a change to any frozen config. The dense
+bandwidth rule (`configs/window_bandwidth_prereg.yaml`) abstains on a 1 Hz / 16-point path;
+this file defines what a coarse-path mode could do instead. It has not been scored on ANWM
+or any generated data.
+
+Date: 2026-11-14. Context: `reports/D04_bandwidth_window.md` §coarse paths.
+
+## When it applies
+
+When the required-lean window selected by the bandwidth rule contains fewer than 8 samples
+at the path's native rate — for example a 1 Hz, 16-point ANWM-like path, where every
+non-zero FFT bin gives a window of at most 7.5 s (7.5 samples) and the maximally smooth
+case gives 8 s (8 samples) but exceeds half the 15 s duration. In that regime the dense
+rule always abstains; the coarse rule is the only testable reading.
+
+## Rule (proposal)
+
+1. **Do not differentiate with a Savitzky-Golay window.** Treat the commanded path as
+   piecewise-constant acceleration between waypoints.
+2. At each interior waypoint `k`, compute
+   `v_k = (p_{k+1} − p_{k−1}) / (t_{k+1} − t_{k−1})`,
+   `a_k = (v_{k+1} − v_k) / Δt`, then
+   `u_k = normalize(a_k + g e3 + k_d v_k)`, `l_req_k = Rz(−yaw_k)[u_k_x, u_k_y]`,
+   and `vel_req_k = Rz(−yaw_k)[v_k_x, v_k_y] / g`.
+3. Require at least **8 intervals** and at least **8 intervals with required tilt ≥ 10°**.
+4. If those are not met, **abstain**; do not lengthen a window or interpolate the path.
+5. Because the true acceleration can vary inside a 1 s interval, the finite-difference
+   required lean is a **lower bound** on the peak. Label the mode
+   `coarse_path_lower_bound`; a flag is a real violation, a pass is not proof of
+   consistency.
+6. The fallback when even the finite difference is too noisy is the **peak lower bound**
+   `|Δv_h|/Δt` projected on the horizontal plane (the Track A2 `peaks.py` form): it needs
+   no second derivative and no window, and also bounds the required tilt from below.
+
+## What it must not do
+
+- Do not compare its gains to the dense-window R2 band without recalibrating: the
+  regressor, the sample count and the lower-bound interpretation differ.
+- Do not use it on generated video in this round; it is a definition and a proposal.
+- Do not change `configs/gain_frozen.yaml`, `configs/coherence_frozen.yaml` or the
+  bandwidth pre-registration.
+
+## Why this is the minimum viable rule
+
+A 1 Hz, 16-point path carries 15 intervals; the finite difference is exact under the only
+model the data can support (constant acceleration between waypoints), and 15 intervals
+clear the 8-interval floor. It gives a required lean at every waypoint with no smoothing
+window, so the depicted side (one frame per waypoint) can be compared on the same samples.
+The cost is stated: it is a lower-bound test and a different mode, not the dense verdict.

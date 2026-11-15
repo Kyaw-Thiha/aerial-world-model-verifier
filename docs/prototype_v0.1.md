@@ -55,6 +55,15 @@ rule abstains 100 %; at the 500 Hz truth rate it is 35-62 samples. The rule poin
 at the rule windows is not on R2, so this is not yet verified. **The gain tier requires
 per-domain calibration even with the window rule.**
 
+## 3b. Coarse paths
+
+A 1 Hz, 16-point ANWM-like path **always abstains** under the bandwidth rule (f95 ≥ 1/15 Hz
+gives a window of at most 7.5 samples; a smoothed 0.0625 Hz edge gives 8 s, longer than
+half the 15 s duration). The minimum-viable coarse-path mode is proposed only
+(`configs/coarse_path_rule_proposal.yaml`): piecewise-constant acceleration between
+waypoints, finite-difference required lean, ≥8 intervals and ≥8 above 10°, explicitly a
+lower-bound test, not the dense-window verdict.
+
 ## 4. What it detects and what it cannot
 
 **Detects (TII piloted, with enough excitation):** full tilt removal, mirrored roll, and
@@ -89,10 +98,14 @@ verdict.
 
 ## 7. Numbers with cluster intervals
 
-- TII gain: 3/57 false rejects, **6 flights**, pooled 5.26 %, flight-cluster 95 %
-  **[2.86, 20.0 %]**; unweighted flight mean 9.7 % [0.6, 26.3 %]. 50 of 57 clips are from
-  two piloted flights.
-- TII coherence: 3/57 with the frozen tau (5.3 % [0-7.1 %]); held-out LOFO 8.8 %.
+- TII gain: 3/57 false rejects in **3 of 6 flights** (01a 1/2, 01p 1/26, 07p 1/24),
+  pooled 5.26 %, same flight-cluster bootstrap (5,000 draws, 6 flights with replacement,
+  clip-weighted): 95 % **[2.86, 20.0 %]**; unweighted flight mean 9.7 % [0.6, 26.3 %].
+  50 of 57 clips are from two piloted flights.
+- TII coherence: 3/57 with the frozen tau (5.3 % [0-7.1 %]); held-out LOFO 8.8 %. The
+  3 flags are in 2 of the 6 testable flights (01p 2, 07p 1). Bootstrap: 5,000 draws,
+  resample the 6 flights with replacement, concatenate their real clips, clip-weighted
+  pooled rate; 2.5/97.5 percentiles.
 - UZH coherence: 1/9, 4 sequences, **[0.00, 0.375]**; removal/mirror 1.0 [1.0, 1.0].
 - UZH R2 TII band: 5/9, 4 sequences, **[0.50, 0.636]**.
 - UZH R2 LOSO: 1/9, 6-7 fit clips, [0.00, 0.375], unstable.

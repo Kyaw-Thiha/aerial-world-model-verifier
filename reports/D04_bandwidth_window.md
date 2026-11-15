@@ -128,3 +128,48 @@ operational window selector: `c=0.5`, 8-sample floor at the truth rate, no clamp
 schema-v2 `lean_req`/`vel_req` at the rule-selected window from dense truth (TII 274.73 Hz,
 UZH 500 Hz); re-freeze the R2 band on >=30 real clips; verify UZH at the rule windows
 before claiming transfer. **Not applied**; the frozen configs remain at 0.37 s/R2.
+
+## Coarse commanded paths (1 Hz, 16 points, ANWM-like)
+
+The rule **always abstains** on a 1 Hz, 16-point path (t = 0..15 s):
+
+- the non-zero rFFT bins are k/15 Hz, the first at 0.0667 Hz;
+- f95 ≥ 0.0667 Hz gives window = 0.5/f95 ≤ 7.5 s, i.e. ≤ 7.5 samples at 1 Hz, below the
+  8-sample floor;
+- f95 = 0 (or below 0.05 Hz) is undefined and abstains;
+- the only way to reach 8 samples is a smoothed f95 of 0.0625 Hz, which is not an FFT bin;
+  that gives an 8 s window, greater than half the 15 s duration, so the duration guard
+  abstains.
+
+Synthetic checks: smooth curve f95 0.0625 → window 8.0 s, 8.0 samples, abstain (half
+duration); slalom f95 0.1875 → 2.67 s, 2.67 samples, abstain (floor); straight line 1.33
+samples; waypoint step 1.14 samples. No 16-point 1 Hz path passes.
+
+**Minimum-viable coarse-path rule (proposal only):**
+`configs/coarse_path_rule_proposal.yaml`. Piecewise-constant acceleration between
+waypoints, finite-difference required lean, at least 8 intervals and 8 intervals above
+10°, lower-bound interpretation (`coarse_path_lower_bound`), fallback to the `|Δv_h|/Δt`
+peak bound. It is not applied and is not comparable to the dense-window band without
+recalibration.
+
+## Appendix: exact TII flight-cluster bootstrap
+
+Both intervals use the same procedure, not clip-level Wilson intervals:
+
+- **Flights:** the 6 flights with testable real clips — 01a (2), 01p (26), 04a (2),
+  07p (24), 13p (2), 16p (1). The two other TII flights (07a, 13a) have zero testable
+  clips and are not in the resampling.
+- **Replicates:** 5,000, `numpy.random.default_rng(1)`. Each replicate draws 6 flights
+  with replacement, concatenates all real clips of the drawn flights, and computes the
+  **clip-weighted pooled rate** `sum(flags)/sum(clips)`; the interval is the 2.5th/97.5th
+  percentile. The point is `sum(flags)/57`.
+- **Coherence** (frozen tau 0.6197): 3/57 = 5.26 %; the 3 flags are in **2 flights**
+  (01p 2, 07p 1); 95 % **[0.00 %, 7.14 %]**, median 5.26 %. Unweighted mean of the six
+  flight rates: 1.98 % [0.00, 4.54].
+- **Gain R2** (frozen band, d02): 3/57 = 5.26 %; the 3 flags are in **3 flights**
+  (01a 1/2, 01p 1/26, 07p 1/24); 95 % **[2.86 %, 20.0 %]**, median 5.17 %. Unweighted
+  mean of the six flight rates: 9.67 % [0.64, 26.28].
+
+The clips within a flight share scene, estimator state and path; the intervals therefore
+resample flights, and the clip count (57) overstates the evidence (50 clips come from two
+piloted flights).
