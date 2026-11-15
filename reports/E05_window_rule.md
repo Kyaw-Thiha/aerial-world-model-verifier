@@ -110,3 +110,42 @@ and no outdoor detection claim is made, as pre-registered.
 * **The R2 band's window-sensitivity (E04 §2.4) is therefore not explained by a principled
   bandwidth rule**: the principled window is ≈0.37 s, and at 0.37 s the band fails. Shortening the
   window to 0.10 s makes the band pass, but no path-derived rule at the truth rate picks 0.10 s.
+
+## 5. Reconciliation: coherence false reject at 0.37 s versus at the rule's windows
+
+One row per run, then the clip that moves.
+
+| run | required-lean window | clips scored / sequences | testable real clips | abstention (real) | coherence false reject | R2 false reject (context) |
+| --- | --- | --- | --- | --- | --- | --- |
+| E04 headline | **0.37 s**, one value for all sequences | 126 / 7 | **9** (4 sequences: indoor_forward_3, _5, _9, _10) | 9/18 = 0.500 (gate 5, gain-CI 6) | **1/9 = 0.111** [0.00, 0.375] | 0.556 [0.50, 0.64] |
+| E05 rule | **0.336-1.420 s**, per sequence (indoor_forward_3 0.458, _5 0.386, _9 1.029, _10 0.879) | 126 / 7 | **9** - *the identical clips* | 9/18 = 0.500 (gate 5, gain-CI 6) | **0/9 = 0.000** [0.00, 0.000] | 0.778 [0.57, 1.00] |
+
+**No population differs between E04 and E05.** Same 126 clips over the same 7 sequences, same 21
+excluded files (`indoor_forward_7`), same 42 dropped files (field below 25 %), same 18 real clips
+reaching the scorer, same 9 testable, same abstention counts and reasons. The two runs differ in
+exactly one input: the required-lean window. So the counts are not the story; the single clip is.
+
+**The clip that moves, and which tier moved it.** `indoor_forward_9_00_real`:
+
+| window (indoor_forward_9) | r_x | r_y | 1-min(r) vs tau_corr 0.6197 | s_x | s_y | 1-min(s) vs tau_sign 0.2921 | flagged |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 0.37 s | 0.983 | 0.912 | 0.088 - far below | 0.804 | **0.667** | **0.333 - above** | **yes (sign)** |
+| 1.029 s (rule) | 0.985 | 0.869 | 0.131 - far below | 0.765 | **0.750** | **0.250 - below** | no |
+
+The **correlation tier never fires**: no clip on any window comes within 0.40 of `tau_corr`. The
+flip is entirely in the **sign tier**, where one clip's per-axis sign agreement moves from 0.667 to
+0.750 (`1-min(s)` from 0.333 to 0.250) and crosses 0.2921. Every other clip keeps its decision, with
+`1-min(s)` moving by at most 0.05 and `1-min(r)` by at most 0.003.
+
+**How to read the 1/9 -> 0/9, stated plainly.** It is one clip crossing one threshold by 0.041 in a
+statistic whose value for that clip is 0.33 at one window and 0.25 at another — a boundary case, not
+evidence that the rule's window is the better one. The defensible claims are the ones that hold at
+*both* windows: coherence false reject is **0.000-0.111**, inside the 0.15 budget either way, with
+detection 1.000/1.000 and both controls at 0.000-0.111; and coherence is the only one of the three
+statistics whose decision does not change with the window in a systematic direction. The R2 band, by
+contrast, moves 0.556 -> 0.778 across the same pair of windows and fails both times.
+
+Windows are the *sequence* windows. `indoor_forward_9`'s clip 00 is the only real clip in the set
+whose sequence window (1.029 s) is more than 0.3 s away from 0.37 s and which sits near a threshold;
+the other long-window sequences (indoor_forward_10 0.879 s, outdoor 1.34-1.42 s) either keep their
+decisions or are abstained on the gate.
