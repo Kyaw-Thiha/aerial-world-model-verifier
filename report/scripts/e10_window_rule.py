@@ -67,27 +67,25 @@ def build():
              ("mirror_roll", "mirrored roll"), ("scale_0.5", "$\\times 0.5$"),
              ("scale_1.5", "$\\times 1.5$")]
     lines = [
-        r"\begin{tabular}{lrrrr}",
+        r"\begin{tabular}{lrrrrr}",
         r"\toprule",
-        r"Condition & R2 (rule) & R2 (0.37 s) & coherence (rule) & coherence (0.37 s) \\",
-        r" & (\%) & (\%) & (\%) & (\%) \\",
+        r"Condition & R2 (rule) & coherence (rule) & median residual (rule) & R2 (0.37 s) & coherence (0.37 s) \\",
+        r" & (\%) & (\%) & (\%) & (\%) & (\%) \\",
         r"\midrule",
     ]
     for key, label in conds:
-        r2r = rule["r2"][key]; r2h = head["r2"][key]
-        cor = rule["coherence"][key]; coh = head["coherence"][key]
+        r2r = rule["r2"][key]; cor = rule["coherence"][key]
+        mrr = rule["median_residual"][key]
+        r2h = head["r2"][key]; coh = head["coherence"][key]
         lines.append(f'{label} & {100*r2r["rate"]:.1f} ({r2r["k"]}/{r2r["n"]}) & '
-                     f'{100*r2h["rate"]:.1f} ({r2h["k"]}/{r2h["n"]}) & '
                      f'{100*cor["rate"]:.1f} ({cor["k"]}/{cor["n"]}) & '
+                     f'{100*mrr["rate"]:.1f} ({mrr["k"]}/{mrr["n"]}) & '
+                     f'{100*r2h["rate"]:.1f} ({r2h["k"]}/{r2h["n"]}) & '
                      f'{100*coh["rate"]:.1f} ({coh["k"]}/{coh["n"]}) \\\\')
-    mr = rule["median_residual"]
-    lines.append(r"\midrule")
-    lines.append(f'Median residual, real$^\\dagger$ & {100*mr["real"]["rate"]:.1f} '
-                 f'({mr["real"]["k"]}/{mr["real"]["n"]}) & -- & -- & -- \\\\')
     lines += [r"\bottomrule",
-              r"\multicolumn{5}{l}{\footnotesize $^\dagger$Median-residual population is wider "
-              r"(18 clips) than the gain/coherence population (9); the dagger marks intervals "
-              r"that are descriptive with 4-7 sequences.} \\",
+              r"\multicolumn{6}{l}{\footnotesize At the rule windows the stored run has 11 "
+              r"median-residual real clips (E05 prints 18); the table uses the stored "
+              r"denominator. 4-7 sequences, so intervals are descriptive.} \\",
               r"\end{tabular}"]
     C.write_tex(ASSET + "_2", "\n".join(lines))
 

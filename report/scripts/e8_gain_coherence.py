@@ -62,20 +62,25 @@ def build():
 
     # ---- table 2: decomposition
     lines = [
-        r"\begin{tabular}{lrrrr}",
+        r"\begin{tabular}{lrrrrr}",
         r"\toprule",
-        r"Flight type & truth to required & estimated to truth & verdict gain & dense required lean \\",
-        r" & (slope) & (slope) & (slope) & (slope) \\",
+        r"Flight type & clips & truth to required & estimated to truth & verdict gain & dense required lean \\",
+        r" & & (slope) & (slope) & (slope) & (slope) \\",
         r"\midrule",
     ]
     a = decomp["all"]
     lines.append(f'All clips ({decomp["n_clips"]}, {a["a_gain"]["n_flights"]} flights) & '
-                 f'{a["a_gain"]["median"]:.3f} & {a["b_gain"]["median"]:.3f} & '
+                 f'{decomp["n_clips"]} & {a["a_gain"]["median"]:.3f} & {a["b_gain"]["median"]:.3f} & '
                  f'{a["c_v1_gain"]["median"]:.3f} & {a["c_v2_gain"]["median"]:.3f} \\\\')
     for typ, d in decomp["by_type"].items():
-        lines.append(f'{typ} & {d["a_gain"]["median"]:.3f} & {d["b_gain"]["median"]:.3f} & '
-                     f'{d["c_v1_gain"]["median"]:.3f} & {d["c_v2_gain"]["median"]:.3f} \\\\')
-    lines += [r"\bottomrule", r"\end{tabular}"]
+        lines.append(f'{typ} & {d["a_gain"]["n_clips"]} & {d["a_gain"]["median"]:.3f} & '
+                     f'{d["b_gain"]["median"]:.3f} & {d["c_v1_gain"]["median"]:.3f} & '
+                     f'{d["c_v2_gain"]["median"]:.3f} \\\\')
+    lines += [r"\bottomrule",
+              r"\multicolumn{6}{l}{\footnotesize This table uses the frozen v2 population "
+              r"(autonomous 3, track 4 clips); the pre-dense-lean v2 population has autonomous "
+              r"4 and track 3 because one clip moved.} \\",
+              r"\end{tabular}"]
     C.write_tex(ASSET + "_2", "\n".join(lines))
 
     # ---- table 3: window sensitivity

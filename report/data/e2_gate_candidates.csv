@@ -1,0 +1,7 @@
+signal,eligible,auroc,coverage,kept_median_deg,dropped_median_deg
+S1_gravity_uncertainty,True,0.786685,0.400974,3.5314,5.0594
+S2_up_confidence,True,0.889946,0.650974,3.4794,8.1776
+S3_latitude_confidence,True,0.945652,0.597465,3.5054,8.0352
+S4_temporal_jitter,False,0.983696,0.801948,3.5667,9.8653
+S5_vo_agreement,False,0.989130,0.831169,3.6386,11.2449
+S6_uncertainty_instability,True,0.748641,0.665035,3.6386,6.3142

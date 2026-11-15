@@ -1,0 +1,35 @@
+{
+  "asset": "e7_implied",
+  "script": "report/scripts/e7_extra.py",
+  "derived_by_report_script": true,
+  "notes": "The two runs and the corrected sample sweep. The first run's seconds-based sweep is inert and is not a usable curve. Oracle-ladder row 4 is self-consistency; 01p's 26.5 deg residual is outside the quoted 2.75-8.30 range and is noted.",
+  "sources": [
+    {
+      "worktree": "a",
+      "branch": "track-a-perception",
+      "commit": "164c5e0dce12d8a4d39ecc01fa874ad126b659a9",
+      "path": "results/phase2_implied/20261108T132738Z_c738aa8/metrics.json",
+      "abs_path": "/home/kevin/Documents/Projects/awmv-track-a/results/phase2_implied/20261108T132738Z_c738aa8/metrics.json",
+      "sha256": "6c7d41d4f2de29a9558ab6492e0bef83ff76940701bb245ff646308994aafcd4",
+      "r2_prefix": "track-a/"
+    },
+    {
+      "worktree": "a",
+      "branch": "track-a-perception",
+      "commit": "164c5e0dce12d8a4d39ecc01fa874ad126b659a9",
+      "path": "results/phase2_implied/20261109T173302Z_d9de303/metrics.json",
+      "abs_path": "/home/kevin/Documents/Projects/awmv-track-a/results/phase2_implied/20261109T173302Z_d9de303/metrics.json",
+      "sha256": "f2d21ee629cee173228aaba7a0b9667ce78d265f49a826c855f7aec5baf0b707",
+      "r2_prefix": "track-a/"
+    },
+    {
+      "worktree": "a",
+      "branch": "track-a-perception",
+      "commit": "164c5e0dce12d8a4d39ecc01fa874ad126b659a9",
+      "path": "results/phase1b_fusion/20261108T133135Z_c738aa8/metrics.json",
+      "abs_path": "/home/kevin/Documents/Projects/awmv-track-a/results/phase1b_fusion/20261108T133135Z_c738aa8/metrics.json",
+      "sha256": "7d665e07ae0779dbfb18caa1c1c32043e3428513bf1ed92024b720ae2a2814bf",
+      "r2_prefix": "track-a/"
+    }
+  ]
+}

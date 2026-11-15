@@ -1,0 +1,26 @@
+{
+  "asset": "e5_dtmin",
+  "script": "report/scripts/e5_extra.py",
+  "derived_by_report_script": true,
+  "notes": "Median per-clip minimum consistent dt from the stored summary, grouped by regime and designed tilt; untestable clips are censored, not dropped.",
+  "sources": [
+    {
+      "worktree": "a2",
+      "branch": "track-a2-gate",
+      "commit": "428dd3fcaba9ead0eef5a537e75bbb2eb2968479",
+      "path": "results/a2_anwm_score/20261109T203155Z_46a8a54/summary.json",
+      "abs_path": "/home/kevin/Documents/Projects/awmv-track-a2/results/a2_anwm_score/20261109T203155Z_46a8a54/summary.json",
+      "sha256": "80f8ee6730a9007eb38959b86ab691dc3d089164576c03fbc32f72f17f3ee2ec",
+      "r2_prefix": "track-a/a2/"
+    },
+    {
+      "worktree": "a2",
+      "branch": "track-a2-gate",
+      "commit": "428dd3fcaba9ead0eef5a537e75bbb2eb2968479",
+      "path": "results/a2_anwm_score/20261109T203155Z_46a8a54/per_clip.json",
+      "abs_path": "/home/kevin/Documents/Projects/awmv-track-a2/results/a2_anwm_score/20261109T203155Z_46a8a54/per_clip.json",
+      "sha256": "46ce831db85944372310fc32760b7e2fa35aed98494724c56298f661145b528c",
+      "r2_prefix": "track-a/a2/"
+    }
+  ]
+}

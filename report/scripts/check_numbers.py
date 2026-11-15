@@ -170,6 +170,91 @@ def build():
     add("E10", "UZH median residual at rule windows, false reject", 0.000,
         rule["median_residual"]["real"]["rate"], TOL_RATE)
 
+
+    # ---------- E2 additional
+    fus = C.load_json("a", "results/phase1b_fusion/20261108T133135Z_c738aa8/metrics.json")
+    leans = C.load_json("a", "results/phase3a_verdict/20261109T074134Z_492033f_lean/leans.json")["summary"]
+    add("E2", "fusion pooled median flight tilt RMSE (deg)", 8.73,
+        fus["pooled"]["median_flight_tilt_rmse_deg"], TOL_DEG)
+    add("E2", "fusion pooled median lean error (deg)", 84.0,
+        fus["pooled"]["median_flight_lean_deg"], 1.0)
+    for w, exp in (("0.5", 4.4), ("1", 10.9), ("2", 19.3), ("3", 84.6), ("4", 114.6),
+                   ("5", 89.7)):
+        add("E2", f"windowed azimuth lean error at {w} s (deg)", exp,
+            leans["windowed_median_deg"][w], 0.2)
+    add("E2", "one-azimuth-per-clip lean error (deg)", 85.5,
+        leans["one_per_clip_median_deg"], 0.2)
+    gv = C.load_json("a2", "results/a2_gate/20261109T201449Z_298ff20/gate_validation.json")["validation"]["signals"]["S3_latitude_confidence"]
+    add("E2", "gate S3 coverage", 0.60, gv["lofo_coverage_overall"], TOL_RATE)
+    dropped_good = sum(d["n_dropped_neg"] for d in gv["lofo"].values())
+    add("E2", "good clips dropped by gate", 22, dropped_good, 0)
+
+    # ---------- E3 additional
+    p3 = C.load_json("a", "results/phase3a_verdict/20261109T090957Z_bc3a398/metrics.json")["evaluation"]
+    add("E3", "first verdict held-out acceptance", 0.711, p3["heldout_acceptance"], TOL_RATE)
+    add("E3", "first verdict AUROC tilt removal", 0.918, p3["families"]["tilt_k0"]["auroc"], TOL_RATE)
+    add("E3", "first verdict Spearman score vs injected", 0.82,
+        p3["spearman_score_vs_injected_deg"], 0.01)
+    add("E3", "primary threshold (deg)", 5.76,
+        p3["pooled_thresholds"]["pooled"]["threshold"], TOL_DEG)
+    add("E3", "all-flights policy acceptance", 0.952,
+        p3["alt_threshold_policy_all_flights"]["heldout_acceptance"], TOL_RATE)
+    add("E3", "all-but-13a policy acceptance", 0.904,
+        p3["alt_threshold_policy_all_but_13a"]["heldout_acceptance"], TOL_RATE)
+    abl = C.load_json("a", "results/phase3a_verdict/20261109T091536Z_ad3952a_ablations/ablations.json")["absorption_table_deg"]
+    add("E3", "absorption by nuisances, tilt x1.5 (deg)", 6.2,
+        abl["tilt_k15"]["absorption_by_nuisances_deg"], 0.05)
+    add("E3", "real-clip score with both nuisances (deg)", 2.9,
+        abl["identity"]["both"], TOL_DEG)
+    pair = C.load_json("a2", "results/a2_verdict_gated_pairgate/20261109T202002Z_9e1656d/metrics.json")["results"]["kd_0.295"]
+    add("E3", "pair-level tilt-removal rejection", 0.78,
+        pair["families"]["tilt_k0"]["rejection_rate"], TOL_RATE)
+
+    # ---------- E5 additional
+    ctl = C.load_json("a2", "results/a2_anwm_score/20261109T203026Z_46a8a54/controls.json")
+    pc5 = C.load_json("a2", "results/a2_anwm_score/20261109T203155Z_46a8a54/per_clip.json")
+    frames5 = []
+    for clip in ctl["noise_floor"]["cruise_clips"]:
+        frames5.extend(pc5[clip]["depicted_per_frame"])
+    import numpy as _np
+    add("E5", "cruise noise floor frame median (deg)", 0.89,
+        float(_np.median(frames5)), TOL_DEG)
+    add("E5", "cruise noise floor p99 (deg)", 6.70,
+        float(_np.percentile(frames5, 99)), 0.05)
+    er = ctl["edit_recovery"]["conditions"]
+    for cond, exp in (("roll_5", 3.27), ("roll_10", 8.70), ("roll_20", 19.42),
+                      ("pitch_5", 2.48), ("pitch_10", 8.26), ("pitch_20", 19.15)):
+        add("E5", f"edit recovery {cond} (deg)", exp,
+            er[cond]["recovered_change_median_deg"], TOL_DEG)
+    anc = C.load_json("a2", "results/a2_anwm_score/20261109T203155Z_46a8a54/summary.json")
+    add("E5", "generated clips dropped by gate", 7, anc["testable_counts"]["gate_dropped"], 0)
+    par = C.load_json("a2", "results/a2_parity/20261110T073039Z_b13f97d/summary.json")["by_cell"]
+    add("E5", "uptilt absorption, C, drag 0.295 (deg)", 6.4,
+        par["spline_kd0.295_C"]["median_absorbed_deg"], 0.1)
+    add("E5", "uptilt absorption, C, drag-free (deg)", 3.4,
+        par["spline_kd0.0_C"]["median_absorbed_deg"], 0.1)
+    add("E5", "fraction at uptilt bound, C, drag 0.295", 0.92,
+        par["spline_kd0.295_C"]["uptilt_at_bound_frac"], 0.01)
+    pk = C.load_json("a2", "results/a2_checks/20261109T225321Z/checks.json")["peak_bounds_summary"]["dt0.25_kd0.295_A"]
+    add("E5", "peak T/W fraction above 3 at 0.25 s, A", 0.96, pk["frac_twr_gt_3"], TOL_RATE)
+
+    # ---------- E7 additional
+    p2f = C.load_json("a", "results/phase2_implied/20261108T132738Z_c738aa8/metrics.json")
+    p2c = C.load_json("a", "results/phase2_implied/20261109T173302Z_d9de303/metrics.json")
+    add("E7", "implied-tilt RMSE, first run (deg)", 28.97,
+        p2f["pooled_by_window"]["0.05"]["median_flight_rmse_deg"], TOL_DEG)
+    add("E7", "implied-tilt SNR, first run", 0.84,
+        p2f["pooled_by_window"]["0.05"]["median_flight_snr"], 0.01)
+    add("E7", "implied-tilt RMSE, corrected 5-sample (deg)", 32.67,
+        p2c["gate2"]["implied_tilt_rmse_deg"], TOL_DEG)
+    add("E7", "implied-tilt SNR, corrected", 0.58, p2c["gate2"]["snr"], 0.01)
+    add("E7", "implied-tilt RMSE at 31 samples (deg)", 41.06,
+        p2c["pooled_by_window"]["31"]["median_flight_rmse_deg"], TOL_DEG)
+    add("E7", "oracle ladder VO oracle scale + mocap attitude, corrected (deg)", 34.89,
+        p2c["oracle_ladder"]["vo_position_oracle_scale"]["median_rmse_deg"], TOL_DEG)
+    add("E7", "oracle ladder fully estimated fitted scale, corrected (deg)", 34.97,
+        p2c["oracle_ladder"]["fully_estimated_fitted_scale"]["median_rmse_deg"], TOL_DEG)
+
     # ---------- write markdown
     lines = [
         "# Cross-checks",
@@ -217,11 +302,17 @@ def build():
         "detection 0.667 (6/9) on the R2 band and 0.111 (1/9) on the coherence tier; E05 "
         "prints 0.700 and 0.200. The table prints the stored values with their denominators; "
         "the differences are one clip each.",
-        "9. **E8 gain-test detection at matched false reject**: the stored operating curve at "
+        "9. **E9 median-residual population**: at the 0.37 s headline the stored run has 11 "
+        "median-residual real clips and gives 0.636 (7/11) removal and 0.636 mirror detection, "
+        "where the handoff expects 0.72/0.78 on a wider 18-clip population. The table uses the "
+        "stored denominators.",
+        "10. **E10 median-residual population**: the rule-window run stores 11 real median-residual "
+        "clips (0/11), not the 18 E05 quotes; detection is 7/11 (0.636) where E05 prints 0.722.",
+        "11. **E8 gain-test detection at matched false reject**: the stored operating curve at "
         "5.3% FRR gives 100 / 100 / 100 / 96.5% for removal, mirror, x0.5, x1.5; report D01 "
         "quotes 100 / 94.7 / 98.2 / 94.7 at 3.5%. The table uses the stored curve points and "
         "labels its FRR; the report values are not reproducible from the stored curve.",
-        "10. **Track D HEAD moved during the build**: the handoff records about `59b3aaf`; the "
+        "12. **Track D HEAD moved during the build**: the handoff records about `59b3aaf`; the "
         "worktree was at `2a91765` when the reproducibility table was written. The MCP/agent "
         "sources should be re-read if the report needs an exact frozen cutoff.",
         "",
@@ -235,6 +326,19 @@ def build():
         "with its window. The earlier 0.667 figure on the 27-clip 15 Hz export is not used.",
         "* Numbers in `docs/prototype_v0.1.md` that predate E05: the scope matrix follows the "
         "later reports; the window claim is corrected in `corrections.csv`.",
+        "* Flight-cluster bootstrap draws: D03 says 20,000, D04's appendix says 5,000 with "
+        "seed 1. The asset uses the stored `d_flights` interval; the coherence interval was "
+        "recomputed with 5,000 draws and matches.",
+        "* Gain-tier testable-set composition: the decomposition uses autonomous 3 / track 4; "
+        "the pre-dense-lean v2 population has autonomous 4 / track 3. The decomposition table "
+        "states its set.",
+        "* D04 still contains the superseded UZH window statement and 35-62 samples at 500 Hz; "
+        "see the window-rule bullet above.",
+        "* D01 holds first-run schema-v1/R1 numbers, D02 the final schema-v2/R2 numbers. Tables "
+        "use D02; D01 values appear only in `corrections.csv`.",
+        "* Track A report 03's DPVO per-axis correlations (0.01, -0.09, 0.13) are quoted from "
+        "the Phase 2 record and not re-derived; they are not used in any asset.",
+        "* Track A2 report 07 repeats sections 4-7; the first occurrence was used.",
         "* TII per-frame error with a 5% versus 10% trim: `4.80` is the 10% trim; the 5% trim "
         "of the same frames is `10.20`. The asset labels the trim.",
         "",

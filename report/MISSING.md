@@ -9,12 +9,23 @@ make it buildable.
    is not. The LPIPS and prior-coverage assets are built; no verdict table or
    depicted-vs-designed figure exists for the injected clips. Needs the scoring run's
    per-clip residual/threshold output.
-2. **E5 smallest step duration consistent with level frames.** The per-mode minimum-dt
-   table exists only as prose in report 08 (§4) and is not stored as a result file. The
-   built `tab_e5_anwm-verdict_2` carries infeasible/testable counts only; the minimum-dt
-   column is omitted rather than typed from the report.
 3. **E5/E4 coarse-path rule.** `configs/coarse_path_rule_proposal.yaml` is a proposal only.
    No result table is built from it (as instructed).
+
+## Report-sourced (stored only as prose)
+
+2. **E5 minimum consistent dt.** Built in `tab_e5_anwm-verdict_8` from the stored
+   per-clip `minimum_consistent_dt`; the medians (1.08 s and 1.51 s drag-free for the 10°
+   and 20° families) are close to, but not identical with, report 08's 1.10 and 1.58 s,
+   because the report quotes a different per-cell aggregation.
+
+* **E3 pre-registered criteria / policy thresholds**: the evaluation block stores
+  acceptance and AUROC but not the alternative-policy thresholds (67.16°, 9.37°) or the
+  per-clip real scores. Those are parsed/transcribed from report 04 (thresholds in the
+  script, scores parsed from the table) and flagged in the source files.
+* **E5 Regime A statistic comparison**: the amendment-3 versus frame-level counts exist
+  only in report 08 §9; `tab_e5_anwm-verdict_7` transcribes them and says so.
+* **E2 permutation null**: unchanged — summary statistics only, from report 06.
 
 ## Missing source data
 
@@ -23,7 +34,7 @@ make it buildable.
    coherence tiers were not scored on the synthetic sweep, so the three-method matched-FRR
    figure cannot be built. `fig_e8_gain-and-coherence-tests_1.pdf` shows the gain curve
    alone. Needs baseline and coherence scores on the same scaled series.
-5. **E8 depicted-vs-truth lean per axis.** Per-clip, per-axis depicted and truth lean
+5. **E8 depicted-vs-truth lean per axis (still missing).** Per-clip, per-axis depicted and truth lean
    arrays are not in the repository (the Deming table stores fitted gains, not the paired
    axis samples). The scatter figure is omitted. Needs the per-clip lean export from the
    frozen d02 population.
@@ -48,7 +59,10 @@ make it buildable.
 11. **E7 DPVO calibrated direction error**: 4.18 deg in the v2 summary versus 3.9 deg in
     report C08's focal-length table. Both are stored runs; the table uses the bakeoff
     summary and `CHECKS.md` shows the difference.
-12. **E10 UZH x0.5 at rule windows**: 6/9 (0.667) in the stored rule run versus 0.700 in
+12. **E9/E10 median-residual populations**: the stored 0.37 s and rule-window runs carry
+    11 median-residual real clips (0/11), not the 18 quoted by E05. Detection is 7/11
+    (0.636) where E05 prints 0.722 / 0.778. Tables use the stored denominators.
+13. **E10 UZH x0.5 at rule windows**: 6/9 (0.667) in the stored rule run versus 0.700 in
     E05's text. Stored value used.
 
 ## Environment

@@ -45,23 +45,23 @@ def config_provenance(track, rel):
 def build():
     # ---- datasets table
     lines = [
-        r"\begin{tabular}{lllll}",
+        r"\begin{tabular}{llllll}",
         r"\toprule",
-        r"Dataset & sensor & rate & truth source & used for \\",
+        r"Dataset & sensor & rate & truth source & speed / tilt range & used for \\",
         r"\midrule",
     ]
     datasets = [
         ("TII racing", "fisheye + mocap", "mocap 274.73 Hz; camera 12.04 Hz",
-         "mocap pose", "E1-E3, E8, E10"),
-        ("UZH-FPV", "forward / 45$^\\circ$-down cameras", "truth 500 Hz; clips ~15 Hz",
-         "sensor ground truth", "E7, E9, E10"),
+         "mocap pose", "6.7-19.1 m/s; tilt median 1-67$^\\circ$", "E1-E3, E8, E10"),
+        ("UZH-FPV", "forward / 45$^\\circ$-down", "truth 500 Hz; clips ~15 Hz",
+         "sensor ground truth", "4.3-16.1 m/s; tilt median 7-40$^\\circ$", "E7, E9, E10"),
         ("ANWM", "generated frames (224/512 px)", "1 s per step, 16 steps",
-         "commanded path", "E4-E7"),
+         "commanded path", "required tilt 0-36$^\\circ$", "E4-E7"),
     ]
-    for name, sensor, rate, truth, use in datasets:
-        lines.append(f"{name} & {sensor} & {rate} & {truth} & {use} \\\\")
+    for name, sensor, rate, truth, rng, use in datasets:
+        lines.append(f"{name} & {sensor} & {rate} & {truth} & {rng} & {use} \\\\")
     lines += [r"\bottomrule",
-              r"\multicolumn{5}{l}{\footnotesize Rates and truth sources from the source audits "
+              r"\multicolumn{6}{l}{\footnotesize Rates, truth sources and ranges from the source audits "
               r"(phase0 floor, UZH audit, ANWM clip index).} \\",
               r"\end{tabular}"]
     C.write_tex("tab_datasets_1", "\n".join(lines))

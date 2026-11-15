@@ -1,0 +1,19 @@
+\begin{tabular}{llrr}
+\toprule
+Criterion & target & measured & verdict \\
+\midrule
+held-out acceptance & $\geq 0.95$ & 0.711 (59/83) & fail \\
+AUROC, tilt removal & $>0.9$ & 0.918 & pass \\
+AUROC, $\times 0.5$ & $>0.9$ & 0.803 & fail \\
+AUROC, $\times 1.5$ & $>0.9$ & 0.743 & fail \\
+pooled AUROC, tilt families & -- & 0.821 & -- \\
+Spearman, score vs injected tilt & $>0.8$ & 0.82 & pass \\
+min detectable violation at 80\,\% rejection & a curve & none & fail \\
+yaw-control rejection & $\pm5$ pp of real & 34.9\% & fail \\
+\midrule
+\multicolumn{4}{l}{\footnotesize Three threshold policies:} \\
+primary (non-trackRATM) & 5.76$^\circ$ threshold & acceptance 0.711 & -- \\
+all flights & 67.16$^\circ$ threshold & acceptance 0.952 (vacuous) & -- \\
+all but 13a & 9.37$^\circ$ threshold & acceptance 0.904 & -- \\
+\bottomrule
+\end{tabular}

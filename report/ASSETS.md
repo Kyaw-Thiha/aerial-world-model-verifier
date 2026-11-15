@@ -25,6 +25,9 @@ Status: `ready` = built and cross-checked; `pending` = depends on work still in 
 | `tables/tab_e2_depicted-tilt-tii_2.tex` | estimator-route comparison (three routes) | report 02 survey | ready | "The raw fisheye route is the only one below the Gate 1a bar at the median." |
 | `figures/fig_e2_depicted-tilt-tii_1.pdf` | CDF of per-frame error by track | derived from per-frame npz | ready | "All three tracks share a ~4 deg core; track flights carry the heavy tail." |
 | `figures/fig_e2_depicted-tilt-tii_2.pdf` | ROC of the confidence gate with permutation null | gate clip table; null from report 06 | ready | "The gate ranks clips with >10 deg error well above the selection-adjusted null." |
+| `tables/tab_e2_depicted-tilt-tii_3.tex` | fusion per-flight tilt/axis/lean error and windowed azimuth re-score | phase1b_fusion + leans.json | ready | "Rotation fuses well; heading does not — lean error is ~84 deg, collapsing only at 0.5 s windows." |
+| `tables/tab_e2_depicted-tilt-tii_4.tex` | six gate candidates: AUROC, coverage, kept/dropped error | gate_validation.json | ready | "Only single-frame signals are eligible; S3 is the best eligible one." |
+| `tables/tab_e2_depicted-tilt-tii_5.tex` | frozen gate coverage and false drops per flight | gate_validation.json | ready | "The gate discards whole track flights rather than their bad clips." |
 
 ## E3 verdict on real flights
 
@@ -33,6 +36,12 @@ Status: `ready` = built and cross-checked; `pending` = depends on work still in 
 | `tables/tab_e3_verdict-real-flights_1.tex` | conformal threshold, fold range, detection floor per calibration mode | a2_modes thresholds | ready | "Drag and the nuisance fit each buy several degrees of detection floor." |
 | `tables/tab_e3_verdict-real-flights_2.tex` | acceptance and abstention by flight type | a2_verdict_gated (drag 0.295) | ready | "Acceptance is a statement about piloted flights; autonomous flights mostly abstain." |
 | `figures/fig_e3_verdict-real-flights_1.pdf` | detection by edit condition with Wilson intervals and k/n, drag-free mode | a2_verdict_gated kd_0 | ready | "Removal is caught in half of eight testable pairs; the mirrored roll almost always." |
+| `tables/tab_e3_verdict-real-flights_3.tex` | first verdict against pre-registered criteria and three policies | phase3a evaluation; report 04 | ready | "The primary policy fails acceptance; the all-flights policy is vacuous." |
+| `tables/tab_e3_verdict-real-flights_4.tex` | per-flight real scores and the five 49–80 deg clips | report 04 (scores not stored per clip) | ready | "Five clips, four on one racing flight, set the threshold." |
+| `tables/tab_e3_verdict-real-flights_5.tex` | nuisance ablation and per-condition fitted uptilt/lag | ablations.json | ready | "The uptilt term buys real-clip accuracy at the cost of absorbing half-tilt edits." |
+| `tables/tab_e3_verdict-real-flights_6.tex` | yaw-control artifact floor per flight | phase3a evaluation | ready | "A pure yaw warp still moves the depicted tilt, most on the racing flights." |
+| `tables/tab_e3_verdict-real-flights_7.tex` | gated verdict with drag as an axis, plus pair-level analysis | a2 gated runs | ready | "Acceptance rises with the gate; the small edits become undetectable." |
+| `tables/tab_e3_verdict-real-flights_8.tex` | population × threshold definitions | report 07 | ready | "Which population and which threshold: the fixed-threshold cross-drag column is withdrawn." |
 
 ## E4 ANWM data audit
 
@@ -50,6 +59,12 @@ Status: `ready` = built and cross-checked; `pending` = depends on work still in 
 | `figures/fig_e5_anwm-verdict_1.pdf` | depicted vs designed tilt for designed maneuvers, required-tilt line | a2_anwm_score per_clip | ready | "Depicted tilt barely follows the design (+0.04 vs the +0.5 required)." |
 | `tables/tab_e5_anwm-verdict_1.tex` | 20-deg designs: residual, threshold, margins per mode and interpolant | margins_regimeC_20deg.csv | ready | "Margins are positive at the drag-free primary; full parity is tighter." |
 | `tables/tab_e5_anwm-verdict_2.tex` | infeasible/testable counts by cell and mode | a2_modes verdicts | ready | "Designed-10 flips with calibration mode; designed-20 is infeasible throughout." |
+| `tables/tab_e5_anwm-verdict_3.tex` | cruise-clip noise floor versus released level frames | controls.json + per_clip.json | ready | "Generated cruise frames read level to ~0.9 deg, with a heavier tail than ground truth." |
+| `tables/tab_e5_anwm-verdict_4.tex` | edit recovery and gate transfer | controls.json | ready | "Known 5–20 deg rotations are recovered; the generated-clip drop rate is 8.5%." |
+| `tables/tab_e5_anwm-verdict_5.tex` | nuisance absorption and straight-cruise nulls | a2_parity + modes nulls | ready | "The ±7 deg grid absorbs ~6.4 deg with drag, and saturates on 92% of Regime C clips." |
+| `tables/tab_e5_anwm-verdict_6.tex` | interpolation-free peak thrust-to-weight bounds | a2_checks peak bounds | ready | "At 0.25 s, 24 of 25 native paths need thrust-to-weight above 3; at 1 s none do." |
+| `tables/tab_e5_anwm-verdict_7.tex` | Regime A amendment-3 versus frame-level statistic | report 08 §9 | ready | "The old statistic inflated testability; the direction of the finding is unchanged." |
+| `tables/tab_e5_anwm-verdict_8.tex` | minimum consistent step duration per cell and mode | summary minimum_consistent_dt | ready | "Designed-20 paths become consistent only at 1.4–1.7 s." |
 
 ## E6 pose injection
 
@@ -70,6 +85,8 @@ is built from it.
 | `tables/tab_e7_path-from-pixels_2.tex` | DPVO with calibrated vs estimated intrinsics | pathrec_calib | ready | "A wrong focal is survivable; estimated K costs 10-15 deg but still passes 8/10." |
 | `tables/tab_e7_path-from-pixels_3.tex` | ANWM frames with DPVO (crash/degenerate/usable) and the failed UZH verdict pilot | pathrec_anwm + pathrec_verdict | ready | "DPVO crashes on 10 of 25 ANWM clips; the pixel-path verdict separates nothing." |
 | `figures/fig_e7_path-from-pixels_1.pdf` | direction error vs sequence peak speed, marker = rig | v2 summary + UZH audit | ready | "Failure tracks the rig (outdoor/45-down), not speed alone." |
+| `tables/tab_e7_path-from-pixels_4.tex` | implied tilt from the DPVO path: two runs and the corrected sample sweep | phase2_implied runs | ready | "The first run's seconds sweep was inert; the corrected curve is flat-to-worse with window." |
+| `tables/tab_e7_path-from-pixels_5.tex` | oracle ladder: position source × attitude source | phase2_implied + fusion | ready | "Only the commanded path plus a good attitude stays near the floor." |
 
 ## E8 gain and coherence tests
 
