@@ -102,8 +102,9 @@ def _ulp(lean: np.ndarray) -> np.ndarray:
     return u / np.maximum(np.linalg.norm(u, axis=1, keepdims=True), 1e-12)
 
 
-def build(clips_root: Path, out_root: Path, window_s: float, uzh_root: Path) -> dict:
-    tag = f"clips_v2_w{int(round(window_s * 1000))}ms"
+def build(clips_root: Path, out_root: Path, window_s: float, uzh_root: Path,
+          windows_by_seq: dict | None = None, tag_override: str | None = None) -> dict:
+    tag = tag_override or f"clips_v2_w{int(round(window_s * 1000))}ms"
     out = out_root / tag
     if out.exists():
         shutil.rmtree(out)
@@ -116,6 +117,7 @@ def build(clips_root: Path, out_root: Path, window_s: float, uzh_root: Path) -> 
             if (clips_root / seq / "00000.meta.json").exists() else None
         t_unix0 = float(meta0["clock_offset_applied_s"]) if False else None
         (out / seq).mkdir(parents=True, exist_ok=True)
+        win_here = float((windows_by_seq or {}).get(seq, window_s))
         for npz in sorted((clips_root / seq).glob("*.npz")):
             meta = json.loads(npz.with_suffix(".meta.json").read_text())
             d = np.load(npz)
@@ -129,7 +131,7 @@ def build(clips_root: Path, out_root: Path, window_s: float, uzh_root: Path) -> 
             # ``dense_required`` measures its own time from gt[0, 0], so the frame times must be
             # expressed on that same origin: (clip start on the truth clock) - (table start).
             t_frame = (t_first_unix + offset - float(gt[0, 0])) + np.asarray(d["t"], dtype=np.float64)
-            rec = dense_required(gt, t_frame, window_s)
+            rec = dense_required(gt, t_frame, win_here)
             if np.isnan(rec["lean_req"]).all():
                 rejected.append(npz.name)
                 continue
@@ -144,7 +146,7 @@ def build(clips_root: Path, out_root: Path, window_s: float, uzh_root: Path) -> 
                 from src.depicted.metrics import angle_deg as angle_between
                 from src.depicted.uzh import load_truth as _lt
 
-                _ps = _pswt(_lt(uzh_root, seq), gt, k_d=0.0, window_s=window_s)
+                _ps = _pswt(_lt(uzh_root, seq), gt, k_d=0.0, window_s=win_here)
                 lo_, hi_ = meta["index"]
                 _indep = lean_from_axis(_ps["required_axis"][lo_:hi_], d["yaw"])
                 okc = (np.isfinite(rec["lean_req"]).all(axis=1)
@@ -162,7 +164,7 @@ def build(clips_root: Path, out_root: Path, window_s: float, uzh_root: Path) -> 
                 **({"valid_frac": d["valid_frac"]} if "valid_frac" in d.files else {}),
                 lean_req=rec["lean_req"], vel_req=rec["vel_req"],
                 tilt_req_deg=rec["tilt_req_deg"],
-                required_window_s=np.float64(window_s),
+                required_window_s=np.float64(win_here),
                 required_window_samples=np.int64(rec["window_samples"]),
                 required_dt_s=np.float64(rec["dt_s"]))
             meta["schema_version"] = 2
@@ -170,11 +172,13 @@ def build(clips_root: Path, out_root: Path, window_s: float, uzh_root: Path) -> 
                                             f"{window_s} s polyorder 3, sampled at frame times")
             meta["required_window_samples"] = rec["window_samples"]
             meta["required_dt_s"] = rec["dt_s"]
-            meta["required_window_s"] = window_s
+            meta["required_window_s"] = win_here
             meta["depicted_side_interpolated"] = False
             (out / seq / npz.with_suffix(".meta.json").name).write_text(json.dumps(meta, indent=1))
             made += 1
     return {"tree": str(out), "window_s": window_s, "clips": made, "rejected": rejected,
+            "per_sequence_windows": {f"{seq}": float((windows_by_seq or {}).get(seq, window_s))
+                                     for seq in seqs},
             "lean_req_consistency_deg": {
                 "n": len(gaps),
                 "median": float(np.median([g["consistency_deg"] for g in gaps])) if gaps else None,
@@ -187,8 +191,23 @@ def main() -> int:
     ap.add_argument("--out-root", default="data")
     ap.add_argument("--uzh-root", default="data/uzh")
     ap.add_argument("--windows", default="0.37,0.10,0.185")
+    ap.add_argument("--rule-json", default="",
+                    help="per-sequence windows from experiments/e_window_rule.py; when set, "
+                         "the tree is written as clips_v2_rule and --windows is ignored")
     args = ap.parse_args()
     recs = []
+    if args.rule_json:
+        rule = json.loads(Path(args.rule_json).read_text())["per_sequence"]
+        wmap = {k: float(v["window_s"]) for k, v in rule.items() if np.isfinite(v["window_s"])}
+        rec = build(Path(args.clips), Path(args.out_root), 0.0, Path(args.uzh_root),
+                    windows_by_seq=wmap, tag_override="clips_v2_rule")
+        recs.append(rec)
+        print(json.dumps({"tree": rec["tree"], "clips": rec["clips"],
+                          "windows": {k: round(v, 3) for k, v in wmap.items() if k in
+                                      {p.parent.name for p in Path(args.clips).glob("*/*.npz")}}
+                          }), flush=True)
+        Path(args.out_root, "clips_v2_build.json").write_text(json.dumps(recs, indent=1))
+        return 0
     for w in [float(x) for x in args.windows.split(",") if x]:
         rec = build(Path(args.clips), Path(args.out_root), w, Path(args.uzh_root))
         recs.append(rec)
