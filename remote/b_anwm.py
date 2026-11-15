@@ -1,0 +1,818 @@
+"""Modal image and jobs for ANWM (Track B, prefixes awmv-b-*).
+
+ANWM needs its own Python/torch/diffusers pins, so it never runs in pixi. Volumes:
+  awmv-b-weights   /w   slim EMA checkpoint (+ the source file while extracting)
+  awmv-b-hf-cache  /hf  diffusers/torch hub cache (sd-vae-ft-ema)
+  awmv-b-native    /n   native trajectories pulled from the HF dataset shards
+  awmv-b-results   /r   rollout outputs
+
+Usage:
+  modal run remote/b_anwm.py::extract_slim
+  modal run remote/b_anwm.py::smoke
+"""
+
+import json
+import os
+import time
+from pathlib import Path
+
+import modal
+
+ROOT_DIR = Path(__file__).resolve().parents[1]
+
+APP = "awmv-b-anwm"
+CKPT_REPO, CKPT_FILE = "EmbodiedCity/ANWM", "0200000.pth.tar"
+
+vol_weights = modal.Volume.from_name("awmv-b-weights", create_if_missing=True)
+vol_hf = modal.Volume.from_name("awmv-b-hf-cache", create_if_missing=True)
+vol_native = modal.Volume.from_name("awmv-b-native", create_if_missing=True)
+vol_results = modal.Volume.from_name("awmv-b-results", create_if_missing=True)
+
+ANWM_LOCAL = Path(__file__).resolve().parents[1] / "third_party" / "anwm"
+
+image = (
+    modal.Image.from_registry("nvidia/cuda:12.1.1-devel-ubuntu22.04", add_python="3.10")
+    .apt_install("git", "libgl1", "libglib2.0-0", "ffmpeg")
+    .run_commands(
+        "pip install --no-cache-dir torch==2.4.1 torchvision==0.19.1 "
+        "--index-url https://download.pytorch.org/whl/cu121",
+        "pip install --no-cache-dir 'numpy<2'",
+    )
+    .run_commands(
+        "python -c \"import torch;print('torch', torch.__version__, torch.cuda.is_available())\""
+    )
+    .add_local_dir(str(ANWM_LOCAL), "/anwm", copy=True,
+                   ignore=[".git", "**/.git", "**/__pycache__", "**/*.pyc"])
+    .run_commands("cd /anwm && pip install --no-cache-dir -e '.[metrics]'",
+                  "pip install --no-cache-dir huggingface_hub boto3",
+                  # recent diffusers calls torch.accelerator (torch >= 2.6); keep a version that
+                  # matches the torch 2.4.1 pin above
+                  "pip install --no-cache-dir 'diffusers==0.33.1' "
+                  "'transformers==4.44.2' 'peft==0.13.2'",
+                  "python -c \"import diffusers, torch; print('diffusers', diffusers.__version__, "
+                  "'torch', torch.__version__)\"")
+    .add_local_dir(str(ROOT_DIR / "src"), "/app/src", copy=True,
+                   ignore=["**/__pycache__", "**/*.pyc"])
+)
+
+app = modal.App(APP, image=image)
+
+
+# --------------------------------------------------------------------- Task 1.1
+@app.function(cpu=8, memory=65536, timeout=3 * 3600, volumes={"/w": vol_weights, "/hf": vol_hf})
+def extract_slim() -> dict:
+    """One-off: pull the 18.1 GB training checkpoint, keep only the EMA weights (~4.4 GB)."""
+    import hashlib
+
+    import torch
+    from huggingface_hub import hf_hub_download
+
+    def sha256(path: str, chunk: int = 1 << 25) -> str:
+        h = hashlib.sha256()
+        with open(path, "rb") as f:
+            for b in iter(lambda: f.read(chunk), b""):
+                h.update(b)
+        return h.hexdigest()
+
+    os.makedirs("/w/slim", exist_ok=True)
+    src = hf_hub_download(CKPT_REPO, CKPT_FILE, cache_dir="/hf/hub")
+    src_size = os.path.getsize(src)
+    print(f"source {src} {src_size/1e9:.2f} GB")
+    # mmap avoids holding 18 GB of tensors resident while copying the EMA
+    ckp = torch.load(src, map_location="cpu", weights_only=False, mmap=True)
+    print("checkpoint keys:", sorted(ckp.keys())[:12], "step:", ckp.get("step"))
+    slim = {"ema": {k: v.clone() for k, v in ckp["ema"].items()}, "step": ckp.get("step"),
+            "source": f"{CKPT_REPO}/{CKPT_FILE}", "source_bytes": src_size}
+    dst = "/w/slim/0200000_ema.pth.tar"
+    torch.save(slim, dst)
+    del ckp, slim
+    info = {"source": src, "source_bytes": src_size, "source_sha256": sha256(src),
+            "slim": dst, "slim_bytes": os.path.getsize(dst), "slim_sha256": sha256(dst)}
+    Path("/w/slim/manifest.json").write_text(json.dumps(info, indent=1))
+    vol_weights.commit()
+    print(json.dumps(info, indent=1))
+    return info
+
+
+# --------------------------------------------------------------------- Task 1.3
+CTX = 16  # from the checkpoint: pos_embed has 17 rows = 16 context + 1 predicted frame
+
+
+def _load_models(device: str = "cuda"):
+    import torch
+    from diffusers.models import AutoencoderKL
+
+    from anwm.diffusion import create_diffusion
+    from anwm.model import CDiT_models
+
+    model = CDiT_models["CDiT-XL/2"](context_size=CTX, input_size=28, in_channels=4)
+    ckp = torch.load("/w/slim/0200000_ema.pth.tar", map_location="cpu", weights_only=False)
+    msg = model.load_state_dict(ckp["ema"], strict=True)
+    print("load_state_dict:", msg)
+    model.eval().to(device)
+    diffusion = create_diffusion(str(250))
+    vae = AutoencoderKL.from_pretrained("stabilityai/sd-vae-ft-ema").to(device).eval()
+    return model, diffusion, vae
+
+
+@app.function(gpu="A10G", timeout=1800, volumes={"/w": vol_weights, "/hf": vol_hf},
+              env={"HF_HOME": "/hf"})
+def smoke(steps: int = 250, reps: int = 3) -> dict:
+    """One 224x224-equivalent forward pass and one full 250-step frame, timed and measured."""
+    import torch
+
+    from anwm.rollout import model_forward_wrapper
+
+    torch.backends.cuda.matmul.allow_tf32 = True
+    torch.backends.cudnn.allow_tf32 = True
+    device = "cuda"
+    t0 = time.time()
+    model, diffusion, vae = _load_models(device)
+    load_s = time.time() - t0
+    params = sum(p.numel() for p in model.parameters())
+
+    B, T = 1, 16
+    y = torch.randn(B, 4, device=device)
+    x_cond = torch.randn(B, CTX, 4, 28, 28, device=device)
+    rel_t = torch.full((B,), T / 128.0, device=device)
+    x_sup = torch.randn(B, 4, 28, 28, device=device)  # already flattened, as the wrapper does
+
+    torch.cuda.reset_peak_memory_stats()
+    times = []
+    with torch.no_grad(), torch.amp.autocast("cuda", enabled=True, dtype=torch.bfloat16):
+        for _ in range(reps):  # warmup + timed passes
+            x = torch.randn(B, 4, 28, 28, device=device)
+            tt = torch.full((B,), 500, device=device, dtype=torch.long)
+            torch.cuda.synchronize()
+            s = time.time()
+            model.forward(x, tt, y=y, x_cond=x_cond, rel_t=rel_t, x_supervised=x_sup)
+            torch.cuda.synchronize()
+            times.append(time.time() - s)
+    per_pass = min(times)
+    peak_forward = torch.cuda.max_memory_allocated() / 1e9
+
+    # one complete generated frame: 250 passes through the sampler + VAE round trip
+    torch.cuda.reset_peak_memory_stats()
+    obs = torch.randn(B, CTX, 3, 224, 224, device=device)
+    fsup = torch.randn(B, 1, 3, 224, 224, device=device)
+    torch.cuda.synchronize()
+    s = time.time()
+    out = model_forward_wrapper((model, diffusion, vae), obs, y, 1, 28, device=device,
+                                num_cond=CTX, num_goals=1, x_supervised=fsup)
+    torch.cuda.synchronize()
+    frame_s = time.time() - s
+    peak_frame = torch.cuda.max_memory_allocated() / 1e9
+    info = {
+        "gpu": torch.cuda.get_device_name(0),
+        "params_b": params / 1e9, "load_s": load_s,
+        "pass_ms": 1e3 * per_pass, "pass_ms_all_reps": [1e3 * t for t in times],
+        "frame_s": frame_s, "frame_shape": list(out.shape),
+        "rollout16_est_s": 16 * frame_s,
+        "peak_forward_gb": peak_forward, "peak_frame_gb": peak_frame,
+        "sampling_steps": steps,
+    }
+    Path("/w/smoke.json").write_text(json.dumps(info, indent=1))
+    vol_weights.commit()
+    print(json.dumps(info, indent=1))
+    return info
+
+
+# --------------------------------------------------------------------- shared helpers
+def _eval_shim(data_folder: str = "/n/airvln_16"):
+    """An EvalDataset with attributes set directly, so every method stays ANWM's own code."""
+    import numpy as np
+
+    from anwm.data.airvln import EvalDataset
+    from anwm.utils import transform
+
+    from anwm.config import load_yaml
+
+    cfg = load_yaml("config/data_config.yaml")
+    ds = object.__new__(EvalDataset)
+    ds.data_folder = data_folder
+    ds.data_split_folder = "/anwm/data/splits/airvln_16"
+    ds.dataset_name = "airvln_16"
+    ds.image_size = (224, 224)
+    ds.min_dist_cat, ds.max_dist_cat = -64, 64
+    ds.len_traj_pred, ds.traj_stride, ds.context_size = 16, 80, CTX
+    ds.normalize = True
+    ds.transform = transform
+    ds.goals_per_obs = 1
+    ds.data_config = cfg["airvln_16"]
+    ds.ACTION_STATS = {k: np.expand_dims(np.asarray(v, dtype=np.float32), 0)
+                       for k, v in cfg["action_stats"].items()}
+    return ds
+
+
+def _camera_axis_change(traj) -> "np.ndarray":
+    """R_ec: the world->camera axis change baked into every released pose.
+
+    The released pose is `[R_z(yaw) @ R_ec | xyz]` (preprocessing notebook, cell 14). Recovering
+    R_ec from the data and checking it is constant is the only way to build *new* target poses
+    in the same convention; a wrong convention would silently rotate the projected prior.
+    """
+    import numpy as np
+
+    yaw = np.asarray(traj["yaw"], float).ravel()
+    R = np.asarray(traj["pose"], float)[:, :3, :3]
+    out = []
+    for k in range(len(yaw)):
+        c, s = np.cos(yaw[k]), np.sin(yaw[k])
+        Rz = np.array([[c, -s, 0], [s, c, 0], [0, 0, 1.0]])
+        out.append(Rz.T @ R[k])
+    out = np.asarray(out)
+    spread = float(np.abs(out - out[0]).max())
+    if spread > 1e-3:
+        raise RuntimeError(f"camera axis change is not constant (spread {spread:.2e})")
+    return out[0], spread
+
+
+def _pose_from_position_yaw(pos, yaw, R_ec):
+    import numpy as np
+
+    poses = np.tile(np.eye(4), (len(pos), 1, 1))
+    c, s = np.cos(yaw), np.sin(yaw)
+    Rz = np.zeros((len(pos), 3, 3))
+    Rz[:, 0, 0], Rz[:, 0, 1] = c, -s
+    Rz[:, 1, 0], Rz[:, 1, 1] = s, c
+    Rz[:, 2, 2] = 1.0
+    poses[:, :3, :3] = Rz @ R_ec[None]
+    poses[:, :3, 3] = pos
+    return poses
+
+
+def _ffp(traj, ctx_times, rgb, target_poses):
+    """Future Frame Projection to *our* target poses, through ANWM's own projection functions.
+
+    `EvalDataset._compute_projected_images` indexes the recorded poses with goal *times*
+    (`poses_dst_seq = traj_data["pose"][goal_times_np]`), so it cannot take new poses. These are
+    the same two functions it calls, with the target poses passed directly.
+    """
+    import numpy as np
+    from anwm.projection import project_to_2d_image_seq2seq, reproject_depth_to_other_pose_seq2seq
+
+    depth_seq = np.asarray(traj["depth"])[ctx_times]          # (T, H, W)
+    poses_src = np.asarray(traj["pose"])[ctx_times]           # (T, 4, 4)
+    H, W = depth_seq.shape[-2:]
+    pts, cols = reproject_depth_to_other_pose_seq2seq(
+        K=traj["K"], depth_maps=depth_seq, rgb_imgs=rgb,
+        poses_src=poses_src, poses_dst=np.asarray(target_poses))
+    return project_to_2d_image_seq2seq(K=traj["K"], points_3d=pts, colors=cols,
+                                       image_size=(H, W))
+
+
+def _context_inputs(ds, traj, ctx_times, target_poses, data_dir="/n/airvln_16"):
+    """(obs_image tensor, x_supervised tensor) through ANWM's own FFP code."""
+    import cv2
+    import numpy as np
+    import torch
+    from PIL import Image
+
+    rgb = []
+    for t in ctx_times:
+        img = cv2.imread(f"{data_dir}/{traj['name']}/{int(t)}.jpg")
+        rgb.append(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+    rgb = np.stack(rgb, 0)
+    proj = _ffp(traj, list(ctx_times), rgb, np.asarray(target_poses))
+    # per-step fill of the projected prior, measured on the 512x512 image FFP produces (the same
+    # definition as Stage 0); Track A2 stratifies depicted tilt by this
+    coverage = [float((proj[i].sum(-1) > 0).mean()) for i in range(len(proj))]
+    obs = torch.stack([ds.transform(Image.fromarray(rgb[i])) for i in range(len(ctx_times))])
+    sup = torch.stack([ds.transform(Image.fromarray(proj[i])) for i in range(len(proj))])
+    return obs.unsqueeze(0), sup.unsqueeze(0), coverage
+
+
+# --------------------------------------------------------------------- Task 2
+@app.function(gpu="A10G", timeout=3 * 3600, volumes={"/w": vol_weights, "/hf": vol_hf,
+                                                    "/n": vol_native, "/r": vol_results},
+              env={"HF_HOME": "/hf"})
+def validate_native(names="", sampling_steps: int = 250, lpips_net: str = "alex") -> dict:
+    """Roll out the released model on native context and compare with the recorded frames.
+
+    `names` is a comma-separated string: this Modal version cannot parse `list[str]` annotations.
+    """
+    names = [n for n in names.split(",") if n]
+    import pickle
+
+    import numpy as np
+    import torch
+    from PIL import Image
+
+    from anwm.rollout import model_forward_wrapper
+
+    device = "cuda"
+    model, diffusion, vae = _load_models(device)
+    ds = _eval_shim()
+    manifest = json.load(open("/n/airvln_16/manifest.json"))
+    import lpips as lpips_lib
+    lp = lpips_lib.LPIPS(net=lpips_net).to(device).eval()
+
+    out = {}
+    for name in names:
+        ct = manifest[name]["curr_time"]
+        if not Path(f"/n/airvln_16/{name}/{ct}.jpg").exists():
+            ct = manifest[name]["start_candidates"][0]
+            print("fallback start time", name, ct)
+        traj = pickle.load(open(f"/n/airvln_16/{name}/traj_data.pkl", "rb"))
+        traj = {k: v.astype("float") if hasattr(v, "astype") else v for k, v in traj.items()}
+        # convention check: poses rebuilt from (point, yaw) must equal the recorded poses
+        R_ec, spread = _camera_axis_change(traj)
+        p17 = np.asarray(traj["point"], float)[ct:ct + 17]
+        y17 = np.asarray(traj["yaw"], float).ravel()[ct:ct + 17]
+        rebuilt = _pose_from_position_yaw(p17, y17, R_ec)
+        conv_err = float(np.abs(rebuilt - np.asarray(traj["pose"], float)[ct:ct + 17]).max())
+        print("pose convention max abs err", conv_err, "R_ec spread", spread)
+        ds.index_to_data = [(name, ct, -64, 64)]
+        idxs, obs, gt, delta, proj = ds[0]
+        delta = delta.unsqueeze(0)
+        obs, gt, proj = obs.unsqueeze(0), gt.unsqueeze(0), proj.unsqueeze(0)
+
+        preds = []
+        curr = obs.clone().to(device)
+        for i in range(gt.shape[1]):
+            x_pred = model_forward_wrapper(
+                (model, diffusion, vae), curr, delta[:, i:i + 1].to(device), 1, 28,
+                device=device, num_cond=CTX, num_goals=1, x_supervised=proj[:, i:i + 1].to(device))
+            curr = torch.cat((curr, x_pred.unsqueeze(1)), dim=1)[:, 1:]
+            preds.append(x_pred.clamp(-1, 1).float())
+        pred = torch.stack(preds, 1)
+
+        g01 = ((gt.to(device) + 1) / 2).clamp(0, 1).float()
+        p01 = ((pred + 1) / 2).clamp(0, 1).float()
+        d_lpips = [float(lp(2 * p01[:, i] - 1, 2 * g01[:, i] - 1).mean()) for i in range(gt.shape[1])]
+        flat = lambda t: t.flatten(1)
+        collapse = {
+            "pred_frame_std": [float(p01[:, i].std()) for i in range(gt.shape[1])],
+            "gt_frame_std": [float(g01[:, i].std()) for i in range(gt.shape[1])],
+            "pred_temporal_delta": float((p01[:, 1:] - p01[:, :-1]).abs().mean()),
+            "gt_temporal_delta": float((g01[:, 1:] - g01[:, :-1]).abs().mean()),
+        }
+        folder = f"/r/native/{name}"
+        os.makedirs(folder, exist_ok=True)
+        tiles = []
+        for i in range(gt.shape[1]):
+            for tag, t in (("gt", g01), ("pred", p01)):
+                Image.fromarray((t[0, i].permute(1, 2, 0).cpu().numpy() * 255).astype(np.uint8)
+                                ).save(f"{folder}/{i:02d}_{tag}.png")
+        # contact sheet: 2 rows (gt, pred) x 16 frames
+        rows = []
+        for t in (g01, p01):
+            ims = [Image.fromarray((t[0, i].permute(1, 2, 0).cpu().numpy() * 255).astype(np.uint8))
+                   for i in range(gt.shape[1])]
+            w, h = ims[0].size
+            row = Image.new("RGB", (w * len(ims), h))
+            for i, im in enumerate(ims):
+                row.paste(im, (i * w, 0))
+            rows.append(row)
+        sheet = Image.new("RGB", (rows[0].width, rows[0].height * 2))
+        for r, im in enumerate(rows):
+            sheet.paste(im, (0, r * rows[0].height))
+        sheet.save(f"{folder}/contact_sheet.png")
+        out[name] = {"curr_time": int(ct), "n_frames": int(gt.shape[1]), "lpips": d_lpips,
+                     "pose_convention_max_err": conv_err, "R_ec_spread": spread,
+                     "lpips_mean": float(np.mean(d_lpips)), **collapse}
+        print(name, "lpips", np.round(d_lpips, 3).tolist())
+        vol_results.commit()
+    Path("/r/native/summary.json").write_text(json.dumps(out, indent=1))
+    vol_results.commit()
+    print(json.dumps(out, indent=1)[:2000])
+    return out
+
+
+# --------------------------------------------------------------------- Task 5
+@app.function(gpu="A10G", timeout=10 * 3600, volumes={"/w": vol_weights, "/hf": vol_hf,
+                                                    "/n": vol_native, "/r": vol_results},
+              env={"HF_HOME": "/hf"})
+def generate(specs_json, sampling_steps: int = 250, out_root: str = "/r/clips",
+             force: bool = False, save_priors: bool = False,
+             require_coverage: bool = False) -> dict:
+    """Roll out the released model from native start states along commanded paths.
+
+    Each spec: {id, regime, positions (17,3), yaw (17,), start_traj, start_time, seed,
+    designed_tilt_deg, meta} and optionally {arm, thrust (17,3), roll_deg (17,), pitch_deg (17,),
+    paired_level_id, convention}. Without `thrust` the target poses are level (the original arm);
+    with it, the target poses carry the injected attitude for FFP. Frames go to
+    `<out_root>/<regime>/<id>/frames/`; priors to `.../priors/` when `save_priors`.
+    """
+    import pickle
+
+    import numpy as np
+    import torch
+    from PIL import Image
+
+    from anwm.rollout import model_forward_wrapper
+
+    specs = json.loads(specs_json)
+    device = "cuda"
+    model, diffusion, vae = _load_models(device)
+    ds = _eval_shim()
+    cache = {}
+    out = {}
+
+    slim_sha = json.load(open("/w/slim/manifest.json"))["slim_sha256"]
+    for sp in specs:
+        folder = f"{out_root}/{sp['regime']}/{sp['id']}"
+        if not force and os.path.exists(f"{folder}/manifest.json"):
+            done = True
+            if require_coverage:
+                old = json.load(open(f"{folder}/manifest.json"))
+                done = "prior_coverage_per_step" in old
+            if done:
+                print("skip (already done)", sp["id"])
+                continue
+        name, ct = sp["start_traj"], int(sp["start_time"])
+        if name not in cache:
+            traj = pickle.load(open(f"/n/airvln_16/{name}/traj_data.pkl", "rb"))
+            traj = {k: (v.astype("float") if hasattr(v, "astype") else v) for k, v in traj.items()}
+            traj["name"] = name
+            cache[name] = traj
+        traj = cache[name]
+        R_ec, spread = _camera_axis_change(traj)
+
+        pos = np.asarray(sp["positions"], float)
+        yaw = np.asarray(sp["yaw"], float)
+        n = len(pos)
+        ctx_times = list(range(ct - CTX + 1, ct + 1))
+        if sp.get("thrust") is not None:
+            import sys as _sys
+            _sys.path.insert(0, "/app")
+            from src.generation.attitude import pose_with_attitude
+            target_poses = pose_with_attitude(pos[1:n], yaw[1:n],
+                                              np.asarray(sp["thrust"], float)[1:n], R_ec)
+        else:
+            target_poses = _pose_from_position_yaw(pos[1:n], yaw[1:n], R_ec)
+        obs, sup, prior_coverage = _context_inputs(ds, traj, ctx_times, target_poses)
+
+        # actions along the commanded path, straight through ANWM's own construction
+        act, _ = ds._compute_actions({"point": pos, "yaw": yaw.reshape(-1, 1)}, 0,
+                                     np.array([n - 1]))
+        from anwm.utils import get_delta_np, normalize_data
+
+        act[:, :3] = normalize_data(act[:, :3], ds.ACTION_STATS)
+        delta = torch.as_tensor(get_delta_np(act), dtype=torch.float32).unsqueeze(0)
+
+        torch.manual_seed(int(sp.get("seed", 0)))
+        curr = obs.clone().to(device)
+        preds = []
+        for i in range(n - 1):
+            x_pred = model_forward_wrapper(
+                (model, diffusion, vae), curr, delta[:, i:i + 1].to(device), 1, 28,
+                device=device, num_cond=CTX, num_goals=1, x_supervised=sup[:, i:i + 1].to(device))
+            curr = torch.cat((curr, x_pred.unsqueeze(1)), dim=1)[:, 1:]
+            preds.append(((x_pred.clamp(-1, 1) + 1) / 2 * 255).byte().cpu())
+        os.makedirs(f"{folder}/frames", exist_ok=True)
+        if save_priors:
+            os.makedirs(f"{folder}/priors", exist_ok=True)
+            for k in range(sup.shape[1]):
+                pr = ((sup[0, k].float().clamp(-1, 1) + 1) / 2 * 255).byte()
+                Image.fromarray(pr.permute(1, 2, 0).numpy()).save(f"{folder}/priors/{k:02d}.png")
+        for i, t in enumerate(preds):
+            Image.fromarray(t[0].permute(1, 2, 0).numpy()).save(f"{folder}/frames/{i:02d}.png")
+        if sp["regime"] == "A":  # ground-truth frames are only meaningful for native commands
+            os.makedirs(f"{folder}/gt", exist_ok=True)
+            for i, t in enumerate(range(ct + 1, ct + n)):
+                im = ds.transform(Image.open(f"/n/airvln_16/{name}/{t}.jpg"))
+                Image.fromarray(((im.clamp(-1, 1) + 1) / 2 * 255).byte()
+                                .permute(1, 2, 0).numpy()).save(f"{folder}/gt/{i:02d}.png")
+        manifest = {
+            "id": sp["id"], "regime": sp["regime"], "start_state": {"traj": name, "time": ct},
+            "commanded_path": {"positions": pos.tolist(), "yaw": yaw.tolist(),
+                              "step_spacing_m": float(np.mean(np.linalg.norm(np.diff(pos, axis=0), axis=1)))},
+            "designed_required_tilt_deg": sp.get("designed_tilt_deg"),
+            "seed": int(sp.get("seed", 0)), "sampling_steps": sampling_steps,
+            "slim_checkpoint_sha256": slim_sha,
+            "arm": sp.get("arm", "level"),
+            "injected_roll_deg": sp.get("roll_deg"),
+            "injected_pitch_deg": sp.get("pitch_deg"),
+            "convention": sp.get("convention"),
+            "paired_level_id": sp.get("paired_level_id"),
+            "code_commit": sp.get("code_commit"),
+            "camera_axis_change_spread": spread, "meta": sp.get("meta", {}),
+            "frames": len(preds),
+            "prior_coverage_per_step": prior_coverage,
+            "prior_coverage_mean": float(np.mean(prior_coverage)),
+            "prior_coverage_min": float(np.min(prior_coverage)),
+        }
+        Path(f"{folder}/manifest.json").write_text(json.dumps(manifest, indent=1))
+        stats = {"frame_std": [float(v.float().std() / 255) for v in preds],
+                 "temporal_delta": float(np.mean([float((preds[i].float() - preds[i - 1].float()).abs().mean() / 255) for i in range(1, len(preds))]))}
+        manifest["visual_integrity"] = stats
+        Path(f"{folder}/manifest.json").write_text(json.dumps(manifest, indent=1))
+        out[sp["id"]] = manifest
+        print(sp["id"], "frames", len(preds), "std", round(np.mean(stats["frame_std"]), 4),
+              "dt_delta", round(stats["temporal_delta"], 4))
+        vol_results.commit()
+    Path("/r/clips/summary.json").write_text(json.dumps(out, indent=1))
+    vol_results.commit()
+    return {k: {"visual_integrity": v["visual_integrity"], "frames": v["frames"]} for k, v in out.items()}
+
+
+# --------------------------------------------------------------------- Task 4
+@app.function(cpu=8, memory=32768, timeout=1800, volumes={"/n": vol_native})
+def list_starts(min_forward_m: float = 25.0, min_valid_frac: float = 0.5) -> dict:
+    """Which native start states have enough forward depth for the projected prior to be non-empty.
+
+    FFP reprojects the context frames to the target poses, so no future depth is needed; the
+    check is that the *scene* ahead of the start has depth out to the path extent. We measure the
+    forward depth (90th percentile of valid depth in the central 60% column band) and require it
+    to exceed `min_forward_m`, the largest commanded displacement over 16 steps at 5 m/s.
+    """
+    import pickle
+
+    import numpy as np
+
+    man = json.load(open("/n/airvln_16/manifest.json"))
+    out = {}
+    for name, m in man.items():
+        traj = pickle.load(open(f"/n/airvln_16/{name}/traj_data.pkl", "rb"))
+        traj = {k: (v.astype("float") if hasattr(v, "astype") else v) for k, v in traj.items()}
+        depth = np.asarray(traj["depth"], float)
+        H, W = depth.shape[-2:]
+        band = depth[:, :, int(W * 0.2):int(W * 0.8)]
+        rows = []
+        for ct in m["start_candidates"]:
+            d = float(np.percentile(band[ct][band[ct] > 0], 90)) if (band[ct] > 0).any() else 0.0
+            valid = float(np.mean(band[ct] > 0))
+            path = np.asarray(traj["point"], float)[ct:ct + 17]
+            extent = float(np.max(np.linalg.norm(path - path[0], axis=1))) if len(path) > 1 else 0.0
+            rows.append({"ct": int(ct), "forward_depth_p90_m": d, "valid_frac": valid,
+                         "recorded_path_extent_m": extent,
+                         "usable": bool(d > 0 and valid >= min_valid_frac and d > extent),
+                         # pose keys so clip specs can be built locally without the pickle
+                         "positions": path.tolist() if len(path) == 17 else None,
+                         "yaw": np.asarray(traj["yaw"], float)[ct:ct + 17].tolist()})
+        out[name] = {"n_frames": int(len(depth)), "candidates": rows}
+    Path("/n/starts.json").write_text(json.dumps(out, indent=1))
+    vol_native.commit()
+    total = sum(r["usable"] for v in out.values() for r in v["candidates"])
+    print(json.dumps({k: v["candidates"] for k, v in out.items()}, indent=1)[:3000])
+    print("usable starts:", total)
+    return out
+
+
+# --------------------------------------------------------------------- Task 1.1 (mirror)
+@app.function(cpu=4, memory=8192, timeout=3600, volumes={"/w": vol_weights},
+              secrets=[modal.Secret.from_name("awmv-r2")])
+def mirror_slim_to_r2(prefix: str = "track-b/weights/") -> dict:
+    """Copy the slim checkpoint to R2 from inside Modal (no local disk: 4.5 GB)."""
+    import boto3
+    from boto3.s3.transfer import TransferConfig
+
+    man = json.load(open("/w/slim/manifest.json"))
+    src = man["slim"]
+    s3 = boto3.client("s3", endpoint_url=f"https://{os.environ['R2_ACCOUNT_ID']}"
+                                        ".r2.cloudflarestorage.com",
+                      aws_access_key_id=os.environ["R2_ACCESS_KEY_ID"],
+                      aws_secret_access_key=os.environ["R2_SECRET_ACCESS_KEY"],
+                      region_name="auto")
+    bucket = os.environ["R2_BUCKET"]
+    key = prefix + Path(src).name
+    s3.upload_file(src, bucket, key,
+                   Config=TransferConfig(multipart_threshold=64 << 20,
+                                         multipart_chunksize=128 << 20, max_concurrency=8))
+    head = s3.head_object(Bucket=bucket, Key=key)
+    s3.put_object(Bucket=bucket, Key=prefix + "manifest.json",
+                  Body=json.dumps(man, indent=1).encode())
+    ok = head["ContentLength"] == man["slim_bytes"]
+    print(f"{bucket}/{key} {head['ContentLength']} bytes, size matches: {ok}")
+    return {"bucket": bucket, "key": key, "bytes": head["ContentLength"],
+            "size_matches": bool(ok), "sha256": man["slim_sha256"]}
+
+
+@app.local_entrypoint()
+def run_generate(specs_path: str = "results/anwm_clips/specs.json", regimes: str = "A,B,C",
+                 limit: int = 0, seed_offset: int = 0):
+    """Push the locally built clip specs through the generation function.
+
+    The specs are small (a few hundred KB); the function writes one clip at a time and commits
+    after each, so a failure keeps the finished clips and a rerun skips them.
+    """
+    import subprocess
+
+    commit = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True,
+                            text=True).stdout.strip()
+    specs = json.load(open(specs_path))
+    for s in specs:
+        s["code_commit"] = commit
+    keep = set(regimes.split(","))
+    specs = [s for s in specs if s["regime"] in keep]
+    if seed_offset:
+        for s in specs:
+            s["seed"] = int(s.get("seed", 0)) + seed_offset
+    if limit:
+        specs = specs[:limit]
+    print(f"{len(specs)} specs:", {r: sum(s['regime'] == r for s in specs) for r in keep})
+    out = generate.remote(json.dumps(specs))
+    print(json.dumps(out, indent=1)[:3000])
+
+
+@app.function(cpu=2, memory=32768, timeout=1800, volumes={"/hf": vol_hf})
+def inspect_args() -> dict:
+    """What the released checkpoint says about itself (context size, step, run name)."""
+    import torch
+    from huggingface_hub import hf_hub_download
+
+    p = hf_hub_download(CKPT_REPO, CKPT_FILE, cache_dir="/hf/hub")
+    ckp = torch.load(p, map_location="cpu", weights_only=False, mmap=True)
+    ns = ckp["args"]
+    args = {k: v for k, v in vars(ns).items() if isinstance(v, (int, float, str, bool))} \
+        if hasattr(ns, "__dict__") else ns
+    info = {"args": args, "epoch": ckp.get("epoch"), "train_steps": ckp.get("train_steps"),
+            "ema_pos_embed_shape": list(ckp["ema"]["pos_embed"].shape),
+            "model_pos_embed_shape": list(ckp["model"]["pos_embed"].shape)}
+    print(json.dumps(info, indent=1))
+    return info
+
+
+@app.function(cpu=4, memory=32768, timeout=1800, volumes={"/n": vol_native})
+def inspect_depth() -> dict:
+    """Depth units and distribution, because the start filter compares depth with metres."""
+    import pickle
+
+    import numpy as np
+
+    man = json.load(open("/n/airvln_16/manifest.json"))
+    out = {}
+    for name, m in man.items():
+        traj = pickle.load(open(f"/n/airvln_16/{name}/traj_data.pkl", "rb"))
+        d = np.asarray(traj["depth"], np.float32)
+        ct = m["start_candidates"][0]
+        frame = d[ct]
+        vals = frame[frame > 0]
+        pos = np.asarray(traj["point"], np.float32)
+        steps = np.linalg.norm(np.diff(pos, axis=0), axis=1)
+        out[name] = {
+            "shape": list(d.shape), "dtype": str(d.dtype),
+            "frac_zero": float((frame == 0).mean()),
+            "p50": float(np.percentile(vals, 50)), "p90": float(np.percentile(vals, 90)),
+            "p99": float(np.percentile(vals, 99)), "max": float(vals.max()),
+            "n_unique_sample": int(len(np.unique(vals[:200000]))),
+            "point_step_m_median": float(np.median(steps)),
+            "point_range_m": [float(pos.min()), float(pos.max())],
+        }
+    print(json.dumps(out, indent=1))
+    return out
+
+
+@app.function(cpu=8, memory=32768, timeout=3600, volumes={"/n": vol_native})
+def measure_starts(min_coverage: float = 0.02) -> dict:
+    """Direct test of Task 4's filter: does the projected prior actually contain pixels?
+
+    The depth heuristic is not enough (depth is metres with a 500 m far clip, so a 90th-percentile
+    test is vacuous). Here FFP is run on the four context frames for all 16 target poses of the
+    recorded path, and the fraction of non-zero pixels in each projected image is measured.
+    """
+    import pickle
+
+    import cv2
+    import numpy as np
+
+    import sys
+
+    sys.path.insert(0, "/app")
+    from src.generation.poses import camera_axis_change, pose_from_position_yaw
+
+    ds = _eval_shim()
+    man = json.load(open("/n/airvln_16/manifest.json"))
+    out = {}
+    for name, m in man.items():
+        traj = pickle.load(open(f"/n/airvln_16/{name}/traj_data.pkl", "rb"))
+        traj = {k: (v.astype("float") if hasattr(v, "astype") else v) for k, v in traj.items()}
+        traj["name"] = name
+        R_ec, spread = camera_axis_change(np.asarray(traj["pose"]), traj["yaw"])
+        rows = []
+        for ct in m["start_candidates"]:
+            pos = np.asarray(traj["point"], float)[ct:ct + 17]
+            yaw = np.asarray(traj["yaw"], float).ravel()[ct:ct + 17]
+            targets = pose_from_position_yaw(pos[1:], yaw[1:], R_ec)
+            ctx = list(range(ct - CTX + 1, ct + 1))
+            rgb = np.stack([cv2.cvtColor(cv2.imread(f"/n/airvln_16/{name}/{int(t)}.jpg"),
+                                         cv2.COLOR_BGR2RGB) for t in ctx])
+            proj = _ffp(traj, ctx, rgb, targets)
+            cov = [float((proj[i] > 0).any(axis=-1).mean()) for i in range(len(proj))]
+            depth_p50 = float(np.median(np.asarray(traj["depth"], np.float32)[ct]))
+            rows.append({"ct": int(ct), "coverage_min": min(cov), "coverage_mean": float(np.mean(cov)),
+                         "coverage_per_step": cov, "depth_p50_m": depth_p50,
+                         "path_extent_m": float(np.linalg.norm(pos - pos[0], axis=1).max()),
+                         "usable": bool(min(cov) >= min_coverage)})
+        out[name] = {"n_frames": int(len(traj["point"])), "candidates": rows,
+                     "rot_spread": spread}
+        print(name, [(r["ct"], round(r["coverage_min"], 3), round(r["depth_p50_m"], 1))
+                     for r in rows], flush=True)
+    Path("/n/starts_coverage.json").write_text(json.dumps(out, indent=1))
+    vol_native.commit()
+    n = sum(r["usable"] for v in out.values() for r in v["candidates"])
+    print("usable starts:", n, "of", sum(len(v["candidates"]) for v in out.values()))
+    return out
+
+
+@app.local_entrypoint()
+def run_regen(specs_path: str = "results/anwm_clips/specs.json", ids: str = "",
+              out_root: str = "/r/regen_stage0"):
+    """Regenerate the named C clips unchanged (determinism check for Stage 0)."""
+    import subprocess
+
+    commit = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True,
+                            text=True).stdout.strip()
+    want = [s for s in ids.split(",") if s]
+    specs = [s for s in json.load(open(specs_path)) if s["id"] in want]
+    for s in specs:
+        s["code_commit"] = commit
+    print(f"regenerating {len(specs)} clips: {[s['id'] for s in specs]}")
+    out = generate.remote(json.dumps(specs), out_root=out_root, save_priors=True,
+                          require_coverage=True)
+    print(json.dumps(out, indent=1)[:2000])
+
+
+@app.local_entrypoint()
+def run_injected(specs_path: str = "results/anwm_clips_injected/specs.json",
+                 arm: str = "injected_true", limit: int = 0, include_variance: bool = False,
+                 ids: str = ""):
+    """Stage 1/2: generate the injected-attitude arm, saving the FFP priors."""
+    import subprocess
+
+    commit = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True,
+                            text=True).stdout.strip()
+    specs = [s for s in json.load(open(specs_path)) if s.get("arm", arm) == arm]
+    want = [x for x in ids.split(",") if x]
+    if want:
+        specs = [s for s in specs if s["id"] in want]
+    if not include_variance:
+        # the four cruise clips at seeds 1/2 are duplicates of the seed-0 cruise path, and a
+        # zero-tilt injection is a no-op by construction; dropped to stay inside the budget
+        specs = [s for s in specs if int(s.get("seed", 0)) == 0]
+    for s in specs:
+        s["code_commit"] = commit
+    if limit:
+        specs = specs[:limit]
+    hours = len(specs) * 251 / 3600
+    print(f"{len(specs)} {arm} clips, ~{hours:.2f} GPU-hours, ~US${hours * 1.10:.2f} at the "
+          f"verified A10G rate")
+    out = generate.remote(json.dumps(specs), out_root=f"/r/clips_injected/{arm}",
+                          save_priors=True, require_coverage=True)
+    print(json.dumps(out, indent=1)[:4000])
+
+
+@app.function(cpu=8, memory=16384, timeout=3600,
+              volumes={"/r": vol_results, "/n": vol_native},
+              secrets=[modal.Secret.from_name("awmv-r2")])
+def evaluate_injected(arm: str = "injected_true", writing: bool = True) -> dict:
+    """Checkpoint 2 metrics: LPIPS against the paired level clip and against the FFP prior.
+
+    Reads /r/clips_injected/<arm>/C/<id>/{frames,priors}, pairs with /r/regen_stage0/C/<id> when a
+    same-seed twin exists (else /r/clips/C/<id>), and writes /r/eval_injected_<arm>.json.
+    """
+    import numpy as np
+    from PIL import Image
+
+    import lpips as lpips_lib
+
+    lp = lpips_lib.LPIPS(net="alex")
+
+    def load(d, sub="frames"):
+        fs = sorted((Path(d) / sub).glob("*.png"))
+        return [np.asarray(Image.open(f), float) / 255.0 for f in fs]
+
+    def to_t(a):
+        import torch
+        return torch.as_tensor(2 * a - 1, dtype=torch.float32).permute(2, 0, 1).unsqueeze(0)
+
+    out = {}
+    for d in sorted(Path(f"/r/clips_injected/{arm}/C").iterdir()):
+        m = json.loads((d / "manifest.json").read_text())
+        cid = m["id"]
+        pred = load(d)
+        prior = load(d, "priors")
+        cand = [Path(f"/r/regen_stage0/C/{cid}"), Path(f"/r/clips/C/{cid}")]
+        lvl_dir = next((c for c in cand if (c / "frames").exists()), None)
+        if lvl_dir is None:
+            print("no level pair for", cid)
+            continue
+        lvl = load(lvl_dir)
+        n = min(len(pred), len(lvl), len(prior))
+        with __import__("torch").no_grad():
+            lp_lvl = [float(lp(to_t(pred[i]), to_t(lvl[i])).mean()) for i in range(n)]
+            lp_pri = [float(lp(to_t(pred[i]), to_t(prior[i])).mean()) for i in range(n)]
+        mae_lvl = [float(np.abs(pred[i] - lvl[i]).mean() * 255) for i in range(n)]
+        mae_pri = [float(np.abs(pred[i] - prior[i]).mean() * 255) for i in range(n)]
+        out[cid] = {
+            "level_source": "regenerated" if "regen" in str(lvl_dir) else "original",
+            "lpips_vs_level": lp_lvl, "lpips_vs_level_mean": float(np.mean(lp_lvl)),
+            "lpips_vs_prior": lp_pri, "lpips_vs_prior_mean": float(np.mean(lp_pri)),
+            "mae_vs_level_255": mae_lvl, "mae_vs_level_mean": float(np.mean(mae_lvl)),
+            "mae_vs_prior_255": mae_pri, "mae_vs_prior_mean": float(np.mean(mae_pri)),
+            "prior_coverage_min": m.get("prior_coverage_min"),
+            "prior_coverage_mean": m.get("prior_coverage_mean"),
+            "frame_std_mean": float(np.mean(m.get("visual_integrity", {}).get("frame_std", [0]))),
+            "temporal_delta": m.get("visual_integrity", {}).get("temporal_delta"),
+            "maneuver": m.get("meta", {}).get("maneuver"),
+            "designed_tilt_deg": m.get("designed_required_tilt_deg"),
+        }
+        print(f"{cid:34s} lpips(lvl) {np.mean(lp_lvl):.3f} lpips(prior) {np.mean(lp_pri):.3f} "
+              f"cov_min {m.get('prior_coverage_min'):.3f}", flush=True)
+    if writing:
+        Path(f"/r/eval_injected_{arm}.json").write_text(json.dumps(out, indent=1))
+        vol_results.commit()
+    return {"n_clips": len(out),
+            "lpips_vs_level_mean": float(np.mean([v["lpips_vs_level_mean"] for v in out.values()])),
+            "lpips_vs_prior_mean": float(np.mean([v["lpips_vs_prior_mean"] for v in out.values()]))}
