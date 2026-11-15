@@ -1,0 +1,71 @@
+{
+  "asset": "e10_window-rule-and-prototype",
+  "script": "report/scripts/e10_window_rule.py",
+  "derived_by_report_script": true,
+  "notes": "Two-rate windows from the stored d_window_rates table. Rule-window verdict from e_verdict_v3/rule; 0.37 s comparison from fin_370ms. Synthetic 1 Hz cases parsed from D04 because they are not stored as a result file. The scope matrix is qualitative and cites the later reports; D04 supersedes the prototype's 0.07-0.12 s 'truth rate' claim.",
+  "sources": [
+    {
+      "worktree": "d",
+      "branch": "track-d-verdict-stat",
+      "commit": "2a91765cb86e0ff4c57b9bb04f3776966162688b",
+      "path": "results/d_window_rates/d01/table.csv",
+      "abs_path": "/home/kevin/Documents/Projects/awmv-track-d/results/d_window_rates/d01/table.csv",
+      "sha256": "5330ca3954cd89a5f922208a6453999bf7597e9d18398c6debbebffada1fd8cf",
+      "r2_prefix": "track-d/"
+    },
+    {
+      "worktree": "d",
+      "branch": "track-d-verdict-stat",
+      "commit": "2a91765cb86e0ff4c57b9bb04f3776966162688b",
+      "path": "results/d_bandwidth/d01/metrics.json",
+      "abs_path": "/home/kevin/Documents/Projects/awmv-track-d/results/d_bandwidth/d01/metrics.json",
+      "sha256": "4141df86213df270d51b19ca87f784e9611d66bbbe7c419fa58d89f590e9feb2",
+      "r2_prefix": "track-d/"
+    },
+    {
+      "worktree": "e",
+      "branch": "track-e-depicted-uzh",
+      "commit": "dd209bf933527c91e564df2ec10b9995b1a004c2",
+      "path": "results/e_verdict_v3/rule/metrics.json",
+      "abs_path": "/home/kevin/Documents/Projects/awmv-track-e/results/e_verdict_v3/rule/metrics.json",
+      "sha256": "1b53c4e81978fc84f4bdd4b83a07102766b42b85aa5af19defda134ced54dfb6",
+      "r2_prefix": "track-e/"
+    },
+    {
+      "worktree": "e",
+      "branch": "track-e-depicted-uzh",
+      "commit": "dd209bf933527c91e564df2ec10b9995b1a004c2",
+      "path": "results/e_verdict_v3/fin_370ms/metrics.json",
+      "abs_path": "/home/kevin/Documents/Projects/awmv-track-e/results/e_verdict_v3/fin_370ms/metrics.json",
+      "sha256": "de59c5fd889d39a5302494edc109bd32e91bdcad58754859d66d660cf48b669a",
+      "r2_prefix": "track-e/"
+    },
+    {
+      "worktree": "d",
+      "branch": "track-d-verdict-stat",
+      "commit": "2a91765cb86e0ff4c57b9bb04f3776966162688b",
+      "path": "reports/D04_bandwidth_window.md",
+      "abs_path": "/home/kevin/Documents/Projects/awmv-track-d/reports/D04_bandwidth_window.md",
+      "sha256": "82b9ab8ff00344da92d20b98b56f18ebcd84f5e950a4875a00a079f77ca55965",
+      "r2_prefix": "track-d/"
+    },
+    {
+      "worktree": "e",
+      "branch": "track-e-depicted-uzh",
+      "commit": "dd209bf933527c91e564df2ec10b9995b1a004c2",
+      "path": "reports/E05_window_rule.md",
+      "abs_path": "/home/kevin/Documents/Projects/awmv-track-e/reports/E05_window_rule.md",
+      "sha256": "068ce2ae095f6be4aad0762e751dc755ef2e7effcf8ea16a65fb307e8c5f71b8",
+      "r2_prefix": "track-e/"
+    },
+    {
+      "worktree": "d",
+      "branch": "track-d-verdict-stat",
+      "commit": "2a91765cb86e0ff4c57b9bb04f3776966162688b",
+      "path": "docs/prototype_v0.1.md",
+      "abs_path": "/home/kevin/Documents/Projects/awmv-track-d/docs/prototype_v0.1.md",
+      "sha256": "63d3c7a797d72a353d2f2d05fb586f0c2046e19cb1414e548ed43697a1458b2c",
+      "r2_prefix": "track-d/"
+    }
+  ]
+}

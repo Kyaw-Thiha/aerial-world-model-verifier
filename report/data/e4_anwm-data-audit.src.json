@@ -1,0 +1,44 @@
+{
+  "asset": "e4_anwm-data-audit",
+  "script": "report/scripts/e4_anwm_audit.py",
+  "derived_by_report_script": true,
+  "notes": "Regime statistics use the corrected pooled values in audit.json. Clip counts are counted from clips_index.csv by maneuver/policy/design. Seed variance is mean pairwise pixel MAE across 3 seeds. Unreachable designs listed separately.",
+  "sources": [
+    {
+      "worktree": "b",
+      "branch": "track-b-generation",
+      "commit": "9ca9e908694672b4cb4f8dba94e48e76a6da2e6c",
+      "path": "results/anwm_path_audit/audit.json",
+      "abs_path": "/home/kevin/Documents/Projects/awmv-track-b/results/anwm_path_audit/audit.json",
+      "sha256": "5a84e92b0547bc32e685aab3721003da88a0c6fe7ec52cddd21283fdf8f1066c",
+      "r2_prefix": "track-b/"
+    },
+    {
+      "worktree": "b",
+      "branch": "track-b-generation",
+      "commit": "9ca9e908694672b4cb4f8dba94e48e76a6da2e6c",
+      "path": "results/anwm_clips/clips_index.csv",
+      "abs_path": "/home/kevin/Documents/Projects/awmv-track-b/results/anwm_clips/clips_index.csv",
+      "sha256": "8c86498a5a4c8188e9c1137b88266515ca790ed8f1ba425b17ee92199aeed430",
+      "r2_prefix": "track-b/"
+    },
+    {
+      "worktree": "b",
+      "branch": "track-b-generation",
+      "commit": "9ca9e908694672b4cb4f8dba94e48e76a6da2e6c",
+      "path": "results/anwm_clips/variance.json",
+      "abs_path": "/home/kevin/Documents/Projects/awmv-track-b/results/anwm_clips/variance.json",
+      "sha256": "7d47b0bf75f98bbce54a0d45329aebd5d510e7d9f4d745d397f4f58f05a2ba68",
+      "r2_prefix": "track-b/"
+    },
+    {
+      "worktree": "a",
+      "branch": "track-a-perception",
+      "commit": "164c5e0dce12d8a4d39ecc01fa874ad126b659a9",
+      "path": "results/anwm_scoring/20261109T075519Z_f084f03/noise_floor.json",
+      "abs_path": "/home/kevin/Documents/Projects/awmv-track-a/results/anwm_scoring/20261109T075519Z_f084f03/noise_floor.json",
+      "sha256": "fb4e0d147cc54452bacd4310cc94149f20ffd46bb718942de3813d2596c04e1f",
+      "r2_prefix": "track-a/"
+    }
+  ]
+}

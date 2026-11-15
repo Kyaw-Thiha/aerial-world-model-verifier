@@ -1,0 +1,7 @@
+{
+  "asset": "repro",
+  "script": "report/scripts/methodology.py",
+  "derived_by_report_script": true,
+  "notes": "HEADs and config hashes read live from the six worktrees. R2 object counts unavailable: rclone returns 403 and no .env is present.",
+  "sources": []
+}

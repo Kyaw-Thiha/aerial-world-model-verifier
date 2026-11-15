@@ -1,0 +1,9 @@
+flight,track,control,n_frames,median_deg,trimmed_rmse_deg,full_rmse_deg,frac_over_10_deg
+flight-01a-ellipse,ellipse,autonomous,270,4.2021,4.1935,13.6690,0.103704
+flight-01p-ellipse,ellipse,piloted,1267,3.1360,3.2638,3.7995,0.006314
+flight-04a-ellipse,ellipse,autonomous,350,3.2908,3.2620,10.3518,0.051429
+flight-07a-lemniscate,lemniscate,autonomous,370,2.5362,6.6235,28.4311,0.175676
+flight-07p-lemniscate,lemniscate,piloted,1284,3.5939,3.7066,4.2036,0.005452
+flight-13a-trackRATM,trackRATM,autonomous,557,7.4376,34.6310,44.3569,0.333932
+flight-13p-trackRATM,trackRATM,piloted,536,7.8499,18.4403,33.6949,0.363806
+flight-16p-trackRATM,trackRATM,piloted,373,7.3389,13.5583,31.1846,0.348525

@@ -1,0 +1,44 @@
+{
+  "asset": "e2_depicted-tilt-tii",
+  "script": "report/scripts/e2_depicted_tilt.py",
+  "derived_by_report_script": true,
+  "notes": "Table rows from metrics.flights[*].raw; pooled from pooled_all_frames. Trimmed RMSE is a 10% trim. CDF derived by report script from per-frame err_deg arrays in the npz files. ROC derived by report script from the gate clip table (S3 signal, label = median error > 10 deg); the permutation-null medians (0.822, 0.874) are transcribed from report 06 because the null distribution is not stored.",
+  "sources": [
+    {
+      "worktree": "a",
+      "branch": "track-a-perception",
+      "commit": "164c5e0dce12d8a4d39ecc01fa874ad126b659a9",
+      "path": "results/phase1_depicted/20261108T131825Z_c738aa8/metrics.json",
+      "abs_path": "/home/kevin/Documents/Projects/awmv-track-a/results/phase1_depicted/20261108T131825Z_c738aa8/metrics.json",
+      "sha256": "9f05fbb120f69aed7aa5890e63552799820aa9f07db361ca0cf08ba93fdd7dda",
+      "r2_prefix": "track-a/"
+    },
+    {
+      "worktree": "a2",
+      "branch": "track-a2-gate",
+      "commit": "428dd3fcaba9ead0eef5a537e75bbb2eb2968479",
+      "path": "results/a2_gate/20261109T201449Z_298ff20/clip_table.csv",
+      "abs_path": "/home/kevin/Documents/Projects/awmv-track-a2/results/a2_gate/20261109T201449Z_298ff20/clip_table.csv",
+      "sha256": "0e20db54cec4955de3d13f876449cbeecaa97e7e1c8d6438e81f41267311ef0a",
+      "r2_prefix": "track-a/a2/"
+    },
+    {
+      "worktree": "a",
+      "branch": "track-a-perception",
+      "commit": "164c5e0dce12d8a4d39ecc01fa874ad126b659a9",
+      "path": "results/phase1_depicted/20261108T131825Z_c738aa8/frames_flight-01p-ellipse.npz",
+      "abs_path": "/home/kevin/Documents/Projects/awmv-track-a/results/phase1_depicted/20261108T131825Z_c738aa8/frames_flight-01p-ellipse.npz",
+      "sha256": "f3864e44ed8a9338838ab3e6b67bfa8ea0733d42644a85b42a67c9b209c8009e",
+      "r2_prefix": "track-a/"
+    },
+    {
+      "worktree": "a2",
+      "branch": "track-a2-gate",
+      "commit": "428dd3fcaba9ead0eef5a537e75bbb2eb2968479",
+      "path": "reports/06_track_a2_confidence_gate.md",
+      "abs_path": "/home/kevin/Documents/Projects/awmv-track-a2/reports/06_track_a2_confidence_gate.md",
+      "sha256": "227a0a5f0c01e74d8365ed0f8399a024c88fbf0dcc6f4b177930b53f312cd2a8",
+      "r2_prefix": "track-a/a2/"
+    }
+  ]
+}

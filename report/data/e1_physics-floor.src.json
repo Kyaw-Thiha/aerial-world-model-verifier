@@ -1,0 +1,17 @@
+{
+  "asset": "e1_physics-floor",
+  "script": "report/scripts/e1_physics_floor.py",
+  "derived_by_report_script": true,
+  "notes": "Per-flight values from loo_folds; speed curve from residual_curves, n-weighted across flights, band = min/max of per-flight medians. Pooled values are the stored pooled held-out medians (metrics.gate), not a weighted average of per-flight medians. Derived by report script: n-weighted aggregation and drag reduction.",
+  "sources": [
+    {
+      "worktree": "a",
+      "branch": "track-a-perception",
+      "commit": "164c5e0dce12d8a4d39ecc01fa874ad126b659a9",
+      "path": "results/phase0_floor/20261108T044153Z_f3b5d2bf/metrics.json",
+      "abs_path": "/home/kevin/Documents/Projects/awmv-track-a/results/phase0_floor/20261108T044153Z_f3b5d2bf/metrics.json",
+      "sha256": "6b96c913a1f17f89b4ac79a1bb74b6c832954f7b1c204cf7d391456428a7bf8f",
+      "r2_prefix": "track-a/"
+    }
+  ]
+}

@@ -5,3 +5,5 @@ assets_test.pdf
 *.fdb_latexmk
 *.out
 __pycache__/
+!data/
+!data/**

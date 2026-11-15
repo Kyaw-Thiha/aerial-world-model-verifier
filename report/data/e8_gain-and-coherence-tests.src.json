@@ -1,0 +1,71 @@
+{
+  "asset": "e8_gain-and-coherence-tests",
+  "script": "report/scripts/e8_gain_coherence.py",
+  "derived_by_report_script": true,
+  "notes": "Matched false-reject and decomposition are stored. Window rates use rates_frozen_band R2. Coherence AUROC/operating point stored. Gain cluster intervals stored in d_flights; coherence cluster intervals recomputed by the stated procedure from the per-flight flags in D04 (the run's own interval file is not stored). Synthetic sweep stores only the gain statistic; the baseline and coherence curves are not stored and are omitted.",
+  "sources": [
+    {
+      "worktree": "d",
+      "branch": "track-d-verdict-stat",
+      "commit": "2a91765cb86e0ff4c57b9bb04f3776966162688b",
+      "path": "results/d_eval/d02/metrics.json",
+      "abs_path": "/home/kevin/Documents/Projects/awmv-track-d/results/d_eval/d02/metrics.json",
+      "sha256": "c5f50e95b8d94a672c47d2f5bc366de1da4e7e50af5834b28708bc8f9aef99b2",
+      "r2_prefix": "track-d/"
+    },
+    {
+      "worktree": "d",
+      "branch": "track-d-verdict-stat",
+      "commit": "2a91765cb86e0ff4c57b9bb04f3776966162688b",
+      "path": "results/d_decomposition/d01/decomposition.json",
+      "abs_path": "/home/kevin/Documents/Projects/awmv-track-d/results/d_decomposition/d01/decomposition.json",
+      "sha256": "59e4091ad189ec3285cf7ee5e60e677d645f1091b89ce70261da2f88cfeab564",
+      "r2_prefix": "track-d/"
+    },
+    {
+      "worktree": "d",
+      "branch": "track-d-verdict-stat",
+      "commit": "2a91765cb86e0ff4c57b9bb04f3776966162688b",
+      "path": "results/d_window/d01/metrics.json",
+      "abs_path": "/home/kevin/Documents/Projects/awmv-track-d/results/d_window/d01/metrics.json",
+      "sha256": "a39458cac071445bf3c25208bde466910e93fdde096463ff0353a8f5fbc128b4",
+      "r2_prefix": "track-d/"
+    },
+    {
+      "worktree": "d",
+      "branch": "track-d-verdict-stat",
+      "commit": "2a91765cb86e0ff4c57b9bb04f3776966162688b",
+      "path": "results/d_coherence/d01/metrics.json",
+      "abs_path": "/home/kevin/Documents/Projects/awmv-track-d/results/d_coherence/d01/metrics.json",
+      "sha256": "b4fd23575ae23b4915c79a183dfb8076571c7964119a426633e70b6082731a44",
+      "r2_prefix": "track-d/"
+    },
+    {
+      "worktree": "d",
+      "branch": "track-d-verdict-stat",
+      "commit": "2a91765cb86e0ff4c57b9bb04f3776966162688b",
+      "path": "results/d_flights/d01/interval.json",
+      "abs_path": "/home/kevin/Documents/Projects/awmv-track-d/results/d_flights/d01/interval.json",
+      "sha256": "a4f0f9d6c892bd8b7c2e235079235f2ff37166640d83ebc182939058cd2ac4ea",
+      "r2_prefix": "track-d/"
+    },
+    {
+      "worktree": "d",
+      "branch": "track-d-verdict-stat",
+      "commit": "2a91765cb86e0ff4c57b9bb04f3776966162688b",
+      "path": "reports/D04_bandwidth_window.md",
+      "abs_path": "/home/kevin/Documents/Projects/awmv-track-d/reports/D04_bandwidth_window.md",
+      "sha256": "82b9ab8ff00344da92d20b98b56f18ebcd84f5e950a4875a00a079f77ca55965",
+      "r2_prefix": "track-d/"
+    },
+    {
+      "worktree": "d",
+      "branch": "track-d-verdict-stat",
+      "commit": "2a91765cb86e0ff4c57b9bb04f3776966162688b",
+      "path": "results/d_eval/d02/operating_curves.csv",
+      "abs_path": "/home/kevin/Documents/Projects/awmv-track-d/results/d_eval/d02/operating_curves.csv",
+      "sha256": "d711bbe658d3a7ab9f19d1dd3856625cbb1f4f166f48bbb68934e2d87073c9e9",
+      "r2_prefix": "track-d/"
+    }
+  ]
+}

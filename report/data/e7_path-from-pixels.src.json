@@ -1,0 +1,62 @@
+{
+  "asset": "e7_path-from-pixels",
+  "script": "report/scripts/e7_path_from_pixels.py",
+  "derived_by_report_script": true,
+  "notes": "Sequence peak speeds from the UZH audit kinematics. Extractor rows and pass flags read from the v2 summary. Intrinsics table counts the pre-registered pass criterion (direction <= 30 deg and magnitude in [0.7, 1.4]) from the stored per-run scores. ANWM counts derived by report script: crash = no generated block; degenerate = accel magnitude ratio > 10. Verdict pilot scores read from pathrec_verdict/v1.",
+  "sources": [
+    {
+      "worktree": "c",
+      "branch": "track-c-pathrec",
+      "commit": "ed76a0870f967f4322a008f4bd948aebbdd72255",
+      "path": "results/pathrec_bakeoff/v2/summary.json",
+      "abs_path": "/home/kevin/Documents/Projects/awmv-track-c/results/pathrec_bakeoff/v2/summary.json",
+      "sha256": "fc754daee25b6f9ae86520fcb39953ad3ec8d4dbc5a26de9fdd44cd90b0f4b28",
+      "r2_prefix": "track-c/"
+    },
+    {
+      "worktree": "c",
+      "branch": "track-c-pathrec",
+      "commit": "ed76a0870f967f4322a008f4bd948aebbdd72255",
+      "path": "results/pathrec_calib/focal_matrix.json",
+      "abs_path": "/home/kevin/Documents/Projects/awmv-track-c/results/pathrec_calib/focal_matrix.json",
+      "sha256": "27cdc247a5b0e247a9d678f7bad65c206b73d522a363ef940e96c856f5664a1f",
+      "r2_prefix": "track-c/"
+    },
+    {
+      "worktree": "c",
+      "branch": "track-c-pathrec",
+      "commit": "ed76a0870f967f4322a008f4bd948aebbdd72255",
+      "path": "results/pathrec_calib/estimated_k.json",
+      "abs_path": "/home/kevin/Documents/Projects/awmv-track-c/results/pathrec_calib/estimated_k.json",
+      "sha256": "0b0d9ff93252b727ad0f31061f6ddb76d733215bdb34545411b733287a7260f5",
+      "r2_prefix": "track-c/"
+    },
+    {
+      "worktree": "c",
+      "branch": "track-c-pathrec",
+      "commit": "ed76a0870f967f4322a008f4bd948aebbdd72255",
+      "path": "results/pathrec_anwm/raw/anwmA_dpvo.json",
+      "abs_path": "/home/kevin/Documents/Projects/awmv-track-c/results/pathrec_anwm/raw/anwmA_dpvo.json",
+      "sha256": "dd98ff186077064a093a3ccbe38213d843b7dcab63dc7095d7efb63642169763",
+      "r2_prefix": "track-c/"
+    },
+    {
+      "worktree": "c",
+      "branch": "track-c-pathrec",
+      "commit": "ed76a0870f967f4322a008f4bd948aebbdd72255",
+      "path": "results/pathrec_verdict/v1/summary.json",
+      "abs_path": "/home/kevin/Documents/Projects/awmv-track-c/results/pathrec_verdict/v1/summary.json",
+      "sha256": "dfbbb9f7941a950fcf0b75994f1f606b5e8577a85a84369257e413ef36ab3bff",
+      "r2_prefix": "track-c/"
+    },
+    {
+      "worktree": "e",
+      "branch": "track-e-depicted-uzh",
+      "commit": "dd209bf933527c91e564df2ec10b9995b1a004c2",
+      "path": "results/e_audit/audit.json",
+      "abs_path": "/home/kevin/Documents/Projects/awmv-track-e/results/e_audit/audit.json",
+      "sha256": "ae732cdb87f3258ab344638d3aa5d5b08c2048bf655bf3939f01619f7de09a7d",
+      "r2_prefix": "track-e/"
+    }
+  ]
+}
