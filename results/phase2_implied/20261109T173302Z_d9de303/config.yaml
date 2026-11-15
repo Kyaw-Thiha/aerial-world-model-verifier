@@ -1,0 +1,15 @@
+dpvo_tag: stride10_fov100_s0.5
+geocalib_tag: div10
+windows_samples:
+- 5
+- 7
+- 9
+- 11
+- 15
+- 21
+- 31
+polyorder: 3
+k_d: 0.295
+fps_diff: 0.0
+depicted_gain: 0.2
+note: window chosen on fit flights only

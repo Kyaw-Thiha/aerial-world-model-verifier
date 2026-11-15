@@ -166,3 +166,62 @@ def lean_error_deg(est: np.ndarray, tru: np.ndarray, min_tilt_deg: float = 10.0,
     return {"n": int(mask.sum()), "yaw_align_rad": float(yaw_align),
             "median_abs_deg": float(np.degrees(np.median(np.abs(d)))),
             "p90_abs_deg": float(np.degrees(np.percentile(np.abs(d), 90)))}
+
+
+def lean_error_windowed_deg(est: np.ndarray, tru: np.ndarray, t: np.ndarray,
+                            win_s: float = 4.0, min_tilt_deg: float = 10.0,
+                            min_count: int = 6, leave_self_out: bool = True) -> dict:
+    """Lean-direction error with one fitted azimuth per sliding time window.
+
+    The clip-level form (:func:`lean_error_deg`) absorbs one constant azimuth for the
+    whole clip, so a slowly drifting yaw — which the verifier never sees, because it
+    compares depicted and implied axes inside one frame — is charged to the estimate.
+    Here the offset is fitted inside a centred window of ``win_s`` seconds and removed
+    per frame, which is the same freedom a per-frame comparison has.
+
+    ``leave_self_out`` removes the frame's own contribution from its window fit, so the
+    residual is not shrunk by construction (shrinkage is 1/count otherwise).
+    Frames whose window holds fewer than ``min_count`` usable samples keep no residual.
+    """
+    est = np.asarray(est, dtype=np.float64).reshape(-1, 3)
+    tru = np.asarray(tru, dtype=np.float64).reshape(-1, 3)
+    t = np.asarray(t, dtype=np.float64).ravel()
+    n = len(t)
+    if len(est) != n or len(tru) != n:
+        raise ValueError(f"length mismatch: est={len(est)} tru={len(tru)} t={n}")
+    e = lean_direction_deg(est)
+    tr = lean_direction_deg(tru)
+    tilt_est = np.degrees(np.arccos(np.clip(est[:, 2], -1, 1)))
+    tilt_tru = np.degrees(np.arccos(np.clip(tru[:, 2], -1, 1)))
+    mask = (tilt_tru > min_tilt_deg) & (tilt_est > 1e-6)
+    d = np.angle(np.exp(1j * (e - tr)))
+
+    w = mask.astype(np.float64)
+    sin_d = np.where(mask, np.sin(d), 0.0)
+    cos_d = np.where(mask, np.cos(d), 0.0)
+    # cumulative sums over time allow an O(N log N) sliding-window fit
+    cs_w = np.concatenate([[0.0], np.cumsum(w)])
+    cs_s = np.concatenate([[0.0], np.cumsum(sin_d)])
+    cs_c = np.concatenate([[0.0], np.cumsum(cos_d)])
+    half = 0.5 * float(win_s)
+    lo = np.searchsorted(t, t - half, side="left")
+    hi = np.searchsorted(t, t + half, side="right")
+    cnt = cs_w[hi] - cs_w[lo]
+    s_sum = cs_s[hi] - cs_s[lo]
+    c_sum = cs_c[hi] - cs_c[lo]
+    if leave_self_out:
+        cnt = cnt - w
+        s_sum = s_sum - sin_d
+        c_sum = c_sum - cos_d
+
+    out = np.full(n, np.nan)
+    usable = mask & (cnt >= min_count)
+    yaw = np.arctan2(s_sum[usable], c_sum[usable])
+    out[usable] = np.angle(np.exp(1j * (d[usable] - yaw)))
+    vals = np.abs(out[usable])
+    if len(vals) == 0:
+        return {"n": 0, "win_s": float(win_s)}
+    return {"n": int(len(vals)), "win_s": float(win_s),
+            "median_abs_deg": float(np.degrees(np.median(vals))),
+            "p90_abs_deg": float(np.degrees(np.percentile(vals, 90))),
+            "residual_deg": np.degrees(out)}

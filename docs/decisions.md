@@ -159,3 +159,55 @@ One line per structural choice, with the reason. Newest at the bottom.
 - [A] Gate 2: implied-tilt RMSE **28.97 deg**, SNR **0.84**. FAIL. Attributed to the trajectory: the oracle scale against mocap is -0.003 to 0.011, per-axis correlation 0.01 / -0.09 / 0.13, VO path 41 m against mocap 479 m on 01p, and full-resolution DPVO (640x480, 80 patches) does not change it. DPVO's **rotation** is meanwhile 0.15-1.5 deg per frame against mocap, so rotation is not the problem.
 - [A] A fitted per-clip scale removes only 0-12 % of the depicted-vs-implied residual and gives the same RMSE as the oracle scale, so the nuisance term that could absorb violations does not, on this data, have enough leverage to hide them either. Recorded because Phase 3 depends on it.
 - [A] MoGe-2 depth scale was **not run**; the metrics file records `scale_depth.run = false` rather than substituting a fitted scale.
+
+## Track A, phase 3a (verdict test) — all entries tagged [A]
+
+### Environment and housekeeping
+
+- [A] Everything Track A committed on `track-a-perception` before starting (`git status` clean), then work done in a second worktree `../awmv-track-a` on the same branch. The main tree stays on `main` for the other tracks.
+- [A] The pixi environment is **not** re-created in the worktree: pixi refuses to reuse a moved env directory, so commands run as `<main-tree>/.pixi/envs/gpu/bin/python` with `PYTHONPATH=.`. `data/`, `third_party/` and `.env` are symlinked into the worktree and added to `info/exclude` (the repo `.gitignore` patterns `data/` do not match a symlink). Gitignored `.npz` artifacts from Phases 0-2 were copied in so the scripts' relative paths work.
+- [A] GeoCalib weights are downloaded once locally and mirrored to the Modal Volume `awmv-a-data/geocalib_weights`; `remote/a_geocalib_p3.py` copies them into `~/.cache/torch/hub/geocalib` before constructing the model. Reason: the GitHub release URL returned HTTP 504 three times in a row inside Modal's builder and at run time, which would otherwise make every GPU job a coin flip.
+
+### Pre-registration
+
+- [A] `configs/verdict_preregistration.yaml` committed (`d6b2003`) **before** any edited clip was scored. The scoring script's guard (`src/score/prereg.py::verify_prereg`) refuses an edit condition unless the file is tracked, unmodified in `HEAD`, and records its sha256 per run; the guard itself is unit-tested (missing, untracked, out-of-repo, dirty).
+- [A] **Amendment 1** (`addd9ec`), written after real-clip scores and before any negative: thresholds are fitted on the five non-trackRATM flights and the all-flights variant is reported too. Reason: one trackRATM flight scores a real-clip median of 68 deg, so an all-flights threshold would be set by that estimator failure; both variants are reported rather than only the favourable one.
+- [A] Clip length 4 s, stride 10 (~12.04 Hz), non-overlapping. From the Phase 0 per-frame arrays: 4 s gives 76 testable clips against 56 at 6 s and 32 at 10 s, while still leaving ~10-40 frames above the 10 deg signal floor per clip. Abstention floor (12 frames >= 10 deg, fraction >= 0.20, usable depicted >= 0.40) is justified by the median score's standard error (1.25 sigma / sqrt(n) = 1.5-2.9 deg at n = 12, sigma = 4-8 deg), i.e. a 10 deg violation is resolvable at 3.5-6.5 sigma.
+- [A] Implied axis is computed on the **native-rate mocap** (275 Hz, Savitzky-Golay 101 samples = 0.37 s, poly 3) and sampled at the frame timestamps, so the implied side does not depend on the frame stride. `k_d` fixed at 0.295 in every clip; not fitted, not per fold.
+
+### Depicted side
+
+- [A] The depicted body attitude is reconstructed by **inverting the ZYX decomposition**: gravity gives roll and pitch (`u_b = (-sin p, sin r cos p, cos r cos p)`), the path gives yaw. A first version used the minimal rotation `R(u_b -> e3)`, which does **not** reproduce a known attitude (it was 24 deg off on synthetic truth); the unit test caught it, the closed form reproduces it exactly, and a synthetic 5 deg mount error and 75 ms lag are both recovered by the nuisance fit.
+- [A] Heading comes from the path (mocap yaw for TII, commanded yaw for ANWM), stated as a restriction of the claim: gravity cannot observe azimuth. This is what makes the lean direction testable at all, and it removes the azimuth nuisance the Phase 1b fusion needed.
+
+### Edits
+
+- [A] Edits are pure camera rotations about the camera centre in the **raw fisheye**, using an equidistant model `r = f theta` with `f = 320 / rad(87.5)` = 209.5 px from the declared 175 deg field. Reason: the released calibration inverts only to theta = 56 deg, so it cannot express the periphery a 66 deg tilt removal needs; the virtual pinhole view is only 46% valid. The identity warp is pixel-exact (valid 1.0) and a rotated blob lands on the predicted pixel, both unit-tested.
+- [A] Two controls, both pixel edits: identity (null edit, resampling only) and a **yaw rotation about world up with the warp magnitude matched frame-by-frame to the tilt-removal edit** (capped at 60 deg). The yaw control has the same border loss and content motion but cannot change the depicted tilt, so anything flagged there is an artifact. Border handling is black fill, and frames whose output is less than 50% source-valid are not testable.
+- [A] The yaw control is capped at 60 deg, so on the two extreme piloted trackRATM flights (66-70 deg tilt) the warp magnitude is matched only approximately; the valid fraction is 0.73 against 0.62 for tilt removal there.
+
+### Findings recorded early
+
+- [A] Lean-direction re-score: the Phase 1b lean error is 85.5 deg with one azimuth per clip, 4.4 deg with 0.5 s windows, 10.9 with 1 s, and **worse** than one-per-clip at 3-5 s (84.6-114.6). The azimuth error is fast, not a slow drift, so the plan's 3-5 s window is the wrong instrument and sub-second anchoring is the right one.
+- [A] ANWM noise floor: on 186 released level frames GeoCalib reads median 0.57 deg, p90 1.5-1.6 deg, nothing above 10 deg, at both 512 and 224. The estimator reads level frames as level, so a level-camera violation is far outside the floor.
+
+### Task 4
+
+- [A] Not run. The workstation has 4.1 GB free, UZH-FPV's release is tens of GB and the small HF derivative (128x128) does not carry the calibration the test exists to isolate. Recorded with the concrete next step rather than substituted with a weaker proxy.
+
+### Compute (recorded because the estimate exceeds US$5)
+
+- [A] Phase 3a GPU estimate: 5,007 frames x 6 conditions = 30,042 GeoCalib estimates at the measured ~1.5 estimates/s per container = ~5.6 A10G-hours, plus 95 s for the ANWM floor. At ~US$1.10/h that is **US$6-8**, above the US$5 threshold, so it is recorded here before the run. The first two batches ran serially at ~25 min/flight and would have taken four hours; the remainder runs one container per flight (`--parallel`, Modal `.spawn`), which is the same GPU-seconds spread over more containers. Waste from the two restarts: about 25 minutes of one container (01p, killed before its commit).
+
+### Phase 3a outcomes
+
+- [A] Gate 3 **fails** four of six pre-registered criteria and the failure is attributed, not explained away: acceptance 0.711 (primary policy; 0.967 on the five non-trackRATM flights, 0.043 on trackRATM), AUROC 0.918 tilt removal / 0.925 mirrored roll / 0.804 and 0.746 tilt scaling, Spearman 0.82, no violation rejected 80% of the time, yaw control rejected 33% against a 10% budget.
+- [A] The binding constraint is the **threshold**, not the score. The conformal 95th percentile is estimated from 34-78 real clips; a single autonomous clip at 49 deg sets the fold that holds out `01p` at 48.8 deg, and one broken flight moves the threshold from 9.4 to 67 deg. Recorded as the first thing to fix, with three concrete options: more clips (shorter clips or more flights), a trimmed quantile, or a tail model — all of them after this handoff, none of them applied here.
+- [A] One flight is not testable at all: `flight-13a-trackRATM` scores a real-clip median of 68 deg, and a tilt removal *lowers* its score because the systematic tilt partly cancels the estimator's random error. Excluded from the fit in a sensitivity policy (`all_but_13a`) and reported, not silently dropped.
+- [A] Measured estimator view-dependence: a rotation about world up moves the estimated tilt by 4.75 deg median on the frames it rotates by more than 10 deg (0.50 rank correlation with the rotation angle). That number, not the clip-score noise, is the floor under the minimum detectable violation.
+- [A] Nuisance ablation: both terms needed on real clips (4.4 -> 2.9 deg) and they absorb 4.1 deg of a 27.2 deg tilt removal but **6.2 of the 13.6 deg** half-tilt change — 46% of the smallest violation. Verdict-level AUC moves only 0.822 -> 0.833 without them, so the ranking is robust even though the per-clip score is not.
+- [A] The identity edit reproduces the Phase 1 GeoCalib run to 0.13-0.16 deg median per flight, so the edit pipeline changes the input by less than the estimator's own run-to-run variation.
+
+### Task 4 (DPVO on a well-calibrated sequence)
+
+- [A] Not completed, two attempts used. One UZH-FPV DAVIS sequence (417 MB) was fetched and unpacked: it ships images, IMU, events and ground truth but **no calibration**, and the calibration bundle is not at the documented paths. Without it the experiment cannot distinguish a calibration cause from a parsing cause, so it was not run. The scaffolding (prepare, remote DPVO entry point, oracle-scale analysis) is committed and unit-tested, and the two format quirks (ground truth is `id timestamp tx ty tz qx qy qz qw`; `images.txt` is `id timestamp image_name`) are recorded in `docs/track_a_verdict.md` section 7.

@@ -6,6 +6,7 @@ import pytest
 from scipy.spatial.transform import Rotation
 
 from src.fusion import (body_z_from_camera, complementary_filter, gravity_align,
+                        lean_error_windowed_deg,
                         lean_error_deg, relative_rotations, rotation_between)
 
 E3 = np.array([0.0, 0.0, 1.0])
@@ -83,3 +84,25 @@ def test_body_z_and_lean_error():
     err = lean_error_deg(est, tru, min_tilt_deg=5.0, yaw_align=0.0)
     assert err["n"] == 5
     assert err["median_abs_deg"] == pytest.approx(90.0, abs=1e-6)
+
+
+def test_windowed_lean_error_absorbs_slow_azimuth_drift():
+    """A drifting yaw is invisible to a per-frame comparison; one constant is not."""
+    rng = np.random.default_rng(3)
+    n = 1200
+    t = np.arange(n) / 12.0                      # 100 s at 12 Hz
+    tilt = np.deg2rad(20.0)
+    az_true = rng.normal(scale=0.15, size=n)     # the true lean wanders a bit
+    drift = np.deg2rad(4.0 * t / t[-1] * 20.0)   # 20 deg of slow azimuth drift over the clip
+    def axis(az):
+        return np.column_stack([np.sin(tilt) * np.cos(az), np.sin(tilt) * np.sin(az),
+                                np.full(n, np.cos(tilt))])
+    tru, est = axis(az_true), axis(az_true + drift)
+    one = lean_error_deg(est, tru, min_tilt_deg=10.0)
+    win = lean_error_windowed_deg(est, tru, t, win_s=4.0, min_tilt_deg=10.0)
+    assert one["median_abs_deg"] > 8.0           # constant alignment cannot follow the drift
+    assert win["median_abs_deg"] < 2.0           # per-window alignment can
+    assert win["n"] > 0.95 * n
+    # and with no drift the two agree, so the window machinery adds no error by itself
+    win0 = lean_error_windowed_deg(est, axis(az_true), t, win_s=4.0, min_tilt_deg=10.0)
+    assert win0["median_abs_deg"] < 0.5

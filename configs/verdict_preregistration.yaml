@@ -1,0 +1,181 @@
+# Pre-registration for the Phase 3a verdict test (handoff 04, Task 2).
+#
+# Committed BEFORE any edited clip is scored. Everything a threshold, a window, a
+# bound or a success criterion depends on is fixed here. The scoring script refuses
+# to run an edited-clip condition unless this file is committed and unmodified
+# (`src/score/prereg.py::verify_prereg`). Changing a value after the first edited
+# score is an amendment commit with a stated reason, not an edit.
+prereg_version: 1
+date: 2026-11-09
+tag: "[A]"
+handoff: "04 Task 2 (verdict test, commanded-path mode)"
+
+# ---------------------------------------------------------------- mode
+mode: commanded_path
+# The path (position and yaw) is known exactly: mocap for TII, the commanded action
+# sequence for ANWM. Only the depicted attitude comes from pixels. Yaw is taken from
+# the path because gravity cannot observe heading; this is stated as a restriction
+# of the claim, not a nuisance.
+position_source: mocap
+heading_source: path_yaw
+scale: none            # mocap is metric; no scale is fitted anywhere
+
+# ---------------------------------------------------------------- inputs
+dataset: tii
+flights:
+  fit:  [flight-01a-ellipse, flight-04a-ellipse, flight-07a-lemniscate,
+         flight-13a-trackRATM, flight-01p-ellipse, flight-07p-lemniscate,
+         flight-13p-trackRATM, flight-16p-trackRATM]
+split: leave_one_flight_out     # a held-out flight never sets its own threshold
+trackratm_flights: [flight-13a-trackRATM, flight-13p-trackRATM, flight-16p-trackRATM]
+trackratm_policy: report_separately   # GeoCalib error 31-44 deg there; not pooled silently
+
+# ---------------------------------------------------------------- sampling
+frame_stride: 10               # every 10th camera frame, ~12.04 Hz measured (Phase 1)
+clip_length_s: 4.0             # non-overlapping, starting at the flight segment start
+clip_length_sensitivity: [6.0] # reported as a robustness check, not a second primary
+min_frames_per_clip: 24
+
+# ---------------------------------------------------------------- implied tilt (path side)
+implied:
+  differentiator: savgol
+  sg_window_s: 0.37            # 101 samples at the measured 274.73 Hz mocap rate
+  sg_window_samples: 101       # Phase 0 leave-one-flight-out choice, all eight folds
+  sg_polyorder: 3
+  k_d: 0.295                   # FIXED. Not fitted, not per clip, not per fold.
+  drag_frame: world
+  g: 9.81
+  sampling: "computed at the native mocap rate, then sampled at the frame timestamps"
+  lean_direction: "from the path; no azimuth is fitted inside the verdict"
+
+# ---------------------------------------------------------------- depicted tilt (pixel side)
+depicted:
+  estimator: geocalib
+  commit: 1dedb29f94fc11b896c5f572005978aeebccd67f
+  input: raw_fisheye
+  camera_model: simple_divisional
+  weights: distorted
+  focal_prior: null
+  mount: analytic_uptilt     # R_cb = camera_to_body_pitched(recorded uptilt + delta)
+
+# ---------------------------------------------------------------- residual
+residual:
+  primary: axis              # angle(z_dep_world(t), z_imp_world(t + tau))
+  secondary: tilt            # |theta_dep(t) - theta_imp(t + tau)|, heading-free
+  z_dep_construction: >
+    z_dep_world = Rz(psi_path) @ T @ e3 with T = rotation_between(R_cb @ u_est, e3),
+    i.e. body attitude from the measured gravity direction and the path's yaw.
+    A perfect estimate on a level frame gives T = I.
+  score: median              # over testable frames; robust to the 3-7% flip tail
+  score_secondary: p75
+
+# ---------------------------------------------------------------- nuisances (fitted per clip)
+nuisances:
+  uptilt_offset_deg:
+    bounds: [-7.0, 7.0]        # covers the recorded 6-7 deg piloted-trackRATM residual
+    step: 1.0
+    count: 1                   # one constant per clip, never per frame
+  lag_ms:
+    bounds: [-150.0, 150.0]
+    step: 25.0
+  grid_search: minimise_median_residual_over_testable_frames
+  not_fitted: [k_d, scale, sg_window, clip_length, speed_bin_edges]
+  ablations: [no_uptilt, no_lag, none]
+  reported_against: recorded_uptilt_per_flight
+
+# ---------------------------------------------------------------- abstention (fixed before negatives)
+abstention:
+  rule: not_testable_if_any
+  conditions:
+    - "frames with implied tilt >= 10 deg: < 12 (about 1 s at 12 Hz)"
+    - "testable fraction (implied tilt >= 10 deg) < 0.20"
+    - "frames with a usable depicted estimate < 0.40 of the clip"
+  justification: >
+    A clip whose implied tilt never exceeds 10 deg cannot test a 10 deg violation:
+    the largest residual a level-camera negative can produce there is 10 deg, which
+    is inside the estimator's own per-frame spread (median 3.96, p90 12.87 deg).
+    Twelve frames is the point where the standard error of a median score
+    (1.25 * sigma / sqrt(n) with sigma ~ 4-8 deg) falls to 1.5-2.9 deg, which
+    resolves a 10 deg violation at 3.5-6.5 sigma.
+  estimator_valid_frame: >
+    finite gravity vector AND, for edited conditions only, at least 50% of the
+    output frame maps inside the source image.
+  report: abstention rate per flight type (autonomous / piloted / trackRATM)
+
+# ---------------------------------------------------------------- negatives
+edits:
+  domain: raw_fisheye_equidistant
+  model: "r = f * theta, f = 320 / (87.5 deg in rad) = 209.5 px"
+  model_note: >
+    The released calibration inverts only to theta = 56 deg, so it cannot express the
+    periphery a tilt removal needs. The equidistant model is the one-parameter
+    approximation implied by the declared 175 deg horizontal field. It is not fitted to
+    any clip. The null-edit family measures what the model error costs.
+  border: black_fill
+  families:
+    tilt_scaling_k: [0.0, 0.5, 1.5]      # k = 0 is "tilt removal"
+    mirrored_roll: true
+    null_edit_identity: true
+    yaw_control: true                    # rotation about world up, magnitude matched to
+                                         # the tilt edit: same warp, same borders, no tilt change
+    delay_ms: [100, 200, 300]            # analysis only, no pixel edit
+    retime: [0.5, 2.0]                   # optional; analysis only, reported if run
+  rotation_definition: >
+    body attitude Rz(yaw) * T with T = Ry(pitch) Rx(roll) (ZYX); tilt scaling uses
+    Rz(yaw) * Exp(k * log T); mirrored roll uses Rx(-roll). The world-frame delta
+    D = R'_bw R_bw^T is applied as a pure camera rotation D_cam = R_cw^T D R_cw about
+    the camera centre, so no parallax is introduced.
+  matched_set: >
+    Every condition (real, each edit, each control) is scored on the same clip set:
+    clips testable on the real condition. A clip dropped by abstention in any
+    condition is dropped from every paired comparison and the dropout is reported.
+
+# ---------------------------------------------------------------- thresholds
+thresholds:
+  per_speed_bin: true
+  speed_bins_mps: [[0, 2], [2, 5], [5, 10], [10, 20], [20, 99]]
+  bin_statistic: median_speed_of_clip
+  merge_rule: "merge with the neighbour below when a bin holds fewer than 25 fit clips"
+  estimator: conformal_quantile
+  alpha: 0.05                  # 95th percentile of held-out real scores
+  pooled_threshold: reported_alongside
+  # AMENDMENT 1 (2026-11-09, committed before any edited clip was scored): the
+  # operational reading of "report separately, do not let them dominate". Real-clip
+  # scores show the three trackRATM flights carry the estimator failure (one of them
+  # scores a median of 68 deg on real clips), so a threshold fitted over them would be
+  # set by that failure and would hide everything else. Both variants are reported:
+  threshold_fit_flights: non_trackratm
+  threshold_fit_flights_alt: all_flights
+  amendment_1_reason: >
+    operationalizes the existing "report_separately / do not let them dominate" line;
+    it was written after seeing real-clip scores and before any negative was scored,
+    and both threshold variants are reported rather than only the favourable one
+
+# ---------------------------------------------------------------- success criteria (RQ2)
+success_criteria:
+  real_acceptance_at_least: 0.95          # by construction; report held-out acceptance
+  auroc_above: 0.9
+  auroc_families: [tilt_removal, tilt_scaling]
+  mdv_rejection_rate: 0.80                # smallest violation rejected 80% of the time
+  spearman_above: 0.8                     # score vs injected violation magnitude
+  null_edit_acceptance_within_pp: 0.05    # of the real-clip rate, both controls
+  report_mirrored_roll_and_delay_separately: true
+
+# ---------------------------------------------------------------- what would invalidate the test
+invalidation:
+  - "null-edit control rejected above the real rate + 5 pp: edits are measuring warp
+     artifacts, the pixel-edit family is declared invalid and Gate 3 is reported as
+     not-run rather than reinterpreted"
+  - "yaw control rejected above the real rate + 5 pp: same conclusion"
+  - "depicted estimator unusable on a flight (valid fraction or collapse): that flight
+     is reported separately and excluded from the pooled numbers with the reason"
+
+# ---------------------------------------------------------------- outputs and provenance
+outputs:
+  results_dir: results/phase3a_verdict
+  report: docs/track_a_verdict.md
+  r2_prefix: track-a/phase3a
+provenance:
+  git_hash: recorded per run
+  prereg_sha256: recorded per run
+  seeds: [0]

@@ -176,14 +176,94 @@ def run(flight: str, stride: int = 4, fov: float = 100.0, max_frames: int = 0,
     return rec
 
 
+@app.function(image=image, gpu="A10G", volumes={VOLUME_MOUNT: volume}, timeout=3 * 3600)
+def run_uzh(seq: str, stride: int = 1, scale: float = 1.0, patches: int = 48,
+            run_tag: str = "") -> dict:
+    """DPVO on a prepared UZH-FPV sequence (undistorted pinhole frames + a real K).
+
+    Task 4 of handoff 04: the same pipeline as TII, on a dataset whose calibration is
+    well posed. Frames are 8-bit grey PNGs at ``/uzh/<seq>/frames``; ``meta.json`` has the
+    pinhole intrinsics of the undistorted view.
+    """
+    import json
+    import sys
+    import time
+    from pathlib import Path
+
+    import cv2
+    import numpy as np
+    import torch
+
+    sys.path.insert(0, DPVO_ROOT)
+    from dpvo.config import cfg
+    from dpvo.dpvo import DPVO
+
+    assert torch.cuda.is_available(), "no CUDA in this container"
+    torch.backends.cudnn.benchmark = True
+    cfg.merge_from_file(f"{DPVO_ROOT}/config/default.yaml")
+    cfg.PATCHES_PER_FRAME = patches
+    cfg.REMOVAL_WINDOW = 12
+    cfg.OPTIMIZATION_WINDOW = 8
+    cfg.PATCH_LIFETIME = 5
+    weights = Path(VOLUME_MOUNT) / "dpvo_models" / "dpvo.pth"
+
+    root = Path(VOLUME_MOUNT) / "uzh" / seq
+    meta = json.loads((root / "meta.json").read_text())
+    K = np.asarray(meta["K"], dtype=np.float64)
+    files = sorted((root / "frames").glob("*.png"))[::stride]
+    frames = []
+    for p in files:
+        img = cv2.imread(str(p), cv2.IMREAD_GRAYSCALE)
+        if scale != 1.0:
+            img = cv2.resize(img, None, fx=scale, fy=scale, interpolation=cv2.INTER_AREA)
+        frames.append(img)
+    h, w = frames[0].shape[:2]
+    h, w = h - h % 16, w - w % 16
+    Ks = K.copy() * np.array([[scale, 1.0, scale], [1.0, scale, scale], [1.0, 1.0, 1.0]])
+    intr = np.array([Ks[0, 0], Ks[1, 1], Ks[0, 2], Ks[1, 2]], dtype=np.float32)
+
+    tag = run_tag or f"uzh_{seq}_stride{stride}_s{scale}_p{patches}"
+    out_dir = Path(VOLUME_MOUNT) / "dpvo" / tag
+    out_dir.mkdir(parents=True, exist_ok=True)
+    slam = DPVO(cfg, str(weights), ht=h, wd=w, viz=False)
+    t0 = time.time()
+    with torch.no_grad():
+        for t, f in enumerate(frames):
+            im = torch.from_numpy(np.ascontiguousarray(f[:h, :w])).permute(2, 0, 1).repeat(3, 1, 1).cuda()
+            slam(t, im, torch.from_numpy(intr).cuda())
+    wall = time.time() - t0
+    poses, tstamps = slam.terminate()
+    poses = np.asarray(poses, dtype=np.float64)
+    np.savez_compressed(out_dir / "poses.npz", poses=poses,
+                        tstamps=np.asarray(tstamps, dtype=np.float64),
+                        frame_timestamps_ns=np.asarray(meta["frame_timestamps_ns"][:len(poses)],
+                                                       dtype=np.int64),
+                        intrinsics=intr)
+    rec = {"sequence": seq, "stride": stride, "n_frames_fed": len(frames),
+           "n_poses": int(len(poses)), "seconds": wall,
+           "fps": len(frames) / wall if wall else 0.0,
+           "peak_gpu_gb": torch.cuda.max_memory_allocated() / 1e9,
+           "image_hw": [h, w], "scale": scale, "patches_per_frame": patches,
+           "intrinsics": intr.tolist(), "dpvo_commit": DPVO_COMMIT,
+           "pose_layout": "tx ty tz qx qy qz qw (DPVO convention, up to scale)"}
+    (out_dir / "summary.json").write_text(json.dumps(rec, indent=2))
+    volume.commit()
+    print(json.dumps(rec, indent=2), flush=True)
+    return rec
+
+
 @app.local_entrypoint()
 def main(flight: str = "flight-01a-ellipse", stride: int = 4, fov: float = 100.0,
          max_frames: int = 0, all: bool = False, fetch: bool = True, scale: float = 0.5,
-         patches: int = 48):
+         patches: int = 48, uzh: str = "", uzh_scale: float = 1.0, uzh_patches: int = 48,
+         uzh_stride: int = 1):
     import json
 
     if fetch:
         print("weights:", json.dumps(fetch_weights.remote()))
+    if uzh:
+        print(json.dumps(run_uzh.remote(uzh, uzh_stride, uzh_scale, uzh_patches), indent=2))
+        return
     flights = [f for v in FLIGHTS.values() for f in v] if all else [flight]
     for f in flights:
         print(json.dumps(run.remote(f, stride, fov, max_frames, "", scale, patches),
