@@ -59,6 +59,10 @@ Bundle: `track-d-verdict-stat.bundle` (complete history of `track-d-verdict-stat
 | results/d_bandwidth/d01/tii_windows.csv | 12667 | c5f4db6a66a8fbb8… |
 | results/d_bandwidth/d01/uzh_coherence.csv | 3123 | 6eec037a2272af62… |
 | results/d_bandwidth/d01/uzh_windows.csv | 4140 | 655c4a6d26768fed… |
+| results/d_window_rates/d01/table.csv | 4129 | 5330ca3954cd89a5… |
+| results/d_window_rates/d01/table.md | 2262 | 570bc4f5cf54cca0… |
+| results/d_window_rates/d01/tii_clip_rate.csv | 14165 | 650370e3101217d7… |
+| results/d_window_rates/d01/uzh_truth_rate.csv | 2904 | 4057e9c3fd2daf93… |
 | results/d_uzh_v2/analysis.json | 1401 | 80cf7b1c08932a57… |
 | results/d_uzh_v2/loso_quick.json | 2637 | 81b7a842647409f2… |
 | results/d_uzh_v2/track_e_metrics_w370ms.json | 112514 | 5b7454c423d9c0ba… |

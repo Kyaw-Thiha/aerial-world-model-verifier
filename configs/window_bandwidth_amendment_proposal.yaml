@@ -32,12 +32,12 @@ removal **100 %**, mirror **100 %**, x0.5 **100 %**, x1.5 **96.5 %**, yaw **29.8
 rule selects per-clip windows 0.05-0.22 s and reproduces the frozen statistic without
 looking at outcomes. Track flights remain not validated.
 
-**UZH forward:** the rule selects **0.071-0.124 s** per sequence. The 15 Hz v1 export
-gives 1.1-1.9 samples, so the floor abstains on 27/27 real clips. At the 500 Hz truth rate
-the same windows are 35-62 samples. Track E's official v2 TII-band result at 0.37 s is
-**0.556** (5/9 real) and at 0.10 s is **0.000**; the rule's windows sit around 0.10 s, so
-the rule points at the transferable window, but this is post-hoc and must be verified on a
-v2 export with `lean_req` at the rule windows.
+**UZH forward:** at the **500 Hz truth rate** the rule selects **0.336-1.420 s**
+(169-711 samples). At the **15 Hz clip rate** it selects 0.071-0.124 s (1.1-1.9 samples),
+where it violates its own 8-sample floor and abstains on 27/27 real clips; those are not
+the truth-rate windows. The gain tier fails on UZH at TII bands at **0.37 s (5/9)** and at
+the **truth-rate rule windows (7/9 false reject)**, and requires per-domain calibration of
+at least **30 real clips**. The 0.10 s passing result is post-hoc, not the rule's window.
 
 **Per-domain calibration:** a UZH LOSO band on the available 9 real clips reduces the real
 rate to 0.111, but it is fitted on 6-7 clips (tau 3.21-3.61 vs TII 2.19; `gy` scale

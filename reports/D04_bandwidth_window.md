@@ -38,7 +38,7 @@ on 13a. The rule does not change that.
 
 ## UZH forward (Track E)
 
-### The 15 Hz schema-v1 export: the rule abstains
+### The 15 Hz schema-v1 export: the clip-rate application abstains
 
 The R2 `track-e/clips` export is schema v1 (`pos` at about 15 Hz). The rule picks windows
 of **0.071-0.124 s** per sequence (f95 ~4-7 Hz), which are **1.1-1.9 samples at 15 Hz**.
@@ -57,12 +57,13 @@ false-reject or detection number exists for the gain tier on this export.
 | outdoor_forward_3 | 0.111 | 1.7 | abstain |
 | outdoor_forward_5 | 0.091 | 1.4 | abstain |
 
-At the **500 Hz truth rate** the same windows are 35-62 samples, so the floor is met. The
-floor must be applied to the rate of the truth that computes `lean_req`, not to the
-frame-rate `pos`. This is the precise reason Track E's 0.10 s result exists while the v1
-export cannot reproduce it: they used the official schema-v2 `lean_req` from the 500 Hz
-truth. The v2 `lean_req` itself is not on R2, so the gain at the rule's per-clip windows
-cannot be recomputed here.
+**Correction.** The **500 Hz truth-rate** rule selects **0.336-1.420 s** (169-711
+samples; see the two-rate table below and `results/d_window_rates/d01/table.md`). The
+0.071-0.124 s values in the table above are the **15 Hz clip-rate application**, where the
+rule violates its own 8-sample floor; they are not the truth-rate windows. The floor must
+be applied to the rate of the truth that computes `lean_req`, not to the frame-rate `pos`.
+Track E's 0.10 s result is a separate, post-hoc window choice, not what this rule selects
+at the truth rate.
 
 ### Official schema-v2 population (Track E's per-clip rows)
 
@@ -72,6 +73,7 @@ sequences** (3, 5, 9, 10), gate abstains on all outdoor.
 | statistic | real (FRR) | null | yaw | removal | mirror | x0.5 | x1.5 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | R2 band, TII unchanged, 0.37 s | **0.556** (5/9) | 0.556 | 0.286 (2/7) | 1.000 | 1.000 | 1.000 | 1.000 |
+| R2 band, TII unchanged, truth-rate rule windows | **0.778** (7/9) | — | — | — | — | — | — |
 | coherence, TII tau | **0.111** (1/9) | 0.111 | 0.143 | **1.000** | **1.000** | 0.200 | 0.250 |
 | R2 band, UZH LOSO (6-7 fit clips) | **0.111** (1/9) | — | 0.000 | 1.000 | 1.000 | 1.000 | 1.000 |
 
@@ -86,11 +88,44 @@ but that band is fitted on 6-7 clips, with `gy` scale 0.023-0.037 against TII's 
 and tau 3.21-3.61 against TII's 2.19. It is shown only to quantify the instability, not
 as a usable UZH calibration.
 
-The rule's windows (0.07-0.12 s) sit around the **0.10 s** window where Track E found the
-TII band reaches **0.000** real (their window sensitivity). The rule therefore selects,
-without seeing UZH outcomes, the window at which the gain tier can transfer — but that is
-a post-hoc UZH validation and must be re-run on a v2 export with `lean_req` at the rule
-windows, not 0.37 s.
+At the truth rate the rule selects **0.336-1.420 s**, not 0.10 s. At the rule windows the
+gain tier **fails on UZH at TII bands: 7/9 false reject** (Track E). The gain tier
+therefore requires **per-domain calibration of at least 30 real clips**; the 0.10 s
+passing result is a post-hoc window, not evidence that the rule transfers.
+
+## Two-rate table
+
+The rule applied to the **truth rate** and to the **clip rate**, per TII flight and UZH
+forward sequence. `truth samples` are at 274.73 Hz (TII) or 500 Hz (UZH); `clip-rate rule`
+is the rule recomputed from the 12/15 Hz `pos`; `same window at clip rate` shows the
+truth-rate window expressed in clip-rate samples. Full CSV: `results/d_window_rates/d01/table.csv`.
+
+**Table: rule windows and sample counts, truth rate vs clip rate**
+
+| dataset | unit | n | truth rate | truth window s (med [min-max]) | truth samples | same window at clip rate (samples) | clip rate | clip-rate rule window s (med) | clip samples | floor truth / clip |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| TII | 01a-ellipse | 5 | 274.73 | 0.103 [0.056-0.490] | 28 | 1.2 | 12.00 | 0.200 | 2.40 | pass / fail |
+| TII | 01p-ellipse | 26 | 274.73 | 0.178 [0.098-0.280] | 49 | 2.1 | 12.00 | 0.286 | 3.43 | pass / fail |
+| TII | 04a-ellipse | 7 | 274.73 | 0.063 [0.038-0.392] | 17 | 0.8 | 12.00 | 0.182 | 2.18 | pass / fail |
+| TII | 07a-lemniscate | 7 | 274.73 | 0.107 [0.029-0.329] | 30 | 1.3 | 11.96 | 0.200 | 2.40 | pass / fail |
+| TII | 07p-lemniscate | 26 | 274.73 | 0.218 [0.065-0.327] | 60 | 2.6 | 12.00 | 0.333 | 4.00 | pass / fail |
+| TII | 13a-trackRATM | 11 | 274.73 | 0.050 [0.012-0.218] | 14 | 0.6 | 12.01 | 0.250 | 3.00 | pass / fail |
+| TII | 13p-trackRATM | 11 | 274.73 | 0.218 [0.115-0.281] | 60 | 2.6 | 11.97 | 0.251 | 3.00 | pass / fail |
+| TII | 16p-trackRATM | 7 | 274.73 | 0.219 [0.123-0.247] | 60 | 2.6 | 11.99 | 0.287 | 3.43 | pass / fail |
+| UZH forward | indoor_forward_10 | 3 | 500.00 | 0.879 [0.879-0.879] | 441 | 13.3 | 15.07 | 0.077 | 1.15 | pass / fail |
+| UZH forward | indoor_forward_3 | 3 | 500.00 | 0.458 [0.458-0.458] | 229 | 6.9 | 15.07 | 0.124 | 1.88 | pass / fail |
+| UZH forward | indoor_forward_5 | 3 | 500.00 | 0.386 [0.386-0.386] | 193 | 5.8 | 15.07 | 0.071 | 1.07 | pass / fail |
+| UZH forward | indoor_forward_6 | 3 | 500.00 | 0.336 [0.336-0.336] | 169 | 5.1 | 15.07 | 0.117 | 1.76 | pass / fail |
+| UZH forward | indoor_forward_7 | 3 | 500.00 | 0.470 [0.470-0.470] | 235 | 7.1 | 15.06 | 0.111 | 1.67 | pass / fail |
+| UZH forward | indoor_forward_9 | 3 | 500.00 | 1.029 [1.029-1.029] | 515 | 15.5 | 15.07 | 0.124 | 1.87 | pass / fail |
+| UZH forward | outdoor_forward_1 | 3 | 500.00 | 1.420 [1.420-1.420] | 711 | 21.4 | 15.07 | 0.077 | 1.15 | pass / fail |
+| UZH forward | outdoor_forward_3 | 3 | 500.00 | 1.339 [1.339-1.339] | 671 | 20.2 | 15.07 | 0.111 | 1.67 | pass / fail |
+| UZH forward | outdoor_forward_5 | 3 | 500.00 | 0.550 [0.550-0.550] | 275 | 8.3 | 15.06 | 0.091 | 1.36 | pass / fail |
+
+Reading the table: **TII at its 12 Hz clip rate would also fail the floor** (2.2-4
+samples; the truth-rate windows are 0.05-0.22 s, but the clip-rate rule selects 0.18-0.33
+s). TII is usable only because `lean_req` is computed from the 274.73 Hz truth. UZH is the
+same: 1.1-1.9 samples at 15 Hz, 169-711 at 500 Hz.
 
 ## Does one rule give a gain tier that transfers with TII thresholds?
 
@@ -172,4 +207,6 @@ Both intervals use the same procedure, not clip-level Wilson intervals:
 
 The clips within a flight share scene, estimator state and path; the intervals therefore
 resample flights, and the clip count (57) overstates the evidence (50 clips come from two
-piloted flights).
+piloted flights). With only **6 clusters**, these percentile intervals are **descriptive**:
+they show sensitivity to resampling whole flights, not a calibrated 95 % sampling
+distribution. The same applies to the 4-sequence UZH intervals.

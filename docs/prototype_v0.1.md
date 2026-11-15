@@ -32,10 +32,12 @@ Per-clip `l_dep = G1·lean_req + G2·vel_req + b`; R2 flags if `max(|gx−c_x|/s
 | --- | --- | --- | --- | --- | --- | --- |
 | TII, held-out (n=57, 6 flights) | **5.3 %** [2.9-20.0 % flight-cluster] | 100 % | 100 % | 100 % | 96.5 % | 28.1 % |
 | UZH v2 at 0.37 s, TII band (n=9, 4 seq) | **0.556** [0.50-0.636] | 100 % | 100 % | 100 % | 100 % | 0.286 |
+| UZH v2 at truth-rate rule windows, TII band | **0.778** (7/9) | — | — | — | — | — |
 | UZH v2, UZH LOSO band (6-7 fit clips) | 0.111 [0.00-0.375] | 100 % | 100 % | 100 % | 100 % | 0.000 |
 
 The UZH TII-band failure is not a detection failure — it flags everything (5/9 real and
-5/9 null edits), so its 1.000 detection is uninformative. A per-domain band on 6-7 clips
+5/9 null edits at 0.37 s; **7/9 at the truth-rate rule windows**), so its 1.000 detection
+is uninformative. A per-domain band on 6-7 clips
 lowers the rate to 0.111 but is unstable (`gy` scale 0.023-0.037 vs TII 0.0735; tau
 3.21-3.61 vs 2.19).
 
@@ -48,12 +50,15 @@ lowers the rate to 0.111 but is unstable (`gy` scale 0.023-0.037 vs TII 0.0735; 
 `window = 0.5 / f95` from the commanded acceleration spectrum, with an 8-sample floor at
 the truth rate; abstain otherwise. Pre-registered before scoring
 (`configs/window_bandwidth_prereg.yaml`). On TII it selects per-clip windows 0.05-0.22 s
-and reproduces the gain tier (**5.3 % FRR, 100/100/100/96.5**, yaw 29.8, 57/100 testable).
-On UZH it selects **0.071-0.124 s**; at the 15 Hz v1 export that is 1.1-1.9 samples, so the
-rule abstains 100 %; at the 500 Hz truth rate it is 35-62 samples. The rule points at the
-~0.10 s window where Track E found the TII R2 band at 0.000, but the v2 dense `lean_req`
-at the rule windows is not on R2, so this is not yet verified. **The gain tier requires
-per-domain calibration even with the window rule.**
+at the 274.73 Hz truth rate and reproduces the gain tier (**5.3 % FRR,
+100/100/100/96.5**, yaw 29.8, 57/100 testable). At the 12 Hz clip rate the same rule would
+fail the floor (2.2-4 samples); the dense truth is what makes TII usable.
+At UZH's **500 Hz truth rate** it selects **0.336-1.420 s** (169-711 samples); at the
+**15 Hz clip rate** it selects 0.071-0.124 s (1.1-1.9 samples), where it abstains by its
+own 8-sample floor. The 0.07-0.12 s figures are the clip-rate application, not the
+truth-rate rule. At the truth-rate rule windows the gain tier **fails on UZH at TII
+bands: 7/9 false reject**; it requires **per-domain calibration of at least 30 real
+clips**. The 0.10 s passing result is post-hoc, not what the rule selects.
 
 ## 3b. Coarse paths
 
@@ -97,6 +102,9 @@ S3 confidence gate; or (label-free rule) the acceleration-bandwidth window has f
 verdict.
 
 ## 7. Numbers with cluster intervals
+
+The 6-cluster (TII) and 4-cluster (UZH) percentile intervals are **descriptive**, not
+calibrated 95 % confidence intervals; they show sensitivity to resampling whole flights.
 
 - TII gain: 3/57 false rejects in **3 of 6 flights** (01a 1/2, 01p 1/26, 07p 1/24),
   pooled 5.26 %, same flight-cluster bootstrap (5,000 draws, 6 flights with replacement,
