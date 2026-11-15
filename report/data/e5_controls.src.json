@@ -1,0 +1,35 @@
+{
+  "asset": "e5_controls",
+  "script": "report/scripts/e5_extra.py",
+  "derived_by_report_script": true,
+  "notes": "Cruise per-clip medians/p90 stored; the pooled frame median/p99 is derived by pooling the stored depicted_per_frame arrays. Edit recovery and gate transfer are stored controls.",
+  "sources": [
+    {
+      "worktree": "a2",
+      "branch": "track-a2-gate",
+      "commit": "428dd3fcaba9ead0eef5a537e75bbb2eb2968479",
+      "path": "results/a2_anwm_score/20261109T203026Z_46a8a54/controls.json",
+      "abs_path": "/home/kevin/Documents/Projects/awmv-track-a2/results/a2_anwm_score/20261109T203026Z_46a8a54/controls.json",
+      "sha256": "67c08250dd29438ec5b1f2b2f54e1c69898c89fe97040dcda9c9745773d7473f",
+      "r2_prefix": "track-a/a2/"
+    },
+    {
+      "worktree": "a2",
+      "branch": "track-a2-gate",
+      "commit": "428dd3fcaba9ead0eef5a537e75bbb2eb2968479",
+      "path": "results/a2_anwm_score/20261109T203155Z_46a8a54/summary.json",
+      "abs_path": "/home/kevin/Documents/Projects/awmv-track-a2/results/a2_anwm_score/20261109T203155Z_46a8a54/summary.json",
+      "sha256": "80f8ee6730a9007eb38959b86ab691dc3d089164576c03fbc32f72f17f3ee2ec",
+      "r2_prefix": "track-a/a2/"
+    },
+    {
+      "worktree": "a2",
+      "branch": "track-a2-gate",
+      "commit": "428dd3fcaba9ead0eef5a537e75bbb2eb2968479",
+      "path": "results/a2_anwm_score/20261109T203155Z_46a8a54/per_clip.json",
+      "abs_path": "/home/kevin/Documents/Projects/awmv-track-a2/results/a2_anwm_score/20261109T203155Z_46a8a54/per_clip.json",
+      "sha256": "46ce831db85944372310fc32760b7e2fa35aed98494724c56298f661145b528c",
+      "r2_prefix": "track-a/a2/"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "measured_utc": "2026-11-15T10:03:23Z",
+  "method": "rclone size --json against an S3-remote configured from R2_* in the main worktree .env; read-only",
+  "note": "track-a/ includes the nested track-a/a2/ objects; the a2 count is reported separately. track-c/ is empty in this bucket.",
+  "prefixes": {
+    "track-a/": {
+      "count": 288,
+      "bytes": 3833554623
+    },
+    "track-a/a2/": {
+      "count": 122,
+      "bytes": 42490106
+    },
+    "track-b/": {
+      "count": 3641,
+      "bytes": 4936179889
+    },
+    "track-c/": {
+      "count": 0,
+      "bytes": 0
+    },
+    "track-d/": {
+      "count": 67,
+      "bytes": 36959802
+    },
+    "track-e/": {
+      "count": 595,
+      "bytes": 31612527
+    }
+  }
+}

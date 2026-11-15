@@ -1,0 +1,71 @@
+{
+  "asset": "e9_uzh-transfer",
+  "script": "report/scripts/e9_uzh_transfer.py",
+  "derived_by_report_script": true,
+  "notes": "Per-frame pooled values read directly. Published elevation is the median optical-axis elevation in the UZH audit. Edit-validity pass rates from validity_gate. Verdict transfer uses the 0.37 s headline run. Slopes from e_calib/calibration.json.",
+  "sources": [
+    {
+      "worktree": "e",
+      "branch": "track-e-depicted-uzh",
+      "commit": "dd209bf933527c91e564df2ec10b9995b1a004c2",
+      "path": "results/e_perframe/v1_forward/metrics.json",
+      "abs_path": "/home/kevin/Documents/Projects/awmv-track-e/results/e_perframe/v1_forward/metrics.json",
+      "sha256": "fe58f8256cd7bd63317f7c6c9750f6485ff2439659617bab7edcb40d0b3fbd85",
+      "r2_prefix": "track-e/"
+    },
+    {
+      "worktree": "e",
+      "branch": "track-e-depicted-uzh",
+      "commit": "dd209bf933527c91e564df2ec10b9995b1a004c2",
+      "path": "results/e_perframe/v1_all/metrics.json",
+      "abs_path": "/home/kevin/Documents/Projects/awmv-track-e/results/e_perframe/v1_all/metrics.json",
+      "sha256": "04f18f7b667c0d02a3893b86902271c7b6c7ad686d7171df55f7ee8c91545112",
+      "r2_prefix": "track-e/"
+    },
+    {
+      "worktree": "e",
+      "branch": "track-e-depicted-uzh",
+      "commit": "dd209bf933527c91e564df2ec10b9995b1a004c2",
+      "path": "results/e_mount/mount.json",
+      "abs_path": "/home/kevin/Documents/Projects/awmv-track-e/results/e_mount/mount.json",
+      "sha256": "6a9b397a43b6b92afcaf8e12f135b2266dbc77b7087f4bbdd9bd22a68a18e3fa",
+      "r2_prefix": "track-e/"
+    },
+    {
+      "worktree": "e",
+      "branch": "track-e-depicted-uzh",
+      "commit": "dd209bf933527c91e564df2ec10b9995b1a004c2",
+      "path": "results/e_audit/audit.json",
+      "abs_path": "/home/kevin/Documents/Projects/awmv-track-e/results/e_audit/audit.json",
+      "sha256": "ae732cdb87f3258ab344638d3aa5d5b08c2048bf655bf3939f01619f7de09a7d",
+      "r2_prefix": "track-e/"
+    },
+    {
+      "worktree": "e",
+      "branch": "track-e-depicted-uzh",
+      "commit": "dd209bf933527c91e564df2ec10b9995b1a004c2",
+      "path": "results/e_verdict_v3/fin_370ms/metrics.json",
+      "abs_path": "/home/kevin/Documents/Projects/awmv-track-e/results/e_verdict_v3/fin_370ms/metrics.json",
+      "sha256": "de59c5fd889d39a5302494edc109bd32e91bdcad58754859d66d660cf48b669a",
+      "r2_prefix": "track-e/"
+    },
+    {
+      "worktree": "e",
+      "branch": "track-e-depicted-uzh",
+      "commit": "dd209bf933527c91e564df2ec10b9995b1a004c2",
+      "path": "results/e_calib/calibration.json",
+      "abs_path": "/home/kevin/Documents/Projects/awmv-track-e/results/e_calib/calibration.json",
+      "sha256": "e007e040fdb3aa5f02fb76a32b8ad6084a29769dc9a3576c6fc96cebb8886292",
+      "r2_prefix": "track-e/"
+    },
+    {
+      "worktree": "a",
+      "branch": "track-a-perception",
+      "commit": "164c5e0dce12d8a4d39ecc01fa874ad126b659a9",
+      "path": "results/phase1_depicted/20261108T131825Z_c738aa8/metrics.json",
+      "abs_path": "/home/kevin/Documents/Projects/awmv-track-a/results/phase1_depicted/20261108T131825Z_c738aa8/metrics.json",
+      "sha256": "9f05fbb120f69aed7aa5890e63552799820aa9f07db361ca0cf08ba93fdd7dda",
+      "r2_prefix": "track-a/"
+    }
+  ]
+}

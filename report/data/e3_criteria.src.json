@@ -1,0 +1,26 @@
+{
+  "asset": "e3_criteria",
+  "script": "report/scripts/e3_extra.py",
+  "derived_by_report_script": true,
+  "notes": "Criteria and policies from the phase3a evaluation block; per-flight real scores parsed from report 04's table (scores are not stored per clip in metrics.json; alternative-policy thresholds 67.16 and 9.37 deg are quoted from report 04 because the evaluation block stores only their acceptance).",
+  "sources": [
+    {
+      "worktree": "a",
+      "branch": "track-a-perception",
+      "commit": "164c5e0dce12d8a4d39ecc01fa874ad126b659a9",
+      "path": "results/phase3a_verdict/20261109T090957Z_bc3a398/metrics.json",
+      "abs_path": "/home/kevin/Documents/Projects/awmv-track-a/results/phase3a_verdict/20261109T090957Z_bc3a398/metrics.json",
+      "sha256": "3a43c0dfa08f6b5bd2eaeb82afc4bbec4b0bcff385c1f5c590f86f5525ca1798",
+      "r2_prefix": "track-a/"
+    },
+    {
+      "worktree": "a",
+      "branch": "track-a-perception",
+      "commit": "164c5e0dce12d8a4d39ecc01fa874ad126b659a9",
+      "path": "reports/04_track_a_gate3_verdict.md",
+      "abs_path": "/home/kevin/Documents/Projects/awmv-track-a/reports/04_track_a_gate3_verdict.md",
+      "sha256": "399368da896658439dc5e0865963843503466e22b608a0163d4ea36eae641913",
+      "r2_prefix": "track-a/"
+    }
+  ]
+}

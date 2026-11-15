@@ -1,0 +1,17 @@
+\footnotesize
+\begin{tabular}{llrrrr}
+\toprule
+Regime & step (s) & per-step, free & per-step, drag & smoothed, free & smoothed, drag \\
+\midrule
+native paths & 0.250 & 40.6 & 79.8 & 63.2 & 78.8 \\
+native paths & 0.667 & 38.2 & 77.4 & 0.9 & 40.7 \\
+native paths & 1.000 & 38.2 & 38.2 & 0.0 & 4.8 \\
+rescaled racing & 0.250 & 39.2 & 69.3 & 39.5 & 69.7 \\
+rescaled racing & 0.667 & 0.1 & 16.3 & 0.0 & 16.3 \\
+rescaled racing & 1.000 & 0.0 & 0.0 & 0.0 & 0.0 \\
+designed maneuvers & 0.250 & 87.0 & 100.0 & 85.7 & 99.4 \\
+designed maneuvers & 0.667 & 73.9 & 96.4 & 57.8 & 97.4 \\
+designed maneuvers & 1.000 & 19.1 & 47.0 & 0.0 & 31.8 \\
+\bottomrule
+\multicolumn{6}{l}{\footnotesize Fraction of steps with required tilt above $10^\circ$ (\%).} \\
+\end{tabular}

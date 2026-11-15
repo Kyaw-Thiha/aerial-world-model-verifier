@@ -1,0 +1,35 @@
+{
+  "asset": "e3_gated",
+  "script": "report/scripts/e3_extra.py",
+  "derived_by_report_script": false,
+  "notes": "Gated runs at k_d 0.295 and 0.15 (run 165308) and k_d 0 (run 165240); pair-level from the gate-on-real analysis run.",
+  "sources": [
+    {
+      "worktree": "a2",
+      "branch": "track-a2-gate",
+      "commit": "428dd3fcaba9ead0eef5a537e75bbb2eb2968479",
+      "path": "results/a2_verdict_gated/20261110T165240Z_71fb651/metrics.json",
+      "abs_path": "/home/kevin/Documents/Projects/awmv-track-a2/results/a2_verdict_gated/20261110T165240Z_71fb651/metrics.json",
+      "sha256": "ddcfdf9ccef9a92a3224349a0493ade33b84233d3f500bca8dd20a39efe5d38c",
+      "r2_prefix": "track-a/a2/"
+    },
+    {
+      "worktree": "a2",
+      "branch": "track-a2-gate",
+      "commit": "428dd3fcaba9ead0eef5a537e75bbb2eb2968479",
+      "path": "results/a2_verdict_gated/20261110T165308Z_71fb651/metrics.json",
+      "abs_path": "/home/kevin/Documents/Projects/awmv-track-a2/results/a2_verdict_gated/20261110T165308Z_71fb651/metrics.json",
+      "sha256": "db1ddd8abafa0aeee282fcccc492729b7b1a9758d084e13c454a2bd164486604",
+      "r2_prefix": "track-a/a2/"
+    },
+    {
+      "worktree": "a2",
+      "branch": "track-a2-gate",
+      "commit": "428dd3fcaba9ead0eef5a537e75bbb2eb2968479",
+      "path": "results/a2_verdict_gated_pairgate/20261109T202002Z_9e1656d/metrics.json",
+      "abs_path": "/home/kevin/Documents/Projects/awmv-track-a2/results/a2_verdict_gated_pairgate/20261109T202002Z_9e1656d/metrics.json",
+      "sha256": "3b8310741ea189a7a7e9393738ad0b3225c9ca611dbb572bc81ed99300add593",
+      "r2_prefix": "track-a/a2/"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+\footnotesize
+\begin{tabular}{llrrrr}
+\toprule
+Maneuver & design (deg) & clips & LPIPS vs level & LPIPS vs prior & prior coverage (mean / min) \\
+\midrule
+accel\_brake & 5 & 3 & 0.247 & 0.447 & 0.63 / 0.41 \\
+accel\_brake & 10 & 3 & 0.176 & 0.490 & 0.58 / 0.28 \\
+accel\_brake & 20 & 3 & 0.133 & 0.508 & 0.56 / 0.15 \\
+climb\_turn & 5 & 6 & 0.270 & 0.662 & 0.36 / 0.00 \\
+climb\_turn & 10 & 3 & 0.394 & 0.555 & 0.53 / 0.36 \\
+climb\_turn & 20 & 3 & 0.508 & 0.545 & 0.51 / 0.22 \\
+cruise & 0 & 3 & 0.000 & 0.542 & 0.56 / 0.36 \\
+slalom & 5 & 6 & 0.182 & 0.528 & 0.55 / 0.35 \\
+slalom & 10 & 3 & 0.237 & 0.440 & 0.63 / 0.48 \\
+turn & 5 & 6 & 0.223 & 0.629 & 0.39 / 0.00 \\
+turn & 10 & 3 & 0.390 & 0.428 & 0.61 / 0.40 \\
+turn & 20 & 3 & 0.559 & 0.421 & 0.66 / 0.44 \\
+\midrule
+Pooled & -- & 45 & 0.266 & 0.534 & -- \\
+\bottomrule
+\end{tabular}

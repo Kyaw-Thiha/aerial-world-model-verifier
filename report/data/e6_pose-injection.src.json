@@ -1,0 +1,35 @@
+{
+  "asset": "e6_pose-injection",
+  "script": "report/scripts/e6_pose_injection.py",
+  "derived_by_report_script": false,
+  "notes": "LPIPS means are stored per clip. Prior coverage is the stored prior_coverage_mean/min on the injected arm. Depicted-tilt scoring of the injected clips is pending; no verdict asset is built.",
+  "sources": [
+    {
+      "worktree": "b",
+      "branch": "track-b-generation",
+      "commit": "9ca9e908694672b4cb4f8dba94e48e76a6da2e6c",
+      "path": "results/anwm_injected/eval_injected_injected_true.json",
+      "abs_path": "/home/kevin/Documents/Projects/awmv-track-b/results/anwm_injected/eval_injected_injected_true.json",
+      "sha256": "f9a833fd93bab97288016ff08c1ecae2a1a7bfca212fd6a9e15dcbcb4edd5d8a",
+      "r2_prefix": "track-b/"
+    },
+    {
+      "worktree": "b",
+      "branch": "track-b-generation",
+      "commit": "9ca9e908694672b4cb4f8dba94e48e76a6da2e6c",
+      "path": "results/anwm_injected/clips_injected_index.csv",
+      "abs_path": "/home/kevin/Documents/Projects/awmv-track-b/results/anwm_injected/clips_injected_index.csv",
+      "sha256": "1806504aeda30761d9e68de1079eb4b250d075bd61068a3ed4a94ffabf565cb7",
+      "r2_prefix": "track-b/"
+    },
+    {
+      "worktree": "b",
+      "branch": "track-b-generation",
+      "commit": "9ca9e908694672b4cb4f8dba94e48e76a6da2e6c",
+      "path": "results/anwm_injected/sheets/C_turn_20_fixed_0_level_vs_injected.png",
+      "abs_path": "/home/kevin/Documents/Projects/awmv-track-b/results/anwm_injected/sheets/C_turn_20_fixed_0_level_vs_injected.png",
+      "sha256": "53b90a038abf529cd8e966622f2bd886f7d7bae84347fee95feaf7755f45127b",
+      "r2_prefix": "track-b/"
+    }
+  ]
+}

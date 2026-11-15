@@ -1,0 +1,31 @@
+\footnotesize
+\begin{tabular}{llrrrr}
+\toprule
+Maneuver & yaw policy & target (deg) & clips & required, free & required, drag \\
+\midrule
+cruise & course & -- & 7 & 0.00 & 8.55 \\
+turn & course & 5 & 3 & 5.00 & 9.83 \\
+turn & fixed & 5 & 3 & 5.00 & 9.83 \\
+turn & fixed & 10 & 3 & 10.02 & 12.95 \\
+turn & fixed & 20 & 3 & 19.94 & 21.19 \\
+slalom & course & 5 & 3 & 4.90 & 9.77 \\
+slalom & fixed & 5 & 3 & 4.90 & 9.77 \\
+slalom & fixed & 10 & 3 & 9.99 & 12.94 \\
+accel\_brake & course & 5 & 3 & 4.97 & 12.11 \\
+accel\_brake & course & 10 & 3 & 9.90 & 14.88 \\
+accel\_brake & course & 20 & 3 & 19.87 & 22.52 \\
+climb\_turn & course & 5 & 3 & 5.00 & 9.83 \\
+climb\_turn & fixed & 5 & 3 & 5.00 & 9.83 \\
+climb\_turn & fixed & 10 & 3 & 10.02 & 12.95 \\
+climb\_turn & fixed & 20 & 3 & 19.94 & 21.19 \\
+\midrule
+\multicolumn{6}{l}{\footnotesize Unreachable designs (at 1 s steps):} \\
+turn & course & 10 & -- & 7.44 & 11.20 \\
+turn & course & 20 & -- & 7.44 & 11.20 \\
+slalom & course & 10 & -- & 7.08 & 10.96 \\
+slalom & course & 20 & -- & 7.08 & 10.96 \\
+slalom & fixed & 20 & -- & 11.03 & 13.65 \\
+climb\_turn & course & 10 & -- & 7.44 & 11.20 \\
+climb\_turn & course & 20 & -- & 7.44 & 11.20 \\
+\bottomrule
+\end{tabular}

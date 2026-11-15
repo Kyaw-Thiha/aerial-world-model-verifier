@@ -1,0 +1,17 @@
+{
+  "asset": "corrections",
+  "script": "report/scripts/corrections.py",
+  "derived_by_report_script": true,
+  "notes": "Curated from the decisions log; each row names the log entry. The prototype row is also sourced to E05 because the correction lives in that report.",
+  "sources": [
+    {
+      "worktree": "d",
+      "branch": "track-d-verdict-stat",
+      "commit": "2a91765cb86e0ff4c57b9bb04f3776966162688b",
+      "path": "docs/decisions.md",
+      "abs_path": "/home/kevin/Documents/Projects/awmv-track-d/docs/decisions.md",
+      "sha256": "bfd2105e560dca802e227872471504972e41d1577b5a48103e2b2cc29fe4ea02",
+      "r2_prefix": "track-d/"
+    }
+  ]
+}

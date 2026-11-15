@@ -1,0 +1,9 @@
+assets_test.pdf
+*.aux
+*.log
+*.fls
+*.fdb_latexmk
+*.out
+__pycache__/
+!data/
+!data/**
