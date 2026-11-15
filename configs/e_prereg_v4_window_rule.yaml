@@ -1,0 +1,108 @@
+# Track E pre-registration v4 — independent test of Track D's label-free window rule
+
+Written and committed **before** the rule is evaluated on UZH and before any clip set is built at
+its windows. Appending after this commit is an amendment with a stated reason.
+
+track: E
+date: 2026-11-14
+tests: Track D's `configs/window_bandwidth_prereg.yaml` (branch `track-d-verdict-stat`, commit
+       `031eb14`, rule committed at `c7af793`), applied **independently** by Track E
+supersedes: nothing — `configs/e_prereg_v3.yaml` remains the governing pre-registration for the
+            v3 round; this is a separate, narrower test with its own decisions.
+
+## Question
+
+Track D proposes a **label-free** required-lean window computed from the commanded path alone:
+`window_s = 0.5 / f95`, where f95 is the frequency below which 95 % of the commanded acceleration
+energy lies. Their transfer analysis reports that this rule picks 0.07-0.12 s on Track E's UZH
+forward sequences, i.e. near the 0.10 s window at which Track E found the TII-fitted R2 band
+transferring (E04 §2.4: false reject 0.556 / 0.444 / 0.000 at 0.37 / 0.185 / 0.10 s).
+
+Two claims get tested here, and they are different:
+
+1. **Does the rule reproduce those windows when implemented independently from the 500 Hz truth?**
+   (An implementation test: if our numbers disagree by more than 0.02 s, the disagreement is the
+   finding.)
+2. **Does Track D's frozen R2 axis-gain band — TII band, unchanged — meet T2 on these clips at the
+   rule's windows?** (An outcome test on a window chosen by a rule that never looks at labels.)
+
+Nothing here refits a threshold, a band, a coherence threshold, or `c`.
+
+## The rule, as implemented here (Track E's own code, from their written definition)
+
+Per sequence, from the Leica ground truth at its native 500 Hz:
+
+1. acceleration: Savitzky-Golay on each axis, `window_s = 0.10`, `polyorder = 3`, `deriv = 2`,
+   `mode = "interp"` — the spectrum window, fixed and independent of the required-lean window;
+2. mean-remove each axis, `rFFT` of the whole truth span, energy `E(f) = sum_axes |A_axis(f)|^2`,
+   **DC excluded**;
+3. cumulative energy normalised to 1; `f95` = the first frequency whose cumulative energy is
+   `>= 0.95`;
+4. `window_s = 0.5 / f95`;
+5. abstain (sequence level) if `f95` is non-finite or below 0.05 Hz, or if `window_s` exceeds half
+   a clip's duration (no interior after edge trim). `clamp = none`: the window is never lengthened.
+
+**Scope: one window per sequence**, computed over that sequence's full truth span (the rule reads
+only the commanded path, so a per-sequence value is the natural unit and it is what the transfer
+analysis quoted). The sequences are the 9 forward rigs; the clip population is then whatever the
+existing rules make testable, and is reported per statistic.
+
+**Sample floor — the one reading this pre-registration must pin.** Their rule floors the window at
+8 samples *at the rate the required lean is computed*. In schema v2 that rate is the **500 Hz truth**
+(`lean_req` is differentiated there and sampled at frame times), so the floor is 0.016 s and is
+satisfied by any window the rule produces. Their own `uzh` line still refers to schema v1, where the
+required lean came from the clip's ~15 Hz `pos`; at that rate the floor is 0.53 s and **every clip
+would abstain** at a 0.07-0.12 s window. Both readings are computed and reported:
+
+* **headline**: required lean at 500 Hz (the v2 definition), floor 0.016 s — the reading that matches
+  the clip set being scored;
+* **labelled sensitivity**: the v1 reading (required lean at the clip rate), where the rule's own
+  abstain condition removes every clip. No clips are scored under it; the count of abstentions is
+  arithmetic and is reported as such.
+
+## What is scored, and with what
+
+* Clip set: the v3 export (fixed-crop edits, validity gate already applied in `reports/E04`),
+  re-expressed as schema v2 with `lean_req` / `vel_req` / `tilt_req_deg` computed at the rule's
+  **per-sequence** window, 500 Hz truth, sampled at frame times, NaN outside the SG interior.
+  **The depicted side is untouched** — same frames, same GeoCalib estimates, no re-render.
+* Statistics: Track D's `R2_axis_gains` band (centre gx 0.8137 / gy 0.7181, scales 0.2654 / 0.0735,
+  `tau = 2.1922`, n = 57 TII clips) and the coherence tier (`tau_corr = 0.6197`,
+  `tau_sign = 0.2921`), both via their `scripts/score_clip.py` at the pinned commit, plus the median
+  axis residual at the frozen 14.73 deg.
+* Abstention: their rules, unchanged, reported by their own reason order.
+* Populations: forward rigs. Clip drops already established in E04 are carried forward unchanged —
+  42 files (6 clips) below the 25 % field rule, `indoor_forward_7` excluded as a broken export — and
+  **any further abstention caused by the new window is reported separately**, because a window that
+  makes clips untestable is a result, not a nuisance.
+* Intervals: Wilson at clip level and a bootstrap **clustered by sequence** over the scored forward
+  sequences, as in E04.
+
+## Decision rules, fixed now
+
+1. **Implementation**: if a sequence's window differs from Track D's reported value for that
+   sequence by more than 0.02 s, the discrepancy is reported as a finding and the cause is
+   diagnosed (spectrum window clamp, DC handling, truth span, or f95 quantile definition) rather
+   than silently adopting either value.
+2. **Transfer**: at the rule's windows, the R2 band **meets T2** if false reject <= 0.15 on real
+   clips and detection >= 0.80 for both tilt removal and mirrored roll, with the null-edit and
+   yaw-control rates reported beside them. Partial passing is reported as a miss on the failing
+   clause; the near-miss rule from E02 applies.
+3. **Controls matter**: if either control rejects above the real rate by more than 5 points, the
+   result is reported as an artefact rather than as transfer.
+4. **Windows that abstain are a result**: if the rule's windows push clips below `min_frames`,
+   `excitation` or `ci_half_width`, the count and reason are reported and the statistic is
+   reported on the surviving population with that population named.
+5. **No refit of anything**, and no comparison of windows by their verdict outcome is used to pick
+   a window. The rule's number is the number.
+
+## Compute
+
+Zero GPU: the depicted side is unchanged, so this is re-expressing the same arrays and re-running
+their CPU scorer. Wall time minutes; cost US$0.
+
+## What would make this test uninformative
+
+If the rule's windows land within 0.01 s of the 0.10 s sensitivity already reported, the test
+repeats a known number rather than adding evidence — that would be stated, and the value would be
+that a *label-free* rule lands there, not that a new operating point was found.

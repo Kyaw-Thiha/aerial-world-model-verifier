@@ -1,0 +1,36 @@
+{
+ "seq": "indoor_forward_5",
+ "zip": "/e-data/zips/indoor_forward_5_snapdragon_with_gt.zip",
+ "n_members": 8329,
+ "members_top": [
+  "groundtruth.txt",
+  "img",
+  "imu.txt",
+  "left_images.txt",
+  "right_images.txt"
+ ],
+ "n_image_members": 8324,
+ "first_image_member": "img/image_0_2712.png",
+ "image_list_file": "left_images.txt",
+ "image_list_head": [
+  "# id timestamp image_name",
+  "0 1540821095.628558397293 img/image_0_0.png ",
+  "1 1540821095.661733627319 img/image_0_1.png ",
+  "2 1540821095.694906473160 img/image_0_2.png "
+ ],
+ "n_image_list_rows": 4163,
+ "gt_head": [
+  "# timestamp tx ty tz qx qy qz qw",
+  "1540821125.81599 7.48160832414619 -0.00592294838029983 -0.907925948444432 0.00193086066663055 -0.0124940699786069 0.890385528795324 -0.45503162538919",
+  "1540821125.81799 7.4816078723613 -0.00594634839206086 -0.907904438172984 0.00195833232571017 -0.0125151778715419 0.890386986471343 -0.455028075595152",
+  "1540821125.81999 7.48160721547689 -0.00597025811586177 -0.907883342428892 0.00198331634124957 -0.0125352473595411 0.890388853178658 -0.455023762198327"
+ ],
+ "n_gt_rows": 9650,
+ "gt_dt_median_s": 0.002000093460083008,
+ "gt_span_s": 19.29800009727478,
+ "image_list_span_s": 150.04287981987,
+ "image_list_first_unix": 1540821095.6285584,
+ "gt_first_unix": 1540821125.81599,
+ "gt_last_unix": 1540821145.11399,
+ "image_list_last_unix": 1540821245.6714382
+}

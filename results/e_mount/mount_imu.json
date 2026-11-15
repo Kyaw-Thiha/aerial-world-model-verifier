@@ -1,0 +1,162 @@
+[
+ {
+  "seq": "indoor_forward_3",
+  "rig": "indoor_forward",
+  "n_pairs": 200,
+  "pair_rotation_median_deg": 3.765558666907103,
+  "mismatch_median_deg": 6.923168646355045,
+  "mismatch_p90_deg": 20.168989075534483,
+  "all_pairs": {
+   "n": 200,
+   "mean_deg": 5.713420334199869,
+   "axis": [
+    -0.588520337331489,
+    0.6965256234155104,
+    0.4104824825408079
+   ],
+   "ci_lo": 4.783986610984355,
+   "ci_hi": 6.787751294777571
+  },
+  "pairs_over_2deg": {
+   "n": 150,
+   "mean_deg": 7.377906891116311,
+   "axis": [
+    -0.6022805853884162,
+    0.68436183742155,
+    0.41098293388556495
+   ],
+   "ci_lo": 6.288594690969538,
+   "ci_hi": 8.723234094878263
+  },
+  "per_pair_error_median_deg": 6.923168646355045,
+  "note": "mean error rotation between the image-derived and IMU-derived relative rotation; a 14 deg mount error would appear here as ~14 deg"
+ },
+ {
+  "seq": "indoor_forward_5",
+  "rig": "indoor_forward",
+  "n_pairs": 200,
+  "pair_rotation_median_deg": 1.5726402691577444,
+  "mismatch_median_deg": 2.9681213138133944,
+  "mismatch_p90_deg": 8.742736977838453,
+  "all_pairs": {
+   "n": 200,
+   "mean_deg": 3.234969743115242,
+   "axis": [
+    -0.19766687606276745,
+    0.970137549502029,
+    0.14057361471408766
+   ],
+   "ci_lo": 2.7697790956212374,
+   "ci_hi": 3.7414108355293094
+  },
+  "pairs_over_2deg": {
+   "n": 80,
+   "mean_deg": 6.8829004792814565,
+   "axis": [
+    -0.21790712419771016,
+    0.9617126155338485,
+    0.16620869516041606
+   ],
+   "ci_lo": 6.16169948747397,
+   "ci_hi": 7.601124158058635
+  },
+  "per_pair_error_median_deg": 2.968121313813394,
+  "note": "mean error rotation between the image-derived and IMU-derived relative rotation; a 14 deg mount error would appear here as ~14 deg"
+ },
+ {
+  "seq": "indoor_forward_9",
+  "rig": "indoor_forward",
+  "n_pairs": 200,
+  "pair_rotation_median_deg": 2.879118994486901,
+  "mismatch_median_deg": 5.8110764793800165,
+  "mismatch_p90_deg": 12.52685172540705,
+  "all_pairs": {
+   "n": 200,
+   "mean_deg": 1.340051172938427,
+   "axis": [
+    -0.9915233311849541,
+    0.04709773051955837,
+    0.12109206206766332
+   ],
+   "ci_lo": 1.110432804372056,
+   "ci_hi": 1.8586328322019194
+  },
+  "pairs_over_2deg": {
+   "n": 127,
+   "mean_deg": 2.0539346383904884,
+   "axis": [
+    -0.9839002380481894,
+    -0.05996768392569222,
+    0.16835735342807093
+   ],
+   "ci_lo": 1.718626093857627,
+   "ci_hi": 2.8513483151174666
+  },
+  "per_pair_error_median_deg": 5.811076479380018,
+  "note": "mean error rotation between the image-derived and IMU-derived relative rotation; a 14 deg mount error would appear here as ~14 deg"
+ },
+ {
+  "seq": "indoor_45_2",
+  "rig": "indoor_45",
+  "n_pairs": 200,
+  "pair_rotation_median_deg": 9.46014088819782,
+  "mismatch_median_deg": 11.375502110963495,
+  "mismatch_p90_deg": 19.411048079964086,
+  "all_pairs": {
+   "n": 200,
+   "mean_deg": 8.537792742300493,
+   "axis": [
+    -0.8795347206726389,
+    -0.07222509705722963,
+    0.4703213906323807
+   ],
+   "ci_lo": 7.628206085682466,
+   "ci_hi": 9.486296312781375
+  },
+  "pairs_over_2deg": {
+   "n": 167,
+   "mean_deg": 10.24352603229475,
+   "axis": [
+    -0.8820307651380482,
+    -0.06656006487597921,
+    0.4664670268236487
+   ],
+   "ci_lo": 9.387210055492883,
+   "ci_hi": 11.126930788571677
+  },
+  "per_pair_error_median_deg": 11.375502110963499,
+  "note": "mean error rotation between the image-derived and IMU-derived relative rotation; a 14 deg mount error would appear here as ~14 deg"
+ },
+ {
+  "seq": "outdoor_45_1",
+  "rig": "outdoor_45",
+  "n_pairs": 110,
+  "pair_rotation_median_deg": 6.7243490637248495,
+  "mismatch_median_deg": 8.896356547631843,
+  "mismatch_p90_deg": 14.766526177059285,
+  "all_pairs": {
+   "n": 110,
+   "mean_deg": 4.246275234884322,
+   "axis": [
+    -0.9975455599963736,
+    -0.05431273354364877,
+    -0.04419256392808844
+   ],
+   "ci_lo": 3.622147097968433,
+   "ci_hi": 5.014530501402665
+  },
+  "pairs_over_2deg": {
+   "n": 90,
+   "mean_deg": 5.146012918286795,
+   "axis": [
+    -0.9979342473514381,
+    -0.04621676463078995,
+    -0.04462340899327324
+   ],
+   "ci_lo": 4.502464890413598,
+   "ci_hi": 6.008874608741322
+  },
+  "per_pair_error_median_deg": 8.896356547631843,
+  "note": "mean error rotation between the image-derived and IMU-derived relative rotation; a 14 deg mount error would appear here as ~14 deg"
+ }
+]

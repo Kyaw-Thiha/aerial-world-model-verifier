@@ -1,0 +1,552 @@
+{
+ "tag": "five_w0.10",
+ "clips": "data/clips_v2_w0.10",
+ "n_rows": 0,
+ "forward": {
+  "n_clips": 0,
+  "n_sequences": 0,
+  "r2": {
+   "real": {
+    "n": 0,
+    "k": 0,
+    "rate": null,
+    "wilson_lo": NaN,
+    "wilson_hi": NaN
+   },
+   "null_edit": {
+    "n": 0,
+    "k": 0,
+    "rate": null,
+    "wilson_lo": NaN,
+    "wilson_hi": NaN
+   },
+   "yaw_control": {
+    "n": 0,
+    "k": 0,
+    "rate": null,
+    "wilson_lo": NaN,
+    "wilson_hi": NaN
+   },
+   "tilt_removal": {
+    "n": 0,
+    "k": 0,
+    "rate": null,
+    "wilson_lo": NaN,
+    "wilson_hi": NaN
+   },
+   "scale_0.5": {
+    "n": 0,
+    "k": 0,
+    "rate": null,
+    "wilson_lo": NaN,
+    "wilson_hi": NaN
+   },
+   "scale_1.5": {
+    "n": 0,
+    "k": 0,
+    "rate": null,
+    "wilson_lo": NaN,
+    "wilson_hi": NaN
+   },
+   "mirror_roll": {
+    "n": 0,
+    "k": 0,
+    "rate": null,
+    "wilson_lo": NaN,
+    "wilson_hi": NaN
+   }
+  },
+  "coherence": {
+   "real": {
+    "n": 0,
+    "k": 0,
+    "rate": null,
+    "wilson_lo": NaN,
+    "wilson_hi": NaN
+   },
+   "null_edit": {
+    "n": 0,
+    "k": 0,
+    "rate": null,
+    "wilson_lo": NaN,
+    "wilson_hi": NaN
+   },
+   "yaw_control": {
+    "n": 0,
+    "k": 0,
+    "rate": null,
+    "wilson_lo": NaN,
+    "wilson_hi": NaN
+   },
+   "tilt_removal": {
+    "n": 0,
+    "k": 0,
+    "rate": null,
+    "wilson_lo": NaN,
+    "wilson_hi": NaN
+   },
+   "scale_0.5": {
+    "n": 0,
+    "k": 0,
+    "rate": null,
+    "wilson_lo": NaN,
+    "wilson_hi": NaN
+   },
+   "scale_1.5": {
+    "n": 0,
+    "k": 0,
+    "rate": null,
+    "wilson_lo": NaN,
+    "wilson_hi": NaN
+   },
+   "mirror_roll": {
+    "n": 0,
+    "k": 0,
+    "rate": null,
+    "wilson_lo": NaN,
+    "wilson_hi": NaN
+   }
+  },
+  "median_residual": {
+   "real": {
+    "n": 0,
+    "k": 0,
+    "rate": null,
+    "wilson_lo": NaN,
+    "wilson_hi": NaN
+   },
+   "null_edit": {
+    "n": 0,
+    "k": 0,
+    "rate": null,
+    "wilson_lo": NaN,
+    "wilson_hi": NaN
+   },
+   "yaw_control": {
+    "n": 0,
+    "k": 0,
+    "rate": null,
+    "wilson_lo": NaN,
+    "wilson_hi": NaN
+   },
+   "tilt_removal": {
+    "n": 0,
+    "k": 0,
+    "rate": null,
+    "wilson_lo": NaN,
+    "wilson_hi": NaN
+   },
+   "scale_0.5": {
+    "n": 0,
+    "k": 0,
+    "rate": null,
+    "wilson_lo": NaN,
+    "wilson_hi": NaN
+   },
+   "scale_1.5": {
+    "n": 0,
+    "k": 0,
+    "rate": null,
+    "wilson_lo": NaN,
+    "wilson_hi": NaN
+   },
+   "mirror_roll": {
+    "n": 0,
+    "k": 0,
+    "rate": null,
+    "wilson_lo": NaN,
+    "wilson_hi": NaN
+   }
+  },
+  "abstention": {
+   "n": 0,
+   "abstained": 0,
+   "by_reason": {},
+   "rate": null
+  },
+  "gate_dropped_real": 0
+ },
+ "per_rig": {
+  "indoor_forward": {
+   "n_clips": 0,
+   "n_sequences": 0,
+   "r2": {
+    "real": {
+     "n": 0,
+     "k": 0,
+     "rate": null,
+     "wilson_lo": NaN,
+     "wilson_hi": NaN
+    },
+    "null_edit": {
+     "n": 0,
+     "k": 0,
+     "rate": null,
+     "wilson_lo": NaN,
+     "wilson_hi": NaN
+    },
+    "yaw_control": {
+     "n": 0,
+     "k": 0,
+     "rate": null,
+     "wilson_lo": NaN,
+     "wilson_hi": NaN
+    },
+    "tilt_removal": {
+     "n": 0,
+     "k": 0,
+     "rate": null,
+     "wilson_lo": NaN,
+     "wilson_hi": NaN
+    },
+    "scale_0.5": {
+     "n": 0,
+     "k": 0,
+     "rate": null,
+     "wilson_lo": NaN,
+     "wilson_hi": NaN
+    },
+    "scale_1.5": {
+     "n": 0,
+     "k": 0,
+     "rate": null,
+     "wilson_lo": NaN,
+     "wilson_hi": NaN
+    },
+    "mirror_roll": {
+     "n": 0,
+     "k": 0,
+     "rate": null,
+     "wilson_lo": NaN,
+     "wilson_hi": NaN
+    }
+   },
+   "coherence": {
+    "real": {
+     "n": 0,
+     "k": 0,
+     "rate": null,
+     "wilson_lo": NaN,
+     "wilson_hi": NaN
+    },
+    "null_edit": {
+     "n": 0,
+     "k": 0,
+     "rate": null,
+     "wilson_lo": NaN,
+     "wilson_hi": NaN
+    },
+    "yaw_control": {
+     "n": 0,
+     "k": 0,
+     "rate": null,
+     "wilson_lo": NaN,
+     "wilson_hi": NaN
+    },
+    "tilt_removal": {
+     "n": 0,
+     "k": 0,
+     "rate": null,
+     "wilson_lo": NaN,
+     "wilson_hi": NaN
+    },
+    "scale_0.5": {
+     "n": 0,
+     "k": 0,
+     "rate": null,
+     "wilson_lo": NaN,
+     "wilson_hi": NaN
+    },
+    "scale_1.5": {
+     "n": 0,
+     "k": 0,
+     "rate": null,
+     "wilson_lo": NaN,
+     "wilson_hi": NaN
+    },
+    "mirror_roll": {
+     "n": 0,
+     "k": 0,
+     "rate": null,
+     "wilson_lo": NaN,
+     "wilson_hi": NaN
+    }
+   },
+   "median_residual": {
+    "real": {
+     "n": 0,
+     "k": 0,
+     "rate": null,
+     "wilson_lo": NaN,
+     "wilson_hi": NaN
+    },
+    "null_edit": {
+     "n": 0,
+     "k": 0,
+     "rate": null,
+     "wilson_lo": NaN,
+     "wilson_hi": NaN
+    },
+    "yaw_control": {
+     "n": 0,
+     "k": 0,
+     "rate": null,
+     "wilson_lo": NaN,
+     "wilson_hi": NaN
+    },
+    "tilt_removal": {
+     "n": 0,
+     "k": 0,
+     "rate": null,
+     "wilson_lo": NaN,
+     "wilson_hi": NaN
+    },
+    "scale_0.5": {
+     "n": 0,
+     "k": 0,
+     "rate": null,
+     "wilson_lo": NaN,
+     "wilson_hi": NaN
+    },
+    "scale_1.5": {
+     "n": 0,
+     "k": 0,
+     "rate": null,
+     "wilson_lo": NaN,
+     "wilson_hi": NaN
+    },
+    "mirror_roll": {
+     "n": 0,
+     "k": 0,
+     "rate": null,
+     "wilson_lo": NaN,
+     "wilson_hi": NaN
+    }
+   },
+   "abstention": {
+    "n": 0,
+    "abstained": 0,
+    "by_reason": {},
+    "rate": null
+   },
+   "gate_dropped_real": 0
+  },
+  "outdoor_forward": {
+   "n_clips": 0,
+   "n_sequences": 0,
+   "r2": {
+    "real": {
+     "n": 0,
+     "k": 0,
+     "rate": null,
+     "wilson_lo": NaN,
+     "wilson_hi": NaN
+    },
+    "null_edit": {
+     "n": 0,
+     "k": 0,
+     "rate": null,
+     "wilson_lo": NaN,
+     "wilson_hi": NaN
+    },
+    "yaw_control": {
+     "n": 0,
+     "k": 0,
+     "rate": null,
+     "wilson_lo": NaN,
+     "wilson_hi": NaN
+    },
+    "tilt_removal": {
+     "n": 0,
+     "k": 0,
+     "rate": null,
+     "wilson_lo": NaN,
+     "wilson_hi": NaN
+    },
+    "scale_0.5": {
+     "n": 0,
+     "k": 0,
+     "rate": null,
+     "wilson_lo": NaN,
+     "wilson_hi": NaN
+    },
+    "scale_1.5": {
+     "n": 0,
+     "k": 0,
+     "rate": null,
+     "wilson_lo": NaN,
+     "wilson_hi": NaN
+    },
+    "mirror_roll": {
+     "n": 0,
+     "k": 0,
+     "rate": null,
+     "wilson_lo": NaN,
+     "wilson_hi": NaN
+    }
+   },
+   "coherence": {
+    "real": {
+     "n": 0,
+     "k": 0,
+     "rate": null,
+     "wilson_lo": NaN,
+     "wilson_hi": NaN
+    },
+    "null_edit": {
+     "n": 0,
+     "k": 0,
+     "rate": null,
+     "wilson_lo": NaN,
+     "wilson_hi": NaN
+    },
+    "yaw_control": {
+     "n": 0,
+     "k": 0,
+     "rate": null,
+     "wilson_lo": NaN,
+     "wilson_hi": NaN
+    },
+    "tilt_removal": {
+     "n": 0,
+     "k": 0,
+     "rate": null,
+     "wilson_lo": NaN,
+     "wilson_hi": NaN
+    },
+    "scale_0.5": {
+     "n": 0,
+     "k": 0,
+     "rate": null,
+     "wilson_lo": NaN,
+     "wilson_hi": NaN
+    },
+    "scale_1.5": {
+     "n": 0,
+     "k": 0,
+     "rate": null,
+     "wilson_lo": NaN,
+     "wilson_hi": NaN
+    },
+    "mirror_roll": {
+     "n": 0,
+     "k": 0,
+     "rate": null,
+     "wilson_lo": NaN,
+     "wilson_hi": NaN
+    }
+   },
+   "median_residual": {
+    "real": {
+     "n": 0,
+     "k": 0,
+     "rate": null,
+     "wilson_lo": NaN,
+     "wilson_hi": NaN
+    },
+    "null_edit": {
+     "n": 0,
+     "k": 0,
+     "rate": null,
+     "wilson_lo": NaN,
+     "wilson_hi": NaN
+    },
+    "yaw_control": {
+     "n": 0,
+     "k": 0,
+     "rate": null,
+     "wilson_lo": NaN,
+     "wilson_hi": NaN
+    },
+    "tilt_removal": {
+     "n": 0,
+     "k": 0,
+     "rate": null,
+     "wilson_lo": NaN,
+     "wilson_hi": NaN
+    },
+    "scale_0.5": {
+     "n": 0,
+     "k": 0,
+     "rate": null,
+     "wilson_lo": NaN,
+     "wilson_hi": NaN
+    },
+    "scale_1.5": {
+     "n": 0,
+     "k": 0,
+     "rate": null,
+     "wilson_lo": NaN,
+     "wilson_hi": NaN
+    },
+    "mirror_roll": {
+     "n": 0,
+     "k": 0,
+     "rate": null,
+     "wilson_lo": NaN,
+     "wilson_hi": NaN
+    }
+   },
+   "abstention": {
+    "n": 0,
+    "abstained": 0,
+    "by_reason": {},
+    "rate": null
+   },
+   "gate_dropped_real": 0
+  }
+ },
+ "clustered": {
+  "real": {
+   "r2": null,
+   "coherence": null,
+   "a": null
+  },
+  "null_edit": {
+   "r2": null,
+   "coherence": null,
+   "a": null
+  },
+  "yaw_control": {
+   "r2": null,
+   "coherence": null,
+   "a": null
+  },
+  "tilt_removal": {
+   "r2": null,
+   "coherence": null,
+   "a": null
+  },
+  "scale_0.5": {
+   "r2": null,
+   "coherence": null,
+   "a": null
+  },
+  "scale_1.5": {
+   "r2": null,
+   "coherence": null,
+   "a": null
+  },
+  "mirror_roll": {
+   "r2": null,
+   "coherence": null,
+   "a": null
+  },
+  "_note": "bootstrap resamples the forward sequences with replacement; thresholds are the frozen ones, so this interval covers sampling of flights, not threshold estimation"
+ },
+ "validity_gate": {
+  "n_pairs": 0
+ },
+ "validity_rows": [],
+ "rows": [],
+ "provenance": {
+  "branch": "track-d-verdict-stat",
+  "gain_rule": "R2_axis_gains",
+  "thresholds": {
+   "tau_axis": 2.192179566480552,
+   "tau_corr": 0.619653015661502,
+   "tau_sign": 0.2921099290780138,
+   "a_threshold_deg": 14.73
+  }
+ }
+}

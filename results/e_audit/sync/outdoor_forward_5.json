@@ -1,0 +1,72 @@
+{
+ "seq": "outdoor_forward_5",
+ "rig": "outdoor_forward",
+ "source": "https://download.ifi.uzh.ch/rpg/web/datasets/uzh-fpv-newer-versions/v3/outdoor_forward_5_snapdragon_with_gt.zip (text members only)",
+ "clocks": {
+  "images": {
+   "n": 2457,
+   "first": 526.017002373,
+   "last": 617.176375797,
+   "span_s": 91.15937342400002,
+   "dt_s": 0.033173844000032204
+  },
+  "imu": {
+   "n": 45585,
+   "first": 526.005993,
+   "last": 617.173991,
+   "span_s": 91.16799800000001,
+   "dt_s": 0.0019999999999527063
+  },
+  "gt": {
+   "n": 8800,
+   "first": 573.454398161,
+   "last": 591.052398161,
+   "span_s": 17.59800000000007,
+   "dt_s": 0.0019999999999527063
+  }
+ },
+ "imu_columns_used": [
+  2,
+  3,
+  4
+ ],
+ "images_minus_imu_s": {
+  "first": 0.01100937299997895,
+  "last": 0.0023847969999906127
+ },
+ "offset_gt_minus_imu_s": 0.002407161007117943,
+ "offset_peak_corr": 0.8612655410868343,
+ "offset_overlap_s": 17.59599999958391,
+ "offset_identifiable": true,
+ "offset_resolution_s": 0.04600000000000004,
+ "offset_epoch_difference_s": -47.44599799999286,
+ "drift_bins": [
+  {
+   "t0_s": 0.0,
+   "t1_s": 30.389332666666633,
+   "offset_s": -0.49759283899288204,
+   "peak_corr": -1.0,
+   "fully_covered": false,
+   "usable": false
+  },
+  {
+   "t0_s": 30.389332666666633,
+   "t1_s": 60.77866533333338,
+   "offset_s": 0.004407161007118389,
+   "peak_corr": 0.8579372636705546,
+   "fully_covered": false,
+   "usable": false
+  },
+  {
+   "t0_s": 60.77866533333338,
+   "t1_s": 91.16799800000001,
+   "offset_s": 0.0004071610071183854,
+   "peak_corr": 0.7551925539833672,
+   "fully_covered": false,
+   "usable": false
+  }
+ ],
+ "drift_span_s": null,
+ "n_usable_bins": 0,
+ "kalibr_timeshift_cam_imu_s": -0.007999243205055177
+}

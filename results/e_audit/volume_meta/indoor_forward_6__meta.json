@@ -1,0 +1,33 @@
+{
+ "clip": "indoor_forward_6",
+ "fps": 15.071539708149325,
+ "n": 150,
+ "intrinsics": {
+  "fx": 278.66723066149086,
+  "fy": 278.48991409740296,
+  "cx": 320.0,
+  "cy": 240.0,
+  "w": 640,
+  "h": 480,
+  "model": "pinhole",
+  "source_calib": {
+   "fx": 278.66723066149086,
+   "fy": 278.48991409740296,
+   "cx": 319.75221200593535,
+   "cy": 241.96858910358173,
+   "k": [
+    -0.013721808247486035,
+    0.020727425669427896,
+    -0.012786476702685545,
+    0.0025242267320687625
+   ],
+   "w": 640,
+   "h": 480,
+   "model": "pinhole+equidistant",
+   "source": "indoor_forward_calib_snapdragon.zip"
+  }
+ },
+ "stride": 2,
+ "cam_index": 0,
+ "source_zip": "/data/zips/indoor_forward_6_snapdragon_with_gt.zip"
+}

@@ -1,0 +1,92 @@
+# Track E pre-registration — Task 4-5: verdict clips and the frozen-threshold transfer test
+# Written and committed BEFORE any edited UZH clip is scored. Appending a rule after the
+# fact is an amendment, not an edit.
+track: E
+task: "4-5"
+date: 2026-11-13
+target: configs/e_acceptance_ref.yaml (T2)
+
+## Inputs
+
+Clips are built from the sequences and frames prepared for Task 2 (`configs/e_prereg.yaml`),
+at the prepared rate (~15 Hz), non-overlapping, 4.0 s, i.e. about 60 frames — TII's 4 s at
+12 Hz, expressed in seconds and rebuilt at this rate.
+
+Testable clip (TII rule, unchanged): >= 12 frames with required tilt >= 10 deg, >= 20% of
+frames above that floor, >= 40% of frames with a usable depicted estimate. The path side is
+the Leica truth differentiated on its own 500 Hz grid (Savitzky-Golay, 0.10 s window,
+polyorder 3 — shorter than TII's 0.37 s because the truth here is 500 Hz, not 275 Hz, and the
+window is stated in seconds).
+
+## Depicted side
+
+The estimator variant is the Task 2 primary (raw KB4 + `simple_divisional`, variant b) if Gate
+E1 passes; if the estimator ladder was used, the ladder's winner. Whatever the outcome, the
+Task 2 metrics are reported beside the verdict numbers so a reader can see what the pixel side
+is worth.
+
+The mount is the **published** Kalibr `T_cam_imu` per rig — an input to the verifier, exactly
+as TII's recorded uptilt is, not something fitted per clip.
+
+## Conditions (shared clip schema, sections 6)
+
+`real`, `null_edit`, `tilt_removal`, `scale_0.5`, `scale_1.5`, `mirror_roll`,
+`yaw_control` (20 deg about world up, magnitude-matched in spirit to the tilt edits).
+Edits are exact pure-rotation warps in the dataset's own KB4 geometry (variant b) or pinhole
+homographies (variants a, c), about the camera centre, so no parallax is introduced. Every
+condition of a frame is masked with the intersection of the conditions' valid regions and the
+null edit is masked identically, so borders cannot masquerade as tilt.
+
+## Edit validation (must pass before any clip is scored)
+
+1. Apply known rotations of 5, 10 and 20 deg roll and 5, 10 and 20 deg pitch to real frames;
+   the estimator's recovered gravity must move with the rotation, i.e. the residual between
+   `up_est(rotated)` and `M up_est(real)` must be <= 2.0 deg median at every angle.
+2. The null edit must reproduce the real condition's depicted tilt to <= 2.0 deg median and
+   its median clip score to <= 1.5 deg.
+If either fails, the edit family is declared invalid, the verdict is reported as not-run, and
+no detection number is quoted.
+
+## Statistic (a): the current one, frozen
+
+`src/depicted/stat_a2.py`: A2's median axis residual in the **drag-free, lag-only** mode
+(`k_d = 0` on the path side, one lag nuisance per clip in [-150, +150] ms at 25 ms steps,
+mount fixed at the published rotation, no uptilt offset). Threshold **14.73 deg**, A2's pooled
+drag-free lag-only operating point, not refit on UZH, not refit per sequence.
+
+Sensitivities, all labelled: with the uptilt-offset nuisance enabled (+-7 deg, 1 deg steps);
+with the frozen S3 gate applied per condition; and UZH-recalibrated thresholds by
+leave-one-sequence-out (sensitivity only, never the headline).
+
+## Statistic (b): Track D's gain statistic
+
+`track-d-verdict-stat` does not publish `configs/gain_frozen.yaml` or `scripts/score_clip.py`
+as of this commit (the branch is at the same commit as `track-a2-gate`). (b) is therefore
+reported as outstanding, and the exported clips are the input for a later run.
+
+## Quantities and populations
+
+* False reject: real clips whose score exceeds the frozen threshold, with a Wilson interval.
+* Detection: edited clips whose score exceeds the same threshold, per family, with Wilson
+  intervals. Paired (each edit against its own real clip, A2's convention) is the headline;
+  unmatched is reported beside it.
+* Abstention: overall, by cause (signal, fraction, usable), per rig and environment.
+* Everything also split by rig (4) and by environment (indoor/outdoor).
+* Leave-one-sequence-out: each sequence's real clips compared against a threshold fitted on
+  the other sequences — sensitivity only.
+
+## T2 verdict rule
+
+Transfer passes if (i) false reject on real clips <= 0.15, and (ii) detection of
+`tilt_removal` >= 0.80 and of `mirror_roll` >= 0.80, on testable clips, at the frozen
+threshold. Anything else is reported as a failure with the measured numbers; a near miss is
+still a miss. Abstention is reported against T4 (<= 10 points above the current statistic's
+TII rate of 0.41).
+
+## Compute estimate
+
+Edits are CPU. GeoCalib runs on every clip-condition: at most 14 sequences x 5 clips x 7
+conditions x 60 frames = 29,400 estimates, about 98 A10G-minutes, about US$1.80. Combined with
+Task 2 (~US$1.20) this stays under the US$5 approval threshold; if the clip count pushes it
+over, sequences are dropped from the export (stated) rather than the study being run over
+budget.
