@@ -1,9 +1,37 @@
 {
-  "generated_utc": "2026-11-15T03:14:48Z",
-  "note": "Commit and date actually read from each worktree when the assets were built. Track D's worktree advanced from 59b3aaf (handoff) to the commit below during this build; the handoff value is recorded beside it.",
+  "generated_utc": "2026-11-15T10:03:30Z",
+  "note": "Commit and date actually read from each worktree when the assets were built. Track D's worktree advanced from 59b3aaf (handoff) to the commit below during this build; the handoff value is recorded beside it. R2 counts were measured on 2026-11-15 from the updated credentials.",
   "r2_object_counts": {
-    "status": "unavailable",
-    "reason": "rclone remote r2remote exists but ListBuckets returns 403, and no .env with R2 credentials is present in the repository (only .env.example)."
+    "status": "measured",
+    "measured_utc": "2026-11-15T10:03:23Z",
+    "method": "rclone size --json against an S3-remote configured from R2_* in the main worktree .env; read-only",
+    "note": "track-a/ includes the nested track-a/a2/ objects; the a2 count is reported separately. track-c/ is empty in this bucket.",
+    "prefixes": {
+      "track-a/": {
+        "count": 288,
+        "bytes": 3833554623
+      },
+      "track-a/a2/": {
+        "count": 122,
+        "bytes": 42490106
+      },
+      "track-b/": {
+        "count": 3641,
+        "bytes": 4936179889
+      },
+      "track-c/": {
+        "count": 0,
+        "bytes": 0
+      },
+      "track-d/": {
+        "count": 67,
+        "bytes": 36959802
+      },
+      "track-e/": {
+        "count": 595,
+        "bytes": 31612527
+      }
+    }
   },
   "branches": {
     "track-a-perception": {
@@ -12,8 +40,9 @@
       "head_date": "2026-11-09 12:36:38 -0500",
       "worktree": "/home/kevin/Documents/Projects/awmv-track-a",
       "r2_prefix": "track-a/",
-      "r2_object_count": null,
-      "handoff_head_note": ""
+      "r2_object_count": 288,
+      "handoff_head_note": "",
+      "r2_bytes": 3833554623
     },
     "track-a2-gate": {
       "head": "428dd3fcaba9ead0eef5a537e75bbb2eb2968479",
@@ -21,8 +50,9 @@
       "head_date": "2026-11-10 15:22:58 -0500",
       "worktree": "/home/kevin/Documents/Projects/awmv-track-a2",
       "r2_prefix": "track-a/a2/",
-      "r2_object_count": null,
-      "handoff_head_note": ""
+      "r2_object_count": 122,
+      "handoff_head_note": "",
+      "r2_bytes": 42490106
     },
     "track-b-generation": {
       "head": "9ca9e908694672b4cb4f8dba94e48e76a6da2e6c",
@@ -30,8 +60,9 @@
       "head_date": "2026-11-10 16:03:19 -0500",
       "worktree": "/home/kevin/Documents/Projects/awmv-track-b",
       "r2_prefix": "track-b/",
-      "r2_object_count": null,
-      "handoff_head_note": ""
+      "r2_object_count": 3641,
+      "handoff_head_note": "",
+      "r2_bytes": 4936179889
     },
     "track-c-pathrec": {
       "head": "ed76a0870f967f4322a008f4bd948aebbdd72255",
@@ -39,8 +70,9 @@
       "head_date": "2026-11-10 15:42:50 -0500",
       "worktree": "/home/kevin/Documents/Projects/awmv-track-c",
       "r2_prefix": "track-c/",
-      "r2_object_count": null,
-      "handoff_head_note": ""
+      "r2_object_count": 0,
+      "handoff_head_note": "",
+      "r2_bytes": 0
     },
     "track-d-verdict-stat": {
       "head": "2a91765cb86e0ff4c57b9bb04f3776966162688b",
@@ -48,8 +80,9 @@
       "head_date": "2026-11-14 22:01:01 -0500",
       "worktree": "/home/kevin/Documents/Projects/awmv-track-d",
       "r2_prefix": "track-d/",
-      "r2_object_count": null,
-      "handoff_head_note": "handoff ~59b3aaf; advanced during build"
+      "r2_object_count": 67,
+      "handoff_head_note": "handoff ~59b3aaf; advanced during build",
+      "r2_bytes": 36959802
     },
     "track-e-depicted-uzh": {
       "head": "dd209bf933527c91e564df2ec10b9995b1a004c2",
@@ -57,8 +90,9 @@
       "head_date": "2026-11-14 21:57:41 -0500",
       "worktree": "/home/kevin/Documents/Projects/awmv-track-e",
       "r2_prefix": "track-e/",
-      "r2_object_count": null,
-      "handoff_head_note": "handoff ~5961c09; actual dd209bf"
+      "r2_object_count": 595,
+      "handoff_head_note": "handoff ~5961c09; actual dd209bf",
+      "r2_bytes": 31612527
     }
   }
 }

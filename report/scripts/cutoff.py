@@ -21,12 +21,9 @@ def build():
         "generated_utc": subprocess.check_output(["date", "-u", "+%Y-%m-%dT%H:%M:%SZ"], text=True).strip(),
         "note": ("Commit and date actually read from each worktree when the assets were built. "
                  "Track D's worktree advanced from 59b3aaf (handoff) to the commit below during "
-                 "this build; the handoff value is recorded beside it."),
-        "r2_object_counts": {
-            "status": "unavailable",
-            "reason": ("rclone remote r2remote exists but ListBuckets returns 403, and no .env "
-                       "with R2 credentials is present in the repository (only .env.example)."),
-        },
+                 "this build; the handoff value is recorded beside it. R2 counts were measured "
+                 "on 2026-11-15 from the updated credentials."),
+        "r2_object_counts": {"status": "see report/data/r2_counts.json"},
         "branches": {},
     }
     for branch, track in BRANCHES.items():
@@ -40,6 +37,22 @@ def build():
             "handoff_head_note": ("handoff ~59b3aaf; advanced during build" if track == "d" else
                                   ("handoff ~5961c09; actual dd209bf" if track == "e" else "")),
         }
+    counts_file = C.DATA / "r2_counts.json"
+    if counts_file.exists():
+        with open(counts_file, encoding="utf-8") as fh:
+            measured = json.load(fh)
+        payload["r2_object_counts"] = {
+            "status": "measured",
+            "measured_utc": measured["measured_utc"],
+            "method": measured["method"],
+            "note": measured["note"],
+            "prefixes": measured["prefixes"],
+        }
+        for branch, info in payload["branches"].items():
+            pref = info["r2_prefix"]
+            if pref in measured["prefixes"]:
+                info["r2_object_count"] = measured["prefixes"][pref]["count"]
+                info["r2_bytes"] = measured["prefixes"][pref]["bytes"]
     with open(C.REPORT / "cutoff.json", "w", encoding="utf-8") as fh:
         json.dump(payload, fh, indent=2)
         fh.write("\n")

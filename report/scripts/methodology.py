@@ -67,10 +67,15 @@ def build():
     C.write_tex("tab_datasets_1", "\n".join(lines))
 
     # ---- reproducibility table
+    counts = {}
+    counts_file = C.DATA / "r2_counts.json"
+    if counts_file.exists():
+        import json as _json
+        counts = _json.load(open(counts_file, encoding="utf-8"))["prefixes"]
     lines = [
-        r"\begin{tabular}{llllr}",
+        r"\begin{tabular}{llllrr}",
         r"\toprule",
-        r"Branch & HEAD & pre-registration / frozen configs & R2 prefix & tests \\",
+        r"Branch & HEAD & pre-registration / frozen configs & R2 prefix & objects & tests/cost \\",
         r"\midrule",
     ]
     csv_rows = []
@@ -86,13 +91,13 @@ def build():
             cfg_s = f"{len(cfg)} frozen config(s), see tab\\_frozen-configs\\_1"
         else:
             cfg_s = "--"
-        lines.append(f"{branch} & {head} ({headdate}) & {cfg_s} & {C.R2_PREFIXES[track]} & -- \\\\")
+        notes_map = {"d": "131 tests (D01)", "b": "about US\\$7 (b04)"}
+        note = notes_map.get(track, "--")
+        lines.append(f"{branch} & {head} ({headdate}) & {cfg_s} & {C.R2_PREFIXES[track]} & "
+                     f"{counts.get(C.R2_PREFIXES[track], {}).get('count', '--')} & {note} \\\\")
         csv_rows.append([branch, head, headdate, cfg_s, C.R2_PREFIXES[track]])
     lines += [r"\bottomrule",
-              r"\multicolumn{5}{l}{\footnotesize Config entries are file@commit (sha256 prefix). "
-              r"Object counts in the R2 bucket could not be listed: the local environment has "
-              r"no valid R2 credentials (see cutoff.json). Test counts and cost are reported in "
-              r"the branch reports and are not re-run here.} \\",
+              r"\multicolumn{6}{l}{\footnotesize R2 objects measured 2026-11-15; track-a includes a2; track-c is empty.} \\",
               r"\end{tabular}"]
     C.write_tex("tab_repro_1", "\n".join(lines))
 
@@ -115,7 +120,7 @@ def build():
     C.write_csv("repro", csv_rows, ["branch", "head", "head_date", "configs", "r2_prefix"])
     C.provenance("repro", [("d", "pixi.toml")] if False else [],
                  notes=("HEADs and config hashes read live from the six worktrees. "
-                        "R2 object counts unavailable: rclone returns 403 and no .env is present."),
+                        "R2 object counts measured 2026-11-15 from the updated credentials; track-c/ is empty."),
                  derived=True)
     return dict(rows=csv_rows)
 

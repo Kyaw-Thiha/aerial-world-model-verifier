@@ -41,9 +41,11 @@ make it buildable.
 6. **E2 permutation-null distribution.** Only the summary statistics (median 0.822, 95th
    percentile 0.874) are stored, in report 06 prose. The figure shows them as reference
    lines; the null draws themselves are not available.
-7. **R2 object counts.** `rclone` can see the `r2remote` remote but `ListBuckets` returns
-   403, and there is no `.env` with credentials (only `.env.example`). `cutoff.json`
-   records the R2 prefixes with `r2_object_count: null` and the reason.
+7. **R2 object counts — now measured (2026-11-15).** With the updated credentials,
+   `rclone size` gives: track-a 288 (incl. a2 122), track-b 3,641, track-c **0**,
+   track-d 67, track-e 595. `cutoff.json` and `data/r2_counts.json` record counts and
+   bytes. The `track-c/` prefix is empty in this bucket, so Track C has no R2 objects to
+   cite; its source is the git branch only.
 8. **Test counts and cost per branch.** These are stated in the branch reports, not stored
    as result files. `tab_repro_1` leaves the counts column as "--" rather than copying
    prose numbers; the reports are the source (for example D01: 131 tests; b04: about

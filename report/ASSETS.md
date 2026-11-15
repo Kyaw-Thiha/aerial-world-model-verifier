@@ -125,7 +125,7 @@ is built from it.
 | --- | --- | --- | --- | --- |
 | `tables/tab_datasets_1.tex` | datasets, sensors, rates, truth, use | branch audits | ready | "Three data sources, three different notions of truth." |
 | `tables/tab_frozen-configs_1.tex` | every frozen config with commit and sha256 | live worktrees | ready | "Configuration freeze points; tab_repro_1 is the summary." |
-| `tables/tab_repro_1.tex` | per-branch HEAD, configs, R2 prefix, test/cost status | live worktrees + reports | ready | "Commit and hash provenance; R2 object counts unavailable offline." |
+| `tables/tab_repro_1.tex` | per-branch HEAD, configs, R2 prefix, test/cost status | live worktrees + reports | ready | "Commit and hash provenance; R2 object counts measured 2026-11-15 (track-c prefix empty)." |
 
 ## Documents
 
