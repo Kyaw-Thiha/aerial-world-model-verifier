@@ -1,0 +1,50 @@
+# Track C pre-registration v4: pixel-path verdict test on UZH (real vs edited)
+#
+# Committed BEFORE any GeoCalib or DPVO run for this test.
+
+version: 4
+written: 2026-11-10
+inherits: [configs/pathrec_prereg.yaml, configs/pathrec_prereg_v2.yaml,
+           configs/pathrec_prereg_calib.yaml]
+question: >
+  With the path coming from pixels (DPVO, calibrated) and the depicted tilt from pixels
+  (GeoCalib), does the verifier's residual separate a real flight from the same flight with
+  its tilt removed?
+
+design:
+  clip: indoor_forward_5 (150 frames, 15.1 Hz, calibrated KB4->pinhole) — the sequence where
+        DPVO is most accurate (2.5 deg direction error) so a null result cannot be blamed on
+        the path.
+  conditions:
+    real: the prepared frames as they are
+    tilt_removed: every frame warped by the rotation that levels the body (Track A's edit
+                  k=0: keep heading, remove roll and pitch), applied with the same
+                  homography code path as `src/negatives/edits.py`
+    yaw_control: warped by a rotation about world up (same border loss, no tilt change) —
+                  a control for warp artefacts
+  depicted tilt: GeoCalib gravity per frame (weights "pinhole"), fused with DPVO's relative
+                 rotations by the complementary filter (gain 0.2, Track A's value)
+  implied tilt: DPVO path, Savitzky-Golay 0.5 s window, poly 3, k_d = 0.295
+  residual: r(t) = angle(z_depicted(t), z_implied(t)); clip score = median over testable t
+
+decision_rule:
+  violation if clip score > 10 deg (Track A's minimum detectable violation), else clean
+  not testable if fewer than 20 % of samples require >= 10 deg of implied tilt
+  expected separation: real clean, tilt_removed violated, yaw_control clean
+
+pass_criteria:
+  - real clip not flagged
+  - tilt_removed clip flagged
+  - yaw_control not flagged
+  - abstention declared in advance (above), applied before any threshold
+
+reporting: >
+  Report the three clip scores, the testable fraction, and the same numbers for a
+  "path-only" control (implied tilt from the true path) so the pixel path's contribution is
+  visible. A failure to separate is reported as a failure; no threshold tuning after the run.
+
+out_of_scope:
+  - generated video (no general model is run here)
+  - any sequence other than indoor_forward_5 in this pass
+  - the TII edit pipeline (different mount and fisheye; the edit maths is reused, the frames
+    are not)

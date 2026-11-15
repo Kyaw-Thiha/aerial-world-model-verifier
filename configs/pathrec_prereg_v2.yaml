@@ -1,0 +1,56 @@
+# Track C pre-registration v2: widened UZH set (supersedes v1 only for the widened set)
+#
+# Committed BEFORE any of the added sequences is scored. v1 (configs/pathrec_prereg.yaml,
+# commit 6a16297) stays in force: same extractors, same criteria, same windows, same
+# alignment rules. This file only fixes the sequence list and the train/test split by
+# sequence, because v1's 5-sequence set was too narrow to firm up a 3/5 pass.
+
+version: 2
+written: 2026-11-10
+inherits: configs/pathrec_prereg.yaml
+change: >
+  Widen T1 to every UZH-FPV sequence that ships public ground truth and is not
+  obviously out of range (the 45-degree-down and SplitS tracks are excluded from the
+  widened set and are diagnosed separately, not scored against these criteria).
+
+testbed:
+  name: T1_uzh_widened
+  camera: snapdragon cam0, KB4 -> pinhole, 640x480, 15.1 Hz (stride 2 of 30 Hz)
+  frames_per_clip: 150
+  truth: Leica laser tracker, frames restricted to the truth interval
+  sequences:            # published vmax (m/s), ground truth public
+    indoor_forward_3: 9.5
+    indoor_forward_5: 4.87
+    indoor_forward_6: 12.52
+    indoor_forward_7: 12.78
+    indoor_forward_9: 11.42
+    indoor_forward_10: 9.49
+    outdoor_forward_1: 8.55
+    outdoor_forward_3: 14.04
+    outdoor_forward_5: 20.73
+  excluded:
+    indoor_45_*: "45-degree-down mount: diagnosed in C05, not scored here"
+    outdoor_45_*: "same"
+    SplitS races: "no public ground truth"
+    indoor_forward_8, 11, 12: "no public ground truth"
+    outdoor_forward_2, 6, 9, 10: "no public ground truth"
+
+split:
+  # by sequence, declared before scoring; v1's eval members stay on the eval side
+  fit:  [indoor_forward_3, indoor_forward_5, indoor_forward_10, outdoor_forward_1]
+  eval: [indoor_forward_6, indoor_forward_7, indoor_forward_9,
+         outdoor_forward_3, outdoor_forward_5]
+
+extractors: [pi3, da3, vggt]      # same three as v1; DPVO added as a separate report
+
+criteria:
+  inherited: true                  # 30 deg direction, ratio [0.7, 1.4], coverage >= 0.5
+  per_clip_testable: "true required tilt >= 10 deg on >= 20 % of samples"
+  reporting: >
+    Per-sequence speed, camera-mount tilt class (forward vs downward), stride and
+    coverage are reported beside every number. A model passes only if its per-clip pass
+    rate is >= 0.5 on the eval split, not on the pooled set.
+
+no_tuning: >
+  Split and sequence list frozen at commit. New sequences are added only before they are
+  scored; nothing is removed after a result is seen.

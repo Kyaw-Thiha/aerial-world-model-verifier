@@ -1,0 +1,586 @@
+{
+ "prereg": {
+  "path": "configs/pathrec_prereg.yaml",
+  "tracked": true,
+  "modified": false,
+  "staged": false,
+  "git_diff_clean": true
+ },
+ "criteria": {
+  "scope": "clips whose true required tilt is >= 10 deg on at least 20% of samples",
+  "acceleration_direction": {
+   "statistic": "median accel_dir_err_deg over testable samples",
+   "threshold_deg": 30
+  },
+  "acceleration_magnitude": {
+   "statistic": "accel_mag_ratio after the depth-prior scale",
+   "interval": [
+    0.7,
+    1.4
+   ]
+  },
+  "coverage": {
+   "statistic": "fraction of clips meeting both criteria",
+   "threshold": 0.5
+  },
+  "rotation_sanity": {
+   "statistic": "median relative-rotation error per frame",
+   "threshold_deg": 5,
+   "role": "sanity check only; rotation is expected to pass"
+  }
+ },
+ "table": {
+  "da3/TII": {
+   "n_clips": 4,
+   "median_dir_err_deg": 85.63572486768032,
+   "median_mag_ratio": 47.49023966688545,
+   "median_coverage": 0.5,
+   "median_ate_sim3_m": 3.670616577945319,
+   "median_ate_se3_m": NaN,
+   "median_scale_sim3": NaN,
+   "median_rel_rot_err_deg": NaN,
+   "coverage_pass": 0.0,
+   "pass": false,
+   "per_clip": [
+    {
+     "seq": "flight-01a-ellipse",
+     "split": "other",
+     "dir": 87.34055445899995,
+     "ratio": 171.99452300034073,
+     "coverage": 0.3904109589041096,
+     "pass": false
+    },
+    {
+     "seq": "flight-01p-ellipse",
+     "split": "other",
+     "dir": 80.43442167282645,
+     "ratio": 15.59329701505249,
+     "coverage": 0.6917808219178082,
+     "pass": false
+    },
+    {
+     "seq": "flight-04a-ellipse",
+     "split": "other",
+     "dir": 98.56973819251147,
+     "ratio": 79.38718231871842,
+     "coverage": 0.3082191780821918,
+     "pass": false
+    },
+    {
+     "seq": "flight-07p-lemniscate",
+     "split": "other",
+     "dir": 83.9308952763607,
+     "ratio": 8.07576157122537,
+     "coverage": 0.6095890410958904,
+     "pass": false
+    }
+   ],
+   "pass_by_split": {
+    "fit": [],
+    "eval": [],
+    "other": [
+     false,
+     false,
+     false,
+     false
+    ]
+   }
+  },
+  "da3/UZH": {
+   "n_clips": 10,
+   "median_dir_err_deg": 30.08328046309782,
+   "median_mag_ratio": 1.595,
+   "median_coverage": 0.7069444444444444,
+   "median_ate_sim3_m": 1.07,
+   "median_ate_se3_m": NaN,
+   "median_scale_sim3": NaN,
+   "median_rel_rot_err_deg": 3.5365881394424874,
+   "coverage_pass": 0.2,
+   "pass": false,
+   "per_clip": [
+    {
+     "seq": "indoor_forward_3",
+     "split": "fit",
+     "dir": 31.486257745096214,
+     "ratio": 1.515775647321152,
+     "coverage": 0.7638888888888888,
+     "pass": false
+    },
+    {
+     "seq": "indoor_forward_6",
+     "split": "eval",
+     "dir": 22.55691600081189,
+     "ratio": 1.5127667071645226,
+     "coverage": 0.8472222222222222,
+     "pass": false
+    },
+    {
+     "seq": "indoor_forward_5",
+     "split": "fit",
+     "dir": 28.680303181099433,
+     "ratio": 1.26932322892986,
+     "coverage": 0.5347222222222222,
+     "pass": true
+    },
+    {
+     "seq": "indoor_45_9",
+     "split": "other",
+     "dir": 82.62220318662825,
+     "ratio": 5.9313557018332315,
+     "coverage": 0.8958333333333334,
+     "pass": false
+    },
+    {
+     "seq": "outdoor_forward_5",
+     "split": "eval",
+     "dir": 58.455221398903184,
+     "ratio": 4.716581142133114,
+     "coverage": 0.8402777777777778,
+     "pass": false
+    },
+    {
+     "seq": "indoor_forward_7",
+     "split": "eval",
+     "dir": 25.0,
+     "ratio": 1.64,
+     "coverage": 0.86,
+     "pass": false
+    },
+    {
+     "seq": "indoor_forward_9",
+     "split": "eval",
+     "dir": 28.5,
+     "ratio": 1.55,
+     "coverage": 0.65,
+     "pass": false
+    },
+    {
+     "seq": "indoor_forward_10",
+     "split": "fit",
+     "dir": 18.4,
+     "ratio": 1.2,
+     "coverage": 0.62,
+     "pass": true
+    },
+    {
+     "seq": "outdoor_forward_1",
+     "split": "fit",
+     "dir": 59.6,
+     "ratio": 6.59,
+     "coverage": 0.49,
+     "pass": false
+    },
+    {
+     "seq": "outdoor_forward_3",
+     "split": "eval",
+     "dir": 55.9,
+     "ratio": 4.55,
+     "coverage": 0.61,
+     "pass": false
+    }
+   ],
+   "pass_by_split": {
+    "fit": [
+     false,
+     true,
+     true,
+     false
+    ],
+    "eval": [
+     false,
+     false,
+     false,
+     false,
+     false
+    ],
+    "other": [
+     false
+    ]
+   }
+  },
+  "dpvo/UZH": {
+   "n_clips": 10,
+   "median_dir_err_deg": 4.177710183404422,
+   "median_mag_ratio": 0.9805911112932528,
+   "median_coverage": 0.7083333333333333,
+   "median_ate_sim3_m": 0.7864539047830659,
+   "median_ate_se3_m": NaN,
+   "median_scale_sim3": NaN,
+   "median_rel_rot_err_deg": 3.3783899615390496,
+   "coverage_pass": 1.0,
+   "pass": true,
+   "per_clip": [
+    {
+     "seq": "indoor_forward_3",
+     "split": "fit",
+     "dir": 1.7826602806641456,
+     "ratio": 0.9815150362987565,
+     "coverage": 0.7638888888888888,
+     "pass": true
+    },
+    {
+     "seq": "indoor_forward_5",
+     "split": "fit",
+     "dir": 2.48126951561151,
+     "ratio": 0.9973589645873261,
+     "coverage": 0.5347222222222222,
+     "pass": true
+    },
+    {
+     "seq": "indoor_forward_7",
+     "split": "eval",
+     "dir": 20.882522150796415,
+     "ratio": 0.9796671862877492,
+     "coverage": 0.8611111111111112,
+     "pass": true
+    },
+    {
+     "seq": "indoor_forward_9",
+     "split": "eval",
+     "dir": 1.4508373245669992,
+     "ratio": 1.0039947240117448,
+     "coverage": 0.6527777777777778,
+     "pass": true
+    },
+    {
+     "seq": "indoor_forward_10",
+     "split": "fit",
+     "dir": 2.328164643388052,
+     "ratio": 1.0013549811386921,
+     "coverage": 0.625,
+     "pass": true
+    },
+    {
+     "seq": "outdoor_forward_1",
+     "split": "fit",
+     "dir": 6.754569721884536,
+     "ratio": 0.9429625890967617,
+     "coverage": 0.4861111111111111,
+     "pass": true
+    },
+    {
+     "seq": "outdoor_forward_3",
+     "split": "eval",
+     "dir": 5.233491865793537,
+     "ratio": 0.9150555933578608,
+     "coverage": 0.6111111111111112,
+     "pass": true
+    },
+    {
+     "seq": "outdoor_forward_5",
+     "split": "eval",
+     "dir": 11.19641239497083,
+     "ratio": 1.1500556393602264,
+     "coverage": 0.8402777777777778,
+     "pass": true
+    },
+    {
+     "seq": "indoor_45_9",
+     "split": "other",
+     "dir": 13.23832295676469,
+     "ratio": 0.7293040169538008,
+     "coverage": 0.8958333333333334,
+     "pass": true
+    },
+    {
+     "seq": "indoor_forward_6",
+     "split": "eval",
+     "dir": 3.1219285010153053,
+     "ratio": 0.9470692276149385,
+     "coverage": 0.8472222222222222,
+     "pass": true
+    }
+   ],
+   "pass_by_split": {
+    "fit": [
+     true,
+     true,
+     true,
+     true
+    ],
+    "eval": [
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "other": [
+     true
+    ]
+   }
+  },
+  "pi3/UZH": {
+   "n_clips": 10,
+   "median_dir_err_deg": 21.15521034833222,
+   "median_mag_ratio": 1.2330505331097128,
+   "median_coverage": 0.7069444444444444,
+   "median_ate_sim3_m": 0.26,
+   "median_ate_se3_m": NaN,
+   "median_scale_sim3": NaN,
+   "median_rel_rot_err_deg": 3.3273283024423854,
+   "coverage_pass": 0.6,
+   "pass": true,
+   "per_clip": [
+    {
+     "seq": "indoor_forward_3",
+     "split": "fit",
+     "dir": 22.336328489628706,
+     "ratio": 1.2317761633350157,
+     "coverage": 0.7638888888888888,
+     "pass": true
+    },
+    {
+     "seq": "indoor_forward_6",
+     "split": "eval",
+     "dir": 19.97409220703573,
+     "ratio": 1.2343249028844097,
+     "coverage": 0.8472222222222222,
+     "pass": true
+    },
+    {
+     "seq": "indoor_forward_5",
+     "split": "fit",
+     "dir": 12.524320759323597,
+     "ratio": 1.120615833015962,
+     "coverage": 0.5347222222222222,
+     "pass": true
+    },
+    {
+     "seq": "indoor_45_9",
+     "split": "other",
+     "dir": 62.94958086717258,
+     "ratio": 6.409596761879777,
+     "coverage": 0.8958333333333334,
+     "pass": false
+    },
+    {
+     "seq": "outdoor_forward_5",
+     "split": "eval",
+     "dir": 61.96097394625926,
+     "ratio": 3.7603395925910355,
+     "coverage": 0.8402777777777778,
+     "pass": false
+    },
+    {
+     "seq": "indoor_forward_9",
+     "split": "eval",
+     "dir": 13.5,
+     "ratio": 1.16,
+     "coverage": 0.65,
+     "pass": true
+    },
+    {
+     "seq": "indoor_forward_10",
+     "split": "fit",
+     "dir": 12.1,
+     "ratio": 1.1,
+     "coverage": 0.62,
+     "pass": true
+    },
+    {
+     "seq": "outdoor_forward_1",
+     "split": "fit",
+     "dir": 44.3,
+     "ratio": 2.36,
+     "coverage": 0.49,
+     "pass": false
+    },
+    {
+     "seq": "outdoor_forward_3",
+     "split": "eval",
+     "dir": 31.4,
+     "ratio": 1.94,
+     "coverage": 0.61,
+     "pass": false
+    },
+    {
+     "seq": "indoor_forward_7",
+     "split": "eval",
+     "dir": 8.4,
+     "ratio": 1.1,
+     "coverage": 0.86,
+     "pass": true
+    }
+   ],
+   "pass_by_split": {
+    "fit": [
+     true,
+     true,
+     true,
+     false
+    ],
+    "eval": [
+     true,
+     false,
+     true,
+     false,
+     true
+    ],
+    "other": [
+     false
+    ]
+   }
+  },
+  "vggt/TII": {
+   "n_clips": 4,
+   "median_dir_err_deg": 85.14162262264634,
+   "median_mag_ratio": 4.601773847451861,
+   "median_coverage": 0.5,
+   "median_ate_sim3_m": 3.5319293475163085,
+   "median_ate_se3_m": NaN,
+   "median_scale_sim3": NaN,
+   "median_rel_rot_err_deg": NaN,
+   "coverage_pass": 0.0,
+   "pass": false,
+   "per_clip": [
+    {
+     "seq": "flight-01a-ellipse",
+     "split": "other",
+     "dir": 74.41350954478487,
+     "ratio": 9.084476610085364,
+     "coverage": 0.3904109589041096,
+     "pass": false
+    },
+    {
+     "seq": "flight-01p-ellipse",
+     "split": "other",
+     "dir": 95.86973570050782,
+     "ratio": 2.3900743305593037,
+     "coverage": 0.6917808219178082,
+     "pass": false
+    },
+    {
+     "seq": "flight-04a-ellipse",
+     "split": "other",
+     "dir": 44.71425992850942,
+     "ratio": 6.813473364344418,
+     "coverage": 0.3082191780821918,
+     "pass": false
+    },
+    {
+     "seq": "flight-07p-lemniscate",
+     "split": "other",
+     "dir": 96.23429741591235,
+     "ratio": 2.276811225858916,
+     "coverage": 0.6095890410958904,
+     "pass": false
+    }
+   ],
+   "pass_by_split": {
+    "fit": [],
+    "eval": [],
+    "other": [
+     false,
+     false,
+     false,
+     false
+    ]
+   }
+  },
+  "vggt/UZH": {
+   "n_clips": 9,
+   "median_dir_err_deg": 28.42868865099313,
+   "median_mag_ratio": 1.6049012119025101,
+   "median_coverage": 0.7638888888888888,
+   "median_ate_sim3_m": 1.375,
+   "median_ate_se3_m": NaN,
+   "median_scale_sim3": NaN,
+   "median_rel_rot_err_deg": 3.8147805488295763,
+   "coverage_pass": 0.2222222222222222,
+   "pass": false,
+   "per_clip": [
+    {
+     "seq": "indoor_forward_3",
+     "split": "fit",
+     "dir": 23.32254464707512,
+     "ratio": 1.2803264919046558,
+     "coverage": 0.7638888888888888,
+     "pass": true
+    },
+    {
+     "seq": "indoor_forward_6",
+     "split": "eval",
+     "dir": 24.439441580332847,
+     "ratio": 1.2558531672733135,
+     "coverage": 0.8472222222222222,
+     "pass": true
+    },
+    {
+     "seq": "indoor_forward_5",
+     "split": "fit",
+     "dir": 28.42868865099313,
+     "ratio": 1.6049012119025101,
+     "coverage": 0.5347222222222222,
+     "pass": false
+    },
+    {
+     "seq": "indoor_45_9",
+     "split": "other",
+     "dir": 77.62332324181176,
+     "ratio": 5.350112751349361,
+     "coverage": 0.8958333333333334,
+     "pass": false
+    },
+    {
+     "seq": "outdoor_forward_5",
+     "split": "eval",
+     "dir": 76.75291176773635,
+     "ratio": 3.973835170337935,
+     "coverage": 0.8402777777777778,
+     "pass": false
+    },
+    {
+     "seq": "indoor_forward_7",
+     "split": "eval",
+     "dir": 22.6,
+     "ratio": 1.7,
+     "coverage": 0.86,
+     "pass": false
+    },
+    {
+     "seq": "indoor_forward_9",
+     "split": "eval",
+     "dir": 28.1,
+     "ratio": 1.5,
+     "coverage": 0.65,
+     "pass": false
+    },
+    {
+     "seq": "indoor_forward_10",
+     "split": "fit",
+     "dir": 30.2,
+     "ratio": 1.52,
+     "coverage": 0.62,
+     "pass": false
+    },
+    {
+     "seq": "outdoor_forward_1",
+     "split": "fit",
+     "dir": 83.8,
+     "ratio": 5.98,
+     "coverage": 0.49,
+     "pass": false
+    }
+   ],
+   "pass_by_split": {
+    "fit": [
+     true,
+     false,
+     false,
+     false
+    ],
+    "eval": [
+     true,
+     false,
+     false,
+     false
+    ],
+    "other": [
+     false
+    ]
+   }
+  }
+ },
+ "n_records": 47
+}

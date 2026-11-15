@@ -1,0 +1,43 @@
+# Track C pre-registration v3: DPVO calibration sensitivity (UZH)
+#
+# Committed BEFORE any perturbed-intrinsics run. Criteria inherited from v1/v2 unchanged:
+# direction <= 30 deg, magnitude ratio in [0.7, 1.4], per-clip pass rate >= 0.5.
+
+version: 3
+written: 2026-11-10
+inherits: [configs/pathrec_prereg.yaml, configs/pathrec_prereg_v2.yaml]
+question: >
+  DPVO passes 10/10 on UZH when it is given the Kalibr intrinsics. How much of that is the
+  calibration? Perturb the focal length and replace the calibration with intrinsics estimated
+  from the same frames.
+
+perturbations:
+  focal_scale: [0.8, 0.9, 1.0, 1.1, 1.2]   # fx, fy multiplied; cx, cy fixed at the calibrated values
+  estimated_intrinsics:
+    da3: "DA3-LARGE-1.1 predicted intrinsics, median over the clip"
+    vggt: "VGGT-1B predicted intrinsics, median over the clip"
+    pi3: "not exposed by the model; reported as n/a"
+    geocalib: "Track A's estimator; deferred (needs a UZH GeoCalib pass, not run here)"
+
+procedure:
+  clips: all ten (nine scored + indoor_45_9), 150 frames at 15.1 Hz, 640x480
+  tracker: DPVO, 48 patches, 0.5x virtual view, same settings as the passing run
+  scoring: identical to v2 (Sim(3) alignment, 0.5 s window, k_d 0.295)
+  note: >
+    The magnitude ratio uses the ORACLE Sim(3) scale in this study, as everywhere in the
+    bake-off; it is a property of the trajectory shape, not of a metric claim. A
+    depth-prior-scale version is reported separately (see the scale-provenance note).
+
+hypotheses:
+  H1: "DPVO tolerates +/-10 % focal error without losing the direction criterion on 8/10 clips."
+  H2: "At +/-20 % the direction criterion degrades on at least half the clips."
+  H3: "DA3 or VGGT intrinsics are worse than +/-10 % focal error, i.e. estimated K is the
+       mechanism behind the feed-forward models' failures."
+
+reporting: >
+  Per clip and per condition: direction error, magnitude ratio, coverage, pass/fail; plus the
+  median across clips and the count passing. No tuning; a failed hypothesis is reported.
+
+stop_rule: >
+  If two conditions both fail to run (image or container problems), stop and report the
+  partial matrix rather than substituting estimates.

@@ -1,0 +1,28 @@
+[
+ {
+  "seq": "indoor_forward_5",
+  "pix_n": 144,
+  "pix_testable_fraction": 0.7708333333333334,
+  "pix_implied_tilt_median_deg": 22.67481224000697,
+  "pix_score_deg": 85.8411457180749,
+  "pix_verdict": "violated",
+  "pathonly_n": 144,
+  "pathonly_testable_fraction": 0.5347222222222222,
+  "pathonly_implied_tilt_median_deg": 10.39093037082992,
+  "pathonly_score_deg": 110.7937995819945,
+  "pathonly_verdict": "violated"
+ },
+ {
+  "seq": "indoor_forward_5_tilt_removed",
+  "pix_n": 144,
+  "pix_testable_fraction": 0.7222222222222222,
+  "pix_implied_tilt_median_deg": 18.00185269976697,
+  "pix_score_deg": 88.68265112162946,
+  "pix_verdict": "violated",
+  "pathonly_n": 144,
+  "pathonly_testable_fraction": 0.5347222222222222,
+  "pathonly_implied_tilt_median_deg": 10.39093037082992,
+  "pathonly_score_deg": 115.46937301220683,
+  "pathonly_verdict": "violated"
+ }
+]
