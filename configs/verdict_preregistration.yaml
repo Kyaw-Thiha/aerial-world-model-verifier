@@ -144,6 +144,8 @@ thresholds:
   # scores show the three trackRATM flights carry the estimator failure (one of them
   # scores a median of 68 deg on real clips), so a threshold fitted over them would be
   # set by that failure and would hide everything else. Both variants are reported:
+  # SUPERSEDED by amendment_2 (below): this key is kept as a record only and is not used
+  # by any run that cites amendment 2.
   threshold_fit_flights: non_trackratm
   threshold_fit_flights_alt: all_flights
   amendment_1_reason: >
@@ -179,3 +181,546 @@ provenance:
   git_hash: recorded per run
   prereg_sha256: recorded per run
   seeds: [0]
+
+# ================================================================ AMENDMENT 2
+# Track A2 (handoff 05). Committed BEFORE any gate signal is extracted or evaluated and
+# before any generated clip is scored. It SUPERSEDES amendment 1.
+#
+# Why. Amendment 1 removed the three trackRATM flights from the threshold fit. It was
+# written after seeing real-clip scores, and a later sensitivity row (`all_but_13a`) was
+# picked because it looked better. Choosing which clips count by looking at their scores
+# inflates every number downstream, and it is unavailable on generated video where no
+# mocap exists. Amendment 2 withdraws that rule and replaces it with a gate that reads
+# only pixels and estimator outputs. Amendment 1 stays above as a record of what was
+# done; no run that cites amendment 2 uses `threshold_fit_flights: non_trackratm`.
+amendment_2:
+  date: 2026-11-09
+  tag: "[A2]"
+  supersedes: amendment_1
+  no_flight_level_exclusion: true
+  threshold_fit_flights: all_flights     # conformal quantile over all 8 flights, after the gate
+  abstentions_allowed: [excitation_rule, confidence_gate]
+
+  # ---------------------------------------------------------------- what the gate sees
+  gate_inputs: >
+    pixels and GeoCalib outputs only: per-frame gravity direction, GeoCalib's gravity /
+    roll / pitch uncertainty, and its up / latitude confidence maps. Not mocap, not the
+    commanded path, not the implied tilt, not any verdict score or outcome.
+  extraction: >
+    GeoCalib is re-run with exactly the Gate 3 setup (remote/a_geocalib_p3.py, commit
+    1dedb29f94fc11b896c5f572005978aeebccd67f, simple_divisional, distorted weights, raw
+    fisheye) and the per-frame extras are stored: gravity_uncertainty,
+    roll_uncertainty, pitch_uncertainty, and mean and 10th percentile of up_confidence
+    and latitude_confidence over the image. The Gate 3 rows did not store them; the
+    pinned source returns them (lm_optimizer.estimate_uncertainty, extractor.calibrate).
+    Consistency check: the re-run gravity direction must match the stored rows (median
+    disagreement < 0.05 deg), otherwise the extraction is void and nothing is scored.
+
+  # ---------------------------------------------------------------- what it must predict
+  label:
+    definition: >
+      Per-frame depicted-gravity error = angle between the estimated up direction in the
+      camera frame and the up direction implied by mocap attitude through the recorded
+      mount, R_cb = camera_to_body_pitched(recorded uptilt), with no fitted nuisances.
+      Clip label = 1 when the median of that error over frames with a finite estimate
+      exceeds 10 deg, else 0. Computed on the identity (real) condition for every clip of
+      the Gate 3 clip set, including clips the excitation rule abstains on, because this
+      is a property of the estimator and not of the verdict.
+    threshold_deg: 10.0
+    sensitivity_reported: [5.0, 20.0]
+    never_an_input_to_the_gate: true
+
+  # ---------------------------------------------------------------- candidate signals
+  # Clip level, oriented so that larger = less trustworthy. This list is fixed; no
+  # candidates are added after looking at the labels.
+  candidates:
+    S1_gravity_uncertainty:
+      definition: median over frames of GeoCalib gravity_uncertainty, degrees
+      single_frame: true
+    S2_up_confidence:
+      definition: negative median over frames of the image-mean up_confidence
+      single_frame: true
+    S3_latitude_confidence:
+      definition: negative median over frames of the image-mean latitude_confidence
+      single_frame: true
+    S4_temporal_jitter:
+      definition: >
+        slow component = running median of the unit gravity vector (component-wise, then
+        renormalised) over a 0.5 s window (6 samples at the clip's ~12 Hz stride);
+        signal = median over frames of the angle between the frame's gravity and that
+        slow component, degrees.
+      single_frame: false      # undefined at 1 s spacing (a 16-frame ANWM clip is 15 s)
+    S5_vo_agreement:
+      definition: >
+        median over consecutive frame pairs of the angle between the measured gravity at
+        t+1 and the gravity at t carried forward by the DPVO relative rotation, degrees.
+        A clip whose DPVO rows do not cover the clip's stride-10 frames is dropped by
+        this signal (counts as not testable). Evaluated only if stored DPVO rows cover
+        those frames; otherwise reported as "not evaluated" with the reason.
+      single_frame: false
+    S6_uncertainty_instability:
+      definition: >
+        fraction of frames whose gravity_uncertainty exceeds twice the clip's own median
+        gravity_uncertainty. Within-clip, so it needs no floor fitted on other clips.
+      single_frame: true
+  combinations: none     # 100 clips over 8 flights do not support a search over mixtures
+
+  # ---------------------------------------------------------------- eligibility, selection
+  eligibility: >
+    The frozen gate must also run on a 16-frame, 224x224 generated clip with 1 s between
+    frames and no mocap. Only single-frame signals can be frozen. S4 and S5 are evaluated
+    and reported, but cannot be selected.
+  selection_criterion: >
+    Highest AUROC for label = 1, pooled over the identity-condition clips, among eligible
+    signals. Report a flight-level bootstrap interval (flights resampled, 2000 draws,
+    seed 0). If that interval's lower bound is <= 0.5 for the best eligible signal, the
+    gate is declared NOT VALIDATED: the gated verdict is not run and that is the reported
+    outcome. Same outcome if fewer than 5 clips carry label = 1.
+  validation: leave_one_flight_out
+
+  # ---------------------------------------------------------------- threshold rule
+  threshold_rule: >
+    Drop a clip whose signal exceeds tau. tau maximises (TPR - FPR) over candidate values
+    equal to the observed signal values of the fit clips, subject to the fit clips' kept
+    fraction being at least 0.60. Ties go to the larger tau. Leave-one-flight-out: tau is
+    refitted on the other seven flights and used only on the held-out flight; coverage,
+    kept-versus-dropped error and all gated numbers are reported from those held-out
+    decisions. The FROZEN tau is fitted on all eight flights, committed in
+    configs/gate_frozen.yaml together with the commit hash, and never changed afterwards.
+  application: >
+    The gate is applied per condition: the real clip and each edit are gated on their own
+    pixels. A gated clip is "not testable", exactly like an excitation abstention. Paired
+    comparisons keep the matched-set rule of the original protocol (a clip dropped in any
+    condition of a family is dropped from that family's pairing, and the dropout is
+    reported); unmatched pooled numbers are reported alongside.
+
+  # ---------------------------------------------------------------- reporting, transfer
+  report: >
+    Per-signal AUROC with a flight-level interval; coverage per flight; median label error
+    of kept versus dropped clips; flight 13a and the 07a clip that scored 48.8 deg; the
+    LOFO tau spread; label sensitivity at 5 and 20 deg.
+  transfer_check: >
+    Before any generated clip is scored, the frozen gate is applied to the 186 ANWM
+    ground-truth (level) frames of the Gate 3 noise-floor run, grouped into 16-frame
+    clips. The dropped fraction is reported. The gate is not altered whatever it shows;
+    if more than half are dropped, generated-video results are reported as "gate not
+    transferable to 224 px frames" and are not interpreted as verdicts.
+  generated_clips: >
+    Scoring of generated clips and the minimum-consistent-dt analysis are covered by a
+    separate amendment 3, committed before any generated clip is scored.
+
+# ================================================================ AMENDMENT 3
+# Track A2, Task 3. Committed BEFORE the depicted tilt of any generated clip is computed,
+# and before the positive controls are run. Nothing in it may be changed after the first
+# generated-clip score exists.
+amendment_3:
+  date: 2026-11-09
+  tag: "[A2]"
+  scope: scored_generated_clips
+  clip_set: >
+    Track B's 82 clips (regimes A 25, B 8, C 49), read-only, 16 frames each, 224x224, one
+    frame per commanded step. Commanded paths come from each clip's manifest.json. Track B's
+    code and files are not modified.
+  intrinsics: >
+    224 px frames, pinhole, f = 112 px (90 deg horizontal field), principal point at the
+    centre, camera exactly level (uptilt 0). This is the setting the Gate 3 noise-floor run
+    used at 224 px; the manifest's recorded K is [[256,0,256],[0,256,256],[0,0,1]] at
+    512x512 before resize, which gives the same field.
+
+  # ---- what decides that a clip can be read at all
+  testability:
+    gate: >
+      the frozen gate in configs/gate_frozen.yaml (file hash recorded with the run) is
+      applied to each clip's own frames. A gate drop is "not testable", never a violation.
+    collapse: >
+      a frame set whose median frame std is below 0.05 (0-1 scale) or whose median
+      frame-to-frame difference is below 0.02 is a collapsed rollout and is "not testable".
+      Track B's visual_integrity values are used to decide this; they are not a score.
+    detectability: >
+      a clip is "not testable (below detectability)" when its lower-bound required tilt
+      never reaches 10 deg at the dt under consideration: a level-camera fake there could
+      not exceed the estimator's own spread. Such clips are reported as not testable, and
+      are never reported as "consistent".
+    transfer_check: >
+      before any clip is scored, the frozen gate is applied to the 186 released ANWM
+      ground-truth (level) frames grouped into 16-frame clips. If more than half are
+      dropped, generated-video verdicts are not reported (only the controls).
+
+  # ---- the two sides being compared
+  depicted:
+    estimator: geocalib        # commit 1dedb29f94fc311b896c5f572005978aeebccd67f
+    camera_model: pinhole
+    focal_px: 112.0
+    statistic: median over frames of the frame's tilt (angle of body z from world up)
+    profile: per-frame values are kept, so frame-level dose can be reported
+  required:
+    source: commanded_path positions from the manifest, exact waypoints
+    k_d: [0.0, 0.295]          # 0 = drag-free (conservative claim), 0.295 = racing quad
+    dt_s: [0.25, 0.667, 1.0]   # 1.0 is the paper-consistent reading
+    lower_bound:
+      interpolant: natural cubic spline through the waypoints (minimum-acceleration)
+      samples_per_step: 20
+      statistic: median over samples     # matches the verifier's median clip score
+      also_reported: [p90, max]
+    upper_bound:
+      interpolant: per-step (the whole velocity change between consecutive waypoints)
+      statistic: median over steps
+      also_reported: [max]              # NB Track B's clips_index column is this max
+      note: >
+        median and max disagree by more than 10 deg on 22-24 of 82 clips, so every table
+        states which statistic it uses. The median is primary because the verifier's clip
+        score is a median; the max is given so a reader can see the peak demand.
+    declared_order: lower_bound <= upper_bound per clip, dt and k_d; a violation is a bug
+      and is reported rather than smoothed over.
+
+  # ---- the claim rule
+  violation:
+    definition: >
+      required_lower_median(dt, k_d) - depicted_median. A clip is declared INFEASIBLE only
+      when this exceeds the frozen verdict threshold. If even the least-tilt flight through
+      the commanded waypoints asks for tilt the pixels do not show, no interpolator can
+      rescue the path.
+    threshold: >
+      the Gate 3 operating threshold refit under amendment 2 (all eight flights, after the
+      gate), taken from the Task 2 run and recorded with the Task 3 results.
+    never_claimed: >
+      no statement of the form "ANWM breaks physics" without naming dt, k_d, interpolator,
+      statistic and gate. Track B's pixel-change statistic is not a depicted-tilt result and
+      is not used as evidence either way.
+
+  # ---- analyses, all pre-specified
+  analyses:
+    noise_floor: >
+      depicted tilt on the 7 straight-cruise clips and the 3-seed repeats of the same
+      paths, against the 0.57 deg floor measured on ground-truth frames. Reported as a
+      positive control, not as a verdict.
+    edit_recovery: >
+      at least 10 generated clips with pure camera rotations of 5, 10 and 20 deg roll and
+      pitch, applied with the same equidistant remap family as the TII edits, and the
+      recovered change compared with the applied change.
+    regime_C_dose_response: >
+      depicted versus designed required tilt (nominal 1 s) per maneuver family, with bands
+      from the cruise control and from the 5-path, 3-seed repeats; the seed band is
+      propagated into the comparison, not quoted separately.
+    regime_A_share: >
+      per dt and per k_d, the fraction of Regime A clips whose lower-bound required tilt
+      exceeds the threshold while the depicted tilt stays within 3x its measured noise floor.
+    minimum_consistent_dt: >
+      per clip, the smallest dt in a 0.10-5.00 s sweep (step 0.01 s) at which
+      |required_lower_median(dt) - depicted_median| <= threshold, using the lower bound.
+      Values at the sweep edge are reported as "<= 0.10" or "> 5.00", never interpolated
+      beyond the sweep. The implied speed is step_spacing_m / dt_min.
+    regimes_B_and_A15: >
+      Regime B (8 clips) and clip A15 (a 2 m/s climb, designed required tilt 0) are expected
+      to be "not testable"; if they are not, that is reported as a failure of the
+      testability rule, not as a verdict.
+
+  # ---- the stopping rule for the whole ANWM claim
+  positive_control_gate:
+    rule: >
+      if edit recovery on generated frames has a median absolute error above 3 deg for the
+      10 deg edits, or above 5 deg for the 20 deg edits, the 224 px estimator cannot see
+      tilt in generated video at the size the clips are given in. In that case the ANWM
+      scoring is reported as "not established at 224 px", the designed-tilt dose-response is
+      not interpreted, and no feasibility claim is made.
+    rationale: >
+      the frozen verdict threshold is ~5.76 deg. Recovery worse than that cannot support any
+      statement about 5-20 deg violations.
+
+
+# ================================================================ AMENDMENT 4
+# Committed after the extraction and the gated verdict, before this round's reports were
+# written. It records a DEVIATION from amendment 2 and its measured effect. It changes no
+# threshold, no signal, no label and no success criterion.
+amendment_4:
+  date: 2026-11-09
+  tag: "[A2]"
+  concerns: amendment_2.extraction
+  deviation: >
+    Amendment 2 required the re-run gravity direction to match the stored Gate 3 rows to a
+    median of 0.05 deg, "otherwise the extraction is void". Measured: 0.033-0.169 deg median
+    per flight, so six of eight flights exceed the bound.
+  finding: >
+    The bound was below the estimator's own run-to-run variation. GeoCalib at the pinned
+    commit is not deterministic: two independent runs of the same job on the same frames
+    differ by 0.033-0.155 deg median per flight, with isolated frames up to 28 deg (LM
+    optimizer not converging, logged by the library). Old-versus-new and run-to-run are
+    indistinguishable flight by flight (01a 0.123 vs 0.093; 04a 0.169 vs 0.155; 07a 0.094 vs
+    0.099; 13a 0.133 vs 0.131; 13p 0.091 vs 0.093; 16p 0.072 vs 0.068; 01p 0.034 vs 0.034;
+    07p 0.036 vs 0.035). The re-extraction is therefore a repeat of the same estimator, and
+    the check's purpose -- that the gate rows come from the Gate 3 estimator setup -- holds.
+  measured_effect: >
+    Scored with the Gate 3 rows and with the re-extracted rows, the unchanged Gate 3 protocol
+    gives pooled AUROC 0.8214 / 0.8210 and acceptance 59/83 = 0.7108 / 60/83 = 0.7229 at
+    k_d = 0.295 with the original threshold policy. One clip of 83 moves; the nuisance fit,
+    not the row set, decides which one (two near-tied grid minima 0.2 deg apart).
+  decision: >
+    The extraction is accepted, and every number computed from it is reported with this
+    deviation and with the measured one-clip sensitivity. The check is not silently
+    deleted: it is recorded here as exceeded, with the evidence that it is exceeded for a
+    reason unrelated to correctness.
+  not_changed: [gate signal, tau, label threshold, verdict thresholds, abstention rules]
+
+# ================================================================ AMENDMENT 5
+# Track A2. Committed after the ANWM scoring run and BEFORE report 08 was corrected, in
+# response to a unit test, not to an ANWM outcome. It records a mathematical error in
+# amendment 3 and switches the primary statistic to the verdict protocol's own framing.
+amendment_5:
+  date: 2026-11-09
+  tag: "[A2]"
+  concerns: amendment_3.required.lower_bound
+  error: >
+    Amendment 3 called a natural cubic spline through the waypoints "the least tilt any
+    flight through those waypoints could need" and made its median the lower bound the
+    infeasibility rule rests on. That is false. A natural spline minimises the integral of
+    squared acceleration among C2 interpolants; it does not bound tilt for any statistic.
+    On plateau paths (many repeated waypoints, as in Regime A) the per-step profile is
+    exactly zero at most nodes while the spline spreads the jump, so the spline's median
+    exceeds the per-step median on 345 of 492 clip/dt/k_d rows, and its peak exceeds the
+    per-step peak on 422 of 492 (natural cubic overshoot). Neither interpolation is a
+    bound.
+  found_by: >
+    tests/test_anwm_required.py, written to check the claim and failing it (median 0.98 deg
+    vs 0.00 deg on a 13-plateau path at dt 0.25). The tests now pin the true relation and
+    the counterexample instead of the false one.
+  corrected_primary: >
+    The verdict protocol's own framing: required tilt is evaluated frame by frame at the
+    same times as the depicted tilt (frame i is the depiction after the step ending at
+    waypoint i+1, so 16 frames from 17 waypoints); the residual is |required - depicted|
+    per frame; the clip statistic is its median. A clip is testable when the gate keeps it,
+    the rollout is not collapsed, and at least 12 of its frames carry a required tilt of
+    >= 10 deg (the protocol's excitation rule). A clip is infeasible when that median
+    exceeds the frozen verdict threshold. Both interpolants are reported: 'spline' and
+    'step'.
+  retained: >
+    The amendment-3 tables (median of each interpolant against the median depicted tilt)
+    are still produced and are still reported, labelled as the statistic-level sensitivity
+    rather than as a bound. No threshold, gate, label or success criterion changes.
+  consequence: >
+    The direction of the ANWM finding survives -- every clip that passes the corrected
+    testability rule is infeasible, under both interpolants and both drag settings -- but
+    its prevalence collapses: only 8-9 of 25 Regime A clips (spline) or 2 of 25 (step) are
+    testable at 1 s, against 22 under the erroneous rule.
+
+# ================================================================ AMENDMENT 6
+# Track A2. Reporting corrections required by the parity check and the peak-bound review.
+# No gate, threshold, label or signal changes.
+amendment_6:
+  date: 2026-11-10
+  tag: "[A2]"
+  concerns: [amendment_3, amendment_5]
+  changes:
+    parity:
+      rule: >
+        Generated clips are scored WITH the same two nuisance fits the TII verdict uses
+        (mount uptilt offset in +/-7 deg step 1, lag in +/-150 ms step 25 ms, one constant
+        per clip), and both the fitted and the unfitted residual are reported. The fitted
+        version is primary because a verifier that fits nuisances on real footage must be
+        allowed the same freedom on generated footage; the unfitted version is kept because
+        the render is exactly level, so an uptilt fit can absorb the violation itself.
+      measured: >
+        On straight-cruise clips (null) the drag-free residual is 0.73 deg unfitted and
+        0.65-0.68 deg fitted; with k_d = 0.295 it is 7.8 deg unfitted and 1.2-1.4 deg fitted,
+        i.e. the fit absorbs the whole drag-induced pitch. In Regime C the fitted residual
+        halves (kd 0.295: 12.6 -> 6.0 deg) and the infeasible count falls from 11 to 5 of 11
+        testable; the designed-10 cells flip to feasible and the designed-20 cells stay
+        infeasible (12.9-13.7 deg residual).
+    regime_C_primary: drag_free
+    regime_A_headline: >
+      restated as "no rigorous violation at 1 s; the spline results are indicative". The
+      only interpolation-free statement is the peak bound, which is satisfied at 1 s
+      (thrust-to-weight lower bound <= 0.51) and violated at 0.25 s (>= 3 for 24 of 25
+      Regime A clips).
+    dt_min: >
+      reported as conditional on being testable at 1 s, with untestable clips shown as
+      censored rather than dropped.
+
+# ================================================================ AMENDMENT 7
+# Pre-registration for a PLANNED second Regime C run (not generated, not scored). Written
+# before that run exists so the rule cannot be shaped by its results. The primary excitation
+# rule for the existing clip set is unchanged (12 of 16 frames with required >= 10 deg).
+amendment_7:
+  date: 2026-11-10
+  tag: "[A2]"
+  status: planned_not_run
+  design: >
+    Regime C regenerated with the required tilt injected into the target poses. Four tilt
+    levels {0 (level baseline), 15, 20, 25 deg} x three maneuvers {turn, slalom, accel_brake}
+    x four starts x three seeds = 144 clips, of which 36 are the level baseline. Every
+    tilted clip is PAIRED with the level clip of the same (maneuver, start, seed), so the
+    baseline and the injected set share starts and seeds and the comparison is within-pair.
+  reachability: >
+    a cell is kept only if the generator reports the design reachable within the release's
+    caps (5 m/s horizontal, 2 m/s vertical, 15 deg/s yaw); unreachable cells are reported as
+    unreachable, not replaced. 25 deg needs about 4.6 m/s^2 of horizontal acceleration,
+    which at a 1 s step and a 5 m/s cap is close to the limit and is expected to fail on
+    some starts.
+  scoring: >
+    identical pipeline to the existing set: frozen gate, parity nuisances per amendment 6,
+    frame-level residual, both interpolants, k_d in {0, 0.295}, drag-free primary.
+  excitation_rule:
+    primary: '>= 12 of 16 frames with required >= 10 deg (UNCHANGED; reported first)'
+    secondary: >
+      >= 8 of 16 frames with required >= 10 deg AND max required >= 0.8 x designed tilt;
+      the clip statistic is then the median residual over the frames with required >= 10 deg
+      (not over all 16). Reported alongside the primary, never instead of it, and flagged
+      "secondary" in every table. Rationale: a 15 deg turn that holds its tilt for 8-11 steps
+      is a real test that the primary rule discards, while a 2-step pulse is not.
+    both_reported: true
+  success_reading: >
+    the paired design yields, per cell, the fraction of pairs whose tilted clip has a larger
+    residual than its level twin (a paired sign test), reported with the exact binomial
+    interval; no ANWM claim is made from an unpaired comparison.
+  not_in_scope: [new gates, new thresholds, changes to the existing 82 clips]
+
+# ================================================================ AMENDMENT 8
+# Track A2. Two corrections forced by the review: which nuisance mode is primary for
+# generated clips, and which rejection table may be quoted. No gate, label or threshold moves.
+amendment_8:
+  date: 2026-11-10
+  tag: "[A2]"
+  concerns: [amendment_6]
+  nuisance_modes:
+    definition: >
+      Three modes, all fitted once per clip: (none) nothing fitted; (lag_only) lag in
+      +/-150 ms step 25 ms with the mount fixed at its known value of 0 deg; (full_parity)
+      lag plus an uptilt offset in +/-7 deg step 1 deg, which is TII's mount uncertainty.
+    primary_for_generated: {k_d: 0.0, nuisance: lag_only}
+    rationale: >
+      ANWM's camera is exactly level and the mount is known, so the +/-7 deg grid is not this
+      render's uncertainty; it can absorb a real tilt discrepancy of up to about 7 deg. Measured absorption is reported below.
+      Measured: the lag absorbs 0.0 deg on generated clips (frames are one per step, so
+      150 ms is a sixth of a frame), while the uptilt grid absorbs 6.4 deg of a Res Gime C
+      residual with k_d = 0.295 and 3.4 deg drag-free. With the mount free, 92 % of Regime C
+      clips drive the offset to the +/-7 deg bound, i.e. the fit is saturating.
+      Drag-free is primary because the unfitted null on straight-cruise clips is 0.73 deg
+      drag-free and 7.8 deg with k_d = 0.295: at that drag the nuisance fit is absorbing a
+      disagreement between the drag model and the render, not a violation.
+    reported_alongside: [none, full_parity]
+    conservative_bound: full_parity
+  rejection_tables:
+    headline: >
+      the pre-registered table: pairs where BOTH clips are testable (gate + excitation), each
+      edit scored against its clip's leave-one-flight-out conformal threshold.
+    withdrawn: >
+      the "gate-only pairs at a fixed 6.46 deg" table must not be quoted as a comparison
+      across k_d. Decomposition shows the swing is the threshold, not the population: at
+      k_d = 0, tilt x0.5 goes 0.06 (testable, held-out) -> 0.80 (testable, fixed) -> 0.08
+      (gate-only, held-out) -> 0.76 (gate-only, fixed). Population moves it by <= 0.02;
+      fixing the threshold at 6.46 while the correct operating point is 12.95 moves it by
+      0.70. The gate-only/fixed table is retained only as that decomposition.
+  dt_min_reporting: >
+    quoted per cell (designed tilt) and per nuisance mode, never as a single aggregate median:
+    the aggregate is dominated by the 5 deg family, which has no testable clip.
+
+# ================================================================ AMENDMENT 9
+# Threshold/mode consistency. Every infeasibility count must use a threshold calibrated in
+# the SAME mode as the residual it judges. No gate, signal or label changes.
+amendment_9:
+  date: 2026-11-10
+  tag: "[A2]"
+  concerns: [amendment_8]
+  rule: >
+    For each mode (k_d in {0, 0.295} x nuisance in {lag_only, full_parity}) the threshold is
+    the larger of (a) TII's conformal threshold refit under that mode, all eight flights,
+    gate applied first, held out per fold; (b) the ANWM cruise-clip residual p99 in that
+    mode; (c) the released level-frame depicted-tilt p99 (4.17 deg). Infeasible = residual
+    above that mode's threshold. The single 6.46 deg cut was TII's value at k_d 0.295 with
+    both nuisances; using it at other modes mixed thresholds and residuals, and is withdrawn.
+  measured:
+    kd0.0_lag_only:      {tii_conformal: 14.73, folds: [13.5, 16.5], cruise_p99: 6.70, primary: 14.73, floor_deg: 15.62}
+    kd0.0_full_parity:   {tii_conformal: 12.95, folds: [10.6, 13.8], cruise_p99: 6.70, primary: 12.95, floor_deg: 13.84}
+    kd0.295_lag_only:    {tii_conformal: 8.96,  folds: [9.0, 12.1],  cruise_p99: 8.48, primary: 8.96,  floor_deg: 16.62}
+    kd0.295_full_parity: {tii_conformal: 6.46,  folds: [5.8, 10.1],  cruise_p99: 8.48, primary: 8.48,  floor_deg: 16.14}
+  detection_floor: >
+    reported as primary threshold + median cruise residual in the same mode: 15.6 / 13.8 /
+    16.6 / 16.1 deg of required tilt. That is the smallest real violation each mode can
+    detect, and it is the number to compare with TII's own minimum detectable violation
+    (which never reached 80 % rejection above 27 deg).
+  verdict_reading: >
+    the designed-20 cell is infeasible under every mode and threshold (5 of 5 clips,
+    residual 12.9-21.2 deg). The designed-10 cell is infeasible only at k_d 0.295
+    (11.6 > 8.96) and feasible at the drag-free primary (9.2 < 14.73), so it is NOT robust
+    and is reported as drag-dependent. Regime A is infeasible in every mode.
+
+# ================================================================ AMENDMENT 10
+# Pose-injection arm: scoring protocol, frozen BEFORE Track B's Checkpoint 2 delivers clips.
+# Status: awaiting delivery. Nothing is scored under it until the clips exist.
+amendment_10:
+  date: 2026-11-10
+  tag: "[A2]"
+  status: awaiting_checkpoint_2
+  design:
+    arm: >
+      the same path, start, seed and sampling steps generated twice: once with level target
+      poses (the existing level clips serve where reproducible) and once with flatness-derived
+      roll and pitch injected into the target poses, z_B = (a + g e3)/||a + g e3||.
+    available: 46 of 49 Regime C clips are injectable; 3 slalom-5 course clips cannot be
+      reproduced and are excluded by identity BEFORE scoring, with the exclusion listed.
+    non_reproducibility: >
+      generation is not bit-reproducible: Track B's regenerated pairs differ by 1-2.4/255.
+      Pairs are therefore formed against the EXISTING level clips, and the 8 regenerated
+      level pairs are scored to measure repeat noise in degrees of depicted tilt. That
+      repeat-noise band is reported and used as the floor for any slope claim.
+    covariate: >
+      per-step prior coverage is recorded per clip and entered as a covariate (Track B:
+      accel-20 minimum 0.148, climb-20 0.217). Cells with coverage below 0.15 are reported
+      separately as poorly conditioned.
+  inferential_unit: >
+    (maneuver x tilt) cells, not clips. Bootstrap resamples STARTS (not clips, not frames),
+    2000 draws, seed 0; each cell reports its interval. Clips within a start are not
+    independent and are not resampled individually.
+  decision_rule:
+    required_slope: the slope of required tilt on injected tilt within the cell, recomputed
+      from the commanded paths (about +0.5 to +0.66 deg/deg drag-free).
+    level_arm_slope: 0.04 (measured, report 08 section 3)
+    following: injected slope >= 0.5 x required slope AND the bootstrap interval excludes 0.04
+    partial: 0.15 < injected slope < 0.5 x required slope, or the interval includes 0.04
+      while the point estimate exceeds 0.15
+    ignoring: injected slope <= 0.15
+    no_other_categories: reported as "indeterminate" only when the gate or a control voids
+      the cell, and then with the reason.
+  controls_first:
+    null_edit: identity remap vs raw frames, must agree to <= 0.2 deg median (0.006 deg on
+      the level set)
+    edit_recovery: 5/10/20 deg on >= 10 injected clips; void if median error > 3 deg at 10 or
+      > 5 deg at 20 (the existing rule)
+    gate_transfer: frozen gate on the injected frames; if > 50 % are dropped the arm reports
+      controls only
+    mirror_control: mirrored-sign injection (-theta) on a subset; the depicted change must
+      flip sign with it, else the effect is an injection rendering artefact
+  secondary_excitation_rule:
+    primary: '>= 12 of 16 frames with required >= 10 deg (UNCHANGED)'
+    secondary: '>= 8 of 16 frames with required >= 10 deg AND max required >= 0.8 x designed
+      tilt; statistic = median residual over the excited frames only; flagged as secondary'
+    both_reported: true
+  projected_priors: >
+    if delivered, projected-prior variants are secondary: they have unfilled regions and the
+    estimator is not validated on them. They cannot carry a "following" verdict.
+  order: >
+    amendment frozen and committed first; controls run and reported; only then the paired
+    slope with the bootstrap. No score is computed before Checkpoint 2 is delivered.
+
+# ---------------------------------------------------------------- amendment 10a
+# Clarification of amendment 10, written before any injected clip exists. The slope basis was
+# ambiguous in amendment 10 (it named both +0.5 drag-free and +0.66 with drag); nothing has
+# been scored, so fixing it now costs nothing and keeps the rule unambiguous.
+amendment_10a:
+  date: 2026-11-10
+  clarifies: amendment_10.decision_rule
+  slope_basis:
+    required_slope: >
+      computed DRAG-FREE (k_d = 0, lag-only nudged to zero by construction since the slope is
+      of required tilt on designed tilt, not a residual): the primary mode of amendment 8.
+      Measured +0.50 deg/deg over the designed 5/10/20 cells; the k_d 0.295 value (+0.66) is
+      reported as a secondary sensitivity and never used for the decision.
+    injected_slope: >
+      slope of DEPICTED tilt on DESIGNED (injected) tilt, least squares over the cell's clips,
+      with the lag-only mode (lag absorbs nothing, so this equals the unfitted slope).
+    level_arm_slope: 0.04 (measured on the existing level-pose set, report 08 section 3)
+    untransformed_units: degrees of depicted tilt per degree of designed tilt
+  decision_reading: >
+    following: injected_slope >= 0.5 * required_slope (>= +0.25 deg/deg) AND the bootstrap
+    interval excludes 0.04. partial: 0.15 < injected_slope < +0.25, or the interval contains
+    0.04 with a point estimate above 0.15. ignoring: injected_slope <= 0.15.
+  no_change: [gate, thresholds, nuisance modes, excitation rules, controls]

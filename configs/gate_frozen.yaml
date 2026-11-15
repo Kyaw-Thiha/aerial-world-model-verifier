@@ -1,0 +1,22 @@
+# FROZEN confidence gate (pre-registration amendment 2).
+# Written by experiments/a2_gate_validate.py; committed BEFORE any generated
+# clip is scored. Do not edit: a change is a new amendment.
+{
+  "prereg_amendment": 2,
+  "signal": "S3_latitude_confidence",
+  "tau": -0.0016656352350220922,
+  "direction": "drop when signal > tau",
+  "label_deg": 10.0,
+  "min_keep": 0.6,
+  "validation": {
+    "auroc": 0.9456521739130435,
+    "lo": 0.8844827586206897,
+    "hi": 1.0,
+    "n_clips": 100,
+    "n_positive": 8,
+    "lofo_coverage": 0.597465034965035,
+    "kept_median_error_deg": 3.5053708373395613,
+    "dropped_median_error_deg": 8.03517410742646
+  },
+  "fit_run": "20261109T201449Z_298ff20"
+}

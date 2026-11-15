@@ -1,0 +1,283 @@
+{
+ "thresholds": {
+  "kd0.0_lag_only": {
+   "tii_conformal_pooled": 74.72452898578257,
+   "tii_conformal_pooled_n": 82,
+   "tii_per_fold": {
+    "flight-01a-ellipse": 74.72452898578257,
+    "flight-04a-ellipse": 74.72452898578257,
+    "flight-07a-lemniscate": 74.72452898578257,
+    "flight-13a-trackRATM": 14.732514900359874,
+    "flight-01p-ellipse": 76.6856618182997,
+    "flight-07p-lemniscate": 76.6856618182997,
+    "flight-13p-trackRATM": 76.04135606426084,
+    "flight-16p-trackRATM": 76.04135606426084
+   },
+   "tii_fold_spread": {
+    "min": 14.732514900359874,
+    "max": 76.6856618182997,
+    "median": 75.3829425250217
+   },
+   "real_score_p95": 52.1345916110013,
+   "real_n": 82,
+   "primary_threshold": 74.72452898578257,
+   "primary_source": "TII conformal",
+   "detection_floor_deg": 75.61515904385622
+  },
+  "kd0.0_full_parity": {
+   "tii_conformal_pooled": 72.54524724688514,
+   "tii_conformal_pooled_n": 82,
+   "tii_per_fold": {
+    "flight-01a-ellipse": 72.54524724688514,
+    "flight-04a-ellipse": 72.54524724688514,
+    "flight-07a-lemniscate": 72.54524724688514,
+    "flight-13a-trackRATM": 13.333157505073967,
+    "flight-01p-ellipse": 74.01150251122723,
+    "flight-07p-lemniscate": 74.01150251122723,
+    "flight-13p-trackRATM": 73.40294001695418,
+    "flight-16p-trackRATM": 73.40294001695418
+   },
+   "tii_fold_spread": {
+    "min": 13.333157505073967,
+    "max": 74.01150251122723,
+    "median": 72.97409363191966
+   },
+   "real_score_p95": 51.082046618368665,
+   "real_n": 82,
+   "primary_threshold": 72.54524724688514,
+   "primary_source": "TII conformal",
+   "detection_floor_deg": 73.4358773049588
+  },
+  "kd0.295_lag_only": {
+   "tii_conformal_pooled": 68.47502072953922,
+   "tii_conformal_pooled_n": 83,
+   "tii_per_fold": {
+    "flight-01a-ellipse": 68.47502072953922,
+    "flight-04a-ellipse": 68.47502072953922,
+    "flight-07a-lemniscate": 68.47502072953922,
+    "flight-13a-trackRATM": 11.435386104217006,
+    "flight-01p-ellipse": 78.20857897059355,
+    "flight-07p-lemniscate": 78.20857897059355,
+    "flight-13p-trackRATM": 68.53642995857909,
+    "flight-16p-trackRATM": 68.53642995857909
+   },
+   "tii_fold_spread": {
+    "min": 11.435386104217006,
+    "max": 78.20857897059355,
+    "median": 68.50572534405916
+   },
+   "real_score_p95": 45.71668846914714,
+   "real_n": 83,
+   "primary_threshold": 68.47502072953922,
+   "primary_source": "TII conformal",
+   "detection_floor_deg": 76.13514733139819
+  },
+  "kd0.295_full_parity": {
+   "tii_conformal_pooled": 67.17958060370776,
+   "tii_conformal_pooled_n": 83,
+   "tii_per_fold": {
+    "flight-01a-ellipse": 67.17958060370776,
+    "flight-04a-ellipse": 67.17958060370776,
+    "flight-07a-lemniscate": 67.17958060370776,
+    "flight-13a-trackRATM": 9.537873991077658,
+    "flight-01p-ellipse": 76.9798923387164,
+    "flight-07p-lemniscate": 76.9798923387164,
+    "flight-13p-trackRATM": 68.11559327976599,
+    "flight-16p-trackRATM": 68.11559327976599
+   },
+   "tii_fold_spread": {
+    "min": 9.537873991077658,
+    "max": 76.9798923387164,
+    "median": 67.64758694173688
+   },
+   "real_score_p95": 44.86111193078584,
+   "real_n": 83,
+   "primary_threshold": 67.17958060370776,
+   "primary_source": "TII conformal",
+   "detection_floor_deg": 74.83970720556673
+  }
+ },
+ "nulls": {
+  "gt_level_frames": {
+   "n": 83,
+   "median": 0.580345561438456,
+   "p95": 1.9209585212746585,
+   "p99": 4.1728217327856045,
+   "note": "no commanded path exists for these frames, so the null is the depicted tilt itself (truth is exactly level); mode-independent"
+  },
+  "kd0.0_lag_only": {
+   "cruise_n_frames": 112,
+   "cruise_median": 0.8906300580736508,
+   "cruise_p95": 4.78486888439048,
+   "cruise_p99": 6.695514751724086,
+   "note": "residual |required - depicted| on the 7 straight-cruise clips at 1 s; lag moves the profile by <1/6 frame so lag_only == none here"
+  },
+  "kd0.0_full_parity": {
+   "cruise_n_frames": 112,
+   "cruise_median": 0.8906300580736508,
+   "cruise_p95": 4.78486888439048,
+   "cruise_p99": 6.695514751724086,
+   "note": "residual |required - depicted| on the 7 straight-cruise clips at 1 s; lag moves the profile by <1/6 frame so lag_only == none here"
+  },
+  "kd0.295_lag_only": {
+   "cruise_n_frames": 112,
+   "cruise_median": 7.660126601858957,
+   "cruise_p95": 8.324873155978139,
+   "cruise_p99": 8.482254019467792,
+   "note": "residual |required - depicted| on the 7 straight-cruise clips at 1 s; lag moves the profile by <1/6 frame so lag_only == none here"
+  },
+  "kd0.295_full_parity": {
+   "cruise_n_frames": 112,
+   "cruise_median": 7.660126601858957,
+   "cruise_p95": 8.324873155978139,
+   "cruise_p99": 8.482254019467792,
+   "note": "residual |required - depicted| on the 7 straight-cruise clips at 1 s; lag moves the profile by <1/6 frame so lag_only == none here"
+  }
+ },
+ "verdicts": {
+  "kd0.0_lag_only_A_native": {
+   "n_testable": 10,
+   "interpolant": [
+    "spline",
+    "step"
+   ],
+   "infeasible_at_6.46": 10,
+   "infeasible_at_8.40": 10,
+   "infeasible_at_12.95": 10,
+   "infeasible_at_74.72": 0,
+   "median_residual": 33.84672337396323
+  },
+  "kd0.0_lag_only_C_10": {
+   "n_testable": 12,
+   "interpolant": [
+    "spline",
+    "step"
+   ],
+   "infeasible_at_6.46": 12,
+   "infeasible_at_8.40": 8,
+   "infeasible_at_12.95": 0,
+   "infeasible_at_74.72": 0,
+   "median_residual": 9.018616132899197
+  },
+  "kd0.0_lag_only_C_20": {
+   "n_testable": 10,
+   "interpolant": [
+    "spline",
+    "step"
+   ],
+   "infeasible_at_6.46": 10,
+   "infeasible_at_8.40": 10,
+   "infeasible_at_12.95": 10,
+   "infeasible_at_74.72": 0,
+   "median_residual": 19.058627783181066
+  },
+  "kd0.295_lag_only_A_native": {
+   "n_testable": 11,
+   "interpolant": [
+    "spline",
+    "step"
+   ],
+   "infeasible_at_6.46": 11,
+   "infeasible_at_8.40": 11,
+   "infeasible_at_12.95": 11,
+   "infeasible_at_68.48": 0,
+   "median_residual": 34.54484081379097
+  },
+  "kd0.295_lag_only_C_10": {
+   "n_testable": 12,
+   "interpolant": [
+    "spline",
+    "step"
+   ],
+   "infeasible_at_6.46": 12,
+   "infeasible_at_8.40": 12,
+   "infeasible_at_12.95": 0,
+   "infeasible_at_68.48": 0,
+   "median_residual": 11.510457411891842
+  },
+  "kd0.295_lag_only_C_20": {
+   "n_testable": 10,
+   "interpolant": [
+    "spline",
+    "step"
+   ],
+   "infeasible_at_6.46": 10,
+   "infeasible_at_8.40": 10,
+   "infeasible_at_12.95": 10,
+   "infeasible_at_68.48": 0,
+   "median_residual": 19.973861087270095
+  },
+  "kd0.0_full_parity_A_native": {
+   "n_testable": 10,
+   "interpolant": [
+    "spline",
+    "step"
+   ],
+   "infeasible_at_6.46": 10,
+   "infeasible_at_8.40": 10,
+   "infeasible_at_12.95": 10,
+   "infeasible_at_72.55": 0,
+   "median_residual": 27.229171549141427
+  },
+  "kd0.0_full_parity_C_10": {
+   "n_testable": 12,
+   "interpolant": [
+    "spline",
+    "step"
+   ],
+   "infeasible_at_6.46": 0,
+   "infeasible_at_8.40": 0,
+   "infeasible_at_12.95": 0,
+   "infeasible_at_72.55": 0,
+   "median_residual": 2.6370910851658547
+  },
+  "kd0.0_full_parity_C_20": {
+   "n_testable": 10,
+   "interpolant": [
+    "spline",
+    "step"
+   ],
+   "infeasible_at_6.46": 10,
+   "infeasible_at_8.40": 10,
+   "infeasible_at_12.95": 4,
+   "infeasible_at_72.55": 0,
+   "median_residual": 12.481977975290523
+  },
+  "kd0.295_full_parity_A_native": {
+   "n_testable": 11,
+   "interpolant": [
+    "spline",
+    "step"
+   ],
+   "infeasible_at_6.46": 11,
+   "infeasible_at_8.40": 11,
+   "infeasible_at_12.95": 9,
+   "infeasible_at_67.18": 0,
+   "median_residual": 27.83198332382147
+  },
+  "kd0.295_full_parity_C_10": {
+   "n_testable": 12,
+   "interpolant": [
+    "spline",
+    "step"
+   ],
+   "infeasible_at_6.46": 0,
+   "infeasible_at_8.40": 0,
+   "infeasible_at_12.95": 0,
+   "infeasible_at_67.18": 0,
+   "median_residual": 5.02946724671888
+  },
+  "kd0.295_full_parity_C_20": {
+   "n_testable": 10,
+   "interpolant": [
+    "spline",
+    "step"
+   ],
+   "infeasible_at_6.46": 10,
+   "infeasible_at_8.40": 10,
+   "infeasible_at_12.95": 7,
+   "infeasible_at_67.18": 0,
+   "median_residual": 13.746991500316653
+  }
+ }
+}

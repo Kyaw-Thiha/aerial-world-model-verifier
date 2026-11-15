@@ -24,3 +24,19 @@
 | Verdict run (final) | `results/phase3a_verdict/20261109T090638Z_c0845a5/`, R2 `track-a/phase3a/verdict/<run>/` | < 1 MB | `metrics.json` (580 clip-condition records), `roc.png`, `mdv_curve.png`, `score_cdf.png`, config, git hash, prereg sha256 |
 | Anomaly/ablation run | `results/phase3a_verdict/<run>_ablations/ablations.json` | < 1 MB | four nuisance fits, absorption table |
 | ANWM clip scoring | `results/anwm_scoring/<run>/not_available.json` | - | Track B had not delivered clips; recorded rather than substituted |
+
+## Track A2 (handoff 05)
+
+Full per-object list with sha256: `results/a2_manifest.md` (71 objects, all uploaded and
+hash-verified; upload report `results/a2_manifest_upload.json`).
+
+| artifact | where | size | notes |
+| --- | --- | --- | --- |
+| GeoCalib rows with uncertainty/confidence, TII | `results/gate_a2/tii/`, R2 `track-a/a2/geocalib/tii/`, Volume `:/geocalib/gate_a2_tii` | 16 MB | 8 flights x 6 conditions, re-run at the Gate 3 commit |
+| GeoCalib rows, generated clips | `results/gate_a2/anwm/depicted.jsonl`, R2 `track-a/a2/geocalib/anwm_depicted.jsonl` | 0.7 MB | 82 clips x 16 frames, 224 px, f = 112 |
+| GeoCalib rows, level frame set | `results/gate_a2/floor/floor_224.jsonl` | 0.1 MB | 186 released level frames (gate transfer + noise floor) |
+| Edit-recovery rows | `results/gate_a2/edits/edits.jsonl` | 0.8 MB | 12 clips x 7 conditions (identity, roll/pitch 5/10/20) |
+| Gate validation + frozen gate | `results/a2_gate/`, `configs/gate_frozen.yaml`, R2 `track-a/a2/gate/` | 0.6 MB | per-signal AUROC, LOFO coverage, per-clip table |
+| Gated verdict | `results/a2_verdict_gated[-baseline|_pairgate]/`, R2 `track-a/a2/verdict_gated/` | 3.2 MB | `k_d` in {0, 0.15, 0.295}; baseline and analysis-only pair-gate runs |
+| Required tilt from commanded paths | `results/a2_anwm/`, R2 `track-a/a2/anwm_required/` | 6 MB | both interpolators, three dt, dt sweep 0.1-5 s |
+| ANWM scoring | `results/a2_anwm_score/`, R2 `track-a/a2/anwm_scored/` | 0.2 MB | controls, regime tables, dt_min distributions |

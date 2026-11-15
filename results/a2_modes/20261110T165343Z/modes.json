@@ -1,0 +1,299 @@
+{
+ "thresholds": {
+  "kd0.0_lag_only": {
+   "tii_conformal_pooled": 14.732514900359874,
+   "tii_conformal_pooled_n": 58,
+   "tii_per_fold": {
+    "flight-01a-ellipse": 13.501131354985883,
+    "flight-04a-ellipse": 14.732514900359874,
+    "flight-07a-lemniscate": 14.732514900359874,
+    "flight-13a-trackRATM": 14.732514900359874,
+    "flight-01p-ellipse": 16.46427037279193,
+    "flight-07p-lemniscate": 16.46427037279193,
+    "flight-13p-trackRATM": 14.732514900359874,
+    "flight-16p-trackRATM": 13.501131354985883
+   },
+   "tii_fold_spread": {
+    "min": 13.501131354985883,
+    "max": 16.46427037279193,
+    "median": 14.732514900359874
+   },
+   "real_score_p95": 12.550423663897096,
+   "real_n": 58,
+   "primary_threshold": 14.732514900359874,
+   "primary_source": "TII conformal",
+   "detection_floor_deg": 15.623144958433524
+  },
+  "kd0.0_full_parity": {
+   "tii_conformal_pooled": 12.94715981791374,
+   "tii_conformal_pooled_n": 58,
+   "tii_per_fold": {
+    "flight-01a-ellipse": 10.61310620154993,
+    "flight-04a-ellipse": 12.94715981791374,
+    "flight-07a-lemniscate": 12.94715981791374,
+    "flight-13a-trackRATM": 12.94715981791374,
+    "flight-01p-ellipse": 13.758031227966475,
+    "flight-07p-lemniscate": 13.758031227966475,
+    "flight-13p-trackRATM": 12.94715981791374,
+    "flight-16p-trackRATM": 10.61310620154993
+   },
+   "tii_fold_spread": {
+    "min": 10.61310620154993,
+    "max": 13.758031227966475,
+    "median": 12.94715981791374
+   },
+   "real_score_p95": 10.375131443081099,
+   "real_n": 58,
+   "primary_threshold": 12.94715981791374,
+   "primary_source": "TII conformal",
+   "detection_floor_deg": 13.83778987598739
+  },
+  "kd0.295_lag_only": {
+   "tii_conformal_pooled": 8.962213114592739,
+   "tii_conformal_pooled_n": 59,
+   "tii_per_fold": {
+    "flight-01a-ellipse": 8.962213114592739,
+    "flight-04a-ellipse": 8.962213114592739,
+    "flight-07a-lemniscate": 8.962213114592739,
+    "flight-13a-trackRATM": 8.962213114592739,
+    "flight-01p-ellipse": 12.074043892305149,
+    "flight-07p-lemniscate": 12.074043892305149,
+    "flight-13p-trackRATM": 10.012432163731463,
+    "flight-16p-trackRATM": 10.012432163731463
+   },
+   "tii_fold_spread": {
+    "min": 8.962213114592739,
+    "max": 12.074043892305149,
+    "median": 9.487322639162102
+   },
+   "real_score_p95": 8.8861236291523,
+   "real_n": 59,
+   "primary_threshold": 8.962213114592739,
+   "primary_source": "TII conformal",
+   "detection_floor_deg": 16.622339716451698
+  },
+  "kd0.295_full_parity": {
+   "tii_conformal_pooled": 6.460055940045862,
+   "tii_conformal_pooled_n": 59,
+   "tii_per_fold": {
+    "flight-01a-ellipse": 6.460055940045862,
+    "flight-04a-ellipse": 6.803082381796793,
+    "flight-07a-lemniscate": 6.460055940045862,
+    "flight-13a-trackRATM": 6.460055940045862,
+    "flight-01p-ellipse": 10.083474106486035,
+    "flight-07p-lemniscate": 10.083474106486035,
+    "flight-13p-trackRATM": 5.838378650003575,
+    "flight-16p-trackRATM": 6.803082381796793
+   },
+   "tii_fold_spread": {
+    "min": 5.838378650003575,
+    "max": 10.083474106486035,
+    "median": 6.631569160921328
+   },
+   "real_score_p95": 5.9005463790078005,
+   "real_n": 59,
+   "primary_threshold": 8.482254019467792,
+   "primary_source": "ANWM cruise p99",
+   "detection_floor_deg": 16.14238062132675
+  }
+ },
+ "nulls": {
+  "gt_level_frames": {
+   "n": 186,
+   "median": 0.5787681422441728,
+   "p95": 1.924670790547689,
+   "p99": 4.17164220667444,
+   "note": "no commanded path exists for these frames, so the null is the depicted tilt itself (truth is exactly level); mode-independent"
+  },
+  "kd0.0_lag_only": {
+   "cruise_n_frames": 112,
+   "cruise_median": 0.8906300580736508,
+   "cruise_p95": 4.78486888439048,
+   "cruise_p99": 6.695514751724086,
+   "note": "residual |required - depicted| on the 7 straight-cruise clips at 1 s; lag moves the profile by <1/6 frame so lag_only == none here"
+  },
+  "kd0.0_full_parity": {
+   "cruise_n_frames": 112,
+   "cruise_median": 0.8906300580736508,
+   "cruise_p95": 4.78486888439048,
+   "cruise_p99": 6.695514751724086,
+   "note": "residual |required - depicted| on the 7 straight-cruise clips at 1 s; lag moves the profile by <1/6 frame so lag_only == none here"
+  },
+  "kd0.295_lag_only": {
+   "cruise_n_frames": 112,
+   "cruise_median": 7.660126601858957,
+   "cruise_p95": 8.324873155978139,
+   "cruise_p99": 8.482254019467792,
+   "note": "residual |required - depicted| on the 7 straight-cruise clips at 1 s; lag moves the profile by <1/6 frame so lag_only == none here"
+  },
+  "kd0.295_full_parity": {
+   "cruise_n_frames": 112,
+   "cruise_median": 7.660126601858957,
+   "cruise_p95": 8.324873155978139,
+   "cruise_p99": 8.482254019467792,
+   "note": "residual |required - depicted| on the 7 straight-cruise clips at 1 s; lag moves the profile by <1/6 frame so lag_only == none here"
+  }
+ },
+ "verdicts": {
+  "kd0.0_lag_only_A_native": {
+   "n_testable": 10,
+   "interpolant": [
+    "spline",
+    "step"
+   ],
+   "infeasible_at_6.46": 10,
+   "infeasible_at_8.40": 10,
+   "infeasible_at_12.95": 10,
+   "infeasible_at_14.73": 10,
+   "median_residual": 33.84672337396323
+  },
+  "kd0.0_lag_only_C_10": {
+   "n_testable": 12,
+   "interpolant": [
+    "spline",
+    "step"
+   ],
+   "infeasible_at_6.46": 12,
+   "infeasible_at_8.40": 8,
+   "infeasible_at_12.95": 0,
+   "infeasible_at_14.73": 0,
+   "median_residual": 9.018616132899197
+  },
+  "kd0.0_lag_only_C_20": {
+   "n_testable": 10,
+   "interpolant": [
+    "spline",
+    "step"
+   ],
+   "infeasible_at_6.46": 10,
+   "infeasible_at_8.40": 10,
+   "infeasible_at_12.95": 10,
+   "infeasible_at_14.73": 10,
+   "median_residual": 19.058627783181066
+  },
+  "kd0.295_lag_only_A_native": {
+   "n_testable": 11,
+   "interpolant": [
+    "spline",
+    "step"
+   ],
+   "infeasible_at_6.46": 11,
+   "infeasible_at_8.40": 11,
+   "infeasible_at_12.95": 11,
+   "infeasible_at_8.96": 11,
+   "median_residual": 34.54484081379097
+  },
+  "kd0.295_lag_only_C_10": {
+   "n_testable": 12,
+   "interpolant": [
+    "spline",
+    "step"
+   ],
+   "infeasible_at_6.46": 12,
+   "infeasible_at_8.40": 12,
+   "infeasible_at_12.95": 0,
+   "infeasible_at_8.96": 12,
+   "median_residual": 11.510457411891842
+  },
+  "kd0.295_lag_only_C_20": {
+   "n_testable": 10,
+   "interpolant": [
+    "spline",
+    "step"
+   ],
+   "infeasible_at_6.46": 10,
+   "infeasible_at_8.40": 10,
+   "infeasible_at_12.95": 10,
+   "infeasible_at_8.96": 10,
+   "median_residual": 19.973861087270095
+  },
+  "kd0.0_full_parity_A_native": {
+   "n_testable": 10,
+   "interpolant": [
+    "spline",
+    "step"
+   ],
+   "infeasible_at_6.46": 10,
+   "infeasible_at_8.40": 10,
+   "infeasible_at_12.95": 10,
+   "median_residual": 27.229171549141427
+  },
+  "kd0.0_full_parity_C_10": {
+   "n_testable": 12,
+   "interpolant": [
+    "spline",
+    "step"
+   ],
+   "infeasible_at_6.46": 0,
+   "infeasible_at_8.40": 0,
+   "infeasible_at_12.95": 0,
+   "median_residual": 2.6370910851658547
+  },
+  "kd0.0_full_parity_C_20": {
+   "n_testable": 10,
+   "interpolant": [
+    "spline",
+    "step"
+   ],
+   "infeasible_at_6.46": 10,
+   "infeasible_at_8.40": 10,
+   "infeasible_at_12.95": 4,
+   "median_residual": 12.481977975290523
+  },
+  "kd0.295_full_parity_A_native": {
+   "n_testable": 11,
+   "interpolant": [
+    "spline",
+    "step"
+   ],
+   "infeasible_at_6.46": 11,
+   "infeasible_at_8.40": 11,
+   "infeasible_at_12.95": 9,
+   "infeasible_at_8.48": 11,
+   "median_residual": 27.83198332382147
+  },
+  "kd0.295_full_parity_C_10": {
+   "n_testable": 12,
+   "interpolant": [
+    "spline",
+    "step"
+   ],
+   "infeasible_at_6.46": 0,
+   "infeasible_at_8.40": 0,
+   "infeasible_at_12.95": 0,
+   "infeasible_at_8.48": 0,
+   "median_residual": 5.02946724671888
+  },
+  "kd0.295_full_parity_C_20": {
+   "n_testable": 10,
+   "interpolant": [
+    "spline",
+    "step"
+   ],
+   "infeasible_at_6.46": 10,
+   "infeasible_at_8.40": 10,
+   "infeasible_at_12.95": 7,
+   "infeasible_at_8.48": 10,
+   "median_residual": 13.746991500316653
+  }
+ },
+ "gate": {
+  "prereg_amendment": 2,
+  "signal": "S3_latitude_confidence",
+  "tau": -0.0016656352350220922,
+  "direction": "drop when signal > tau",
+  "label_deg": 10.0,
+  "min_keep": 0.6,
+  "validation": {
+   "auroc": 0.9456521739130435,
+   "lo": 0.8844827586206897,
+   "hi": 1.0,
+   "n_clips": 100,
+   "n_positive": 8,
+   "lofo_coverage": 0.597465034965035,
+   "kept_median_error_deg": 3.5053708373395613,
+   "dropped_median_error_deg": 8.03517410742646
+  },
+  "fit_run": "20261109T201449Z_298ff20"
+ }
+}
