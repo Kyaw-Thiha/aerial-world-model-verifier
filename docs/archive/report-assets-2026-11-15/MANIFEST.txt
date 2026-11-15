@@ -1,0 +1,17 @@
+Report asset bundle
+===================
+Created: 2026-11-15T10:10:25Z
+Git branch: report-assets
+Git HEAD: 02f4e720f604299e97b0b82d432f0a50d2477824
+
+Contents
+--------
+report/                  Generated deliverable: 48 table fragments, 11 vector figures,
+                         44 data/provenance files, 22 scripts, and:
+                         ASSETS.md, CHECKS.md, MISSING.md, cutoff.json, assets_test.tex.
+source_reports/          The agents' source reports (markdown) read for the build, grouped
+                         by branch, plus each branch's decisions log and the prototype doc.
+
+Rebuild:  cd report && python3 scripts/make_all.py
+Checks:   python3 scripts/check_numbers.py
+Compile:  latexmk -pdf assets_test.tex
