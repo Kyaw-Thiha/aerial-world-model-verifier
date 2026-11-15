@@ -1,0 +1,366 @@
+{
+ "run": "d01",
+ "git": "1df4084295c4e765011e37b1caa9d2059fc4fcba",
+ "source_run": "results/d_eval/d02",
+ "prereg": "configs/coherence_prereg.yaml",
+ "n_real_testable": 57,
+ "pooled_thresholds": {
+  "tau_correlation": 0.619653015661502,
+  "tau_sign": 0.2921099290780138,
+  "n_real": 57
+ },
+ "per_fold_thresholds": {
+  "flight-01a-ellipse": {
+   "tau_correlation": 0.5757539653579208,
+   "tau_sign": 0.27256205673758865,
+   "n_fit": 55
+  },
+  "flight-04a-ellipse": {
+   "tau_correlation": 0.6210406635017424,
+   "tau_sign": 0.24166666666666653,
+   "n_fit": 55
+  },
+  "flight-07a-lemniscate": {
+   "tau_correlation": 0.619653015661502,
+   "tau_sign": 0.2921099290780138,
+   "n_fit": 57
+  },
+  "flight-13a-trackRATM": {
+   "tau_correlation": 0.619653015661502,
+   "tau_sign": 0.2921099290780138,
+   "n_fit": 57
+  },
+  "flight-01p-ellipse": {
+   "tau_correlation": 0.5483115562153473,
+   "tau_sign": 0.3153812056737588,
+   "n_fit": 31
+  },
+  "flight-07p-lemniscate": {
+   "tau_correlation": 0.6224283113419827,
+   "tau_sign": 0.3708333333333333,
+   "n_fit": 33
+  },
+  "flight-13p-trackRATM": {
+   "tau_correlation": 0.6210406635017424,
+   "tau_sign": 0.2998670212765955,
+   "n_fit": 55
+  },
+  "flight-16p-trackRATM": {
+   "tau_correlation": 0.6203468395816223,
+   "tau_sign": 0.2959884751773049,
+   "n_fit": 56
+  }
+ },
+ "auroc": {
+  "tilt_removal": {
+   "n": 57,
+   "auroc_correlation": 0.9993844259772238,
+   "auroc_sign": 0.9981532779316713
+  },
+  "scale_0.5": {
+   "n": 57,
+   "auroc_correlation": 0.7057556171129579,
+   "auroc_sign": 0.5680209295167744
+  },
+  "scale_1.5": {
+   "n": 57,
+   "auroc_correlation": 0.6217297630040012,
+   "auroc_sign": 0.46398891966759004
+  },
+  "mirror_roll": {
+   "n": 57,
+   "auroc_correlation": 0.9996922129886119,
+   "auroc_sign": 0.9990766389658357
+  },
+  "yaw_control": {
+   "n": 57,
+   "auroc_correlation": 0.6001846722068329,
+   "auroc_sign": 0.5224684518313327
+  }
+ },
+ "operating_point": {
+  "tilt_removal": {
+   "frr_correlation": 0.08771929824561403,
+   "frr_correlation_wilson": [
+    0.038051110766638294,
+    0.18945112454604246
+   ],
+   "det_correlation": 1.0,
+   "det_correlation_wilson": [
+    0.936858991216536,
+    0.9999999999999999
+   ],
+   "frr_sign": 0.07017543859649122,
+   "frr_sign_wilson": [
+    0.02762597299465902,
+    0.1670040170121784
+   ],
+   "det_sign": 1.0,
+   "det_sign_wilson": [
+    0.936858991216536,
+    0.9999999999999999
+   ],
+   "n_det": 57
+  },
+  "scale_0.5": {
+   "frr_correlation": 0.08771929824561403,
+   "frr_correlation_wilson": [
+    0.038051110766638294,
+    0.18945112454604246
+   ],
+   "det_correlation": 0.17543859649122806,
+   "det_correlation_wilson": [
+    0.09818747133596609,
+    0.2936759905059315
+   ],
+   "frr_sign": 0.07017543859649122,
+   "frr_sign_wilson": [
+    0.02762597299465902,
+    0.1670040170121784
+   ],
+   "det_sign": 0.07017543859649122,
+   "det_sign_wilson": [
+    0.02762597299465902,
+    0.1670040170121784
+   ],
+   "n_det": 57
+  },
+  "scale_1.5": {
+   "frr_correlation": 0.08771929824561403,
+   "frr_correlation_wilson": [
+    0.038051110766638294,
+    0.18945112454604246
+   ],
+   "det_correlation": 0.24561403508771928,
+   "det_correlation_wilson": [
+    0.1523270046544784,
+    0.3710254384107928
+   ],
+   "frr_sign": 0.07017543859649122,
+   "frr_sign_wilson": [
+    0.02762597299465902,
+    0.1670040170121784
+   ],
+   "det_sign": 0.08771929824561403,
+   "det_sign_wilson": [
+    0.038051110766638294,
+    0.18945112454604246
+   ],
+   "n_det": 57
+  },
+  "mirror_roll": {
+   "frr_correlation": 0.08771929824561403,
+   "frr_correlation_wilson": [
+    0.038051110766638294,
+    0.18945112454604246
+   ],
+   "det_correlation": 1.0,
+   "det_correlation_wilson": [
+    0.936858991216536,
+    0.9999999999999999
+   ],
+   "frr_sign": 0.07017543859649122,
+   "frr_sign_wilson": [
+    0.02762597299465902,
+    0.1670040170121784
+   ],
+   "det_sign": 1.0,
+   "det_sign_wilson": [
+    0.936858991216536,
+    0.9999999999999999
+   ],
+   "n_det": 57
+  },
+  "yaw_control": {
+   "frr_correlation": 0.08771929824561403,
+   "frr_correlation_wilson": [
+    0.038051110766638294,
+    0.18945112454604246
+   ],
+   "det_correlation": 0.10526315789473684,
+   "det_correlation_wilson": [
+    0.04914398953912691,
+    0.21123049107939723
+   ],
+   "frr_sign": 0.07017543859649122,
+   "frr_sign_wilson": [
+    0.02762597299465902,
+    0.1670040170121784
+   ],
+   "det_sign": 0.07017543859649122,
+   "det_sign_wilson": [
+    0.02762597299465902,
+    0.1670040170121784
+   ],
+   "n_det": 57
+  }
+ },
+ "distributions": {
+  "real": {
+   "piloted": {
+    "n": 50,
+    "r_min_median": 0.8961954040601333,
+    "r_min_iqr": [
+     0.7954905622819486,
+     0.9335333580201011
+    ],
+    "s_min_median": 0.9479166666666667,
+    "s_min_iqr": [
+     0.9018003273322422,
+     0.9791666666666666
+    ]
+   },
+   "autonomous": {
+    "n": 4,
+    "r_min_median": 0.6287114900402848,
+    "r_min_iqr": [
+     0.563721853036379,
+     0.6416988151604127
+    ],
+    "s_min_median": 0.6846187943262412,
+    "s_min_iqr": [
+     0.6354166666666667,
+     0.7717198581560284
+    ]
+   },
+   "track": {
+    "n": 3,
+    "r_min_median": 0.6415715454557057,
+    "r_min_iqr": [
+     0.5809130765030162,
+     0.6585893725816679
+    ],
+    "s_min_median": 0.8863636363636364,
+    "s_min_iqr": [
+     0.8702651515151515,
+     0.8899903288201161
+    ]
+   }
+  },
+  "null_edit": {
+   "piloted": {
+    "n": 50,
+    "r_min_median": 0.8961954040601333,
+    "r_min_iqr": [
+     0.7954905622819486,
+     0.9335333580201011
+    ],
+    "s_min_median": 0.9479166666666667,
+    "s_min_iqr": [
+     0.9018003273322422,
+     0.9791666666666666
+    ]
+   },
+   "autonomous": {
+    "n": 4,
+    "r_min_median": 0.6287114900402848,
+    "r_min_iqr": [
+     0.563721853036379,
+     0.6416988151604127
+    ],
+    "s_min_median": 0.6846187943262412,
+    "s_min_iqr": [
+     0.6354166666666667,
+     0.7717198581560284
+    ]
+   },
+   "track": {
+    "n": 3,
+    "r_min_median": 0.6415715454557057,
+    "r_min_iqr": [
+     0.5809130765030162,
+     0.6585893725816679
+    ],
+    "s_min_median": 0.8863636363636364,
+    "s_min_iqr": [
+     0.8702651515151515,
+     0.8899903288201161
+    ]
+   }
+  },
+  "yaw_control": {
+   "piloted": {
+    "n": 50,
+    "r_min_median": 0.859095098030636,
+    "r_min_iqr": [
+     0.7669266244870983,
+     0.9074302912190118
+    ],
+    "s_min_median": 0.9375,
+    "s_min_iqr": [
+     0.8958333333333334,
+     0.9791666666666666
+    ]
+   },
+   "autonomous": {
+    "n": 4,
+    "r_min_median": 0.13250854632173925,
+    "r_min_iqr": [
+     -0.16518882740080487,
+     0.3512204438858312
+    ],
+    "s_min_median": 0.6110372340425532,
+    "s_min_iqr": [
+     0.5572916666666666,
+     0.6914893617021276
+    ]
+   },
+   "track": {
+    "n": 3,
+    "r_min_median": 0.7158175352550382,
+    "r_min_iqr": [
+     0.6227779654979129,
+     0.7262898499847266
+    ],
+    "s_min_median": 0.8297872340425532,
+    "s_min_iqr": [
+     0.8211436170212766,
+     0.8467117988394584
+    ]
+   }
+  }
+ },
+ "per_flight_real": {
+  "flight-01a-ellipse": {
+   "n": 2,
+   "r_min_median": 0.5083117746953514,
+   "s_min_median": 0.7604166666666666
+  },
+  "flight-04a-ellipse": {
+   "n": 2,
+   "r_min_median": 0.6451065816176622,
+   "s_min_median": 0.6846187943262412
+  },
+  "flight-07a-lemniscate": {
+   "n": 0,
+   "r_min_median": NaN,
+   "s_min_median": NaN
+  },
+  "flight-13a-trackRATM": {
+   "n": 0,
+   "r_min_median": NaN,
+   "s_min_median": NaN
+  },
+  "flight-01p-ellipse": {
+   "n": 26,
+   "r_min_median": 0.8343731501864728,
+   "s_min_median": 0.9368351063829787
+  },
+  "flight-07p-lemniscate": {
+   "n": 24,
+   "r_min_median": 0.9272971577980034,
+   "s_min_median": 0.9583333333333334
+  },
+  "flight-13p-trackRATM": {
+   "n": 2,
+   "r_min_median": 0.5809130765030162,
+   "s_min_median": 0.8738918439716312
+  },
+  "flight-16p-trackRATM": {
+   "n": 1,
+   "r_min_median": 0.6756071997076302,
+   "s_min_median": 0.8863636363636364
+  }
+ },
+ "note": "x0.5/x1.5 are expected to sit at chance: a positive scale leaves the correlation unchanged. Track flights are not validated (4 testable clips)."
+}

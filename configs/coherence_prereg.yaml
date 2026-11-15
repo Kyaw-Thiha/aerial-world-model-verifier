@@ -1,0 +1,90 @@
+# Track D pre-registration: scale-free coherence tier (handoff continuation, task 3)
+#
+# Committed BEFORE the coherence statistics are computed on any edited clip.  The tier is
+# complementary to the gain test: it asks whether the depicted and required lean series
+# have the right *shape and sign*, not the right *magnitude*.  A positive scale change
+# (x0.5, x1.5) leaves a correlation unchanged by construction, so those families are
+# expected to sit at chance and are reported as a negative result rather than tuned.
+
+version: 1
+date: 2026-11-14
+status: committed_before_edited_scoring
+owner: track-d
+
+# ----------------------------------------------------------------- inputs
+inputs:
+  schema: verdict_clip v2 (`t`, `pos`, `yaw`, `depicted_lean`, `depicted_conf`,
+          `lean_req`, `vel_req`); see docs/verdict_clip_schema_v2.md
+  required_side: lean_req (dense-rate truth, sampled at frame times)
+  lag: the lag selected by the primary gain fit for the same clip (ms).  The coherence
+       tier does not search its own lag, so it cannot buy coherence by shifting the
+       series; if no gain fit exists, lag = 0 and that fact is recorded.
+  usable_frames: finite depicted_lean and lean_req, and the pair-level testability set of
+       the gain statistic (the real clip's abstention inherited by its edits).  A
+       standalone caller repeats the min-frames and non-constant checks below.
+
+# ----------------------------------------------------------------- statistics
+statistics:
+  per_axis_correlation:
+    definition: >
+      Pearson correlation over usable frames between l_dep[:, i] and l_req[:, i], with
+      l_req shifted by the gain fit's selected lag.  Axes: i = 0 pitch/forward,
+      i = 1 roll/lateral.
+    undefined: >
+      If either series has variance below 1e-12 over the usable frames, r = 0 (no linear
+      relation), never NaN: a removed tilt leaves depicted noise and a near-zero
+      correlation, which is the intended reading.
+    score: r_min = min(r_x, r_y)
+  sign_agreement:
+    definition: >
+      Fraction of usable frames where sign(l_dep[:, i]) == sign(l_req[:, i]), counting
+      only frames where both |values| exceed 1e-4 (about 0.006 deg).  If no frame
+      qualifies, s = 0.5 (neutral).
+    score: s_min = min(s_x, s_y)
+  violation_scores:
+    correlation: C_r = 1 - r_min        # higher = more suspicious
+    sign: C_s = 1 - s_min
+  primary: correlation
+  secondary: sign_agreement
+
+# ----------------------------------------------------------------- decision rule
+thresholds:
+  correlation:
+    tau: 95th percentile of C_r on the fit flights' testable real clips, leave-one-flight-out
+    flag: C_r > tau
+    frozen_for_transfer: one pooled tau computed on all testable real TII clips
+  sign:
+    tau: 95th percentile of C_s on the same fit clips
+    flag: C_s > tau
+    frozen_for_transfer: one pooled tau
+  calibration_notes: >
+    Two-sided is not meaningful for a directional shape statistic; the flag is the upper
+    5 % tail of real clips, so the false-reject target is 5 %.  Both thresholds are
+    frozen before any UZH clip is scored and must not be recalibrated on UZH.
+
+# ----------------------------------------------------------------- evaluation
+evaluation:
+  population: the 57 TII real clips testable under the frozen gain statistic (d02) and
+              their paired edits
+  folds: leave-one-flight-out
+  conditions: [real, null_edit, tilt_removal, scale_0.5, scale_1.5, mirror_roll,
+               yaw_control]
+  auroc: >
+    threshold-free, real vs each condition, violation as the positive class
+    (auroc_detect(real_scores, edit_scores)); C_r and C_s reported separately.
+  detection: at the frozen threshold, with Wilson 95 % intervals and the yaw-control
+             rate beside every detection rate.
+  real_null_distributions: median and IQR of r_min and s_min by flight type
+             (piloted/autonomous/track) for real, null_edit and yaw_control.
+  expected:
+    tilt_removal: low r_min (depicted has no required shape)
+    mirror_roll: roll-axis r negative and sign agreement near 0; pitch axis near +1
+    x0.5 / x1.5: correlation invariant, AUROC about 0.5 (negative result, not tuned)
+    yaw_control: should stay in the real range; anything outside is estimator artifact
+  track_flights: reported separately and marked not validated (4 testable clips).
+
+# ----------------------------------------------------------------- transfer
+transfer:
+  run_by: track-e on UZH-FPV after re-exporting schema v2
+  rule: apply configs/coherence_frozen.yaml unchanged; report FRR and detection
+  no_recalibration: true

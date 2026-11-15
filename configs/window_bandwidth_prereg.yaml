@@ -1,0 +1,76 @@
+# Pre-registration: label-free required-lean window from the path alone
+#
+# Committed BEFORE the rule is applied to TII or to Track E's UZH clips.  The rule uses
+# only the commanded path (`pos`, `t`); it never reads a condition label, an edit, a
+# verdict outcome, or a test-set real/false-reject decision.
+#
+# This is a pre-registration and a proposal, not a frozen-config change.  The frozen gain
+# and coherence configs remain untouched until the user approves an amendment.
+
+version: 1
+date: 2026-11-14
+status: committed_before_scoring
+owner: track-d
+
+# ----------------------------------------------------------------- rule
+rule:
+  window_s: "c / f95"
+  c: 0.5
+  c_rationale: >
+    A smoothing window of half the period of the highest frequency that carries 95 % of
+    the commanded acceleration energy.  Half a period is the standard low-pass choice that
+    preserves the significant band while suppressing above-band differentiation noise; it
+    also reproduces the Phase 0 0.11 s pixel-stage reference for a 4.5 Hz manoeuvre.
+    c is fixed here, before any TII or UZH scoring, and is not selected from either
+    dataset's verdict outcomes.
+  f95:
+    definition: frequency below which 95 % of the commanded acceleration energy lies
+    source: pos and t only (the commanded path)
+    acceleration:
+      differentiator: savitzky_golay
+      window_s: 0.10
+      polyorder: 3
+      note: >
+        The 0.10 s spectrum window is fixed and independent of the required-lean window.
+        At coarse rates it is clamped to polyorder + 2 samples so the acceleration exists;
+        that clamp affects the spectrum estimate, not the required-lean window or the
+        sample floor.
+    spectrum:
+      method: rFFT of the mean-removed acceleration, energy summed over the three axes,
+              DC excluded
+      cumulative: f95 is the first frequency at which cumulative energy >= 0.95
+  floor:
+    samples: 8
+    applies_to: the sample rate at which the required lean is computed
+    rates:
+      tii: dense mocap 274.73 Hz (lean_req from dense truth)
+      uzh: the clip's own rate (schema v1 pos; about 15 Hz)
+  abstain_if:
+    - fewer than 24 frames in the clip
+    - f95 is undefined, non-finite, or below 0.05 Hz
+    - window_s / sample_rate < 8 samples
+    - window_s > 0.5 * clip duration (no interior after edge trim)
+  clamp: none
+  note: >
+    If the sample rate cannot support the bandwidth window, the clip is NOT TESTABLE.  The
+    window is not lengthened to the sample rate: that changes the physical meaning and is
+    the failure Track E saw on coarse UZH positions.
+
+# ----------------------------------------------------------------- evaluation
+evaluation:
+  tii:
+    population: the frozen d02 real testable set and its paired edits
+    bands: R2 axis rule, conformal leave-one-flight-out on fit flights
+    report: window per flight, false-reject, detection, abstention
+  uzh:
+    clips: track-e/clips (schema v1; 294 clips, 42 real, 14 sequences)
+    bands:
+      tii_unchanged: configs/gain_frozen.yaml applied without recalibration
+      uzh_loso: conformal leave-one-sequence-out on UZH real clips
+    report: window per sequence, false-reject, detection, abstention
+  coherence:
+    thresholds: configs/coherence_frozen.yaml unchanged
+    note: the coherence tier is scale-free and window-insensitive; it is reported for
+          completeness, not used to choose the rule
+  no_outcome_tuning: no c, floor or rule parameter may change after seeing a TII or UZH
+                     verdict result

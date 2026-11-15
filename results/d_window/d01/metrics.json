@@ -1,0 +1,1122 @@
+{
+ "windows": {
+  "0.100": {
+   "window_s": 0.1,
+   "native_samples": 27,
+   "n_testable_fixed": 57,
+   "n_testable_window": 59,
+   "abstention_window": 0.41000000000000003,
+   "testable_by_flight_window": {
+    "flight-01a-ellipse": {
+     "n": 5,
+     "testable": 2
+    },
+    "flight-04a-ellipse": {
+     "n": 7,
+     "testable": 2
+    },
+    "flight-07a-lemniscate": {
+     "n": 7,
+     "testable": 0
+    },
+    "flight-13a-trackRATM": {
+     "n": 11,
+     "testable": 0
+    },
+    "flight-01p-ellipse": {
+     "n": 26,
+     "testable": 26
+    },
+    "flight-07p-lemniscate": {
+     "n": 26,
+     "testable": 25
+    },
+    "flight-13p-trackRATM": {
+     "n": 11,
+     "testable": 3
+    },
+    "flight-16p-trackRATM": {
+     "n": 7,
+     "testable": 1
+    }
+   },
+   "by_type": {
+    "piloted": {
+     "n": 50,
+     "frr": 0.02,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 0.6,
+     "det_scale_1.5": 0.64,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.06
+    },
+    "autonomous": {
+     "n": 4,
+     "frr": 0.25,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 0.75,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.75
+    },
+    "track": {
+     "n": 3,
+     "frr": 0.3333333333333333,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 0.6666666666666666,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.3333333333333333
+    }
+   },
+   "bands_refit": {
+    "R1_scalar_g1": {
+     "scalar": {
+      "lo": 0.4632631271140874,
+      "hi": 0.870457523651505,
+      "alpha": 0.05,
+      "n": 57
+     },
+     "axis": null
+    },
+    "R2_axis_gains": {
+     "scalar": null,
+     "axis": {
+      "keys": [
+       "gx",
+       "gy"
+      ],
+      "center": {
+       "gx": 0.7388709339967073,
+       "gy": 0.7026181798729644
+      },
+      "scale": {
+       "gx": 0.2225110436400063,
+       "gy": 0.09630719151841576
+      },
+      "threshold": 2.65212914696707,
+      "alpha": 0.05,
+      "n": 57
+     }
+    }
+   },
+   "rates_refit": {
+    "R1_scalar_g1": {
+     "frr": 0.08771929824561403,
+     "n_real": 57,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 0.9473684210526315,
+     "det_scale_1.5": 0.9122807017543859,
+     "det_mirror_roll": 0.9649122807017544,
+     "det_yaw_control": 0.10526315789473684,
+     "n_tilt_removal": 57,
+     "n_scale_0.5": 57,
+     "n_scale_1.5": 57,
+     "n_mirror_roll": 57,
+     "n_yaw_control": 57
+    },
+    "R2_axis_gains": {
+     "frr": 0.05263157894736842,
+     "n_real": 57,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 0.6491228070175439,
+     "det_scale_1.5": 0.6491228070175439,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.12280701754385964,
+     "n_tilt_removal": 57,
+     "n_scale_0.5": 57,
+     "n_scale_1.5": 57,
+     "n_mirror_roll": 57,
+     "n_yaw_control": 57
+    }
+   },
+   "rates_frozen_band": {
+    "R1_scalar_g1": {
+     "frr": 0.07017543859649122,
+     "n_real": 57,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 0.9298245614035088,
+     "det_mirror_roll": 0.9649122807017544,
+     "det_yaw_control": 0.22807017543859648,
+     "n_tilt_removal": 57,
+     "n_scale_0.5": 57,
+     "n_scale_1.5": 57,
+     "n_mirror_roll": 57,
+     "n_yaw_control": 57
+    },
+    "R2_axis_gains": {
+     "frr": 0.15789473684210525,
+     "n_real": 57,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 0.9649122807017544,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.40350877192982454,
+     "n_tilt_removal": 57,
+     "n_scale_0.5": 57,
+     "n_scale_1.5": 57,
+     "n_mirror_roll": 57,
+     "n_yaw_control": 57
+    }
+   },
+   "coherence": {
+    "frozen_thresholds": {
+     "FRR_corr": 0.017543859649122806,
+     "FRR_sign": 0.07017543859649122,
+     "det_corr": {
+      "tilt_removal": 0.9824561403508771,
+      "scale_0.5": 0.19298245614035087,
+      "scale_1.5": 0.22807017543859648,
+      "mirror_roll": 1.0,
+      "yaw_control": 0.08771929824561403
+     },
+     "det_sign": {
+      "tilt_removal": 1.0,
+      "scale_0.5": 0.07017543859649122,
+      "scale_1.5": 0.07017543859649122,
+      "mirror_roll": 1.0,
+      "yaw_control": 0.08771929824561403
+     },
+     "r_min_median": 0.8459593285677486
+    },
+    "lofo": {
+     "tau_per_fold": {
+      "flight-01a-ellipse": 0.5759242859962591,
+      "flight-04a-ellipse": 0.6036079601847124,
+      "flight-07a-lemniscate": 0.6031014429352025,
+      "flight-13a-trackRATM": 0.6031014429352025,
+      "flight-01p-ellipse": 0.6046209946837323,
+      "flight-07p-lemniscate": 0.6041144774342224,
+      "flight-13p-trackRATM": 0.6036079601847124,
+      "flight-16p-trackRATM": 0.5753217132314681
+     },
+     "FRR": 0.07017543859649122,
+     "det": {
+      "tilt_removal": 1.0,
+      "scale_0.5": 0.19298245614035087,
+      "scale_1.5": 0.24561403508771928,
+      "mirror_roll": 1.0,
+      "yaw_control": 0.10526315789473684
+     }
+    }
+   },
+   "rates_window_refit": {
+    "R1_scalar_g1": {
+     "frr": 0.0847457627118644,
+     "n_real": 59,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 0.9491525423728814,
+     "det_scale_1.5": 0.8983050847457628,
+     "det_mirror_roll": 0.9661016949152542,
+     "det_yaw_control": 0.13559322033898305,
+     "n_tilt_removal": 59,
+     "n_scale_0.5": 59,
+     "n_scale_1.5": 59,
+     "n_mirror_roll": 59,
+     "n_yaw_control": 59
+    },
+    "R2_axis_gains": {
+     "frr": 0.05084745762711865,
+     "n_real": 59,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 0.8135593220338984,
+     "det_scale_1.5": 0.8135593220338984,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.13559322033898305,
+     "n_tilt_removal": 59,
+     "n_scale_0.5": 59,
+     "n_scale_1.5": 59,
+     "n_mirror_roll": 59,
+     "n_yaw_control": 59
+    }
+   },
+   "frozen_band": {
+    "scalar": {
+     "lo": 0.543,
+     "hi": 0.9364,
+     "alpha": 0.05,
+     "n": 57
+    },
+    "axis": {
+     "keys": [
+      "gx",
+      "gy"
+     ],
+     "center": {
+      "gx": 0.8137020136649358,
+      "gy": 0.718061643355721
+     },
+     "scale": {
+      "gx": 0.2654494004986912,
+      "gy": 0.07353363027599477
+     },
+     "threshold": 2.192179566480552,
+     "alpha": 0.05,
+     "n": 57
+    }
+   }
+  },
+  "0.185": {
+   "window_s": 0.185,
+   "native_samples": 51,
+   "n_testable_fixed": 57,
+   "n_testable_window": 59,
+   "abstention_window": 0.41000000000000003,
+   "testable_by_flight_window": {
+    "flight-01a-ellipse": {
+     "n": 5,
+     "testable": 2
+    },
+    "flight-04a-ellipse": {
+     "n": 7,
+     "testable": 2
+    },
+    "flight-07a-lemniscate": {
+     "n": 7,
+     "testable": 0
+    },
+    "flight-13a-trackRATM": {
+     "n": 11,
+     "testable": 0
+    },
+    "flight-01p-ellipse": {
+     "n": 26,
+     "testable": 26
+    },
+    "flight-07p-lemniscate": {
+     "n": 26,
+     "testable": 25
+    },
+    "flight-13p-trackRATM": {
+     "n": 11,
+     "testable": 3
+    },
+    "flight-16p-trackRATM": {
+     "n": 7,
+     "testable": 1
+    }
+   },
+   "by_type": {
+    "piloted": {
+     "n": 50,
+     "frr": 0.02,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 0.98,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.14
+    },
+    "autonomous": {
+     "n": 4,
+     "frr": 0.25,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 0.75,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.75
+    },
+    "track": {
+     "n": 3,
+     "frr": 0.3333333333333333,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.6666666666666666
+    }
+   },
+   "bands_refit": {
+    "R1_scalar_g1": {
+     "scalar": {
+      "lo": 0.5430036575208859,
+      "hi": 0.9084641361948308,
+      "alpha": 0.05,
+      "n": 57
+     },
+     "axis": null
+    },
+    "R2_axis_gains": {
+     "scalar": null,
+     "axis": {
+      "keys": [
+       "gx",
+       "gy"
+      ],
+      "center": {
+       "gx": 0.8176192418509487,
+       "gy": 0.7158576635033832
+      },
+      "scale": {
+       "gx": 0.25863302134961236,
+       "gy": 0.07262608904856145
+      },
+      "threshold": 2.5956056601953885,
+      "alpha": 0.05,
+      "n": 57
+     }
+    }
+   },
+   "rates_refit": {
+    "R1_scalar_g1": {
+     "frr": 0.10526315789473684,
+     "n_real": 57,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 0.9824561403508771,
+     "det_scale_1.5": 0.9824561403508771,
+     "det_mirror_roll": 0.9824561403508771,
+     "det_yaw_control": 0.19298245614035087,
+     "n_tilt_removal": 57,
+     "n_scale_0.5": 57,
+     "n_scale_1.5": 57,
+     "n_mirror_roll": 57,
+     "n_yaw_control": 57
+    },
+    "R2_axis_gains": {
+     "frr": 0.05263157894736842,
+     "n_real": 57,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 0.9649122807017544,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.21052631578947367,
+     "n_tilt_removal": 57,
+     "n_scale_0.5": 57,
+     "n_scale_1.5": 57,
+     "n_mirror_roll": 57,
+     "n_yaw_control": 57
+    }
+   },
+   "rates_frozen_band": {
+    "R1_scalar_g1": {
+     "frr": 0.03508771929824561,
+     "n_real": 57,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 0.9824561403508771,
+     "det_mirror_roll": 0.9649122807017544,
+     "det_yaw_control": 0.21052631578947367,
+     "n_tilt_removal": 57,
+     "n_scale_0.5": 57,
+     "n_scale_1.5": 57,
+     "n_mirror_roll": 57,
+     "n_yaw_control": 57
+    },
+    "R2_axis_gains": {
+     "frr": 0.08771929824561403,
+     "n_real": 57,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 0.9649122807017544,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.3333333333333333,
+     "n_tilt_removal": 57,
+     "n_scale_0.5": 57,
+     "n_scale_1.5": 57,
+     "n_mirror_roll": 57,
+     "n_yaw_control": 57
+    }
+   },
+   "coherence": {
+    "frozen_thresholds": {
+     "FRR_corr": 0.017543859649122806,
+     "FRR_sign": 0.05263157894736842,
+     "det_corr": {
+      "tilt_removal": 1.0,
+      "scale_0.5": 0.19298245614035087,
+      "scale_1.5": 0.22807017543859648,
+      "mirror_roll": 1.0,
+      "yaw_control": 0.10526315789473684
+     },
+     "det_sign": {
+      "tilt_removal": 1.0,
+      "scale_0.5": 0.07017543859649122,
+      "scale_1.5": 0.07017543859649122,
+      "mirror_roll": 1.0,
+      "yaw_control": 0.08771929824561403
+     },
+     "r_min_median": 0.8610372856249019
+    },
+    "lofo": {
+     "tau_per_fold": {
+      "flight-01a-ellipse": 0.5763163013706445,
+      "flight-04a-ellipse": 0.6087260371202086,
+      "flight-07a-lemniscate": 0.6083494413499339,
+      "flight-13a-trackRATM": 0.6083494413499339,
+      "flight-01p-ellipse": 0.5871364083473726,
+      "flight-07p-lemniscate": 0.6091026328904834,
+      "flight-13p-trackRATM": 0.6087260371202086,
+      "flight-16p-trackRATM": 0.6085377392350713
+     },
+     "FRR": 0.07017543859649122,
+     "det": {
+      "tilt_removal": 1.0,
+      "scale_0.5": 0.19298245614035087,
+      "scale_1.5": 0.22807017543859648,
+      "mirror_roll": 1.0,
+      "yaw_control": 0.10526315789473684
+     }
+    }
+   },
+   "rates_window_refit": {
+    "R1_scalar_g1": {
+     "frr": 0.1016949152542373,
+     "n_real": 59,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 0.9661016949152542,
+     "det_mirror_roll": 0.9830508474576272,
+     "det_yaw_control": 0.2033898305084746,
+     "n_tilt_removal": 59,
+     "n_scale_0.5": 59,
+     "n_scale_1.5": 59,
+     "n_mirror_roll": 59,
+     "n_yaw_control": 59
+    },
+    "R2_axis_gains": {
+     "frr": 0.05084745762711865,
+     "n_real": 59,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 0.9661016949152542,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.2542372881355932,
+     "n_tilt_removal": 59,
+     "n_scale_0.5": 59,
+     "n_scale_1.5": 59,
+     "n_mirror_roll": 59,
+     "n_yaw_control": 59
+    }
+   },
+   "frozen_band": {
+    "scalar": {
+     "lo": 0.543,
+     "hi": 0.9364,
+     "alpha": 0.05,
+     "n": 57
+    },
+    "axis": {
+     "keys": [
+      "gx",
+      "gy"
+     ],
+     "center": {
+      "gx": 0.8137020136649358,
+      "gy": 0.718061643355721
+     },
+     "scale": {
+      "gx": 0.2654494004986912,
+      "gy": 0.07353363027599477
+     },
+     "threshold": 2.192179566480552,
+     "alpha": 0.05,
+     "n": 57
+    }
+   }
+  },
+  "0.370": {
+   "window_s": 0.37,
+   "native_samples": 102,
+   "n_testable_fixed": 57,
+   "n_testable_window": 57,
+   "abstention_window": 0.43000000000000005,
+   "testable_by_flight_window": {
+    "flight-01a-ellipse": {
+     "n": 5,
+     "testable": 2
+    },
+    "flight-04a-ellipse": {
+     "n": 7,
+     "testable": 2
+    },
+    "flight-07a-lemniscate": {
+     "n": 7,
+     "testable": 0
+    },
+    "flight-13a-trackRATM": {
+     "n": 11,
+     "testable": 0
+    },
+    "flight-01p-ellipse": {
+     "n": 26,
+     "testable": 26
+    },
+    "flight-07p-lemniscate": {
+     "n": 26,
+     "testable": 24
+    },
+    "flight-13p-trackRATM": {
+     "n": 11,
+     "testable": 2
+    },
+    "flight-16p-trackRATM": {
+     "n": 7,
+     "testable": 1
+    }
+   },
+   "by_type": {
+    "piloted": {
+     "n": 50,
+     "frr": 0.02,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 0.98,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.2
+    },
+    "autonomous": {
+     "n": 4,
+     "frr": 0.25,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 0.75,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 1.0
+    },
+    "track": {
+     "n": 3,
+     "frr": 0.3333333333333333,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.6666666666666666
+    }
+   },
+   "bands_refit": {
+    "R1_scalar_g1": {
+     "scalar": {
+      "lo": 0.5429747643249784,
+      "hi": 0.9364012130568242,
+      "alpha": 0.05,
+      "n": 57
+     },
+     "axis": null
+    },
+    "R2_axis_gains": {
+     "scalar": null,
+     "axis": {
+      "keys": [
+       "gx",
+       "gy"
+      ],
+      "center": {
+       "gx": 0.8137020136649358,
+       "gy": 0.718061643355721
+      },
+      "scale": {
+       "gx": 0.2654494004986912,
+       "gy": 0.07353363027599477
+      },
+      "threshold": 2.192179566480552,
+      "alpha": 0.05,
+      "n": 57
+     }
+    }
+   },
+   "rates_refit": {
+    "R1_scalar_g1": {
+     "frr": 0.10526315789473684,
+     "n_real": 57,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 0.9824561403508771,
+     "det_mirror_roll": 0.9824561403508771,
+     "det_yaw_control": 0.19298245614035087,
+     "n_tilt_removal": 57,
+     "n_scale_0.5": 57,
+     "n_scale_1.5": 57,
+     "n_mirror_roll": 57,
+     "n_yaw_control": 57
+    },
+    "R2_axis_gains": {
+     "frr": 0.05263157894736842,
+     "n_real": 57,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 0.9649122807017544,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.2807017543859649,
+     "n_tilt_removal": 57,
+     "n_scale_0.5": 57,
+     "n_scale_1.5": 57,
+     "n_mirror_roll": 57,
+     "n_yaw_control": 57
+    }
+   },
+   "rates_frozen_band": {
+    "R1_scalar_g1": {
+     "frr": 0.07017543859649122,
+     "n_real": 57,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 0.9824561403508771,
+     "det_mirror_roll": 0.9649122807017544,
+     "det_yaw_control": 0.19298245614035087,
+     "n_tilt_removal": 57,
+     "n_scale_0.5": 57,
+     "n_scale_1.5": 57,
+     "n_mirror_roll": 57,
+     "n_yaw_control": 57
+    },
+    "R2_axis_gains": {
+     "frr": 0.05263157894736842,
+     "n_real": 57,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 0.9824561403508771,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.3333333333333333,
+     "n_tilt_removal": 57,
+     "n_scale_0.5": 57,
+     "n_scale_1.5": 57,
+     "n_mirror_roll": 57,
+     "n_yaw_control": 57
+    }
+   },
+   "coherence": {
+    "frozen_thresholds": {
+     "FRR_corr": 0.05263157894736842,
+     "FRR_sign": 0.05263157894736842,
+     "det_corr": {
+      "tilt_removal": 1.0,
+      "scale_0.5": 0.17543859649122806,
+      "scale_1.5": 0.24561403508771928,
+      "mirror_roll": 1.0,
+      "yaw_control": 0.10526315789473684
+     },
+     "det_sign": {
+      "tilt_removal": 1.0,
+      "scale_0.5": 0.07017543859649122,
+      "scale_1.5": 0.07017543859649122,
+      "mirror_roll": 1.0,
+      "yaw_control": 0.08771929824561403
+     },
+     "r_min_median": 0.8611963788927426
+    },
+    "lofo": {
+     "tau_per_fold": {
+      "flight-01a-ellipse": 0.5757539653579208,
+      "flight-04a-ellipse": 0.6210406635017424,
+      "flight-07a-lemniscate": 0.619653015661502,
+      "flight-13a-trackRATM": 0.619653015661502,
+      "flight-01p-ellipse": 0.5483115562153473,
+      "flight-07p-lemniscate": 0.6224283113419827,
+      "flight-13p-trackRATM": 0.6210406635017424,
+      "flight-16p-trackRATM": 0.6203468395816223
+     },
+     "FRR": 0.08771929824561403,
+     "det": {
+      "tilt_removal": 1.0,
+      "scale_0.5": 0.17543859649122806,
+      "scale_1.5": 0.24561403508771928,
+      "mirror_roll": 1.0,
+      "yaw_control": 0.10526315789473684
+     }
+    }
+   },
+   "rates_window_refit": {
+    "R1_scalar_g1": {
+     "frr": 0.10526315789473684,
+     "n_real": 57,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 0.9824561403508771,
+     "det_mirror_roll": 0.9824561403508771,
+     "det_yaw_control": 0.19298245614035087,
+     "n_tilt_removal": 57,
+     "n_scale_0.5": 57,
+     "n_scale_1.5": 57,
+     "n_mirror_roll": 57,
+     "n_yaw_control": 57
+    },
+    "R2_axis_gains": {
+     "frr": 0.05263157894736842,
+     "n_real": 57,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 0.9649122807017544,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.2807017543859649,
+     "n_tilt_removal": 57,
+     "n_scale_0.5": 57,
+     "n_scale_1.5": 57,
+     "n_mirror_roll": 57,
+     "n_yaw_control": 57
+    }
+   },
+   "frozen_band": {
+    "scalar": {
+     "lo": 0.543,
+     "hi": 0.9364,
+     "alpha": 0.05,
+     "n": 57
+    },
+    "axis": {
+     "keys": [
+      "gx",
+      "gy"
+     ],
+     "center": {
+      "gx": 0.8137020136649358,
+      "gy": 0.718061643355721
+     },
+     "scale": {
+      "gx": 0.2654494004986912,
+      "gy": 0.07353363027599477
+     },
+     "threshold": 2.192179566480552,
+     "alpha": 0.05,
+     "n": 57
+    }
+   }
+  },
+  "0.740": {
+   "window_s": 0.74,
+   "native_samples": 203,
+   "n_testable_fixed": 57,
+   "n_testable_window": 57,
+   "abstention_window": 0.43000000000000005,
+   "testable_by_flight_window": {
+    "flight-01a-ellipse": {
+     "n": 5,
+     "testable": 2
+    },
+    "flight-04a-ellipse": {
+     "n": 7,
+     "testable": 2
+    },
+    "flight-07a-lemniscate": {
+     "n": 7,
+     "testable": 0
+    },
+    "flight-13a-trackRATM": {
+     "n": 11,
+     "testable": 0
+    },
+    "flight-01p-ellipse": {
+     "n": 26,
+     "testable": 26
+    },
+    "flight-07p-lemniscate": {
+     "n": 26,
+     "testable": 24
+    },
+    "flight-13p-trackRATM": {
+     "n": 11,
+     "testable": 2
+    },
+    "flight-16p-trackRATM": {
+     "n": 7,
+     "testable": 1
+    }
+   },
+   "by_type": {
+    "piloted": {
+     "n": 50,
+     "frr": 0.12,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 1.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.2
+    },
+    "autonomous": {
+     "n": 4,
+     "frr": 0.25,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 0.75,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.75
+    },
+    "track": {
+     "n": 3,
+     "frr": 0.0,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 0.0,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.6666666666666666
+    }
+   },
+   "bands_refit": {
+    "R1_scalar_g1": {
+     "scalar": {
+      "lo": 0.523049801948893,
+      "hi": 0.97574369702451,
+      "alpha": 0.05,
+      "n": 57
+     },
+     "axis": null
+    },
+    "R2_axis_gains": {
+     "scalar": null,
+     "axis": {
+      "keys": [
+       "gx",
+       "gy"
+      ],
+      "center": {
+       "gx": 0.7030737905655516,
+       "gy": 0.7235718045241541
+      },
+      "scale": {
+       "gx": 0.29537903725468173,
+       "gy": 0.08853232847009028
+      },
+      "threshold": 2.31197755620911,
+      "alpha": 0.05,
+      "n": 57
+     }
+    }
+   },
+   "rates_refit": {
+    "R1_scalar_g1": {
+     "frr": 0.08771929824561403,
+     "n_real": 57,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 0.9824561403508771,
+     "det_scale_1.5": 0.9649122807017544,
+     "det_mirror_roll": 0.9649122807017544,
+     "det_yaw_control": 0.12280701754385964,
+     "n_tilt_removal": 57,
+     "n_scale_0.5": 57,
+     "n_scale_1.5": 57,
+     "n_mirror_roll": 57,
+     "n_yaw_control": 57
+    },
+    "R2_axis_gains": {
+     "frr": 0.12280701754385964,
+     "n_real": 57,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 0.9298245614035088,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.2631578947368421,
+     "n_tilt_removal": 57,
+     "n_scale_0.5": 57,
+     "n_scale_1.5": 57,
+     "n_mirror_roll": 57,
+     "n_yaw_control": 57
+    }
+   },
+   "rates_frozen_band": {
+    "R1_scalar_g1": {
+     "frr": 0.12280701754385964,
+     "n_real": 57,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 0.9824561403508771,
+     "det_scale_1.5": 0.9649122807017544,
+     "det_mirror_roll": 0.9649122807017544,
+     "det_yaw_control": 0.19298245614035087,
+     "n_tilt_removal": 57,
+     "n_scale_0.5": 57,
+     "n_scale_1.5": 57,
+     "n_mirror_roll": 57,
+     "n_yaw_control": 57
+    },
+    "R2_axis_gains": {
+     "frr": 0.17543859649122806,
+     "n_real": 57,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 0.9824561403508771,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.40350877192982454,
+     "n_tilt_removal": 57,
+     "n_scale_0.5": 57,
+     "n_scale_1.5": 57,
+     "n_mirror_roll": 57,
+     "n_yaw_control": 57
+    }
+   },
+   "coherence": {
+    "frozen_thresholds": {
+     "FRR_corr": 0.08771929824561403,
+     "FRR_sign": 0.07017543859649122,
+     "det_corr": {
+      "tilt_removal": 1.0,
+      "scale_0.5": 0.19298245614035087,
+      "scale_1.5": 0.22807017543859648,
+      "mirror_roll": 1.0,
+      "yaw_control": 0.12280701754385964
+     },
+     "det_sign": {
+      "tilt_removal": 1.0,
+      "scale_0.5": 0.07017543859649122,
+      "scale_1.5": 0.08771929824561403,
+      "mirror_roll": 1.0,
+      "yaw_control": 0.07017543859649122
+     },
+     "r_min_median": 0.8466478371970201
+    },
+    "lofo": {
+     "tau_per_fold": {
+      "flight-01a-ellipse": 0.6952043470901701,
+      "flight-04a-ellipse": 0.6952043470901701,
+      "flight-07a-lemniscate": 0.6928828705576034,
+      "flight-13a-trackRATM": 0.6928828705576034,
+      "flight-01p-ellipse": 0.5912638233335453,
+      "flight-07p-lemniscate": 0.6975258236227369,
+      "flight-13p-trackRATM": 0.6952043470901701,
+      "flight-16p-trackRATM": 0.6940436088238868
+     },
+     "FRR": 0.07017543859649122,
+     "det": {
+      "tilt_removal": 0.9824561403508771,
+      "scale_0.5": 0.17543859649122806,
+      "scale_1.5": 0.21052631578947367,
+      "mirror_roll": 0.9824561403508771,
+      "yaw_control": 0.08771929824561403
+     }
+    }
+   },
+   "rates_window_refit": {
+    "R1_scalar_g1": {
+     "frr": 0.08771929824561403,
+     "n_real": 57,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 0.9824561403508771,
+     "det_scale_1.5": 0.9649122807017544,
+     "det_mirror_roll": 0.9649122807017544,
+     "det_yaw_control": 0.12280701754385964,
+     "n_tilt_removal": 57,
+     "n_scale_0.5": 57,
+     "n_scale_1.5": 57,
+     "n_mirror_roll": 57,
+     "n_yaw_control": 57
+    },
+    "R2_axis_gains": {
+     "frr": 0.12280701754385964,
+     "n_real": 57,
+     "det_tilt_removal": 1.0,
+     "det_scale_0.5": 1.0,
+     "det_scale_1.5": 0.9298245614035088,
+     "det_mirror_roll": 1.0,
+     "det_yaw_control": 0.2631578947368421,
+     "n_tilt_removal": 57,
+     "n_scale_0.5": 57,
+     "n_scale_1.5": 57,
+     "n_mirror_roll": 57,
+     "n_yaw_control": 57
+    }
+   },
+   "frozen_band": {
+    "scalar": {
+     "lo": 0.543,
+     "hi": 0.9364,
+     "alpha": 0.05,
+     "n": 57
+    },
+    "axis": {
+     "keys": [
+      "gx",
+      "gy"
+     ],
+     "center": {
+      "gx": 0.8137020136649358,
+      "gy": 0.718061643355721
+     },
+     "scale": {
+      "gx": 0.2654494004986912,
+      "gy": 0.07353363027599477
+     },
+     "threshold": 2.192179566480552,
+     "alpha": 0.05,
+     "n": 57
+    }
+   }
+  }
+ },
+ "selection": {
+  "flight-01a-ellipse": {
+   "scores": {
+    "0.100": 0.172850284918172,
+    "0.185": 0.1059772652778568,
+    "0.370": 0.06441157987611978,
+    "0.740": 0.12146492629463525
+   },
+   "truth_gain_best": "0.370",
+   "physical_0.10": "0.100",
+   "sample_rate": "0.100"
+  },
+  "flight-04a-ellipse": {
+   "scores": {
+    "0.100": 0.14824139011897572,
+    "0.185": 0.08548315799189105,
+    "0.370": 0.052353107674731086,
+    "0.740": 0.11317048130989771
+   },
+   "truth_gain_best": "0.370",
+   "physical_0.10": "0.100",
+   "sample_rate": "0.100"
+  },
+  "flight-07a-lemniscate": {
+   "scores": {
+    "0.100": 0.16144033335167018,
+    "0.185": 0.09721441500873008,
+    "0.370": 0.06236382239479276,
+    "0.740": 0.12584348961109335
+   },
+   "truth_gain_best": "0.370",
+   "physical_0.10": "0.100",
+   "sample_rate": "0.100"
+  },
+  "flight-13a-trackRATM": {
+   "scores": {
+    "0.100": 0.16016692765620855,
+    "0.185": 0.10170335156966813,
+    "0.370": 0.06617946224397857,
+    "0.740": 0.12592515599598395
+   },
+   "truth_gain_best": "0.370",
+   "physical_0.10": "0.100",
+   "sample_rate": "0.100"
+  },
+  "flight-01p-ellipse": {
+   "scores": {
+    "0.100": 0.20808486474101037,
+    "0.185": 0.13411924817480142,
+    "0.370": 0.0762288944952457,
+    "0.740": 0.16616186944020825
+   },
+   "truth_gain_best": "0.370",
+   "physical_0.10": "0.100",
+   "sample_rate": "0.100"
+  },
+  "flight-07p-lemniscate": {
+   "scores": {
+    "0.100": 0.20299821696456183,
+    "0.185": 0.13002270791300294,
+    "0.370": 0.07354314452245939,
+    "0.740": 0.16157147992741885
+   },
+   "truth_gain_best": "0.370",
+   "physical_0.10": "0.100",
+   "sample_rate": "0.100"
+  },
+  "flight-13p-trackRATM": {
+   "scores": {
+    "0.100": 0.19297596045929866,
+    "0.185": 0.11671624687970114,
+    "0.370": 0.06864885731648199,
+    "0.740": 0.14553689750313947
+   },
+   "truth_gain_best": "0.370",
+   "physical_0.10": "0.100",
+   "sample_rate": "0.100"
+  },
+  "flight-16p-trackRATM": {
+   "scores": {
+    "0.100": 0.18557422251092828,
+    "0.185": 0.1124813563568749,
+    "0.370": 0.06702252470595689,
+    "0.740": 0.14047472896441082
+   },
+   "truth_gain_best": "0.370",
+   "physical_0.10": "0.100",
+   "sample_rate": "0.100"
+  }
+ }
+}

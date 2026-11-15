@@ -1,0 +1,82 @@
+# Proposal only — required-lean window amendment (NOT APPLIED)
+
+Status: **proposed, not applied.** The frozen statistic still uses **0.37 s**
+(`configs/gain_frozen.yaml`, commit `8b8b7a1`). This file is for the user's approval; it
+does not change any frozen config and no output uses it.
+
+Date: 2026-11-14. Evidence: `reports/D03_shrinkage_window.md`,
+`results/d_window/d01/metrics.json`.
+
+## Recommendation
+
+Adopt **0.185 s** as the operational required-lean window, with a **minimum of 8 samples**
+in the window (otherwise the clip is not testable). Keep the statistic, nuisance settings,
+decision rule and abstention rules unchanged; only the window and the conformal band
+would be re-fitted. The current 0.37 s remains in force until approved.
+
+## Why
+
+TII dense mocap, fixed frozen d02 population (57 clips), R2 axis rule, LOFO bands:
+
+| window | samples | window abstain | band gx / gy / tau | FRR | removal | mirror | x0.5 | x1.5 | yaw control |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 0.10 s | 27 | 41.0 % | 0.739 / 0.703 / 2.652 | 5.3 % | 100 % | 100 % | **64.9 %** | **64.9 %** | 12.3 % |
+| **0.185 s** | 51 | 41.0 % | 0.818 / 0.716 / 2.596 | 5.3 % | 100 % | 100 % | **100 %** | **96.5 %** | **21.1 %** |
+| 0.37 s (frozen) | 102 | 43.0 % | 0.814 / 0.718 / 2.192 | 5.3 % | 100 % | 100 % | 100 % | 96.5 % | 28.1 % |
+| 0.74 s | 203 | 43.0 % | 0.703 / 0.724 / 2.312 | 12.3 % | 100 % | 100 % | 100 % | 93.0 % | 26.3 % |
+
+0.185 s keeps the detection of the frozen 0.37 s, cuts the yaw-control artifact from
+28.1 % to 21.1 %, and makes two more clips testable (41 % vs 43 % abstention). 0.10 s is
+too short: partial-change detection falls to 64.9 %. 0.74 s is too long: false-reject
+rises to 12.3 % and x1.5 falls to 93.0 %.
+
+**The band does not transfer across windows.** Applying the frozen 0.37 s band unchanged
+gives false-reject 15.8 % (0.10 s), 8.8 % (0.185 s), 5.3 % (0.37 s) and 17.5 % (0.74 s).
+Any window change needs its own conformal band; that is a re-freeze, not a free switch.
+
+**Coherence is window-insensitive.** At the frozen tau 0.6197 / 0.2921 the correlation-tier
+false-reject is 1.8 / 1.8 / 5.3 / 8.8 % and detection of removal is 98.2-100 %, mirror
+100 %, x0.5 17.5-19.3 %, x1.5 22.8-24.6 %, yaw 8.8-12.3 % across the four windows. The
+shape tier does not need the window changed for its own sake.
+
+## Principle: manoeuvre bandwidth, not sample rate
+
+The window is a physical low-pass on the commanded acceleration; it must preserve the
+manoeuvre bandwidth. The sample rate only decides whether the window is resolvable. A
+sample-rate rule would pick 0.10 s on dense TII but 0.6 s on 10 Hz UZH, and Track E found
+the long windows fail on coarse positions; that is exactly the wrong direction. The
+proposed rule is:
+
+1. choose the window from the manoeuvre bandwidth (0.185 s here, between the Phase 0
+   0.11 s pixel-stage reference and the 0.37 s mocap window);
+2. require at least 8 samples in the window (a feasibility floor, not a selection rule);
+3. if the floor is not met, mark the clip **not testable** rather than lengthening the
+   window.
+
+## Rules that pick a window without looking at the test dataset
+
+- **truth-gain rule** (fit flights only: the window whose truth-attitude gain is closest
+  to 1) picks **0.37 s in all 8 leave-one-flight-out folds**. It is stable and test-free,
+  but it optimises formula fidelity, not the yaw artifact.
+- **physical 0.10 s** (Phase 0 pixel-stage reference) is fixed and test-free; it gives the
+  lowest artifact but loses partial detection.
+- **sample-rate floor** `max(0.10, 6*median_dt)` picks 0.10 s on dense TII; rejected as a
+  principle because it stretches the window on coarse data.
+
+The 0.185 s recommendation is a **policy compromise** informed by the TII window
+sensitivity, which uses TII outcomes. It therefore requires this amendment and the user's
+approval; it is not applied silently.
+
+## If approved
+
+- Recompute `lean_req`/`vel_req` at 0.185 s for all clips (schema v2; no other field
+  changes).
+- Re-fit the R2 band: `gx` centre 0.8176, scale 0.2586; `gy` centre 0.7159, scale
+  0.0726; tau 2.5956, alpha 0.05, n=57 (TII fit flights, leave-one-flight-out;
+  `results/d_window/d01/metrics.json`).
+- Re-freeze `configs/gain_frozen.yaml` and re-run the T1/T3 table. The coherence
+  thresholds do not need to change.
+
+## If not approved
+
+Keep 0.37 s. The frozen statistic, bands and all D02/D03 numbers remain as reported.

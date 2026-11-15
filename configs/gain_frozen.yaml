@@ -1,0 +1,206 @@
+version: 1
+date: '2026-11-14'
+status: frozen
+source_run: results/d_eval/d02
+commit: 8b8b7a1b3394a03229bcf25bf6b640032f8d5e24
+rule: R2_axis_gains
+statistic: per-clip regression of depicted lean on required lean; l_dep = G1*l_req0
+  + G2*(R_yaw v/g) + b
+options:
+  drag: fitted
+  fixed_drag: 0.295
+  intercept: true
+  lag_search: true
+  lag_bounds_ms:
+  - -150.0
+  - 150.0
+  lag_step_ms: 25.0
+  estimator: ols
+  smoothing_s: 0.0
+  confidence_weights: false
+  sg_window_s: 0.37
+  sg_polyorder: 3
+  n_boot: 400
+  seed: 20261113
+  min_frames: 24
+abstention:
+  min_frames: 24
+  usable_fraction_min: 0.5
+  signal_frames:
+    required_tilt_deg_min: 10.0
+    min_frames: 12
+    fraction_min: 0.2
+    note: the existing pre-registered excitation rule, carried over unchanged
+  excitation:
+    statistic: standard deviation of required lean along its principal axis (sqrt
+      of the largest eigenvalue of the 2x2 covariance)
+    floor_deg: 2.0
+    justification: 'With the depicted estimator''s ~4 deg median error and about 8
+      independent 0.5 s blocks in a 4 s clip, a regressor spread below 2 deg gives
+      a gain standard error above 0.35: a 50 % gain change cannot be resolved, so
+      the clip is not testable rather than tested and passed.
+
+      '
+  conditioning:
+    statistic: condition number of the scalar design matrix including the intercept
+    max: 1000
+    justification: 'Straight-line acceleration makes the acceleration and velocity
+      columns collinear; above 1e3 the coefficient standard error is inflated by more
+      than an order of magnitude and the gain is not identified.
+
+      '
+  ci_half_width:
+    statistic: bootstrap half-width of G1
+    max: 0.35
+    justification: 'The smallest violation in scope is a 50 % gain change. A per-clip
+      interval wider than 0.35 cannot contribute to that decision, so the clip abstains.
+
+      '
+  confidence_gate:
+    config: configs/gate_frozen.yaml
+    application: pair_level
+    sensitivity: per_condition
+  order:
+  - min_frames
+  - usable_fraction
+  - signal_frames
+  - excitation
+  - conditioning
+  - ci_half_width
+  - confidence_gate
+gate:
+  config: configs/gate_frozen.yaml
+  signal: S3_latitude_confidence
+  tau: -0.0016656352350220922
+  direction: drop when signal > tau
+  application: pair_level in evaluation; per clip when scoring one clip
+bands:
+  axis:
+    keys:
+    - gx
+    - gy
+    center:
+      gx: 0.8137020136649358
+      gy: 0.718061643355721
+    scale:
+      gx: 0.2654494004986912
+      gy: 0.07353363027599477
+    threshold: 2.192179566480552
+    alpha: 0.05
+    n: 57
+bands_per_fold:
+  flight-01a-ellipse:
+    axis:
+      keys:
+      - gx
+      - gy
+      center:
+        gx: 0.8242073202092377
+        gy: 0.718061643355721
+      scale:
+        gx: 0.266591704482965
+        gy: 0.069650621753669
+      threshold: 2.2160793607477283
+      alpha: 0.05
+      n: 55
+  flight-04a-ellipse:
+    axis:
+      keys:
+      - gx
+      - gy
+      center:
+        gx: 0.8242073202092377
+        gy: 0.718061643355721
+      scale:
+        gx: 0.266591704482965
+        gy: 0.07321772093458405
+      threshold: 2.2257171346366125
+      alpha: 0.05
+      n: 55
+  flight-07a-lemniscate:
+    axis:
+      keys:
+      - gx
+      - gy
+      center:
+        gx: 0.8137020136649358
+        gy: 0.718061643355721
+      scale:
+        gx: 0.2654494004986912
+        gy: 0.07353363027599477
+      threshold: 2.192179566480552
+      alpha: 0.05
+      n: 57
+  flight-13a-trackRATM:
+    axis:
+      keys:
+      - gx
+      - gy
+      center:
+        gx: 0.8137020136649358
+        gy: 0.718061643355721
+      scale:
+        gx: 0.2654494004986912
+        gy: 0.07353363027599477
+      threshold: 2.192179566480552
+      alpha: 0.05
+      n: 57
+  flight-01p-ellipse:
+    axis:
+      keys:
+      - gx
+      - gy
+      center:
+        gx: 0.8133856033451126
+        gy: 0.7079815595992164
+      scale:
+        gx: 0.25745327260877454
+        gy: 0.10265792883463547
+      threshold: 2.2351492154127994
+      alpha: 0.05
+      n: 31
+  flight-07p-lemniscate:
+    axis:
+      keys:
+      - gx
+      - gy
+      center:
+        gx: 0.791642707536516
+        gy: 0.7286570795093752
+      scale:
+        gx: 0.25713228532448473
+        gy: 0.09185931844302167
+      threshold: 2.2010944310620393
+      alpha: 0.05
+      n: 33
+  flight-13p-trackRATM:
+    axis:
+      keys:
+      - gx
+      - gy
+      center:
+        gx: 0.8242073202092377
+        gy: 0.7234551694918578
+      scale:
+        gx: 0.23661596832006582
+        gy: 0.07391178239853392
+      threshold: 2.473156435573641
+      alpha: 0.05
+      n: 55
+  flight-16p-trackRATM:
+    axis:
+      keys:
+      - gx
+      - gy
+      center:
+        gx: 0.8189546669370867
+        gy: 0.7207584064237894
+      scale:
+        gx: 0.25027385153522336
+        gy: 0.07372270633726435
+      threshold: 2.347968973023241
+      alpha: 0.05
+      n: 56
+n_real_testable: 57
+note: A pass means no violation of the tested size on a clip with enough excitation.
+  It is not proof that the flight is physically consistent.

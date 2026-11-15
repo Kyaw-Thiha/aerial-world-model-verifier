@@ -1,0 +1,62 @@
+# Proposal — label-free acceleration-bandwidth window (NOT APPLIED)
+
+Status: **proposed, not applied.** Frozen configs are unchanged: the gain statistic still
+uses `sg_window_s: 0.37` and the R2 band from `configs/gain_frozen.yaml`; the coherence
+thresholds are unchanged. This file is for the user's approval.
+
+Date: 2026-11-14. Pre-registration: `configs/window_bandwidth_prereg.yaml` (commit
+`c7af793`, before any TII or UZH scoring). Evidence: `reports/D04_bandwidth_window.md`,
+`results/d_bandwidth/d01/`, `results/d_uzh_v2/`.
+
+## Proposal
+
+Adopt the label-free window selector for the gain tier:
+
+```
+window_s = 0.5 / f95
+f95 = frequency below which 95 % of the commanded acceleration energy lies
+      (Savitzky-Golay 0.10 s / poly 3 on pos, rFFT, energy summed over axes, DC excluded)
+floor: window_s * truth_rate >= 8 samples
+abstain if the floor is not met, or window_s > 0.5 * duration
+no clamp, no lengthening to the sample rate
+```
+
+`truth_rate` is the rate at which `lean_req` is computed: TII 274.73 Hz; UZH 500 Hz. The
+floor is **not** applied to the 15 Hz frame-rate `pos`; it is applied to the truth used for
+the required lean. If only a 15 Hz export exists, the clip abstains.
+
+## Evidence
+
+**TII (dense truth, LOFO bands):** 57/100 real testable; R2 false-reject **5.3 %**,
+removal **100 %**, mirror **100 %**, x0.5 **100 %**, x1.5 **96.5 %**, yaw **29.8 %**. The
+rule selects per-clip windows 0.05-0.22 s and reproduces the frozen statistic without
+looking at outcomes. Track flights remain not validated.
+
+**UZH forward:** at the **500 Hz truth rate** the rule selects **0.336-1.420 s**
+(169-711 samples). At the **15 Hz clip rate** it selects 0.071-0.124 s (1.1-1.9 samples),
+where it violates its own 8-sample floor and abstains on 27/27 real clips; those are not
+the truth-rate windows. The gain tier fails on UZH at TII bands at **0.37 s (5/9)** and at
+the **truth-rate rule windows (7/9 false reject)**, and requires per-domain calibration of
+at least **30 real clips**. The 0.10 s passing result is post-hoc, not the rule's window.
+
+**Per-domain calibration:** a UZH LOSO band on the available 9 real clips reduces the real
+rate to 0.111, but it is fitted on 6-7 clips (tau 3.21-3.61 vs TII 2.19; `gy` scale
+0.023-0.037 vs 0.0735), below the stability minimum. TII band stability requires **30 real
+clips** for a tau relative IQR below 10 % (40 for below 7 %), spanning at least 4-6
+flights/sequences.
+
+## What approval would change
+
+1. Recompute `lean_req`/`vel_req` at the rule-selected window from dense truth for TII and
+   re-export UZH schema-v2 clips at the rule windows (UZH 500 Hz).
+2. Re-fit the TII R2 band on the rule-window gains (LOFO), re-freeze
+   `configs/gain_frozen.yaml`.
+3. Verify the UZH gain tier at the rule windows with TII thresholds and with a UZH LOSO
+   band; only claim transfer if the real rate is inside the budget and the calibration
+   population is at least 30 real clips.
+4. Leave the coherence tier unchanged; it already transfers (0.111, detection 1.0/1.0).
+
+## What does not change without approval
+
+`configs/gain_frozen.yaml` (0.37 s, R2 band), `configs/coherence_frozen.yaml`, the gain
+statistic, nuisance settings, abstention rules, and all published D02/D03/D04 numbers.
