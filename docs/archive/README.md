@@ -42,7 +42,7 @@ Frozen configs are immutable and are not listed here at all: `configs/phase1.yam
 
 | superseded | by | note |
 | --- | --- | --- |
-| `docs/track_a_report.md` (early running notes) | `reports/01`-`reports/05` | kept; nothing in `report/` reads it |
+| `docs/track_a_report.md` (early running notes) | `reports/01_track_a_phase0_floor.md` … `reports/05_track_a_task4_dpvo_calibration.md` | kept; nothing in `report/` reads it |
 | the handoff briefs 02-10 | `reports/` | never committed in the first place; see `docs/handoffs/README.md` |
 
 ## What was actually moved

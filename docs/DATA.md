@@ -92,8 +92,8 @@ git clone https://github.com/EmbodiedCity/ANWM.code third_party/anwm && git -C t
 * **The `track-c/` R2 prefix was never populated**, so anything Track C only uploaded locally is
   not on R2. Its results are in git under `results/pathrec_*`.
 * **The pre-consolidation worktrees' untracked state** is preserved in
-  `awmv-archive/untracked/` (Track C's `data/` tree and `results/pathrec_calib/intrinsics.json`,
-  the only untracked files found).
+  `awmv-archive/untracked/` (Track C's `data/` tree and its one untracked result file,
+  `results/pathrec_calib/intrinsics.json`, copied as `awmv-archive/untracked/track-c/intrinsics.json`).
 
 ## 6. Restore recipes
 

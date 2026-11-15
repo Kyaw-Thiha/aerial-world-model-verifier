@@ -44,7 +44,7 @@ during consolidation — see `docs/DATA.md` for the current status of listing ac
   arrays, plots). Gate: pooled held-out median 1.24 deg with drag, 5.46 drag-free.
 * **Report**: `reports/01_track_a_phase0_floor.md`.
 * **Regenerate the assets**: `report/scripts/e1_physics_floor.py`.
-* **Assets**: `tab_e1_physics-floor_1`, `fig_e1_physics-floor_1`, `data/e1_physics-floor.csv`.
+* **Assets**: `tab_e1_physics-floor_1`, `fig_e1_physics-floor_1`, `report/data/e1_physics-floor.csv`.
 
 ## E2 — depicted tilt (TII)
 

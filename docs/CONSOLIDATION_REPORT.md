@@ -197,7 +197,7 @@ git checkout track-d-verdict-stat
   to `report/` on the `report-assets` branch (only `__pycache__` extra), and its `source_reports/`
   carries every track's markdown reports and decisions log;
 * `awmv-archive/untracked/track-c/` — the single untracked file found
-  (`results/pathrec_calib/intrinsics.json`) and Track C's 103 MB `data/` tree;
+  (`intrinsics.json`, from `results/pathrec_calib/`) and Track C's 103 MB `data/` tree;
 * `awmv-archive/untracked/data-manifest.tsv` — 42,535 paths with sizes and mtimes for the 3.3 GB
   `data/` tree (not in git, not in any bundle);
 * `awmv-archive/inventory/INVENTORY.md` — the pre-change inventory this work was planned from;
