@@ -9,16 +9,17 @@ systems Track C never ran.
 bake-off 10/10 without the Kalibr intrinsics and beats DPVO's median direction error
 (4.0 vs 4.2 deg), yet the stage-0 statistics computed on ViPE's path are no better —
 false reject 2/8 (worse than DPVO's 1/8), removal 6/8, mirror 4/8 — so F01's gate still
-fails. MASt3R-SLAM passes on its first sequence at a much worse direction error (16.5 deg)
-and is being run on the remaining nine; MegaSaM's weights are Drive-only and it was not run.
+fails. MASt3R-SLAM passes 5/10 at a median direction error of 39.0 deg, and MegaSaM's
+weights are Drive-only so it was not run.
 
 ## Plain-language summary
 
 Stage 0 found that the shooting statistic detects 6/8 removals and 4/8 mirrors with DPVO's
 path, against 8/8 and 7/8 with the truth path. So the question is no longer whether the
-statistic can work but whether any recovered path is good enough. This stage runs three
-systems that were not in the original bake-off on the same ten UZH sequences and scores them
-with the same metric, then feeds the best into the stage-0 tests unchanged.
+statistic can work but whether any recovered path is good enough. This stage runs two
+systems that were not in the original bake-off on the same ten UZH sequences (MegaSaM was
+blocked by its weight distribution) and scores them with the same metric, then feeds the best
+into the stage-0 tests unchanged.
 
 ## Systems and what is given to each
 
