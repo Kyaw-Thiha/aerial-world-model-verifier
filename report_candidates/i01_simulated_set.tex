@@ -24,11 +24,14 @@ Blender with the project's own dynamics, Isaac Sim, Flightmare, and the Unreal-b
 AirSim/Colosseum pair. \Cref{tab:i01-candidates} states what was measured and what was only
 inspected. Blender is recommended: it renders headless on an L40S with no RT-core requirement,
 its pose$\to$pixel model matches its own camera to within half a pixel, and its scene and
-flight are both functions of a seed. Isaac Sim started headless on the same GPU and is the
-photorealistic fallback, at the cost of a 10-minute, 15\,GB image and a Python API that moved
-between releases. Flightmare's dependency set is Ubuntu 18.04 with ROS Melodic and its
-renderer is a 2020 Unity binary; Colosseum is archived and AirSim's last release predates the
-current ROS and Ubuntu generations.
+flight are both functions of a seed. Its cost is what decides the renderer setting
+(\Cref{tab:i01-throughput}): at 640$\times$360 the 180{,}000-frame set costs about USD~18 with
+EEVEE and about USD~81 with Cycles, so EEVEE is the default and Cycles the validation subset.
+Isaac Sim started headless on the same GPU and is the photorealistic fallback, at the cost of a
+10-minute, 15\,GB image and a Python API that moved between releases; no frame was obtained
+from it within the spike's time box. Flightmare's dependency set is Ubuntu 18.04 with ROS
+Melodic and its renderer is a 2020 Unity binary; Colosseum is archived and AirSim's last
+release predates the current ROS and Ubuntu generations.
 
 \paragraph{The read-out that matters first.} The tilt reader was developed on real images, so
 its error on simulated frames has to be reported before any detection rate. On a 3\,s slalom

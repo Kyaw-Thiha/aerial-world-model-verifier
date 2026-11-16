@@ -1,0 +1,19 @@
+{
+  "device_info": {
+    "cycles_requested": "GPU",
+    "cycles_engine": "BLENDER_EEVEE_NEXT",
+    "cycles_backend": "NONE",
+    "cycles_devices_enabled": []
+  },
+  "n_frames": 91,
+  "width": 640,
+  "height": 360,
+  "engine": "BLENDER_EEVEE_NEXT",
+  "device": "GPU",
+  "samples": 16,
+  "seconds_total": 29.94923604499999,
+  "seconds_per_frame_median": 0.14521686899999864,
+  "fps": 3.0384748333235834,
+  "blender_version": "4.5.9 LTS",
+  "gpu": "NVIDIA L40S, 46068 MiB"
+}

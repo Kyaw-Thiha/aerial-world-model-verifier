@@ -1,0 +1,14 @@
+\footnotesize
+\begin{tabular}{llrrr}
+\toprule
+engine & setting & s/frame & fps & USD for 180k frames \\
+\midrule
+Cycles (OptiX, L40S) & 8 spp, denoise   & 0.83 & 1.2 & 81 \\
+Cycles (OptiX, L40S) & 8 spp, no denoise & 0.52 & 1.9 & 51 \\
+Cycles (OptiX, L40S) & 48 spp, no denoise & 0.56 & 1.8 & 47 \\
+EEVEE Next (GPU)     & 16 spp           & \textbf{0.19} & \textbf{5.4} & \textbf{18} \\
+\midrule
+\multicolumn{5}{l}{\footnotesize 640$\times$360, six-frame steady-state runs; 180{,}000 frames = 300 flights $\times$ 20\,s $\times$ 30\,fps.}\\
+\multicolumn{5}{l}{\footnotesize A 91-frame EEVEE clip takes 30\,s end to end (3.0\,fps including scene build).}\\
+\bottomrule
+\end{tabular}

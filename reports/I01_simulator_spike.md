@@ -1,7 +1,8 @@
 # I01 — Simulator spike: four candidates for a labelled flight set
 
 **Branch** `track-i-simset` (off `main`), worktree `~/Documents/Projects/awmv-track-i`.
-**Date** 2026-11-16. **Spend** USD 0.73 of the USD 40 ceiling (`docs/COST_LEDGER.md`).
+**Date** 2026-11-16. **Spend** USD 2.1 (estimated from container wall time) of the USD 40
+ceiling (`docs/COST_LEDGER.md`).
 
 ## Summary
 
@@ -10,15 +11,18 @@ The track needs a simulator that can draw a **known** camera pose sequence in te
 infeasible *by construction*. Every candidate was therefore judged on rendering, not on
 flight dynamics — the dynamics are ours and already unit-tested (`src/sim/flight.py`).
 
-* **Recommended: Blender + our own dynamics.** It renders headless on a rented L40S with no
-  RT-core requirement, is scriptable from Python, costs `X` frames per GPU-hour at the spike's
-  settings, and the pose→pixel model is verified against Blender's own camera to 0.5 px.
-  Licence GPL-2.0 for the program (rendered images are not derived works of the renderer);
-  scene and flight are both seed-reproducible.
-* **Isaac Sim** is the photorealistic option and did start headless on L40S, but it needs a
-  10-minute, ~15 GB image, a separate discovery step per release because its Python API moved
-  between versions (the 6.x camera/replicator names differ from 4.x), and it buys realism this
-  track does not need if the tilt reader's error on Blender frames is already small.
+* **Recommended: Blender + our own dynamics**, with **EEVEE Next** for the full set. It renders
+  headless on a rented L40S with no RT-core requirement, is scriptable from Python, and its
+  pose→pixel model is verified against Blender's own camera to 0.5 px. Throughput at 640×360:
+  **0.19 s/frame** with EEVEE (5.4 fps) and 0.83 s/frame with Cycles at 8 spp with denoise,
+  which puts the 180,000-frame set at **USD ~18** or USD ~81 respectively. Licence GPL-2.0 for
+  the program (rendered images are not derived works of the renderer); scene and flight are
+  both seed-reproducible.
+* **Isaac Sim** is the photorealistic option. It builds and **starts headless** on an L40S
+  (24 s to "Startup Complete", Warp on `cuda:0`), but the spike did not get a frame out of it:
+  every attempt ended on a script-level API mismatch in *our* driver — the 6.2 camera and
+  replicator names are not the 4.x ones the tutorials use — and each iteration costs a
+  container start. It remains the fallback, not the default.
 * **Flightmare** is dead weight in 2026: its dependency set is Ubuntu 18.04 + ROS Melodic
   (`libzmqpp-dev` does not exist on 22.04), and its renderer is a 936 MB Unity binary from
   2020-12 that has to be driven over ZMQ.
@@ -26,9 +30,11 @@ flight dynamics — the dynamics are ours and already unit-tested (`src/sim/flig
   2022-07 and needs Unreal Engine (Epic account, ~100 GB build). Recorded, not attempted
   beyond the evidence.
 
-The end-to-end check on the rendered clip — the project's own tilt reader on Blender frames
-against exact truth, and its gain statistic on the feasible versus the tilt-removed render —
-is in `## The end-to-end check`.
+The end-to-end check on the rendered clips — the project's own tilt reader on Blender frames
+against exact truth, and its gain statistic on the feasible, tilt-removed and mirrored-roll
+renders — is in `## The end-to-end check`. The reader's residual is 0.6 deg on the feasible
+clip against 24.7 deg on the tilt-removed one, and its gain reads 0.93/0.99, -0.01/-0.004 and
+0.91/**-1.00** on the three clips.
 
 ## Question
 
@@ -44,12 +50,13 @@ Everything below was executed, not read: the adapter code is in `src/sim/`, the 
 | # | what | where | result file |
 | --- | --- | --- | --- |
 | 1 | Blender renders the spike flight (91 frames, 640×360, Cycles 48 spp + denoise), twice: physical attitude and level camera | local RTX 3050 laptop (4 GB), and Modal L40S | `results/i01_spike/frames_blender/{feasible,level}/` |
-| 2 | Blender throughput across settings on a rented GPU | Modal L40S | `results/i01_spike/frames_blender/l40s_benchmark.json` |
+| 2 | Blender throughput across settings on a rented GPU (Cycles OptiX vs EEVEE, with and without denoise) | Modal L40S | `results/i01_spike/l40s_benchmark.json` |
+| 2b | the same clip rendered end to end with EEVEE and scored | Modal L40S + A10 | `results/i01_spike/eevee_91frames_timing.json`, `geocalib/i01_feasible_eevee_*.json` |
 | 3 | pose→pixel model checked against Blender's own `world_to_camera_view` | local | `results/i01_spike/projection_check.json` |
 | 4 | flight-wide geometric check: bare-ground render, horizon against the pose | local | `results/i01_spike/horizon_bare_flight.json` |
 | 5 | GeoCalib on the rendered clips against exact truth | Modal A10 | `results/i01_spike/geocalib/` |
 | 6 | Flightmare build + Unity renderer probe | Modal (CPU) | `results/i01_spike/flightmare_probe.json` |
-| 7 | Isaac Sim headless probe (API discovery + one rendered frame) | Modal L40S | `results/i01_spike/isaac_probe.json` |
+| 7 | Isaac Sim headless probe: image build, app start, API discovery, render attempts | Modal L40S | `results/i01_spike/isaac_probe.json` (log) |
 
 The flight is one 3 s slalom (8 m/s, 2 m amplitude, 30 m wavelength, 12 m altitude, `k_d` =
 0.295): the tilt the path requires runs 14.6-32.2 deg and changes sign twice, so both rolls
@@ -81,31 +88,37 @@ That reframing is why a renderer (Blender) outranks two flight simulators here.
   it and the binary is six years old.
 * Build attempt on Ubuntu 22.04: **`libzmqpp-dev` does not exist** there (apt: "Unable to
   locate package"); the upstream `Dockerfile` targets `ubuntu:18.04` with ROS Melodic, both
-  end-of-life. Building `zmqpp` from source was needed before `flightlib` could be compiled at
-  all. See `results/i01_spike/flightmare_probe.json`.
+  end-of-life. The probe was re-run with `zmqpp` built from source, then stopped during the
+  936 MB Unity download once the picture was clear; the `flightlib` build itself was not
+  carried to a verdict, so the rejection rests on the missing package, the six-year-old
+  renderer and the display requirement, not on a compiler error.
 * Pose rate: the C++ library integrates its own dynamics; it does not expose an exact
   commanded attitude, so the 200 Hz requirement would be met by *generating* truth elsewhere
   anyway.
 * Headless: the Unity player needs a display; the same ZMQ bridge that makes it scriptable
-  also makes it a display-dependent process. Not pursued past the build failure.
+  also makes it a display-dependent process. Whether the 2020 player starts under Xvfb on a
+  cloud GPU is **unverified** — it was not pursued past the build stage, and the report says
+  so rather than guessing.
 
-### B. Isaac Sim (NVIDIA) — viable, not recommended
+### B. Isaac Sim (NVIDIA) — starts headless, rendering not completed, fallback
 
 * Licence: Apache 2.0 for the repository, with additional NVIDIA component licences for the
   Omniverse/KIT runtime; the EULA has to be accepted (`ACCEPT_EULA`), and the pip package is
-  `isaacsim[all]`.
+  `isaacsim[all]` from `https://pypi.nvidia.com` (the PyPI wheels are stubs).
 * Hardware: the upstream README lists **A40 minimum, L40S recommended** for datacenter GPUs,
   i.e. RTX-class ray tracing, which Modal's L40S satisfies.
-* It ran: the image built in **10.5 minutes** (CUDA 12.8 devel + `isaacsim[all]==6.2.0.0` from
-  `https://pypi.nvidia.com`) and the app started headless on an L40S (44 GiB) with Warp on
-  `cuda:0`. Two concrete snags, both recorded in the probe log: `libXt.so.6` is missing from a
-  slim base (a nanosecond of apt), and the **Python API moved between 4.x and 6.x** — the
-  camera/replicator names this project would call (`rep.create.render_product`,
-  `AnnotatorRegistry`, `isaacsim.sensors.camera.Camera.get_rgba`) are not the 6.2 ones
-  (`rep.functional.create.*`, `CameraSensor.get_data`). Each release therefore costs a
-  discovery pass.
-* Pose/rate: rendering is decoupled from physics, so any pose sequence can be drawn; the
-  truthful statement is that Isaac Sim's *physics* is unused here.
+* **Established:** the image builds in **10-13 minutes** and the app reaches "Simulation App
+  Startup Complete" in **24 s** on an L40S (44 GiB), with Warp enumerating `cuda:0`. Two
+  missing system libraries had to be added (`libXt.so.6`, `libxkbcommon0`).
+* **Not established: that it renders our pose sequence.** Four probe iterations ended in our
+  own driver code, each on a different 6.2-surface difference — `UsdGeom.MaterialBindingAPI`
+  does not exist (it is `UsdShade`), and the 4.x camera/replicator names
+  (`rep.create.render_product`, `rep.AnnotatorRegistry`, `isaacsim.sensors.camera.Camera.get_rgba`)
+  are 6.x's `rep.functional.create.*` / `CameraSensor.get_data` — plus one iteration that did
+  not return before the client timeout. The report therefore does not claim an Isaac Sim
+  throughput number, and the rejection rests on effort, not on speed.
+* Pose/rate: rendering is decoupled from physics, so in principle any pose sequence can be
+  drawn; Isaac Sim's *physics* is unused here whatever happens.
 
 ### C. AirSim / Colosseum — not pursued
 
@@ -130,8 +143,28 @@ That reframing is why a renderer (Blender) outranks two flight simulators here.
   against Blender's own projection (**max 0.71 px, median 0.707 px** over 126 point-frames —
   the residual is exactly `sqrt(0.5²+0.5²)`, the half-pixel convention difference between
   `(W-1)/2` and `W/2`; one point at the image edge differs by 1.8 px).
-* Throughput and cost: `X` frames per GPU-hour at 640×360, Cycles, 48 spp + denoise on L40S;
-  `Y` at 16 spp; `Z` for EEVEE. The dataset cost follows directly (see `## Cost model`).
+* Throughput, measured on the L40S in six-frame steady-state runs
+  (`results/i01_spike/l40s_benchmark.json`), all at 640×360:
+
+  | engine | samples | denoise | seconds/frame | fps |
+  | --- | --- | --- | --- | --- |
+  | Cycles (OptiX) | 8 | yes | 0.83 | 1.2 |
+  | Cycles (OptiX) | 8 | no | 0.52 | 1.9 |
+  | Cycles (OptiX) | 48 | no | 0.56 | 1.8 |
+  | EEVEE Next (OpenGL, L40S renderer string) | 16 | no | **0.19** | **5.4** |
+
+  A 91-frame EEVEE render of the clip took 30 s end to end (0.145 s/frame plus ~17 s of
+  scene build and start-up), i.e. 3.0 fps for a whole clip rather than 5.4.
+
+  Three facts matter more than the table. **Cycles' cost is flat in sample count** (8 to 48
+  spp changes the frame time by under 10 %), so at this resolution it is dominated by
+  per-frame overhead — scene sync, BVH build, kernel launch and the denoiser (~0.3 s of the
+  0.83 s), not by shading; on the 4 GB laptop GPU the same comparison does scale with samples
+  (1.0 s at 8 spp, 4.2 s at 48 spp). **EEVEE runs on the GPU headless** — the GL renderer
+  string is `NVIDIA L40S/PCIe/SSE2`, not a software rasteriser — and is 3-5× cheaper per
+  frame. And **Cycles' device selection was flaky across containers**: one benchmark run came
+  back with `cycles_backend = NONE` and no devices enabled, i.e. silently on the CPU, at about
+  half the speed. Any production loop has to assert the device, not request it.
 * Effort: the scene is 60 lines of `bpy` over a shared layout, the flight is the repo's own
   module, and every flight is regenerable from (maneuver, parameters, seed).
 
@@ -215,8 +248,31 @@ GPU-hours      = frames_total / frames/hour
 USD            = GPU-hours x price_per_hour
 ```
 
-At the measured L40S rate `X` fps and USD 1.95/h: `USD_FULL`. At 10 s flights (90,000
-frames): `USD_HALF`. Both are inside the USD 40 ceiling; a run at 16 spp costs `USD_16`.
+| engine (L40S, 640×360) | fps | GPU-hours for 180,000 frames | USD at 1.95/h |
+| --- | --- | --- | --- |
+| Cycles 8 spp + denoise | 1.2 | 41.7 | **81** |
+| Cycles 8 spp, no denoise | 1.9 | 26.3 | 51 |
+| EEVEE Next 16 spp (steady state) | 5.4 | 9.3 | **18** |
+| EEVEE Next (end-to-end clip rate, 3.0 fps) | 3.0 | 16.7 | 33 |
+
+So the set as specified (300 flights × 20 s × 30 fps = 180,000 frames) is **inside the USD 40
+ceiling with EEVEE and outside it with Cycles**, at 640×360. At 10 s flights (90,000 frames)
+the same numbers halve: EEVEE USD 9, Cycles USD 40.
+
+Three qualifications, because a cost number built on one scene is a floor:
+
+* the Cycles number is dominated by per-frame overhead at this resolution. Rendering each clip
+  as an **animation** (one `bpy` render call, camera driven by keyframes) would remove most of
+  that overhead and is not measured here — Step 2 should measure it before choosing a setting;
+* if Cycles silently falls back to CPU again, its cost roughly doubles, so the loop must check
+  `cycles_backend` per job (this run's `device_info` shows `OPTIX` and two L40S devices);
+* the cost model's frame count is the handoff's, not a validated choice. Scene complexity,
+  resolution and the number of scenes all move it.
+
+The reader's error does not care which engine drew the frame: on the same 91 frames,
+GeoCalib reads 0.75 deg median up-vector error and 0.37 deg median tilt residual on the EEVEE
+frames, against 1.14 and 0.62 on the Cycles frames, with the same gain (0.94/1.00 against
+0.93/0.99). EEVEE is therefore not a compromise on the measurement, at least on this scene.
 
 ## What this supports
 
@@ -240,6 +296,9 @@ frames): `USD_HALF`. Both are inside the USD 40 ceiling; a run at 16 spp costs `
   to revisit Isaac Sim — not to claim the sim-to-real gap is measured.
 * Isaac Sim was probed, not benchmarked: it started, but no throughput number was taken, so
   its cost is not comparable here and its rejection rests on effort, not on speed.
+* The throughput numbers are single six-frame runs, not a distribution: the per-frame times
+  vary by tens of percent across containers (one Cycles run came back CPU-only), so treat the
+  cost model as an order-of-magnitude planning number and re-measure in Step 2.
 
 ## Caveats
 

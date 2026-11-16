@@ -48,12 +48,17 @@ def benchmark(tag: str = "i01_feasible", n_frames: int = 6) -> dict:
     comparison is not confounded by scene content.
     """
     import json
+    import os
     import subprocess
     import sys
     import time
     from pathlib import Path
 
     import numpy as np
+
+    def _write(obj):
+        Path("/vol/spike/l40s_benchmark.json").write_text(json.dumps(obj, indent=2))
+        volume.commit()
 
     base = json.loads(Path(f"/vol/spike/{tag}_job.json").read_text())
     npz = np.load(f"/vol/spike/{tag}_poses.npz")
@@ -63,48 +68,57 @@ def benchmark(tag: str = "i01_feasible", n_frames: int = 6) -> dict:
     results = {}
     configs = [
         {"engine": "CYCLES", "samples": 8, "denoise": True},
-        {"engine": "CYCLES", "samples": 16, "denoise": True},
-        {"engine": "CYCLES", "samples": 48, "denoise": True},
+        {"engine": "CYCLES", "samples": 8, "denoise": False},
+        {"engine": "CYCLES", "samples": 48, "denoise": False},
         {"engine": "EEVEE", "samples": 16, "denoise": False},
     ]
+    # EEVEE is last on purpose: headless EEVEE Next needs a GL context and is the one setting
+    # that can hang, so a hang there cannot hide the Cycles numbers.
     for cfg in configs:
         job = dict(base)
+        suffix = f"{cfg['engine']}_{cfg['samples']}{'_dn' if cfg.get('denoise') else ''}"
         job.update({"poses": f"/vol/spike/{tag}_poses_bench.npz",
-                    "out_dir": f"/vol/frames_bench/{tag}_{cfg['engine']}_{cfg['samples']}",
+                    "out_dir": f"/vol/frames_bench/{tag}_{suffix}",
                     "result_json": None, "exposure": -3.0, "device": "GPU",
                     "frame_names": [f"{i:04d}.png" for i in range(n_frames)], **cfg})
-        jp = Path(f"/tmp/bench_{cfg['engine']}_{cfg['samples']}.json")
+        jp = Path(f"/tmp/bench_{suffix}.json")
         jp.write_text(json.dumps(job))
         t0 = time.time()
-        p = subprocess.run([sys.executable, "-m", "src.sim.blender_render", str(jp)],
-                           capture_output=True, text=True, timeout=1500, cwd="/root")
+        try:
+            p = subprocess.run(["blender", "-b", "-P", "/root/blender_render.py"],
+                               capture_output=True, text=True, timeout=420, cwd="/root",
+                               env={**os.environ, "BLENDER_JOB": str(jp)})
+        except subprocess.TimeoutExpired:
+            results[key] = {"rc": "timeout", "log_tail": "subprocess timed out at 420 s"}
+            _write(results)
+            continue
         log = (p.stdout or "") + "\n--stderr--\n" + (p.stderr or "")
-        key = f"{cfg['engine']}_{cfg['samples']}"
+        key = suffix
         entry = {"rc": p.returncode, "wall_s": round(time.time() - t0, 1),
                  "log_tail": log[-1200:]}
         for line in log.splitlines():
             if line.startswith("RENDER_RESULT "):
                 entry["render"] = json.loads(line[len("RENDER_RESULT "):])
         results[key] = entry
-        volume.commit()
-    import pathlib as _pl
-    _pl.Path("/vol/spike/l40s_benchmark.json").write_text(json.dumps(results, indent=2))
-    volume.commit()
+        _write(results)
+    _write(results)
     return {k: v.get("render") for k, v in results.items()}
 
 
 @app.function(image=image, gpu="L40S", volumes={"/vol": volume}, timeout=3600)
 def render(tag: str = "i01_feasible", samples: int = 48, engine: str = "CYCLES",
-           denoise: bool = True, limit: int = 0) -> dict:
+           denoise: bool = True, limit: int = 0, out_tag: str = "") -> dict:
     import json
+    import os
     import subprocess
     import sys
     from pathlib import Path
 
     job = json.loads(Path(f"/vol/spike/{tag}_job.json").read_text())
     job["poses"] = f"/vol/spike/{tag}_poses.npz"
-    job["out_dir"] = f"/vol/frames/{tag}"
-    job["result_json"] = f"/vol/frames/{tag}/render_timing.json"
+    out_tag = out_tag or tag
+    job["out_dir"] = f"/vol/frames/{out_tag}"
+    job["result_json"] = f"/vol/frames/{out_tag}/render_timing.json"
     job["samples"] = samples
     job["engine"] = engine
     job["device"] = "GPU"
@@ -123,8 +137,9 @@ def render(tag: str = "i01_feasible", samples: int = 48, engine: str = "CYCLES",
     jp = Path(f"/tmp/job_{tag}.json")
     jp.write_text(json.dumps(job))
 
-    p = subprocess.run(["blender", "-b", "-P", "/root/blender_render.py", "--", str(jp)],
-                       capture_output=True, text=True, timeout=3300, cwd="/root")
+    p = subprocess.run(["blender", "-b", "-P", "/root/blender_render.py"],
+                       capture_output=True, text=True, timeout=3300, cwd="/root",
+                       env={**os.environ, "BLENDER_JOB": str(jp)})
     log = (p.stdout or "") + "\n--stderr--\n" + (p.stderr or "")
     volume.commit()
     out = {"returncode": p.returncode, "log_tail": log[-3000:]}

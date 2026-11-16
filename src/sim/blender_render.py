@@ -327,7 +327,23 @@ def render_job(job: dict) -> dict:
         bpy.ops.render.render(write_still=True)
         times.append(time.perf_counter() - t0)
     dt = np.asarray(times)
+    dev = {"cycles_requested": job.get("device", "GPU"),
+           "cycles_engine": scene.render.engine}
+    try:
+        import gpu
+        dev["gl_backend"] = gpu.platform.backend_type_get()
+        dev["gl_vendor"] = gpu.platform.vendor_get()
+        dev["gl_renderer"] = gpu.platform.renderer_get()
+    except Exception as exc:
+        dev["gl_error"] = repr(exc)
+    try:
+        prefs = bpy.context.preferences.addons["cycles"].preferences
+        dev["cycles_backend"] = prefs.compute_device_type
+        dev["cycles_devices_enabled"] = [d.name for d in prefs.devices if getattr(d, "use", False)]
+    except Exception as exc:            # pragma: no cover - diagnostic only
+        dev["cycles_backend_error"] = repr(exc)
     return {
+        "device_info": dev,
         "n_frames": int(len(poses)),
         "width": int(job["width"]), "height": int(job["height"]),
         "engine": scene.render.engine,
@@ -359,10 +375,12 @@ def main() -> int:
         # Blender consumes the "--" separator in some invocations; the job file is then the
         # only argument that is a .json path.
         args = [a for a in argv[1:] if a.endswith(".json")]
-    if not args:
-        print("usage: blender -b -P src/sim/blender_render.py -- job.json")
+    job_path = os.environ.get("BLENDER_JOB") or (args[0] if args else None)
+    if not job_path:
+        print("usage: BLENDER_JOB=job.json blender -b -P blender_render.py   "
+              "(or: blender -b -P blender_render.py -- job.json)")
         return 2
-    with open(args[0]) as fh:
+    with open(job_path) as fh:
         job = json.load(fh)
     if job.get("verify_projection"):
         result = verify_projection(job, n_frames=int(job.get("verify_frames", 5)))
