@@ -71,10 +71,18 @@ def main() -> int:
 
     usable = [r for r in rows if r["status"] == "usable"]
     failed = [r for r in rows if r["status"] != "usable"]
+    # the bake-off's per-clip rule, for comparability with E7 (coverage is not meaningful on
+    # 16 samples, so only direction and ratio are applied)
+    def bakeoff_pass(r):
+        d, q = r.get("accel_dir_err_deg_median"), r.get("accel_mag_ratio")
+        return bool(d is not None and q is not None and d <= 30 and 0.7 <= q <= 1.4)
+
+    n_bakeoff_pass = int(sum(bakeoff_pass(r) for r in usable))
     out = {
         "n_clips": len(rows),
         "n_usable": len(usable),
         "n_failed": len(failed),
+        "n_bakeoff_pass_among_usable": n_bakeoff_pass,
         "failed_by_status": {s: sum(1 for r in failed if r["status"] == s)
                              for s in {r["status"] for r in failed}},
         "median_dir_err_deg_usable": float(np.median(

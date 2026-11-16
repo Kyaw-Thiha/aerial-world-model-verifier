@@ -5,11 +5,12 @@ the path does not. This report is the stage-1 table for that question — can an
 produce a path the same statistics can use? — and it extends E7's bake-off with the three
 systems Track C never ran.
 
-**Decision: pending completion of the job set.** The pre-registered gate this report serves
-is F01's: with estimated attitude and the pixel path, false-reject at most 15 % and removal
-and mirror detection at least 90 %. A new extractor "passes" here only if it meets Track C's
-bake-off criteria *and* lifts the stage-0 statistics over that bar; the second condition is
-the one that matters.
+**Decision: the bake-off is answered, the gate is not moved.** ViPE passes Track C's
+bake-off 10/10 without the Kalibr intrinsics and beats DPVO's median direction error
+(4.0 vs 4.2 deg), yet the stage-0 statistics computed on ViPE's path are no better —
+false reject 2/8 (worse than DPVO's 1/8), removal 6/8, mirror 4/8 — so F01's gate still
+fails. MASt3R-SLAM passes on its first sequence at a much worse direction error (16.5 deg)
+and is being run on the remaining nine; MegaSaM's weights are Drive-only and it was not run.
 
 ## Plain-language summary
 

@@ -78,7 +78,7 @@ def _truth_meta(seq: str) -> dict:
     # `fps_measured` / `intrinsics_pinhole`. Accept either rather than assume one.
     fps = meta.get("fps_measured", meta.get("fps"))
     K = meta.get("intrinsics_pinhole") or meta.get("intrinsics")
-    return {"fps": float(fps), "intrinsics": K}
+    return {"fps": float(fps), "intrinsics": K, "n_frames": int(meta.get("n", 150))}
 
 
 def _write_calib(path: str, K: dict) -> str:
@@ -149,21 +149,27 @@ def mast3r_run(seqs: list[str]) -> str:
             continue
         data = np.asarray(rows, dtype=np.float64)
         ts, pos, quat = data[:, 0], data[:, 1:4], data[:, 4:8]
-        R = Rotation.from_quat(quat).as_matrix()
-        order = np.argsort(ts)
-        c2w = np.tile(np.eye(4), (len(order), 1, 1))
-        c2w[:, :3, :3] = R[order]
-        c2w[:, :3, 3] = pos[order]
-        t_norm = ts[order] - ts[order][0]
-        t_frames = np.arange(len(order)) / meta["fps"]
-        tgt = np.clip(t_frames, t_norm[0], t_norm[-1])
-        flat = np.column_stack([np.interp(tgt, t_norm, c2w[:, i, j])
-                                for i in range(3) for j in range(4)])
+        # The folder loader (RGBFiles) timestamps frames as index/30 whatever the real rate
+        # is, so the saved timestamps are frame indices in disguise: index = round(t * 30).
+        # Using them as indices keeps the pose on the frame it belongs to; treating them as
+        # seconds would compress a 10 s clip into 4 s.
+        idx = np.round(ts * 30.0).astype(int)
+        order = np.argsort(idx)
+        idx = idx[order]
+        R = Rotation.from_quat(quat[order]).as_matrix()
+        pos = pos[order]
+        t_frames = np.arange(int(meta.get("n_frames", 150)))
+        tgt = np.clip(t_frames, idx[0], idx[-1])
+        flat = np.column_stack([np.interp(tgt, idx, pos[:, k]) for k in range(3)]
+                               + [np.interp(tgt, idx, R[:, i, j])
+                                  for i in range(3) for j in range(3)])
         c2w_out = np.tile(np.eye(4), (len(t_frames), 1, 1))
-        c2w_out[:, :3, :4] = flat.reshape(-1, 3, 4)
+        c2w_out[:, :3, 3] = flat[:, :3]
+        c2w_out[:, :3, :3] = flat[:, 3:].reshape(-1, 3, 3)
         rec.update(_save(c2w_out, seq, {"traj_file": str(traj), "n_raw": int(len(order)),
-                                        "raw_dt_s": float(np.median(np.diff(t_norm)))
-                                        if len(t_norm) > 1 else None}))
+                                        "kept_frame_indices": idx.tolist(),
+                                        "kept_step": int(np.median(np.diff(idx)))
+                                        if len(idx) > 1 else None}))
         recs.append(rec)
     return json.dumps(recs, indent=1)
 
