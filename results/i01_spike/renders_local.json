@@ -1,0 +1,32 @@
+{
+  "host": "local workstation",
+  "results": [
+    {
+      "clip": "feasible",
+      "n_frames": 91,
+      "width": 640,
+      "height": 360,
+      "engine": "CYCLES",
+      "device": "GPU",
+      "samples": 48,
+      "fps": 0.23895830612976712,
+      "seconds_per_frame_median": 4.155019459999949,
+      "gpu": "NVIDIA GeForce RTX 3050 Laptop GPU, 4096 MiB",
+      "blender_version": "4.5.9 LTS"
+    },
+    {
+      "clip": "level",
+      "n_frames": 91,
+      "width": 640,
+      "height": 360,
+      "engine": "CYCLES",
+      "device": "GPU",
+      "samples": 48,
+      "fps": 0.294988951571755,
+      "seconds_per_frame_median": 3.3448104469998725,
+      "gpu": "NVIDIA GeForce RTX 3050 Laptop GPU, 4096 MiB",
+      "blender_version": "4.5.9 LTS"
+    }
+  ],
+  "note": "48 spp, denoise on, exposure -3.0, Filmic; same scene and flight for both clips"
+}

@@ -1,0 +1,43 @@
+{
+  "name": "slalom",
+  "duration_s": 3.0,
+  "gt_hz": 250.0,
+  "n_gt": 751,
+  "video_fps": 30.0,
+  "n_frames": 91,
+  "k_d": 0.295,
+  "speed_max": 8.673489295722757,
+  "accel_max": 5.614706311199409,
+  "tilt_med_deg": 25.357730006997404,
+  "tilt_p95_deg": 32.12413225682701,
+  "tilt_max_deg": 32.16881379172409,
+  "frac_tilt_gt10_deg": 1.0,
+  "camera_uptilt_deg": 0.0,
+  "maneuver": "slalom",
+  "speed": 8.0,
+  "amplitude": 2.0,
+  "wavelength": 30.0,
+  "width": 640,
+  "height": 360,
+  "hfov_deg": 90.0,
+  "K": [
+    [
+      320.00000000000006,
+      0.0,
+      319.5
+    ],
+    [
+      0.0,
+      320.00000000000006,
+      179.5
+    ],
+    [
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "n_render_frames": 91,
+  "tilt_at_first_frame_deg": 14.618407203194627,
+  "tilt_at_last_frame_deg": 31.953152971659176
+}
