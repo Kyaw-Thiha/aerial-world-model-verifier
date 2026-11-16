@@ -202,6 +202,12 @@ open problem.
 * Compute: see `docs/COST_LEDGER.md`; the pre-registered estimate was 5 USD against a 50 USD
   ceiling.
 
+**Where the authoritative fold files live.** `results/g03_tilt_reader/folds/*.json` in git. The
+Modal volume `awmv-g-data` holds the *last written* version of each name, and the UZH baseline
+pass (`epochs = 0`, run after the fine-tune to get a matching baseline) overwrote the volume's
+three `uzh__*.json` with baseline-only records; the fine-tuned UZH records in git carry both
+columns and say so in `baseline_source`.
+
 ## Regenerate
 
 ```
