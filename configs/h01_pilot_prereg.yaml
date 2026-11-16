@@ -1,0 +1,149 @@
+# H01 — generator pilot pre-registration (Track H).
+#
+# Committed BEFORE any new generated clip is scored on any arm. A change to a
+# statistic, a threshold, a population or a success criterion is an amendment
+# commit with a stated reason, not an edit. Frozen configs this file leans on
+# (`configs/gate_frozen.yaml`, the verdict threshold) are immutable and are used
+# exactly as frozen.
+prereg_version: 1
+date: 2026-11-16
+tag: "[H]"
+handoff: "14 (Track H generator pilot)"
+branch: track-h-generator-pilot
+
+# ---------------------------------------------------------------- shared reader
+reader:
+  description: >
+    The existing depicted-attitude reader used by the ANWM scoring track: GeoCalib
+    on pinhole-remapped frames at 224 px (f = 112 px), gravity -> body attitude
+    through the recorded camera mount (camera_to_body_pitched), tilt of the body z
+    axis from world up. Yaw is unobservable, so only tilt / lean vectors are used.
+  source: "remote/a_gate.py --job anwm (Track A2); results/gate_a2/anwm/depicted.jsonl"
+  geocalib_commit: 1dedb29f94fc11b896c5f572005978aeebccd67f
+  frame_size_px: 224
+  focal_px: 112.0
+  gate: configs/gate_frozen.yaml      # S3 latitude confidence, tau -0.0016656352350220922
+  noise_floor_deg: 0.57               # released level frames, stored in report 08
+
+required_tilt:
+  expression: "z_B ~ (a + g e3 + k_d v) / norm  (verifier flatness, src/physics/flatness.py)"
+  dt_s_primary: 1.0                   # paper-consistent 1 s per commanded step
+  dt_s_sensitivity: [0.25, 0.667]
+  k_d_primary: 0.295                  # fitted drag, /s
+  k_d_sensitivity: [0.0]
+  interpolant_primary: step           # per-step command; spline reported as sensitivity
+  clip_statistic: "median over clip frames of |required_tilt - depicted_tilt|"
+
+verdict_threshold:
+  value_deg: 6.46                     # frozen Phase 3a verdict threshold (configs/verdict_preregistration.yaml)
+  role: "a clip is FEASIBLE when its median residual is <= this value"
+testability_rule:
+  gate_kept: true
+  collapsed: false
+  min_frames_required_ge_10_deg: 12   # the protocol's excitation rule (report 08)
+
+# ---------------------------------------------------------------- Part 1: ANWM seed variance
+part1_seed_variance:
+  question: >
+    Does ANWM's depicted tilt vary across sampling seeds for the same commanded
+    path, and can picking the best of N seeds turn an infeasible flight into a
+    feasible one (oracle best-of-N)?
+  population:
+    model: "EmbodiedCity/ANWM, slim EMA checkpoint, seed 0 already generated"
+    sampling_steps: 250
+    paths: >
+      20 Regime C designed path instances: the start-0 clip of each of the 15
+      unique (maneuver, designed_tilt, policy) cells, plus the start-1 clip of
+      cruise, turn-20-fixed, slalom-10-fixed, accel-20-course and climb-20-fixed.
+      This spans cruise, designed 5/10/20 deg, turn, slalom, accelerate-brake and
+      climb-and-turn, with two start states on the sharpest cells.
+    seeds: [0, 1, 2, 3, 4]            # seed 0 exists; seeds 1-4 are generated
+    n_clips_total: 100
+    required_tilt_per_path: "identical across seeds; reuse the stored path"
+  statistics:
+    - "per-path depicted tilt (clip median) for each seed"
+    - "per-path spread: sd and max-min of the seed medians"
+    - "per-path per-seed residual (median |required - depicted|), residual spread"
+    - "best-of-N oracle residual r_N = min over the first N seeds (N = 1..5), averaged over paths"
+    - "best-of-N feasibility rate = fraction of paths with r_N <= 6.46 deg (k/n reported)"
+    - "design contrast: depicted tilt vs designed tilt 5/10/20 deg (slope, CI)"
+  best_of_n:
+    selection: oracle          # the seed with the lowest residual, not a deployable rule
+    n_grid: [1, 2, 3, 4, 5]
+    seed_order: "seeds 0,1,2,3,4 in that fixed order; min over the first N"
+    intervals: "path-clustered bootstrap, 5000 replicates, numpy.random.default_rng(1)"
+  success_criterion:
+    sampling_helps: >
+      median over paths of (r_1 - r_5) >= 2.0 deg AND at least 20 % of paths
+      (k/n reported) move from infeasible at N=1 to feasible at N=5.
+    sampling_does_not_help: >
+      otherwise: state plainly that seed spread is too small for best-of-N to
+      rescue a designed path, and give the measured spread.
+    tiny_sample_rule: "fewer than 10 paths in a family is descriptive (dagger)"
+  controls:
+    - "depicted tilt on the released level frames (0.57 deg floor) is quoted, not re-measured"
+    - "the 5 paths already at 3 seeds are reported separately from the new 20-path set"
+
+# ---------------------------------------------------------------- Part 2: LingBot-World
+part2_lingbot:
+  weights:
+    - robbyant/lingbot-world-base-cam
+    - robbyant/lingbot-world-fast
+    - "community 4-bit build tried first if available"
+  license: Apache-2.0
+  inputs:
+    pose_format: "poses.npy [frames,4,4], OpenCV camera-to-world (to be verified before use)"
+    intrinsics_format: "intrinsics.npy [frames,4] = fx, fy, cx, cy"
+  first_frames: >
+    5 aerial first frames from the ANWM release (224/512 px source), one per
+    distinct scene/start, recorded by traj name and time index.
+  paths: [cruise, designed 5 deg, designed 10 deg, designed 20 deg, slalom]
+  convention_gate:
+    test: "pure 20 deg camera roll applied to one real frame"
+    pass: >
+      the depicted tilt reads 15-25 deg with the sign of the applied roll, and a
+      visual horizon check rotates the expected way; if this fails, no tilt result
+      from this arm is reported (only the failure).
+  arms:
+    level: "translation path with level camera attitude"
+    flatness: "same translation path, camera roll/pitch from the verifier flatness expression"
+    mirrored_roll: "flatness arm with the roll component negated"
+  statistics:
+    - "depicted tilt (clip median) per arm and path"
+    - "depicted lean vector (x,y in world-horizontal) per arm"
+  success_criterion:
+    follows_injection: >
+      across the 5 paths, the flatness arm's depicted lean direction agrees in sign
+      with the injected lean on >= 4 of 5 paths, and the flatness arm's depicted tilt
+      exceeds the level arm's by >= 50 % of the injected tilt magnitude on >= 3 of 5;
+      the mirrored arm's horizontal lean x-component has the opposite sign to the
+      flatness arm on >= 4 of 5 paths.
+    report_even_if_negative: true
+  cost_recording: "seconds/clip, peak VRAM, GPU type, USD/clip, extrapolation to 200 clips"
+
+# ---------------------------------------------------------------- Part 3: Wan 2.2 I2V
+part3_wan:
+  model: "Wan2.2 I2V-A14B if it fits, else the smaller variant"
+  clips: 5
+  first_frames: "the same 5 aerial first frames as Part 2"
+  prompts:
+    - "a quadrotor drone banks steeply to the right while turning at constant speed over the city"
+    - "a drone flies a fast slalom, banking left then right between buildings"
+    - "a drone approaches a landing pad, pitching nose down and slowing"
+    - "a drone performs a constant-speed orbit around a tower, tilted toward the centre"
+    - "a drone climbs and banks left over an urban skyline"
+  statistics: ["seconds/clip", "peak VRAM", "GPU type", "USD/clip", "depicted tilt (clip median)"]
+  claim_scope: >
+    descriptive pilot only: no commanded path exists, so no residual and no
+    feasibility verdict is computed for this arm.
+  licence_probe_only: ["HunyuanVideo-1.5 I2V", "Cosmos-Predict 2.5", "SolarWM (gated)"]
+
+# ---------------------------------------------------------------- cost and stop rule
+budget:
+  ceiling_usd: 75
+  ask_before_usd: 20
+  gpu_prices_usd_per_hour: {A10: 1.10, A10G: 1.10, L40S: 1.95, A100-80GB: 2.50, H100: 3.95}
+stop_rule: >
+  Stop after the pilot deliverables and wait for the user's decision before
+  generating at scale. No threshold, population or arm is changed after a held-out
+  outcome is seen.
