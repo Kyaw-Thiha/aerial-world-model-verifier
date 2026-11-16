@@ -1,0 +1,213 @@
+{
+ "note": "descriptive; the gate uses the pre-registered LOSO flags",
+ "auc": {
+  "V1_preintegration|estimated_attitude|pixel": {
+   "tilt_removal": 0.75,
+   "mirror_roll": 0.796875,
+   "scale_0.5": 0.6875,
+   "scale_1.5": 0.9375,
+   "null_edit": 0.515625,
+   "yaw_control": 0.5
+  },
+  "V2_shooting|estimated_attitude|pixel": {
+   "tilt_removal": 0.9375,
+   "mirror_roll": 0.796875,
+   "scale_0.5": 0.875,
+   "scale_1.5": 0.90625,
+   "null_edit": 0.5,
+   "yaw_control": 0.53125
+  },
+  "V3_band_coherence|estimated_attitude|pixel": {
+   "tilt_removal": 0.640625,
+   "mirror_roll": 0.5,
+   "scale_0.5": 0.453125,
+   "scale_1.5": 0.53125,
+   "null_edit": 0.5,
+   "yaw_control": 0.578125
+  },
+  "V4_velocity_drag|estimated_attitude|pixel": {
+   "tilt_removal": NaN,
+   "mirror_roll": NaN,
+   "scale_0.5": NaN,
+   "scale_1.5": NaN,
+   "null_edit": NaN,
+   "yaw_control": NaN
+  },
+  "V5_physics_scale|estimated_attitude|pixel": {
+   "tilt_removal": 0.5625,
+   "mirror_roll": 0.5,
+   "scale_0.5": 0.5,
+   "scale_1.5": 0.5,
+   "null_edit": 0.5,
+   "yaw_control": 0.5
+  },
+  "V1_preintegration|estimated_attitude|oracle": {
+   "tilt_removal": 1.0,
+   "mirror_roll": 0.984375,
+   "scale_0.5": 1.0,
+   "scale_1.5": 1.0,
+   "null_edit": 0.546875,
+   "yaw_control": 0.6875
+  },
+  "V2_shooting|estimated_attitude|oracle": {
+   "tilt_removal": 1.0,
+   "mirror_roll": 0.984375,
+   "scale_0.5": 0.953125,
+   "scale_1.5": 1.0,
+   "null_edit": 0.546875,
+   "yaw_control": 0.578125
+  },
+  "V3_band_coherence|estimated_attitude|oracle": {
+   "tilt_removal": 0.828125,
+   "mirror_roll": 0.734375,
+   "scale_0.5": 0.53125,
+   "scale_1.5": 0.453125,
+   "null_edit": 0.515625,
+   "yaw_control": 0.515625
+  },
+  "V4_velocity_drag|estimated_attitude|oracle": {
+   "tilt_removal": NaN,
+   "mirror_roll": NaN,
+   "scale_0.5": NaN,
+   "scale_1.5": NaN,
+   "null_edit": NaN,
+   "yaw_control": NaN
+  },
+  "V5_physics_scale|estimated_attitude|oracle": {
+   "tilt_removal": 0.5,
+   "mirror_roll": 0.5,
+   "scale_0.5": 0.5,
+   "scale_1.5": 0.5,
+   "null_edit": 0.5,
+   "yaw_control": 0.5
+  },
+  "V1_preintegration|oracle_attitude|pixel": {
+   "tilt_removal": 0.53125,
+   "mirror_roll": 0.53125,
+   "scale_0.5": 0.53125,
+   "scale_1.5": 0.53125,
+   "null_edit": 0.53125,
+   "yaw_control": 0.53125
+  },
+  "V2_shooting|oracle_attitude|pixel": {
+   "tilt_removal": 0.5078125,
+   "mirror_roll": 0.5078125,
+   "scale_0.5": 0.5078125,
+   "scale_1.5": 0.5078125,
+   "null_edit": 0.5078125,
+   "yaw_control": 0.5078125
+  },
+  "V3_band_coherence|oracle_attitude|pixel": {
+   "tilt_removal": 0.5,
+   "mirror_roll": 0.5,
+   "scale_0.5": 0.5,
+   "scale_1.5": 0.5,
+   "null_edit": 0.5,
+   "yaw_control": 0.5
+  },
+  "V4_velocity_drag|oracle_attitude|pixel": {
+   "tilt_removal": NaN,
+   "mirror_roll": NaN,
+   "scale_0.5": NaN,
+   "scale_1.5": NaN,
+   "null_edit": NaN,
+   "yaw_control": NaN
+  },
+  "V5_physics_scale|oracle_attitude|pixel": {
+   "tilt_removal": 0.5,
+   "mirror_roll": 0.5,
+   "scale_0.5": 0.5,
+   "scale_1.5": 0.5,
+   "null_edit": 0.5,
+   "yaw_control": 0.5
+  }
+ },
+ "mirror_vs_roll_excitation": {
+  "variant": [
+   "indoor_forward_9",
+   "1"
+  ],
+  "clips": [
+   {
+    "clip": "indoor_forward_10_00_real",
+    "roll_spread": 0.05756176952122104,
+    "pitch_spread": 0.10671339332814504,
+    "stat_real": 0.1799087780377541,
+    "stat_removal": 0.7170890890208701,
+    "stat_mirror": 0.9506687910086331,
+    "flag_removal": "True",
+    "flag_mirror": "True"
+   },
+   {
+    "clip": "indoor_forward_10_01_real",
+    "roll_spread": 0.13461570800494463,
+    "pitch_spread": 0.06929477737104026,
+    "stat_real": 0.1268145078615121,
+    "stat_removal": 0.4059667851290664,
+    "stat_mirror": 0.1590393751255662,
+    "flag_removal": "False",
+    "flag_mirror": "False"
+   },
+   {
+    "clip": "indoor_forward_3_00_real",
+    "roll_spread": 0.11686152294684699,
+    "pitch_spread": 0.12994852181661082,
+    "stat_real": 0.13382889732616787,
+    "stat_removal": 0.6254527337626368,
+    "stat_mirror": 0.20518967316233624,
+    "flag_removal": "True",
+    "flag_mirror": "False"
+   },
+   {
+    "clip": "indoor_forward_3_01_real",
+    "roll_spread": 0.2928449441090897,
+    "pitch_spread": 0.18000286508358054,
+    "stat_real": 0.2890443887896233,
+    "stat_removal": 0.26675095500156726,
+    "stat_mirror": 0.19429101653316544,
+    "flag_removal": "False",
+    "flag_mirror": "False"
+   },
+   {
+    "clip": "indoor_forward_5_00_real",
+    "roll_spread": 0.024976176074051108,
+    "pitch_spread": 0.07629405835567184,
+    "stat_real": 0.09189190514405955,
+    "stat_removal": 0.7480707275235993,
+    "stat_mirror": 0.24443039118699889,
+    "flag_removal": "True",
+    "flag_mirror": "False"
+   },
+   {
+    "clip": "indoor_forward_5_01_real",
+    "roll_spread": 0.07056946032283036,
+    "pitch_spread": 0.022254076592693288,
+    "stat_real": 0.0872028260170249,
+    "stat_removal": 0.5116584298305648,
+    "stat_mirror": 1.047267939398725,
+    "flag_removal": "True",
+    "flag_mirror": "True"
+   },
+   {
+    "clip": "indoor_forward_9_00_real",
+    "roll_spread": 0.018623109122609317,
+    "pitch_spread": 0.09121905605668566,
+    "stat_real": 0.32001243986208683,
+    "stat_removal": 0.7389587527000699,
+    "stat_mirror": 1.398625535449458,
+    "flag_removal": "True",
+    "flag_mirror": "True"
+   },
+   {
+    "clip": "indoor_forward_9_01_real",
+    "roll_spread": 0.15825986493321761,
+    "pitch_spread": 0.04483877872778868,
+    "stat_real": 0.46888802452803835,
+    "stat_removal": 0.7109733232767486,
+    "stat_mirror": 1.3879650960749714,
+    "flag_removal": "True",
+    "flag_mirror": "True"
+   }
+  ]
+ }
+}

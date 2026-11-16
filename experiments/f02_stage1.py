@@ -52,9 +52,9 @@ def passes(sc: dict, crit: dict) -> bool:
     cov = sc.get("coverage_fraction")
     if d is None or ratio is None or cov is None:
         return False
-    lo, hi = crit["accel_magnitude"]["interval"]
-    return bool(d <= crit["accel_direction"]["threshold_deg"] and lo <= ratio <= hi
-                and cov >= 0.2)
+    direction = crit["acceleration_direction"]["threshold_deg"]
+    lo, hi = crit["acceleration_magnitude"]["interval"]
+    return bool(d <= direction and lo <= ratio <= hi and cov >= 0.2)
 
 
 def main() -> int:
@@ -65,7 +65,8 @@ def main() -> int:
     ap.add_argument("--out", default="results/f02_stage1/scores.json")
     args = ap.parse_args()
     import yaml
-    crit = yaml.safe_load(Path(args.prereg).read_text())["criteria"]
+    doc = yaml.safe_load(Path(args.prereg).read_text())
+    crit = doc.get("gate1_pass_criteria") or doc["criteria"]
     root, uzh = Path(args.poses_root), Path(args.uzh)
 
     out = {"criteria": crit, "methods": {}}

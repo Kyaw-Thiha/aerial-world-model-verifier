@@ -41,14 +41,78 @@ and the pre-registered pass rule `direction <= 30 deg`, `ratio in [0.7, 1.4]`, p
 coverage `>= 0.2`, with a model passing at a `>= 0.5` per-clip pass rate
 (`configs/pathrec_prereg.yaml`).
 
-## Results
+## Results — the bake-off table, extended
 
-*(filled from `results/f02_stage1/scores.json`)*
+Run `results/f02_stage1/scores.json`; code commit `06161c8`, extracted with
+`experiments/f02_stage1.py` from the poses on `awmv-f-data` (sha256 in each run's JSON).
+Same clips, same metric, same pass rule as E7.
 
-## The stage-0 statistics on the new paths
+| extractor | sequence | direction error (deg) | magnitude ratio | coverage | ATE Sim(3) (m) | pass |
+| --- | --- | --- | --- | --- | --- | --- |
+| dpvo | indoor_forward_3 | 1.8 | 0.98 | 0.76 | 0.15 | yes |
+| dpvo | indoor_forward_5 | 2.5 | 1.00 | 0.53 | 0.14 | yes |
+| dpvo | indoor_forward_6 | 3.1 | 0.95 | 0.85 | 1.04 | yes |
+| dpvo | indoor_forward_7 | 20.9 | 0.98 | 0.86 | 2.21 | yes |
+| dpvo | indoor_forward_9 | 1.5 | 1.00 | 0.65 | 0.10 | yes |
+| dpvo | indoor_forward_10 | 2.3 | 1.00 | 0.62 | 0.16 | yes |
+| dpvo | outdoor_forward_1 | 6.9 | 0.94 | 0.49 | 0.82 | yes |
+| dpvo | outdoor_forward_3 | 5.2 | 0.92 | 0.61 | 0.75 | yes |
+| dpvo | outdoor_forward_5 | 11.2 | 1.15 | 0.84 | 3.32 | yes |
+| dpvo | indoor_45_9 | 13.2 | 0.73 | 0.90 | 4.99 | yes |
+| **dpvo total** | **10/10** | **4.2** | **0.98** | | | |
+| vipe | indoor_forward_3 | 2.5 | 1.04 | 0.76 | 0.63 | yes |
+| vipe | indoor_forward_5 | 3.2 | 0.97 | 0.53 | 0.25 | yes |
+| vipe | indoor_forward_6 | 4.7 | 1.02 | 0.85 | 0.51 | yes |
+| vipe | indoor_forward_7 | 2.4 | 0.85 | 0.86 | 0.52 | yes |
+| vipe | indoor_forward_9 | 2.1 | 1.00 | 0.65 | 0.67 | yes |
+| vipe | indoor_forward_10 | 2.3 | 0.99 | 0.62 | 0.27 | yes |
+| vipe | outdoor_forward_1 | 5.4 | 0.92 | 0.49 | 1.79 | yes |
+| vipe | outdoor_forward_3 | 9.9 | 1.19 | 0.61 | 3.46 | yes |
+| vipe | outdoor_forward_5 | 12.0 | 1.11 | 0.84 | 4.42 | yes |
+| vipe | indoor_45_9 | 6.3 | 0.89 | 0.90 | 1.70 | yes |
+| **vipe total** | **10/10** | **4.0** | **0.99** | | | |
 
-*(filled from the re-run of `experiments/f01_stage0.py` with `--poses` pointing at the new
-extractor; same population, same thresholds, same edits)*
+
+**ViPE passes 10/10 with its own estimated intrinsics**, a median direction error of 4.0 deg
+against DPVO's 4.2, a median magnitude ratio of 0.99 against 0.98, and it is far better on the
+two sequences where DPVO is weakest: `indoor_forward_7` 2.4 vs 20.9 deg and `indoor_45_9`
+6.3 vs 13.2 deg. Its Sim(3) ATE is larger on several sequences (0.63 vs 0.15 m on
+indoor_forward_3, 3.46 vs 0.75 on outdoor_forward_3) while its direction and magnitude are
+equal or better — the same dissociation C07 saw between trajectory error and acceleration
+direction. Since ViPE is **not** given the Kalibr calibration, that is the strongest form of
+the result C07 framed: with modern streaming SLAM, supplied intrinsics are no longer the
+dividing line.
+
+MASt3R-SLAM: *(filled when the run lands; the image builds only after forcing
+`has_cuda = True` in its `setup.py`, because the build container has no GPU)*.
+
+MegaSaM: not run (Drive-only weights).
+
+## The stage-0 statistics on ViPE's path
+
+Re-run of `experiments/f01_stage0.py` with `--poses data/pathrec/poses/vipe` and nothing else
+changed (`results/f02_stage1/stage0_vipe/`), same 8 real clips in 4 sequences, same
+leave-one-sequence-out conformal rule:
+
+| variant | real | removal | mirror | x1.5 | AUC removal | AUC mirror |
+| --- | --- | --- | --- | --- | --- | --- |
+| V1 preintegration | 0.125 (1/8) | 0.000 (0/8) | 0.625 (5/8) | 0.875 (7/8) | 0.75 | 0.80 |
+| **V2 shooting** | **0.250 (2/8)** | **0.750 (6/8)** | **0.500 (4/8)** | 0.750 (6/8) | 0.94 | 0.80 |
+| V3 band coherence | 0.250 (2/8) | 0.250 (2/8) | 0.000 (0/8) | 0.125 (1/8) | 0.64 | 0.50 |
+| V4 velocity-drag | untestable | untestable | untestable | untestable | -- | -- |
+| V5 physics scale | 0.000 (0/8) | 0.125 (1/8) | 0.000 (0/8) | 0.000 (0/8) | 0.63 | 0.50 |
+
+**ViPE does not move the gate.** The false-reject rate gets worse (2/8 against 1/8) and
+detection is unchanged at 6/8 and 4/8. The two ViPE false rejects are both
+`indoor_forward_9` clips (0.320 and 0.469 against the 0.262 held-out threshold); with DPVO,
+`indoor_forward_9#00` sat at 0.120. So on that sequence ViPE's path is *better* by the
+bake-off metric (2.1 deg direction error, 0.67 m ATE) and *worse* for the verdict, which
+needs the path's shape at the frequencies the depicted lean excites rather than the median
+acceleration direction. Rank AUCs confirm the direction of the change: removal 0.94 vs 0.95,
+mirror 0.80 vs 0.89.
+
+The gate therefore still fails with the best extractor available, and the failure is not a
+calibration artefact: ViPE never saw the Kalibr K.
 
 ## What this supports
 

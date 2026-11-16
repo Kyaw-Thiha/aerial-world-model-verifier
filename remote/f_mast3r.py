@@ -29,7 +29,8 @@ SEQS = ["indoor_forward_3", "indoor_forward_5", "indoor_forward_6", "indoor_forw
 
 mast3r_image = (
     modal.Image.from_registry("nvidia/cuda:12.4.1-devel-ubuntu22.04", add_python="3.11")
-    .apt_install("git", "libgl1", "libglib2.0-0", "build-essential", "wget", "clang")
+    .apt_install("git", "libgl1", "libglib2.0-0", "build-essential", "wget", "clang",
+                 "libusb-1.0-0", "libudev1")
     .pip_install("torch==2.5.1", "torchvision==0.20.1",
                  index_url="https://download.pytorch.org/whl/cu124")
     .pip_install("numpy<2", "wheel", "setuptools", "ninja", "packaging", "cython")
@@ -73,7 +74,11 @@ def _truth_meta(seq: str) -> dict:
     from pathlib import Path
 
     meta = json.loads((Path(C_DATA) / "uzh" / seq / "meta.json").read_text())
-    return {"fps": float(meta["fps_measured"]), "intrinsics": meta["intrinsics_pinhole"]}
+    # the c-volume's meta uses `fps` / `intrinsics`; the local prepared copy uses
+    # `fps_measured` / `intrinsics_pinhole`. Accept either rather than assume one.
+    fps = meta.get("fps_measured", meta.get("fps"))
+    K = meta.get("intrinsics_pinhole") or meta.get("intrinsics")
+    return {"fps": float(fps), "intrinsics": K}
 
 
 def _write_calib(path: str, K: dict) -> str:
@@ -117,10 +122,12 @@ def mast3r_run(seqs: list[str]) -> str:
         meta = _truth_meta(seq)
         calib = _write_calib("/tmp/intrinsics.yaml", meta["intrinsics"])
         t0 = time.time()
-        cmd = ["python", "main.py", "--dataset", frames, "--config", "config/base.yaml",
-               "--calib", calib, "--save-as", f"f01_{seq}"]
+        import sys
+        cmd = [sys.executable, "main.py", "--dataset", frames, "--config",
+               "config/base.yaml", "--calib", calib, "--save-as", f"f01_{seq}"]
         r = subprocess.run(cmd, capture_output=True, text=True, cwd="/opt/mast3r-slam",
-                           env={"PYTHONPATH": "/opt/mast3r-slam", "PATH": "/usr/bin:/bin",
+                           env={"PYTHONPATH": "/opt/mast3r-slam",
+                                "PATH": "/usr/local/bin:/usr/bin:/bin",
                                 "HOME": "/root", "MPLBACKEND": "Agg",
                                 "TORCH_CUDA_ARCH_LIST": "8.0"})
         rec = {"seq": seq, "returncode": r.returncode, "wall_s": round(time.time() - t0, 1),

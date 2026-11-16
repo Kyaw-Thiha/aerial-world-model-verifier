@@ -9,6 +9,7 @@ mechanical explanation of the mirror rate.
 """
 from __future__ import annotations
 
+import argparse
 import csv
 import json
 from pathlib import Path
@@ -46,7 +47,11 @@ def auc(pos: np.ndarray, neg: np.ndarray) -> float:
 
 
 def main() -> int:
-    rows = list(csv.DictReader(open("results/f01_stage0/rows.csv")))
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--rows", default="results/f01_stage0/rows.csv")
+    ap.add_argument("--out", default="results/f01_stage0/analysis.json")
+    args = ap.parse_args()
+    rows = list(csv.DictReader(open(args.rows)))
 
     def val(r, key="statistic"):
         if not r:
@@ -100,7 +105,7 @@ def main() -> int:
             "flag_mirror": m.get("flag"),
         })
     out["mirror_vs_roll_excitation"] = {"variant": key, "clips": table}
-    Path("results/f01_stage0/analysis.json").write_text(json.dumps(out, indent=1))
+    Path(args.out).write_text(json.dumps(out, indent=1))
     print(json.dumps(out["auc"], indent=1))
     print("\nmirror / roll excitation (V2, estimated attitude, pixel path):")
     for c in table:
