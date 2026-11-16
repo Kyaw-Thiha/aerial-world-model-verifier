@@ -302,22 +302,32 @@ frames, against 1.14 and 0.62 on the Cycles frames, with the same gain (0.94/1.0
 
 ## Caveats
 
-* The L40S numbers are from a shared cloud GPU; frame times vary with scene content and with
-  the number of light bounces (`max_bounces = 4`, 48 spp, denoise on).
+* The L40S throughput numbers are six-frame runs on a shared cloud GPU with
+  `max_bounces = 4`; frame times vary by tens of percent with scene content, with the number
+  of bounces and with whichever GPU the scheduler hands out.
 * The mount in the spike is 0 deg uptilt. TII flies 30-50 deg, so the real set should carry
   both, and the mount enters the depicted-lean conversion (`R_cb`).
 * The spike's `k_d` is the project's frozen 0.295 /s; the simulated flights inherit the
   project's own drag model, so agreement with the real flights is by construction and is not
   evidence about the drag model.
 * Everything in this report is reproducible from the committed scripts; the frames themselves
-  are on the Modal volume `awmv-i-data` (`frames/i01_feasible`, `frames/i01_level`) and the
-  GT arrays are regenerable with `experiments/i01_spike_flight.py`.
+  are on the Modal volume `awmv-i-data` (`frames/i01_feasible`, `frames/i01_level`,
+  `frames/i01_mirror`, `frames/i01_feasible_eevee`) and the GT arrays are regenerable with
+  `experiments/i01_spike_flight.py`.
 
 ## Recommendation
 
-**Blender + `src/sim/flight.py`**, with the scene library extended (2-3 scene families,
-realistic materials, an HDRI) and the output written to R2 with a manifest. Isaac Sim stays
-the fallback if the tilt reader's error on Blender frames turns out to be too large to be
-useful — which the numbers above settle before any dataset is built.
+**Blender + `src/sim/flight.py`, EEVEE Next for the bulk pass, Cycles for a validation
+subset**, with the scene library extended (2-3 scene families, an HDRI, more surface texture)
+and the output written to R2 with a manifest. Isaac Sim stays the fallback if the tilt
+reader's error on Blender frames turns out to be too large to be useful — which the numbers
+above settle before any dataset is built.
+
+Concretely, for Step 2's 300 flights × 20 s × 30 fps at 640×360: an EEVEE pass over the whole
+set is about 9 GPU-hours (USD ~18 at the L40S list price, USD ~33 if the end-to-end clip rate
+is used instead), so the set fits inside the USD 40 ceiling with room for a Cycles re-render of
+a validation slice. Two things to measure *before* committing the frame budget: the
+animation-mode render rate (which should remove most of Cycles' per-frame overhead) and the
+reader's error on the second and third scene family.
 
 **Approval needed before Step 2** (the labelled set), per handoff 15.
