@@ -75,6 +75,15 @@ deg, turn, slalom, accelerate-brake and climb-and-turn, with two start states on
 cells. It is a designed, not a random, sample of Regime C and over-weights the two
 high-depicted-tilt paths; the consequence is quantified in the results.
 
+**LingBot-World's control is relative.** The pipeline calls
+`compute_relative_poses(c2ws, framewise=True)`: the model sees the pose change between
+consecutive frames, and the first frame's absolute attitude is discarded (the input image
+anchors the scene). A constant camera roll is therefore invisible, so the convention probe
+ramps the roll linearly from 0 to ±20 deg across the clip, and only arms whose attitude
+changes within the clip can carry information. The `cruise` flatness arm is a constant drag
+pitch (8.55 deg) and is therefore indistinguishable from level; it is generated and reported
+as such, not as a control that failed.
+
 **LingBot-World arms.** Five first frames from the ANWM release — the five lexicographically
 first trajectories under `data/raw/anwm_frames/`, smallest recorded frame index each — padded
 from 512x512 to 832x480, because the pipeline hard-codes 480x832 intrinsics. Five designed
@@ -112,20 +121,42 @@ designed manoeuvres.
 
 ### 2. LingBot-World roll injection
 
-TBD.
+**Convention gate.** The model conditions on framewise relative poses, so the probe ramps the
+roll from 0 to ±20 deg over 49 frames (a constant roll is invisible). The level control
+clip reads a depicted tilt of **3.29 deg** (median over 49 frames). The two ramp clips are
+reported below; no grid clip was generated before this gate was read.
+
+TBD ramp result.
 
 ### 3. Cost, time and VRAM
 
 | model | GPU | s/clip (median) | peak VRAM | USD/clip | 200 clips |
 | --- | --- | --- | --- | --- | --- |
 | ANWM (16 frames, 250 steps) | A10 | 217.9 (n = 5 measured) | 7.3 GB | 0.067 | 12.1 GPU-hours, US$13.3 |
-| LingBot-World NF4 (49 frames, 40 steps) | A100-80GB | TBD | TBD | TBD | TBD |
-| Wan 2.2 TI2V-5B (49 frames, 40 steps) | A10G | TBD | TBD | TBD | TBD |
+| LingBot-World NF4 (49 frames, 40 steps) | A100-80GB | 658.2 (n = 1 probe) | 20.9 GB | 0.457 | 36.6 GPU-hours, US$91 |
+| Wan 2.2 TI2V-5B (49 frames, 40 steps) | A10 | 135.0 (n = 5) | 15.2 GB | 0.041 | 7.5 GPU-hours, US$8.3 |
 
 ANWM's per-clip seconds are the median of the new seed manifests; USD uses the Modal list
-price for A10 (1.10 USD/h). The LingBot and Wan rows are filled from their manifests and
-include the first-clip warmup where it is measured, but exclude the one-time model load,
-which is reported separately.
+price for A10 (1.10 USD/h). Wan's row is the median of the five manifests (133.9-137.0 s); it includes VAE decode and
+frame writing, and excludes the one-time model load (about 1-2 min from the volume). LingBot's row is the level probe clip; at 20
+steps (the pre-registered grid setting) the cost is about half, 18.8 GPU-hours and US$47 for
+200 clips. Both exclude the one-time 30-40 min NF4 load, which is paid per container.
+
+### 3b. Wan 2.2, descriptive
+
+| prompt | depicted median (deg) | p90 (deg) | frame-to-frame delta (median) |
+| --- | --- | --- | --- |
+| banked turn right | 2.50 | 4.91 | 0.043 |
+| slalom | 1.23 | 5.88 | 0.462 |
+| approach and slow | 1.12 | 4.99 | 0.428 |
+| constant-speed orbit | 3.75 | 7.10 | 0.011 |
+| climb and bank left | 3.77 | 5.43 | 0.022 |
+
+Five clips, one seed each, 49 frames, 480x832. The prompt asks for a bank of roughly 20 deg;
+the reader's clip medians are 1.1-3.8 deg, with p90 at 4.9-7.1 deg. The two clips with a
+frame-to-frame delta near 0.43-0.46 (slalom, approach) contain cuts or a scene reset, so their
+median is not a stable attitude measurement; the other three move smoothly (delta 0.01-0.04).
+No residual is computed: there is no commanded path, so this is not a feasibility result.
 
 ### 4. Licence and gating (probed, not downloaded)
 

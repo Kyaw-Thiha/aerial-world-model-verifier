@@ -27,8 +27,8 @@ vol_anwm_b = modal.Volume.from_name("awmv-h-anwm-results-b", create_if_missing=T
 vol_anwm_c = modal.Volume.from_name("awmv-h-anwm-results-c", create_if_missing=True)
 vol_lingbot = modal.Volume.from_name("awmv-h-lingbot-results", create_if_missing=True)
 vol_wan = modal.Volume.from_name("awmv-h-wan-results", create_if_missing=True)
-SOURCES = {"anwm": ("/anwm", "clips"), "anwm_b": ("/anwmb", "clips"),
-           "anwm_c": ("/anwmc", "clips"), "lingbot": ("/lingbot", "lingbot"),
+SOURCES = {"anwm": ("/anwm", "clips/C"), "anwm_b": ("/anwmb", "clips/C"),
+           "anwm_c": ("/anwmc", "clips/C"), "lingbot": ("/lingbot", "lingbot"),
            "wan": ("/wan", "wan")}
 
 

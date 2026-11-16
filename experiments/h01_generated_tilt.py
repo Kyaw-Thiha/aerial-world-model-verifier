@@ -47,8 +47,18 @@ def main() -> int:
     args = ap.parse_args()
 
     rows = load_jsonl(ROOT / args.depicted)
-    grid = json.loads((ROOT / args.inputs / "manifest.json").read_text())["grid"]
+    man = json.loads((ROOT / args.inputs / "manifest.json").read_text())
+    grid = man["grid"]
     by_grid = {f"{g['traj']}_{g['frame']:03d}__{g['path']}__{g['arm']}": g for g in grid}
+    probes = man.get("convention_probe", {})
+    if probes:
+        fr = man["frames"][0]
+        level = [g for g in grid if g["path"] == "cruise" and g["arm"] == "level"
+                 and g["traj"] == fr["traj"]][0]
+        by_grid["probe_level"] = dict(level, arm="probe_level")
+        for key, label in (("20", "probe_rollramp_p20"), ("-20", "probe_rollramp_m20")):
+            by_grid[label] = dict(level, arm=f"probe_roll_{key}",
+                                  dir=probes[key]["dir"])
     by_clip: dict[str, list[dict]] = {}
     for r in rows:
         by_clip.setdefault(r["clip_id"], []).append(r)
@@ -92,6 +102,12 @@ def main() -> int:
                 "injected_lean_y": float(lean_inj[:, 1].mean()),
                 "lean_direction_cos_median": cos,
                 "lean_direction_agrees": agree,
+                "depicted_tilt_first10_deg": float(np.nanmedian(tilt[:10])),
+                "depicted_tilt_last10_deg": float(np.nanmedian(tilt[-10:])),
+                "injected_tilt_first10_deg": float(np.nanmedian(tilt_inj[:10])),
+                "injected_tilt_last10_deg": float(np.nanmedian(tilt_inj[-10:])),
+                "pearson_tilt": (float(np.corrcoef(tilt, tilt_inj)[0, 1])
+                                 if np.std(tilt) > 0 and np.std(tilt_inj) > 0 else None),
             })
             for i in range(n):
                 per_frame.append({"clip_id": cid, "frame": rs[i]["frame"], "i": i,

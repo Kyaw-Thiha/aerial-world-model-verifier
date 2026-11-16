@@ -34,6 +34,7 @@ def main() -> int:
     ap.add_argument("--tag", required=True)
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--max-mb", type=float, default=200.0)
+    ap.add_argument("--patterns", default="", help="comma-separated globs; empty = all files")
     args = ap.parse_args()
 
     from src.utils.r2 import load_env, upload
@@ -41,6 +42,9 @@ def main() -> int:
     load_env()
     src = ROOT / args.src
     files = sorted(p for p in src.rglob("*") if p.is_file())
+    if args.patterns:
+        pats = [q.strip() for q in args.patterns.split(",") if q.strip()]
+        files = [p for p in files if any(p.match(q) for q in pats)]
     rows, skipped = [], []
     for p in files:
         rel = p.relative_to(src).as_posix()
