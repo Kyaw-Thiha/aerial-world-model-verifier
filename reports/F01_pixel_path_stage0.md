@@ -287,6 +287,12 @@ general re-render sensitivity is unmeasured and needs DPVO on the edited frames.
 * **The conformal threshold is now the second binding constraint.** With four clusters it
   converts a 0.95-AUC statistic into 0.75 detection. Any future gate at this scale needs
   either more sequences or a pre-registered lower conformal level.
+* **A better path by the bake-off's own metric does not fix it.** Stage 1 (`F02`) ran ViPE,
+  which passes Track C's bake-off 10/10 without the Kalibr intrinsics and improves the median
+  direction error (4.0 vs 4.2 deg), yet the same stage-0 statistics on its path give a worse
+  false-reject rate (2/8) and the same detection (6/8 removal, 4/8 mirror). The verdict needs
+  path *shape* at the frequencies the depicted lean excites, which the bake-off's median
+  direction error does not rank.
 
 ## What this does not show
 

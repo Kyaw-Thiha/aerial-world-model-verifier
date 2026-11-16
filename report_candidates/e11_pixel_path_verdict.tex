@@ -93,6 +93,18 @@ because the pre-registered band is deliberately loose; the scale it recovers is 
 of the Sim(3) truth scale (median 0.59), a systematic bias the data here cannot attribute
 between estimator attenuation and the drag/scale coupling.
 
+\paragraph{What a better extractor changes, and what it does not.}
+Stage~1 reran the same statistics on ViPE's path (report F02). ViPE passes Track C's bake-off
+10/10 \emph{without} the Kalibr intrinsics and improves the median direction error from 4.2 to
+4.0 deg, but the verdict is no better: false reject 2/8 (against 1/8 with DPVO), removal 6/8,
+mirror 4/8, and the two new false rejects are both \texttt{indoor\_forward\_9} clips whose
+path is \emph{better} by the bake-off metric. A median acceleration-direction error does not
+rank paths for this verdict; what the statistic needs is shape agreement at the frequencies
+the depicted lean excites. MASt3R-SLAM (5/10 on the bake-off, median 39 deg) was not fed in.
+On ANWM's generated clips (report F03) ViPE returns a finite trajectory for all 127 clips but
+36 are degenerate and the direction error has a median of 64 deg, so the pixel-path verdict
+is not formed there: there is no usable path to form it from.
+
 \paragraph{Scope and caveats.}
 The eight clips carry the gate; the exploratory set of fourteen further real clips (outdoor
 rigs, truncated windows, the clip Track E scores but the path only partly covers) does not
