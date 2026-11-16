@@ -11,19 +11,21 @@ blocks × two window lengths, all from commit `a794380`). CPU only; **zero GPU s
    over a 4 s clip and calibrating the *maximum* over windows conformally puts the threshold at
    **89-94 deg** instead of ~15 deg, because four clips of `flight-13a-trackRATM` carry a
    single glitchy window above 89 deg. Every fold whose fit set contains that flight inherits
-   it. The detector then flags nothing: detection equals the false-reject rate for every edit
-   family, and the residual tier's flags are literally identical for `x0.5`, `x1.5`, the yaw
-   control and the null edit (7 of 82 each), i.e. they come from windows that were already
-   above the threshold in the *real* clip.
+   it. The detector then flags nothing: detection sits at or a hair above the false-reject rate
+   for every edit family, and the flags it does produce come from windows that were already
+   above the threshold in the *real* clip. In the gate-kept block (below) that shows up as
+   literally identical counts across families (5 of 69 for `x0.5`, `x1.5`, the yaw control and
+   the null edit at every injected fraction), which is the diagnostic.
 2. **The frozen confidence gate is exactly the instrument for this**, so amendment G01-A
    calibrates on the gate-kept real clips (69 of 82 on dev). The gate drops 28 of the 100 real
    clips and every clip whose max-window residual exceeds 80 deg. Thresholds become sane
    (residual 21-39 deg at one window, 16-25 deg with persistence; whole-clip median 12.5-14 deg).
 3. **With the gate and persistence of two windows, segment detection beats the whole-clip
-   median where it matters: on violations that cover only part of the clip.** At a matched
-   5.8 % false-reject, partial tilt removal is caught in **23.2 %** of clips at 25 % coverage
-   (baseline 8.7 %) and **40.6 %** at 50 % (baseline 24.6 %); partial mirrored roll in
-   **40.6 %** at 25 % (baseline 10.1 %) and **56.5 %** at 50 % (baseline 27.5 %). At full
+   median where it matters: on violations that cover only part of the clip.** Both rules are
+   calibrated to a nominal 5 % (empirical 5.8 % for the scan statistic, 4.3 % for the
+   baseline). Partial tilt removal is caught in **23.2 %** of clips at 25 % coverage (baseline
+   8.7 %) and **40.6 %** at 50 % (baseline 24.6 %); partial mirrored roll in **40.6 %** at 25 %
+   (baseline 10.1 %) and **56.5 %** at 50 % (baseline 27.5 %). At full
    coverage the two rules are equal (71.0 % vs 60.9 % removal, 78.3 % vs 75.4 % mirror).
 4. **It does not meet the pre-registered success bar and it does not localise well.** The bar
    was half the clips at 25 % and 50 % coverage with interval IoU above 0.5; the achieved IoU
@@ -141,8 +143,9 @@ coherence column below.
 | gated, 8 frames, P2 | 5.8 % (4/69) | 4.3 % (3/69) | 4.3 % (3/69) | 4.3 % (3/69) | 1.55 / 0.67 / 0.89 |
 | gated, 12 frames, P2 | 5.8 % (4/69) | 5.8 % (4/69) | 5.8 % (4/69) | 4.3 % (3/69) | 1.33 / 0.89 / 0.89 |
 
-**Detection at matched false-reject, gated, 8-frame windows, persistence 2** (residual tier |
-whole-clip median baseline | coherence tier | IoU | F1 | onset error in frames):
+Detection at the **nominal 5 % threshold** (empirical 5.8 % for the scan statistic, 4.3 % for
+the whole-clip baseline), gated, 8-frame windows, persistence 2. Columns are residual tier |
+whole-clip median baseline | coherence tier | IoU | F1 | onset error in frames:
 
 | family | 10 % | 25 % | 50 % | 100 % |
 | --- | --- | --- | --- | --- |
@@ -211,8 +214,8 @@ rather than repaired. Everything above is dev-block evidence.
 
 * A window scan statistic with max-over-windows conformal calibration **can** be operated at a
   fixed whole-clip false-reject, and it then detects partial violations markedly better than
-  the whole-clip median: roughly 2.5x on 25 % coverage and 1.7x on 50 % coverage for the two
-  families that change shape or magnitude of the lean trace.
+  the whole-clip median: 2.7x at 25 % coverage and 1.7x at 50 % for partial tilt removal, 4.0x
+  and 2.1x for partial mirrored roll.
 * The estimator's own failure tail, not the physics, is what blocks segment detection on TII,
   and the frozen confidence gate is the mechanism that makes the difference (89 deg → 16-25 deg
   threshold). This is a measured, attributable result.

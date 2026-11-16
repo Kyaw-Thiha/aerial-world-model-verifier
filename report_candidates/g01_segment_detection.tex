@@ -26,8 +26,9 @@ population and report the ungated block in full beside it.
 \begin{table}[t]
 \centering
 \caption{Segment detection on the six dev flights, 8-frame windows with persistence of two
-windows, at a 5.8\,\% whole-clip false-reject (4/69). The baseline is the frozen whole-clip
-median residual calibrated by the same leave-one-flight-out rule (4.3\,\%, 3/69). Intervals
+windows, both calibrated to a nominal 5\,\%: empirical whole-clip false-reject 5.8\,\% (4/69) for
+the scan statistic and 4.3\,\% (3/69) for the frozen whole-clip median, which uses the same
+leave-one-flight-out rule. Intervals
 are flight-clustered bootstrap spreads over six clusters: descriptive, not 95\,\% confidence
 intervals. IoU and onset error refer to the residual tier.}
 \label{tab:g01-detection}

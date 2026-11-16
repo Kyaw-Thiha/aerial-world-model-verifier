@@ -1,0 +1,17 @@
+% Candidate section for Track G, report G03. Not integrated into the main report.
+% Numbers are filled from results/g03_tilt_reader/summary.json; placeholders marked TODO.
+
+\subsection{Fine-tuning the depicted-tilt reader}
+\label{sec:g03-reader}
+
+The detection floor, the abstention rate and the false-reject spread are set by the depicted-tilt
+reader rather than by the physics. We fine-tune GeoCalib on \num{5007} mocap-labelled TII frames
+and \num{1097} UZH forward-rig frames, with leave-one-flight and leave-one-sequence-out folds:
+each frame's label is the world-up direction in the camera frame, built from the truth attitude
+and the published mount, so no pixel estimate enters a label. Scored against those labels before
+any fine-tuning, the frozen reader reproduces its published error (median \SI{3.97}{deg},
+\SI{90}{\percent}-trimmed RMSE \SI{4.81}{deg}, \SI{12.7}{\percent} of frames above
+\SI{10}{deg}), which validates the label construction.
+
+% TODO: table of per-fold and pooled per-frame error, baseline vs fine-tuned, plus the
+% downstream block (false-reject, abstention, detection at removal).
