@@ -69,6 +69,12 @@ eleven windows per clip.
 | sign | `1 - min(s_x, s_y)` | same |
 | gain | **not computed**: the frozen gain tier abstains below 24 frames and a window has 8 | always |
 
+**Persistence.** Two consecutive windows with hop 4 cover 12 distinct frames (0.99 s), so the
+persistence-2 statistic can only fire on a violation lasting at least about 1 s — which is why
+the 10 % row (4-5 frames) is at the false-reject rate for *every* family in the persistence-2
+blocks. That is a property of the rule, not a measurement, and it is stated rather than read as
+a detection failure.
+
 **Calibration.** Leave-one-flight-out empirical 95th percentile of the clip **maximum** over
 windows. Calibrating the maximum, not the single window, gives the clip one family-wise budget:
 `P(max_w T_w > tau) ≤ alpha` under exchangeability. The persistence variant calibrates
@@ -108,8 +114,9 @@ roll 7.3 / 8.5 / 14.6 / 14.6 %; **x0.5 6.1 / 7.3 / 7.3 / 8.5 %; x1.5 11.0 / 11.0
 and control rows are the tell: they do not respond to the edit at all, they are the same 5-9
 clips over and over. This block is reported in full and is *not* the headline.
 
-Attribution, not reinterpretation: `flight-13a-trackRATM` scores a real-clip median residual of
-68-85 deg on five of its eleven clips (report 04 recorded the same flight as untestable), and
+Attribution, not reinterpretation: `flight-13a-trackRATM` has real clips with median residuals
+of 85.1, 84.1 and 75.7 deg (and one at 40.0) among its eleven — report 04 recorded the same
+flight as untestable, and it contributes 0 of 11 testable clips to the frozen gain tier — and
 `flight-07a-lemniscate` has one clip at 79.8 deg. A maximum over eleven windows sits on the
 tail of a heavy-tailed per-frame error by construction (12.7 % of TII frames are above 10 deg
 error), so a few clips with catastrophic windows set a whole-flight-agnostic threshold.
