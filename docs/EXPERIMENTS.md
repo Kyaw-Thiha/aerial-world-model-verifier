@@ -201,10 +201,14 @@ during consolidation — see `docs/DATA.md` for the current status of listing ac
   window rule `results/e_window_rule.json`, and the DA3 depth prior
   `results/pathrec_calib/depth.json`.
 * **Results**: `results/f01_stage0/summary.json`, `rows.csv`, `table_stage0.md`,
-  `edit_path_check.json`.
+  `edit_path_check.json`; stage 1 (`F02`) in `results/f02_stage1/` (extractor poses scored
+  with the same metric, plus a full stage-0 rerun on ViPE's path in
+  `results/f02_stage1/stage0_vipe/`); stage 2 (`F03`) in `results/f03_stage2/`.
 * **Regenerate**: `experiments/f01_stage0.py` (CPU, no spend), then
   `experiments/f01_tables.py`; the one-sequence edit-invariance check is
-  `experiments/f01_edit_path_check.py`.
+  `experiments/f01_edit_path_check.py`; stage 1 is `remote/f_vipe.py` and
+  `remote/f_mast3r.py` (GPU) scored by `experiments/f02_stage1.py`; stage 2 is
+  `remote/f_anwm.py` scored by `experiments/f03_anwm.py`.
 * **Caveats**: the stored paths cover prepared frames 0-149, so only clips ending by frame
   150 are in the primary population; the real path is reused for the edits (one-sequence
   check only); the primary population has 8 clips in 4 sequences, so intervals are

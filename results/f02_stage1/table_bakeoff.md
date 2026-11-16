@@ -22,3 +22,14 @@
 | vipe | outdoor_forward_5 | 12.0 | 1.11 | 0.84 | 4.42 | yes |
 | vipe | indoor_45_9 | 6.3 | 0.89 | 0.90 | 1.70 | yes |
 | **vipe total** | **10/10** | **4.0** | **0.99** | | | |
+| mast3r | indoor_forward_3 | 95.1 | 0.00 | 0.76 | 7.69 | no |
+| mast3r | indoor_forward_5 | 16.0 | 0.81 | 0.53 | 0.26 | yes |
+| mast3r | indoor_forward_6 | 62.1 | 0.00 | 0.85 | 7.59 | no |
+| mast3r | indoor_forward_7 | 12.2 | 0.98 | 0.86 | 0.51 | yes |
+| mast3r | indoor_forward_9 | 15.2 | 0.93 | 0.65 | 0.18 | yes |
+| mast3r | indoor_forward_10 | 66.5 | 0.81 | 0.62 | 2.80 | no |
+| mast3r | outdoor_forward_1 | 7.9 | 0.97 | 0.49 | 0.78 | yes |
+| mast3r | outdoor_forward_3 | 11.9 | 0.85 | 0.61 | 1.66 | yes |
+| mast3r | outdoor_forward_5 | 74.2 | 0.00 | 0.84 | 17.41 | no |
+| mast3r | indoor_45_9 | 93.9 | 0.00 | 0.90 | 7.35 | no |
+| **mast3r total** | **5/10** | **39.0** | **0.81** | | | |

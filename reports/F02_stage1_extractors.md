@@ -72,6 +72,17 @@ Same clips, same metric, same pass rule as E7.
 | vipe | outdoor_forward_5 | 12.0 | 1.11 | 0.84 | 4.42 | yes |
 | vipe | indoor_45_9 | 6.3 | 0.89 | 0.90 | 1.70 | yes |
 | **vipe total** | **10/10** | **4.0** | **0.99** | | | |
+| mast3r | indoor_forward_3 | 95.1 | 0.00 | 0.76 | 7.69 | no |
+| mast3r | indoor_forward_5 | 16.0 | 0.81 | 0.53 | 0.26 | yes |
+| mast3r | indoor_forward_6 | 62.1 | 0.00 | 0.85 | 7.59 | no |
+| mast3r | indoor_forward_7 | 12.2 | 0.98 | 0.86 | 0.51 | yes |
+| mast3r | indoor_forward_9 | 15.2 | 0.93 | 0.65 | 0.18 | yes |
+| mast3r | indoor_forward_10 | 66.5 | 0.81 | 0.62 | 2.80 | no |
+| mast3r | outdoor_forward_1 | 7.9 | 0.97 | 0.49 | 0.78 | yes |
+| mast3r | outdoor_forward_3 | 11.9 | 0.85 | 0.61 | 1.66 | yes |
+| mast3r | outdoor_forward_5 | 74.2 | 0.00 | 0.84 | 17.41 | no |
+| mast3r | indoor_45_9 | 93.9 | 0.00 | 0.90 | 7.35 | no |
+| **mast3r total** | **5/10** | **39.0** | **0.81** | | | |
 
 
 **ViPE passes 10/10 with its own estimated intrinsics**, a median direction error of 4.0 deg
@@ -84,10 +95,18 @@ direction. Since ViPE is **not** given the Kalibr calibration, that is the stron
 the result C07 framed: with modern streaming SLAM, supplied intrinsics are no longer the
 dividing line.
 
-MASt3R-SLAM: *(filled when the run lands; the image builds only after forcing
-`has_cuda = True` in its `setup.py`, because the build container has no GPU)*.
+**MASt3R-SLAM passes 5/10** at a median direction error of 39.0 deg, with four of its five
+failures showing a collapsed scale (magnitude ratio 0.00) on sequences DPVO and ViPE both
+handle. Its folder loader timestamps frames as `index/30` regardless of the real rate, so the
+first attempt mapped a 10 s clip onto 4.3 s; the run reported here uses the timestamps as
+frame indices (`round(t*30)`), which is what they are. It also subsamples to every fourth
+frame on some sequences (kept step 4 on `indoor_forward_5`) and every frame on others, so its
+tracking density is not constant across sequences.
 
-MegaSaM: not run (Drive-only weights).
+MegaSaM: not run. Its camera-tracking weight is distributed only through a Google Drive
+folder, which a container cannot fetch non-interactively; the alternative would have been a
+manual download, and the project's reproducibility rule is that a number must be regenerable
+from the repository.
 
 ## The stage-0 statistics on ViPE's path
 
@@ -115,9 +134,35 @@ mirror 0.80 vs 0.89.
 The gate therefore still fails with the best extractor available, and the failure is not a
 calibration artefact: ViPE never saw the Kalibr K.
 
+MASt3R-SLAM was not fed into the stage-0 tests: the pre-registration says the best one or two,
+and it fails the bake-off on half the sequences with a collapsed scale. Feeding a path that
+fails the extractor's own criterion would answer a different question.
+
 ## What this supports
 
-*(filled after the results)*
+* **The extractor question is separable from the verdict question.** ViPE is the best path
+  on the bake-off's terms — 10/10, median 4.0 deg, without the calibration — and it makes
+  the verdict slightly *worse* (FRR 2/8 vs 1/8, mirror AUC 0.80 vs 0.89). A path metric built
+  on the median acceleration direction does not rank paths for this verdict.
+* **The path is still the binding error, but not because extractors are bad at direction.**
+  Both DPVO and ViPE recover direction to a few degrees, and both leave a residual of 0.09 to
+  0.47 in the shooting statistic on `indoor_forward_9`, where the truth path gives 0.01.
+  What the verdict needs is shape agreement at the frequencies the depicted lean excites, and
+  that is a different, tighter requirement than a median direction error.
+* **The calibration is no longer the dividing line** for streaming SLAM on UZH: ViPE matches
+  DPVO without being given the Kalibr K, which weakens C07's "the calibration is the
+  difference" as a statement about modern extractors (it remains true of the feed-forward
+  batch models in the original table).
+* **A SLAM system with keyframe subsampling is not automatically better**: MASt3R-SLAM at
+  every-fourth-frame density is worse than both streaming trackers on this footage.
+
+## What this does not show
+
+* That no path can pass the gate: only these three extractors at 15 Hz/150 frames were tried.
+  A denser run (30 Hz, which C's OOM blocked) or a metric-scale method could still change it.
+* Why `indoor_forward_9` is the ViPE failure: its ATE is 0.67 m and direction 2.1 deg, so the
+  failure is in the path's fine shape, and this report does not localise it further.
+* Anything about ANWM (report F03) or about the generated-video verdict.
 
 ## Caveats
 

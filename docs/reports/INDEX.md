@@ -84,3 +84,11 @@ Files live in `reports/` at the repository root. Numbering restarts per track: T
   ("Known open discrepancies"). Nothing was re-analysed during consolidation.
 * Superseded material is listed in `docs/archive/README.md`; it stays where the reports and
   scripts expect it.
+
+## Track F — pixel-path verdict (branch `track-f-pixel-path`)
+
+| report | title | status |
+| --- | --- | --- |
+| `F01_pixel_path_stage0.md` | Stage 0: statistics that avoid the second derivative | current; **decision: fail** (shooting 6/8 removal, 4/8 mirror; truth path 8/8 and 7/8) |
+| `F02_stage1_extractors.md` | Stage 1: ViPE and MASt3R-SLAM on UZH-FPV, and the stage-0 tests on the best | current; ViPE 10/10 on the bake-off and no improvement to the gate; MASt3R 5/10; MegaSaM not run (Drive-only weights) |
+| `F03_stage2_anwm.md` | Stage 2: ANWM clips against their commanded path | current; ViPE paths unusable on generated clips |

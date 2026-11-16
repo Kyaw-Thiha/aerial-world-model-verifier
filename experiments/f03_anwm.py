@@ -31,6 +31,8 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--poses", default="data/pathrec/poses_anwm/vipe")
     ap.add_argument("--out", default="results/f03_stage2/anwm.json")
+    ap.add_argument("--expected-level", type=int, default=82)
+    ap.add_argument("--expected-injected", type=int, default=45)
     args = ap.parse_args()
     root = Path(args.poses)
     rows = []
@@ -78,8 +80,14 @@ def main() -> int:
         return bool(d is not None and q is not None and d <= 30 and 0.7 <= q <= 1.4)
 
     n_bakeoff_pass = int(sum(bakeoff_pass(r) for r in usable))
+    present_level = sum(1 for r in rows if r["clip"].startswith("clips/"))
+    present_inj = sum(1 for r in rows if r["clip"].startswith("clips_injected/"))
     out = {
         "n_clips": len(rows),
+        "expected_level": args.expected_level,
+        "expected_injected": args.expected_injected,
+        "missing_level": max(0, args.expected_level - present_level),
+        "missing_injected": max(0, args.expected_injected - present_inj),
         "n_usable": len(usable),
         "n_failed": len(failed),
         "n_bakeoff_pass_among_usable": n_bakeoff_pass,
