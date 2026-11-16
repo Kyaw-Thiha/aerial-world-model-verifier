@@ -71,6 +71,12 @@ Files live in `reports/` at the repository root. Numbering restarts per track: T
 | `E04_v3_r2_coherence.md` | v3: fixed-crop edits, official schema v2, Track D's R2 + coherence on UZH | current |
 | `E05_window_rule.md` | Independent test of Track D's label-free window rule (`0.5 / f95`) | current; **supersedes** D04's UZH window numbers (0.07-0.12 s → 0.34-1.42 s at 500 Hz) |
 
+## Track H — generator pilot (branch `track-h-generator-pilot`)
+
+| report | title | status |
+| --- | --- | --- |
+| `H01_generator_pilot.md` | Generator pilot: ANWM seed variance, LingBot-World roll injection, Wan 2.2 cost | current; pilot only, no scale-up until the user decides |
+
 ## Notes
 
 * Report 04 quotes the pre-registration sha256 `b8fd7013…` for `configs/verdict_preregistration.yaml`

@@ -26,8 +26,9 @@ results; none of them runs an experiment.
 | E8 | gain and coherence tests | D | `track-d-verdict-stat` (`2a91765`) | `results/d_eval/`, `d_decomposition/`, `d_coherence/`, `d_deming/`, `d_window/`, `d_shrinkage/`, `d_flights/`, `d_calibrate/` | D01, D02, D03 |
 | E9 | UZH transfer | E (+ A estimator) | `track-e-depicted-uzh` (`dd209bf`) | `results/e_audit/`, `e_mount/`, `e_perframe/`, `e_verdict_v3/`, `e_calib/` | E01-E04 |
 | E10 | window rule and prototype | D (+ E independent test) | `track-d-verdict-stat`, `track-e-depicted-uzh` | `results/d_window_rates/`, `d_bandwidth/`, `d_uzh_v2/`, `e_verdict_v3/rule/` | D03, D04, E05 |
+| E11 | generator pilot: ANWM seed variance, LingBot-World, Wan 2.2 | H | `track-h-generator-pilot` | `results/h01_seed_specs/`, `h01_seed_variance/`, `h01_lingbot/`, `h01_wan/`, `h01_tables/`, `h01_r2/` | H01 |
 
-R2 prefixes are `track-a/`, `track-a/a2/`, `track-b/`, `track-c/`, `track-d/`, `track-e/`
+R2 prefixes are `track-a/`, `track-a/a2/`, `track-b/`, `track-c/`, `track-d/`, `track-e/`, `track-h/`
 (counts and bytes: `report/data/r2_counts.json`, measured 2026-11-15; verified read-only again
 during consolidation — see `docs/DATA.md` for the current status of listing access).
 
@@ -180,3 +181,30 @@ during consolidation — see `docs/DATA.md` for the current status of listing ac
 * **Regenerate**: `report/scripts/e10_window_rule.py`.
 * **Open discrepancy (recorded, not resolved)**: D's 0.07-0.12 s window "at the truth rate" is
   superseded by E05 (0.34-1.42 s at 500 Hz; 0.07-0.11 s only at the 15 Hz clip rate).
+
+---
+
+## E11 — generator pilot (Track H)
+
+* **Owning track / branch**: H, `track-h-generator-pilot`.
+* **What it is**: three questions asked before any scale-up. (1) Does ANWM's depicted tilt
+  vary across sampling seeds, and does an oracle best-of-N rescue a designed path? (2) Does
+  LingBot-World (camera-pose-conditioned, open weights) depict the attitude its pose input
+  commands? (3) What do Wan 2.2 and the other open models cost per clip?
+* **Configs**: `configs/h01_pilot_prereg.yaml` (commit `245f7d9`, sha256 `3529b920…`); all
+  thresholds and populations are fixed there before any new clip is scored. The frozen gate
+  (`configs/gate_frozen.yaml`) and the frozen verdict threshold (6.46 deg) are used unchanged.
+* **Seed population**: 20 Regime C designed paths (`results/h01_seed_specs/paths.json`),
+  seeds 0-4; seed 0 reuses the existing Track B clips, seeds 1-4 are 80 new ANWM rollouts
+  (`awmv-h-anwm`, A10G, 250 sampling steps, same checkout `59def562…`).
+* **Reader**: unchanged — GeoCalib 224 px, `camera_to_body_pitched`, the same row schema as
+  `results/gate_a2/anwm/depicted.jsonl`; the new rows are `results/h01_seed_depicted/`.
+* **Results**: `results/h01_seed_variance/` (per-clip, per-path, best-of-N, summary),
+  `results/h01_seed_variance_existing/` (the five pre-existing 3-seed paths, reported
+  separately), `results/h01_lingbot/`, `results/h01_wan/`, `results/h01_tables/`,
+  `results/h01_r2/*.json` (R2 manifest).
+* **Raw clips**: R2 `track-h/clips/anwm-seeds/`, `track-h/clips/lingbot/`,
+  `track-h/clips/wan/`, with sha256 manifests in `results/h01_r2/`.
+* **Report**: `reports/H01_generator_pilot.md`.
+* **Cost**: `docs/COST_LEDGER.md`.
+* **Stop rule**: the pilot ends with the report; no scale-up until the user decides.

@@ -1,0 +1,51 @@
+{
+ "prefix": "track-h/specs",
+ "src": "results/h01_seed_specs",
+ "tag": "specs",
+ "dry_run": false,
+ "n_files": 5,
+ "bytes": 147854,
+ "files": [
+  {
+   "path": "paths.json",
+   "key": "track-h/specs/paths.json",
+   "bytes": 4028,
+   "sha256": "729799279f80a7cf7f2da2a3680e2df2efec26d6905292e9bc8da6d0e736a6e0",
+   "remote_sha256": "729799279f80a7cf7f2da2a3680e2df2efec26d6905292e9bc8da6d0e736a6e0",
+   "match": true
+  },
+  {
+   "path": "spawn.json",
+   "key": "track-h/specs/spawn.json",
+   "bytes": 182,
+   "sha256": "c99c393016ce48d19c5743c967e113207ddbde27ea682e5adc5368983f765528",
+   "remote_sha256": "c99c393016ce48d19c5743c967e113207ddbde27ea682e5adc5368983f765528",
+   "match": true
+  },
+  {
+   "path": "spawn_b.json",
+   "key": "track-h/specs/spawn_b.json",
+   "bytes": 208,
+   "sha256": "ad9380a2a522142dbdc2bc2007c7e78cff8b50627c68b274837454470d5f1c33",
+   "remote_sha256": "ad9380a2a522142dbdc2bc2007c7e78cff8b50627c68b274837454470d5f1c33",
+   "match": true
+  },
+  {
+   "path": "spawn_c.json",
+   "key": "track-h/specs/spawn_c.json",
+   "bytes": 208,
+   "sha256": "d72466bc3918436cc7fbdfc96dd4dc65df43aa8bd89628f46718bfb7b78fadac",
+   "remote_sha256": "d72466bc3918436cc7fbdfc96dd4dc65df43aa8bd89628f46718bfb7b78fadac",
+   "match": true
+  },
+  {
+   "path": "specs.json",
+   "key": "track-h/specs/specs.json",
+   "bytes": 143228,
+   "sha256": "4402234c48be084cd30ba34e685e221ae372cac85ee6a8a26702b87d8666f97f",
+   "remote_sha256": "4402234c48be084cd30ba34e685e221ae372cac85ee6a8a26702b87d8666f97f",
+   "match": true
+  }
+ ],
+ "skipped": []
+}

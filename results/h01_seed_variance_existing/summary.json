@@ -1,0 +1,104 @@
+{
+ "git": "d9a968a",
+ "prereg": "configs/h01_pilot_prereg.yaml",
+ "reader": "results/gate_a2/anwm/depicted.jsonl + results/h01_seed_depicted/depicted.jsonl",
+ "threshold_deg": 6.46,
+ "k_d": 0.295,
+ "dt_s": 1.0,
+ "n_paths": 20,
+ "n_clips": 24,
+ "seeds_per_path": {
+  "C_accel_brake_10_course_0": 1,
+  "C_accel_brake_20_course_0": 1,
+  "C_accel_brake_20_course_1": 1,
+  "C_accel_brake_5_course_0": 1,
+  "C_climb_turn_10_fixed_0": 1,
+  "C_climb_turn_20_fixed_0": 1,
+  "C_climb_turn_20_fixed_1": 1,
+  "C_climb_turn_5_course_0": 1,
+  "C_climb_turn_5_fixed_0": 1,
+  "C_cruise_ctl_course_0": 3,
+  "C_cruise_ctl_course_1": 3,
+  "C_slalom_10_fixed_0": 1,
+  "C_slalom_10_fixed_1": 1,
+  "C_slalom_5_course_0": 1,
+  "C_slalom_5_fixed_0": 1,
+  "C_turn_10_fixed_0": 1,
+  "C_turn_20_fixed_0": 1,
+  "C_turn_20_fixed_1": 1,
+  "C_turn_5_course_0": 1,
+  "C_turn_5_fixed_0": 1
+ },
+ "depicted_spread": {
+  "median_seed_sd_deg": 0.07407957001827103,
+  "median_seed_range_deg": 0.0,
+  "max_seed_range_deg": 0.1608827546305872
+ },
+ "residual_spread": {
+  "median_seed_sd_deg": 0.11634386293366221,
+  "median_seed_range_deg": 0.0,
+  "max_seed_range_deg": 0.24721996337970342
+ },
+ "best_of_n": [
+  {
+   "N": 1,
+   "n_paths": 20,
+   "mean_oracle_residual_deg": 10.461145411476403,
+   "median_oracle_residual_deg": 8.661397845912331,
+   "feasible_k": 2,
+   "feasible_n": 20,
+   "feasible_rate": 0.1
+  },
+  {
+   "N": 2,
+   "n_paths": 2,
+   "mean_oracle_residual_deg": 7.165268562071308,
+   "median_oracle_residual_deg": 7.165268562071308,
+   "feasible_k": 1,
+   "feasible_n": 2,
+   "feasible_rate": 0.5
+  },
+  {
+   "N": 3,
+   "n_paths": 2,
+   "mean_oracle_residual_deg": 7.084517696413446,
+   "median_oracle_residual_deg": 7.084517696413446,
+   "feasible_k": 1,
+   "feasible_n": 2,
+   "feasible_rate": 0.5
+  }
+ ],
+ "oracle_reduction_1_to_5": {
+  "per_path": [],
+  "median_deg": {},
+  "mean_deg": {},
+  "n_paths_flipped_infeasible_to_feasible": 0,
+  "n_paths": 0
+ },
+ "design_contrast": {
+  "deg_per_deg": 0.10295342462381535,
+  "intercept_deg": 0.1549131745193988,
+  "n_paths": 18,
+  "aggregation": "mean depicted per path",
+  "by_design": {
+   "5.0": {
+    "mean_depicted_deg": 0.7050057641543985,
+    "n_paths": 7
+   },
+   "10.0": {
+    "mean_depicted_deg": 1.110263941074114,
+    "n_paths": 5
+   },
+   "20.0": {
+    "mean_depicted_deg": 2.234588189129994,
+    "n_paths": 6
+   }
+  },
+  "per_clip_seed0": {
+   "deg_per_deg": 0.10295342462381535,
+   "intercept_deg": 0.1549131745193988,
+   "n_clips": 18
+  }
+ },
+ "same_seed_repeat": {}
+}

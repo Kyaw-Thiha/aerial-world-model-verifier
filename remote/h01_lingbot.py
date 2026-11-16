@@ -22,7 +22,7 @@ ROOT = Path(__file__).resolve().parents[1]
 INPUTS = ROOT / "data/h01_lingbot_inputs"
 
 vol_w = modal.Volume.from_name("awmv-h-weights", create_if_missing=True)
-vol_r = modal.Volume.from_name("awmv-h-results", create_if_missing=True)
+vol_r = modal.Volume.from_name("awmv-h-lingbot-results", create_if_missing=True)
 
 REPO = "cahlen/lingbot-world-base-cam-nf4"
 DEST = "/w/lingbot_nf4"
@@ -37,6 +37,10 @@ image = (
                  "bitsandbytes>=0.43.0", "safetensors", "accelerate", "transformers==4.51.3",
                  "diffusers==0.31.0", "einops", "imageio", "imageio-ffmpeg", "easydict",
                  "ftfy", "tqdm", "huggingface_hub")
+    .run_commands("pip install --no-cache-dir "
+                  "'https://github.com/Dao-AILab/flash-attention/releases/download/v2.6.3/"
+                  "flash_attn-2.6.3+cu12torch2.4cxx11abiFALSE-cp311-cp311-linux_x86_64.whl' "
+                  "|| echo 'flash-attn wheel unavailable; SDPA fallback will be used'")
     .add_local_dir(str(INPUTS), "/inputs", copy=True,
                    ignore=["**/__pycache__", "**/*.pyc"])
 )
@@ -61,16 +65,70 @@ def download() -> dict:
                                for p in files), reverse=True)[:5]}
 
 
+def _patch_attention():
+    """Use PyTorch's SDPA when flash-attn is absent (the model calls ``flash_attention`` directly)."""
+    import torch
+    import torch.nn.functional as F
+
+    sys_path = "/w/lingbot_nf4"
+    import sys
+
+    if sys_path not in sys.path:
+        sys.path.insert(0, sys_path)
+    from wan.modules import attention as att
+    import wan.modules.model as wm
+
+    try:
+        import wan.modules.model_fast as wmf
+    except Exception:
+        wmf = None
+    if att.FLASH_ATTN_2_AVAILABLE or att.FLASH_ATTN_3_AVAILABLE:
+        return "flash-attn"
+
+    def sdpa(q, k, v, q_lens=None, k_lens=None, dropout_p=0.0, softmax_scale=None,
+             q_scale=None, causal=False, window_size=(-1, -1), deterministic=False,
+             dtype=torch.bfloat16, version=None):
+        orig = q.dtype
+        q = q.transpose(1, 2).to(dtype)
+        k = k.transpose(1, 2).to(dtype)
+        v = v.transpose(1, 2).to(dtype)
+        if q_scale is not None:
+            q = q * q_scale
+        if k.shape[2] != q.shape[2]:
+            rep = q.shape[2] // k.shape[2]
+            k = k.repeat_interleave(rep, dim=2)
+            v = v.repeat_interleave(rep, dim=2)
+        mask = None
+        if k_lens is not None:
+            lens = torch.as_tensor(k_lens, device=k.device).flatten()
+            if int(lens.min()) < k.shape[1]:
+                ar = torch.arange(k.shape[1], device=k.device)[None, :]
+                mask = (ar >= lens[:, None])[:, None, None, :]
+                mask = torch.zeros(mask.shape, dtype=q.dtype, device=q.device).masked_fill(
+                    mask, float("-inf"))
+        out = F.scaled_dot_product_attention(q, k, v, attn_mask=mask, is_causal=causal,
+                                             dropout_p=dropout_p, scale=softmax_scale)
+        return out.transpose(1, 2).contiguous().to(orig)
+
+    wm.flash_attention = sdpa
+    att.flash_attention = sdpa
+    if wmf is not None:
+        wmf.flash_attention = sdpa
+    return "sdpa"
+
+
 def _load_pipeline():
     import sys
 
     sys.path.insert(0, DEST)
+    mode = _patch_attention()
+    print("attention backend:", mode, flush=True)
     from generate_prequant import WanI2V_PreQuant
 
-    return WanI2V_PreQuant(checkpoint_dir=DEST, device_id=0, t5_cpu=True)
+    return WanI2V_PreQuant(checkpoint_dir=DEST, device_id=0, t5_cpu=False)
 
 
-@app.function(gpu="A100-80GB", timeout=6 * 3600,
+@app.function(gpu="A100-80GB", cpu=8, memory=65536, timeout=6 * 3600,
               volumes={"/w": vol_w, "/r": vol_r},
               env={"HF_HOME": "/w/hf", "PYTORCH_CUDA_ALLOC_CONF": "expandable_segments:True"})
 def generate(jobs: str, sampling_steps: int = 40, frame_num: int = 49,
@@ -113,6 +171,11 @@ def generate(jobs: str, sampling_steps: int = 40, frame_num: int = 49,
         os.makedirs(f"{folder}/frames", exist_ok=True)
         for i, fr in enumerate(arr):
             Image.fromarray(fr).save(f"{folder}/frames/{i:03d}.png")
+        try:
+            import imageio.v2 as imageio
+            imageio.mimsave(f"{folder}/clip.mp4", arr, fps=16)
+        except Exception as exc:  # a missing codec must not lose the frames
+            print("mp4 write failed:", exc, flush=True)
         manifest = {"id": jid, **{k: job[k] for k in job if k not in ("prompt",)},
                     "prompt": job["prompt"], "seconds": secs,
                     "seconds_per_frame": secs / len(arr), "frames": int(len(arr)),
@@ -140,6 +203,32 @@ def main(mode: str = "download", grid: str = "", limit: int = 0, steps: int = 40
         print(json.dumps(download.remote(), indent=1))
         return
     man = json.loads((INPUTS / "manifest.json").read_text())
+    if mode == "probe":
+        probe = man["convention_probe"]
+        fr = man["frames"][0]
+        image = fr["file"].replace("data/h01_lingbot_inputs/", "")
+        level = [g for g in man["grid"] if g["path"] == "cruise" and g["arm"] == "level"
+                 and g["traj"] == fr["traj"]][0]
+        jobs = [{"id": "probe_level", "pose_dir": level["dir"].replace(
+                     "data/h01_lingbot_inputs/", ""),
+                 "image": image, "path": "cruise", "arm": "probe_level",
+                 "traj": fr["traj"], "frame": fr["frame"],
+                 "prompt": "A quadrotor drone flies forward over a city, the horizon "
+                           "visible.", "seed": 0}]
+        for key, label in (("20", "probe_rollramp_p20"), ("-20", "probe_rollramp_m20")):
+            jobs.append({"id": label,
+                         "pose_dir": probe[key]["dir"].replace(
+                             "data/h01_lingbot_inputs/", ""),
+                         "image": image, "path": "cruise", "arm": f"probe_roll_{key}",
+                         "traj": fr["traj"], "frame": fr["frame"],
+                         "prompt": "A quadrotor drone flies forward over a city, the "
+                                   "horizon visible.",
+                         "seed": 0})
+        print(f"{len(jobs)} probe jobs")
+        res = generate.remote(json.dumps(jobs), sampling_steps=steps, frame_num=frame_num)
+        print(json.dumps({k: v for k, v in res.items() if k != "clips"}, indent=1))
+        print(json.dumps(res["clips"], indent=1))
+        return
     grid_entries = man["grid"]
     if grid:
         keep = set(grid.split(","))

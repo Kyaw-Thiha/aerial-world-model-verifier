@@ -30,7 +30,8 @@ from PIL import Image
 from scipy.interpolate import CubicSpline
 from scipy.spatial.transform import Rotation, Slerp
 
-from src.generation.attitude import body_rotation, roll_pitch_from_thrust
+from src.generation.attitude import (body_rotation, body_z_from_poses,
+                                     roll_pitch_from_thrust)
 from src.perception.frames import camera_to_body_pitched
 from src.physics.flatness import G0, implied_thrust_axis
 
@@ -183,6 +184,7 @@ def main() -> int:
                 d = OUT / f"{f['traj']}_{f['frame']:03d}" / name / arm
                 d.mkdir(parents=True, exist_ok=True)
                 np.save(d / "poses.npy", variants[arm])
+                np.save(d / "thrust.npy", body_z_from_poses(variants[arm], R_bc))
                 K = np.tile(np.array([F_PX, F_PX, PAD_W / 2, PAD_H / 2]), (N_OUT, 1))
                 np.save(d / "intrinsics.npy", K)
                 manifest["grid"].append({"traj": f["traj"], "frame": f["frame"],
@@ -200,15 +202,31 @@ def main() -> int:
     Rz_cam = np.array([[np.cos(roll), -np.sin(roll), 0.0],
                        [np.sin(roll), np.cos(roll), 0.0],
                        [0.0, 0.0, 1.0]])
-    probe = base.copy()
-    probe[:, :3, :3] = base[:, :3, :3] @ Rz_cam
-    d = OUT / "convention_probe" / "roll20"
-    d.mkdir(parents=True, exist_ok=True)
-    np.save(d / "poses.npy", probe)
-    np.save(d / "intrinsics.npy", np.tile(np.array([F_PX, F_PX, PAD_W / 2, PAD_H / 2]),
-                                          (N_OUT, 1)))
-    manifest["convention_probe"] = {"dir": str(d.relative_to(ROOT)), "roll_deg": 20.0,
-                                    "image": f"frames/{frames[0]['traj']}_{frames[0]['frame']:03d}.png"}
+    # The model conditions on *relative* frame-to-frame poses (compute_relative_poses,
+    # framewise=True), so a constant absolute roll is invisible (every relative rotation
+    # is the identity). The probe therefore ramps the roll linearly from 0 to +/-20 deg
+    # across the clip, which is the smallest change the model can actually see.
+    probes = {}
+    ramp = np.linspace(0.0, 1.0, N_OUT)
+    for sign in (1.0, -1.0):
+        probe = base.copy()
+        for k, frac in enumerate(ramp):
+            ang = sign * roll * frac
+            Rs = np.array([[np.cos(ang), -np.sin(ang), 0.0],
+                           [np.sin(ang), np.cos(ang), 0.0],
+                           [0.0, 0.0, 1.0]])
+            probe[k, :3, :3] = base[k, :3, :3] @ Rs
+        d = OUT / "convention_probe" / f"rollramp{int(sign * 20.0):+d}".replace("+", "p")
+        d.mkdir(parents=True, exist_ok=True)
+        np.save(d / "poses.npy", probe)
+        np.save(d / "thrust.npy", body_z_from_poses(probe, camera_to_body_pitched(0.0)))
+        np.save(d / "intrinsics.npy", np.tile(np.array([F_PX, F_PX, PAD_W / 2, PAD_H / 2]),
+                                              (N_OUT, 1)))
+        probes[str(int(sign * 20.0))] = {
+            "dir": str(d.relative_to(ROOT)), "roll_deg": float(sign * 20.0),
+            "roll_profile": "linear ramp 0 -> sign*20 deg",
+            "image": f"frames/{frames[0]['traj']}_{frames[0]['frame']:03d}.png"}
+    manifest["convention_probe"] = probes
     (OUT / "manifest.json").write_text(json.dumps(manifest, indent=1))
     print(f"{len(manifest['grid'])} grid clips + 1 convention probe; "
           f"{len(manifest['frames'])} first frames")

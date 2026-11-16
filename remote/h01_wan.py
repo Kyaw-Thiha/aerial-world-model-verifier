@@ -19,8 +19,8 @@ import modal
 ROOT = Path(__file__).resolve().parents[1]
 INPUTS = ROOT / "data/h01_lingbot_inputs"
 
-vol_w = modal.Volume.from_name("awmv-h-weights", create_if_missing=True)
-vol_r = modal.Volume.from_name("awmv-h-results", create_if_missing=True)
+vol_w = modal.Volume.from_name("awmv-h-wan-weights", create_if_missing=True)
+vol_r = modal.Volume.from_name("awmv-h-wan-results", create_if_missing=True)
 
 REPO = "Wan-AI/Wan2.2-TI2V-5B-Diffusers"
 DEST = "/w/wan22_ti2v5b"
@@ -29,8 +29,8 @@ image = (
     modal.Image.from_registry("nvidia/cuda:12.4.1-devel-ubuntu22.04", add_python="3.11")
     .apt_install("libgl1", "libglib2.0-0", "ffmpeg")
     .run_commands(
-        "pip install --no-cache-dir torch==2.4.1 torchvision==0.19.1 "
-        "--index-url https://download.pytorch.org/whl/cu121")
+        "pip install --no-cache-dir torch==2.6.0 torchvision==0.21.0 "
+        "--index-url https://download.pytorch.org/whl/cu124")
     .pip_install("numpy<2", "scipy", "pillow", "imageio", "imageio-ffmpeg", "ftfy",
                  "accelerate", "transformers==4.51.3", "diffusers==0.35.1",
                  "huggingface_hub", "safetensors")
@@ -65,12 +65,14 @@ PROMPTS = [
 ]
 
 
-@app.function(gpu="A100-80GB", timeout=4 * 3600, volumes={"/w": vol_w, "/r": vol_r},
+@app.function(gpu="A10G", cpu=8, memory=65536, timeout=4 * 3600,
+              volumes={"/w": vol_w, "/r": vol_r},
               env={"HF_HOME": "/w/hf"})
 def clips(frame_num: int = 49, steps: int = 40, guidance: float = 5.0,
           height: int = 480, width: int = 832, limit: int = 0) -> dict:
     import time
 
+    import numpy as np
     import torch
     from diffusers import AutoencoderKLWan, WanImageToVideoPipeline
     from diffusers.utils import export_to_video
@@ -83,7 +85,7 @@ def clips(frame_num: int = 49, steps: int = 40, guidance: float = 5.0,
                                            torch_dtype=torch.float32)
     pipe = WanImageToVideoPipeline.from_pretrained(model_id, vae=vae,
                                                    torch_dtype=torch.bfloat16)
-    pipe.to("cuda")
+    pipe.enable_model_cpu_offload()
     torch.cuda.reset_peak_memory_stats()
     out = {"gpu": torch.cuda.get_device_name(0), "frame_num": frame_num, "steps": steps,
            "height": height, "width": width, "clips": {}}
@@ -102,9 +104,18 @@ def clips(frame_num: int = 49, steps: int = 40, guidance: float = 5.0,
         video = res.frames[0]
         secs = time.time() - ts
         (folder / "frames").mkdir(exist_ok=True)
-        for k, arr in enumerate(video):
-            arr.save(folder / "frames" / f"{k:03d}.png")
-        export_to_video(video, str(folder / "clip.mp4"), fps=24)
+        def to_pil(f):
+            if hasattr(f, "save"):
+                return f
+            a = np.asarray(f)
+            if a.dtype != np.uint8:
+                a = (np.clip(a, 0.0, 1.0) * 255.0).round().astype("uint8")
+            return Image.fromarray(a)
+
+        pil = [to_pil(f) for f in video]
+        for k, im in enumerate(pil):
+            im.save(folder / "frames" / f"{k:03d}.png")
+        export_to_video(pil, str(folder / "clip.mp4"), fps=24)
         manifest = {"id": slug, "prompt": prompt, "seconds": secs,
                     "frames": len(video), "height": height, "width": width,
                     "steps": steps, "guidance_scale": guidance,

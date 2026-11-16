@@ -27,7 +27,7 @@ CKPT = "/w/slim/0200000_ema.pth.tar"
 vol_weights = modal.Volume.from_name("awmv-b-weights", create_if_missing=False)
 vol_hf = modal.Volume.from_name("awmv-b-hf-cache", create_if_missing=False)
 vol_native = modal.Volume.from_name("awmv-b-native", create_if_missing=False)
-vol_h = modal.Volume.from_name("awmv-h-results", create_if_missing=True)
+vol_h = modal.Volume.from_name("awmv-h-anwm-results", create_if_missing=True)
 
 image = (
     modal.Image.from_registry("nvidia/cuda:12.1.1-devel-ubuntu22.04", add_python="3.10")
@@ -112,6 +112,7 @@ def seeds(specs_json: str, out_root: str = "/r/clips", sampling_steps: int = 250
             print("skip (already done)", sp["id"])
             continue
         t0 = time.time()
+        print("start", sp["id"], flush=True)
         traj = load_traj(cache, sp["start_traj"])
         ct = int(sp["start_time"])
         R_ec, spread = camera_axis_change(traj)
@@ -121,12 +122,14 @@ def seeds(specs_json: str, out_root: str = "/r/clips", sampling_steps: int = 250
         ctx_times = list(range(ct - CTX + 1, ct + 1))
         target_poses = pose_from_position_yaw(pos[1:n], yaw[1:n], R_ec)
         obs, sup, prior_coverage = context_inputs(ds, traj, ctx_times, target_poses)
+        print("context", sp["id"], f"{time.time() - t0:.1f}s", flush=True)
 
         act, _ = ds._compute_actions({"point": pos, "yaw": yaw.reshape(-1, 1)}, 0,
                                      np.array([n - 1]))
         act[:, :3] = normalize_data(act[:, :3], ds.ACTION_STATS)
         delta = torch.as_tensor(get_delta_np(act), dtype=torch.float32).unsqueeze(0)
 
+        print("diffusion", sp["id"], flush=True)
         torch.manual_seed(int(sp.get("seed", 0)))
         curr = obs.clone().to(device)
         preds = []
@@ -137,6 +140,7 @@ def seeds(specs_json: str, out_root: str = "/r/clips", sampling_steps: int = 250
                 x_supervised=sup[:, i:i + 1].to(device))
             curr = torch.cat((curr, x_pred.unsqueeze(1)), dim=1)[:, 1:]
             preds.append(((x_pred.clamp(-1, 1) + 1) / 2 * 255).byte().cpu())
+        print("rollout done", sp["id"], f"{time.time() - t0:.1f}s", flush=True)
         os.makedirs(f"{folder}/frames", exist_ok=True)
         for i, t in enumerate(preds):
             Image.fromarray(t[0].permute(1, 2, 0).numpy()).save(f"{folder}/frames/{i:02d}.png")

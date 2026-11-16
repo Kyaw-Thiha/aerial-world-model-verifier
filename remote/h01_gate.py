@@ -21,12 +21,22 @@ from src.remote_common import GEOCALIB_COMMIT, VOLUME_MOUNT, ensure_weights, gat
 app = modal.App("awmv-h-gate")
 image = make_image()
 vol_a = modal.Volume.from_name("awmv-a-data", create_if_missing=False)
-vol_r = modal.Volume.from_name("awmv-h-results", create_if_missing=True)
+vol_r = modal.Volume.from_name("awmv-h-gate-results", create_if_missing=True)
+vol_anwm = modal.Volume.from_name("awmv-h-anwm-results", create_if_missing=True)
+vol_anwm_b = modal.Volume.from_name("awmv-h-anwm-results-b", create_if_missing=True)
+vol_anwm_c = modal.Volume.from_name("awmv-h-anwm-results-c", create_if_missing=True)
+vol_lingbot = modal.Volume.from_name("awmv-h-lingbot-results", create_if_missing=True)
+vol_wan = modal.Volume.from_name("awmv-h-wan-results", create_if_missing=True)
+SOURCES = {"anwm": ("/anwm", "clips"), "anwm_b": ("/anwmb", "clips"),
+           "anwm_c": ("/anwmc", "clips"), "lingbot": ("/lingbot", "lingbot"),
+           "wan": ("/wan", "wan")}
 
 
-@app.function(image=image, gpu="A10G", volumes={VOLUME_MOUNT: vol_a, "/r": vol_r},
-              timeout=3 * 3600)
-def depicted(clip_root: str = "clips", out_tag: str = "h01", size: int = 224,
+@app.function(image=image, gpu="A10G", volumes={VOLUME_MOUNT: vol_a, "/r": vol_r,
+                                              "/anwm": vol_anwm, "/anwmb": vol_anwm_b,
+                                              "/anwmc": vol_anwm_c,
+                                              "/lingbot": vol_lingbot, "/wan": vol_wan}, timeout=3 * 3600)
+def depicted(source: str = "anwm", clip_root: str = "", out_tag: str = "h01", size: int = 224,
              fov_deg: float = 90.0, limit: int = 0) -> dict:
     import time
 
@@ -38,7 +48,8 @@ def depicted(clip_root: str = "clips", out_tag: str = "h01", size: int = 224,
     device = "cuda" if torch.cuda.is_available() else "cpu"
     ensure_weights()
     model = GeoCalib(weights="pinhole").to(device)
-    root = Path("/r") / clip_root
+    mount, default_sub = SOURCES[source]
+    root = Path(mount) / (clip_root or default_sub)
     clips = sorted(p for p in root.iterdir() if (p / "frames").is_dir())
     if limit:
         clips = clips[:limit]
@@ -57,6 +68,13 @@ def depicted(clip_root: str = "clips", out_tag: str = "h01", size: int = 224,
                 if img is None:
                     continue
                 orig = [int(img.shape[1]), int(img.shape[0])]
+                # the reader is square: centre-crop a non-square frame first, so the
+                # aspect ratio (and therefore every roll angle) is not distorted
+                h, w = img.shape[:2]
+                if h != w:
+                    side = min(h, w)
+                    y0, x0 = (h - side) // 2, (w - side) // 2
+                    img = img[y0:y0 + side, x0:x0 + side]
                 if img.shape[0] != size or img.shape[1] != size:
                     img = cv2.resize(img, (size, size), interpolation=cv2.INTER_AREA)
                 feed = torch.from_numpy(cv2.cvtColor(img, cv2.COLOR_BGR2RGB)).permute(2, 0, 1)
@@ -69,7 +87,8 @@ def depicted(clip_root: str = "clips", out_tag: str = "h01", size: int = 224,
                     "f_prior": float(f), "orig_size": orig})) + "\n")
                 n_rows += 1
             print(clip.name, len(frames), flush=True)
-    info = {"tag": out_tag, "clip_root": clip_root, "n_clips": len(clips), "n_rows": n_rows,
+    info = {"tag": out_tag, "source": source, "clip_root": str(root), "n_clips": len(clips),
+            "n_rows": n_rows,
             "size": size, "f_px": float(f), "seconds": time.time() - t0,
             "geocalib_commit": GEOCALIB_COMMIT, "out": str(out_dir.relative_to("/r"))}
     (out_dir / "summary.json").write_text(json.dumps(info, indent=2))
@@ -78,5 +97,5 @@ def depicted(clip_root: str = "clips", out_tag: str = "h01", size: int = 224,
 
 
 @app.local_entrypoint()
-def main(clip_root: str = "clips", out_tag: str = "h01", limit: int = 0):
-    print(json.dumps(depicted.remote(clip_root, out_tag, limit=limit), indent=2))
+def main(source: str = "anwm", clip_root: str = "", out_tag: str = "h01", limit: int = 0):
+    print(json.dumps(depicted.remote(source, clip_root, out_tag, limit=limit), indent=2))

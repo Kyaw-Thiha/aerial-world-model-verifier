@@ -54,6 +54,20 @@ def group_rows(rows: list[dict]) -> dict[str, list[dict]]:
     return out
 
 
+def pixel_mae(a: Path, b: Path) -> float | None:
+    """Mean absolute pixel difference between two clip frame sets (0-1 scale)."""
+    from PIL import Image
+
+    fa = sorted((a / "frames").glob("*.png"))
+    fb = sorted((b / "frames").glob("*.png"))
+    if not fa or not fb:
+        return None
+    xa = np.stack([np.asarray(Image.open(p).convert("RGB"), float) / 255.0 for p in fa])
+    xb = np.stack([np.asarray(Image.open(p).convert("RGB"), float) / 255.0 for p in fb])
+    n = min(len(xa), len(xb))
+    return float(np.abs(xa[:n] - xb[:n]).mean())
+
+
 def visual_of(clip_dir: Path | None) -> dict:
     if clip_dir is None or not (clip_dir / "manifest.json").exists():
         return {}
@@ -172,13 +186,17 @@ def main() -> int:
             if ex and nw and base_rows.get(ex["id"]) and new_rows.get(nw["id"]):
                 a, b = clip_stats(base_rows[ex["id"]], ex, cfg, {}, base=base), \
                     clip_stats(new_rows[nw["id"]], nw, cfg, {}, base=base)
-                repeats[base] = {"seed": seed,
-                                 "depicted_existing_deg": a["depicted_median_deg"],
-                                 "depicted_new_deg": b["depicted_median_deg"],
-                                 "depicted_abs_diff_deg": abs(a["depicted_median_deg"]
-                                                              - b["depicted_median_deg"]),
-                                 "residual_abs_diff_deg": abs(a["residual_median_deg"]
-                                                              - b["residual_median_deg"])}
+                pmae = pixel_mae(ROOT / "data/processed/anwm_clips" / ex["regime"] / ex["id"],
+                                 clip_root / nw["regime"] / nw["id"])
+                repeats[f"{base}@{seed}"] = {
+                    "seed": seed,
+                    "depicted_existing_deg": a["depicted_median_deg"],
+                    "depicted_new_deg": b["depicted_median_deg"],
+                    "depicted_abs_diff_deg": abs(a["depicted_median_deg"]
+                                                 - b["depicted_median_deg"]),
+                    "residual_abs_diff_deg": abs(a["residual_median_deg"]
+                                                 - b["residual_median_deg"]),
+                    "pixel_mae": pmae}
 
     df = pd.DataFrame(per_clip).sort_values(["base_path", "seed"])
     out = ROOT / args.out
@@ -211,22 +229,27 @@ def main() -> int:
     rows_bn = []
     max_n = int(df.groupby("base_path").size().max())
     for n in range(1, max_n + 1):
-        vals, feasible, clusters = [], [], []
+        vals, vals0, feasible, feasible0 = [], [], [], []
         for base, g in df.groupby("base_path"):
             g = g.sort_values("seed").head(n)
             if len(g) < n:
                 continue
             r = float(g.residual_median_deg.min())
+            r0 = float(g.residual_median_k0_deg.min())
             vals.append(r)
+            vals0.append(r0)
             feasible.append(r <= THRESH_DEG)
-            clusters.append(base)
+            feasible0.append(r0 <= THRESH_DEG)
         vals_arr = np.asarray(vals, float)
         rows_bn.append({"N": n, "n_paths": len(vals),
                         "mean_oracle_residual_deg": float(vals_arr.mean()),
                         "median_oracle_residual_deg": float(np.median(vals_arr)),
                         "feasible_k": int(np.sum(feasible)),
                         "feasible_n": len(feasible),
-                        "feasible_rate": float(np.mean(feasible))})
+                        "feasible_rate": float(np.mean(feasible)),
+                        "mean_oracle_residual_k0_deg": float(np.mean(vals0)),
+                        "feasible_k0_k": int(np.sum(feasible0)),
+                        "feasible_k0_rate": float(np.mean(feasible0))})
     bn = pd.DataFrame(rows_bn)
     bn.to_csv(out / "best_of_n.csv", index=False)
 
@@ -252,14 +275,48 @@ def main() -> int:
         A = np.vstack([x, np.ones_like(x)]).T
         coef = np.linalg.lstsq(A, y, rcond=None)[0]
         slope = {"deg_per_deg": float(coef[0]), "intercept_deg": float(coef[1]),
-                 "n_paths": int(len(x))}
+                 "n_paths": int(len(x)), "aggregation": "mean depicted per path"}
         by = des.groupby("designed_tilt_deg").depicted_median_deg.agg(["mean", "count"])
         slope["by_design"] = {str(k): {"mean_depicted_deg": float(v["mean"]),
                                        "n_paths": int(v["count"])}
                               for k, v in by.iterrows()}
+        # the headline design contrast used by earlier reports: one point per clip at seed 0
+        s0 = df[(df.seed == 0) & df.designed_tilt_deg.notna()]
+        if len(s0) >= 3:
+            x0 = s0.designed_tilt_deg.to_numpy(float)
+            y0 = s0.depicted_median_deg.to_numpy(float)
+            c0 = np.linalg.lstsq(np.vstack([x0, np.ones_like(x0)]).T, y0, rcond=None)[0]
+            slope["per_clip_seed0"] = {"deg_per_deg": float(c0[0]),
+                                       "intercept_deg": float(c0[1]), "n_clips": int(len(x0))}
+
+    # ---- per-family best-of-N (descriptive; the families are small)
+    by_family = {}
+    for base, g in df.groupby("base_path"):
+        fam = g.maneuver.iloc[0]
+        if pd.notna(g.designed_tilt_deg.iloc[0]):
+            fam = f"{fam}_{int(g.designed_tilt_deg.iloc[0])}"
+        by_family.setdefault(fam, []).append(base)
+    fam_rows = []
+    for fam, bases in sorted(by_family.items()):
+        r1, r5, flip = [], [], 0
+        for b in bases:
+            g = df[df.base_path == b].sort_values("seed")
+            if len(g) < 5:
+                continue
+            r1.append(float(g.residual_median_deg.iloc[0]))
+            r5.append(float(g.residual_median_deg.min()))
+            flip += int((g.residual_median_deg.iloc[0] > THRESH_DEG)
+                        and (g.residual_median_deg.min() <= THRESH_DEG))
+        if r1:
+            fam_rows.append({"family": fam, "n_paths": len(r1),
+                             "mean_r1_deg": float(np.mean(r1)),
+                             "mean_r5_deg": float(np.mean(r5)),
+                             "n_flipped": int(flip)})
+    pd.DataFrame(fam_rows).to_csv(out / "best_of_n_by_family.csv", index=False)
 
     summary = {
         "git": git_hash(), "prereg": "configs/h01_pilot_prereg.yaml",
+        "best_of_n_by_family": fam_rows,
         "reader": "results/gate_a2/anwm/depicted.jsonl + results/h01_seed_depicted/depicted.jsonl",
         "threshold_deg": THRESH_DEG, "k_d": K_PRIMARY, "dt_s": DT_PRIMARY,
         "n_paths": int(sp.shape[0]), "n_clips": int(df.shape[0]),
