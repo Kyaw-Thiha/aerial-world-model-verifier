@@ -1,0 +1,58 @@
+# F01 amendment 1 — the scale and yaw offset are estimated on the real clip and held fixed
+#
+# Written 2026-11-16, after the synthetic unit tests and BEFORE any statistic was computed
+# on any real UZH clip. `configs/f01_pixel_path_prereg.yaml` stays immutable; this file is
+# the operative amendment where the two disagree.
+#
+# Why it was needed. A synthetic check (tests/test_pathverdict.py, tilt-removal case) showed
+# that the registered V2 fit is degenerate when the scale is free: if the depicted lean is
+# removed, the model claims no horizontal acceleration, so the residual is minimised by
+# s -> 0 and the statistic collapses to 0 instead of rising. The same holds for V1 and V4
+# (their fitted scale is a gain, with the same s -> 0 escape). A free scale therefore cannot
+# be the ruler that the edited condition is measured against: the edit would absorb itself.
+
+id: F01
+amendment: 1
+date: "2026-11-16"
+status: pre-registered
+parent: configs/f01_pixel_path_prereg.yaml
+parent_commit: 6b88d5a
+applies_to: [V1_preintegration, V2_shooting, V4_velocity_drag]
+does_not_apply_to: [V3_band_coherence]   # scale-free and rotation-invariant by construction
+  # V5 reads the scale from the real-clip V2 fit, so this amendment defines its input.
+
+changes:
+  A1.1_paired_ruler: >
+    For each clip, the path scale s (V1, V2) and the drag gain (V4) are estimated ONCE, on
+    the `real` condition, by the registered fit. Every condition of that clip is then scored
+    with s held fixed. The yaw offset psi is also estimated on the real condition and held
+    fixed for the edits. This is a paired design: an edit may not move the ruler it is
+    measured with.
+  A1.2_real_fit: >
+    On the real condition the scale IS fitted jointly with psi and the initial state, exactly
+    as the parent pre-registration says, so the real-clip statistic remains the
+    minimum-over-scale residual and the false-reject rate keeps its conformal meaning. The
+    fitted s is reported per clip.
+  A1.3_oracle_path: >
+    The oracle-path arms use the same rule on the truth path (scale fitted on the real
+    condition, fixed for edits; expected near 1 m per metre).
+  A1.4_psi_sensitivity: >
+    A second pass that refits psi per condition (scale still fixed) is computed and reported
+    as a labelled sensitivity. It is never the headline.
+  A1.5_reporting: >
+    The degeneracy itself is a result: F01 must report that a free scale makes V1/V2/V4
+    blind to tilt removal by construction, and that the paired ruler is what removes it.
+    This does not change the gate.
+
+statistics_after_amendment:
+  V2: rho = sqrt(SSE / (s_real^2 * sum_i |X_i - mean X|^2)), scale fixed at s_real
+  V1: rho_v = sqrt(SSE / (s_real^2 * sum_i |v_i|^2)), scale fixed at s_real
+  V4: rho_d = sqrt(SSE / sum_i |v_i|^2), gain fixed at the real-condition fit
+  V3: unchanged (1 - gamma)
+  V5: reads s and its relative standard error from the real-condition V2 fit
+  direction: high = suspicious, unchanged
+  threshold_rule: unchanged (leave-one-sequence-out conformal 95th percentile on real clips)
+
+testability_added:
+  - a clip whose real-condition fit has no positive-scale solution is not testable for
+    V1/V2/V4 (counted and reported, never silently dropped)
