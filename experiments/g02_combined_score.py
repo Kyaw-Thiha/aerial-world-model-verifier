@@ -279,7 +279,7 @@ def main() -> int:
         for m in methods + ["residual", "coherence", "gain"]:
             val = auc_pool(testable, cond, m)
             boots = []
-            for _ in range(200):
+            for _ in range(N_BOOT):
                 pick = rng.choice(flights, size=len(flights), replace=True)
                 rs = [r for f in pick for r in by_flight[f]]
                 a = auc_pool(rs, cond, m)
