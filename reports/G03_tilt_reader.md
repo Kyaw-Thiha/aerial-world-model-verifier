@@ -31,8 +31,15 @@ Track G. Written 2026-11-16. Pre-registration `configs/g03_tilt_reader_prereg.ya
    estimate, not in admissibility: abstention is set by the path's excitation and by frames with
    no estimate, not by how large the error is. The published 43 % includes the gain tier's
    bootstrap-CI rule, which is not recomputed here.
-6. **UZH transfer is reported separately and is weak**: UZH's fold results are
-   <!--UZH-->
+6. **UZH transfer is reported separately and is modest**: the frozen pinhole reader is already good on this rig, and the fine-tune halves its median
+   without moving the tail. Per sequence (leave-one-sequence-out, 1,097 frames): median 1.28 ->
+   0.64 deg on `indoor_forward_3`, 1.08 -> 0.61 on `indoor_forward_5`, 1.48 -> 0.74 on
+   `indoor_forward_9`; the fraction above 10 deg goes 1.6 -> 2.9 % on `forward_3` and stays at
+   0 % on the other two, so the tail does not improve. The baseline column comes from a separate
+   `epochs = 0` pass of the same harness on the same frames (the frozen weights), merged by frame
+   name. The UZH route is the pinhole export with the pinhole weights and is not comparable with
+   the TII raw-fisheye route; the 45-degree-down rigs are excluded (E03), and no UZH clip
+   statistics are computed.
 
 ## Question
 
@@ -122,6 +129,21 @@ median residual, computed twice (all real clips, and the gate-kept clips only).
 | flight-07a-lemniscate | 19.4 / 12.4 | 0/0 | 0/0 | 4/7 | 1.0 -> 3.0 |
 | **total** | | **5/72 (6.9 %)** | **55/72 (76.4 %)** | **18/100** | |
 
+### UZH-FPV forward rigs (separate route, separate folds)
+
+Three sequences, 1,097 pinhole frames, leave-one-sequence-out, `weights="pinhole"`:
+
+| sequence | n | baseline median (deg) | fine-tuned median | baseline >10 deg | fine-tuned >10 deg |
+| --- | --- | --- | --- | --- | --- |
+| indoor_forward_3 | 450 | 1.28 | 0.64 | 0.016 | 0.029 |
+| indoor_forward_5 | 264 | 1.08 | 0.61 | 0.000 | 0.000 |
+| indoor_forward_9 | 383 | 1.48 | 0.74 | 0.000 | 0.000 |
+
+The medians halve on a rig the reader already handled well. The tail is unchanged, and on
+`forward_3` nominally worse: 7 of 450 frames above 10 deg with the frozen reader, 13 with the
+fine-tuned one — a dozen frames, reported as counts rather than as a rate. The baseline is a
+separate `epochs = 0` pass of the same harness with the frozen weights, merged by frame name.
+
 The ungated threshold is 18-33 deg, i.e. still set by the flights with catastrophic clips: the
 same threshold pathology as G01, and the reason both calibrations are reported. Two readings are
 honest and both belong here: (i) on the gate-kept population the reader reaches 76 % detection
@@ -166,8 +188,10 @@ open problem.
 * Training ran through the LM, so the loss is measured after refinement and is not comparable
   with a network-only field loss; the LM adds about 1 s per batch of two at 320 px and is the
   reason the batch is 2 (batch 8 exhausts a 22 GB A10G).
-* The confidence-weighted loss ablation declared in the pre-registration is
-  <!--CONFABLATION-->.
+* The confidence-weighted-loss ablation declared in the pre-registration was **not run**. A
+  third full TII pass costs about 7 USD and an hour for a secondary question, and the track had
+  already spent twice its estimate on the repeated primary run (see `docs/COST_LEDGER.md`). It is
+  declared as run-or-not rather than dropped quietly.
 * Fold files record the exact settings (`epochs`, `lr`, `batch`, `lm_steps`, seed, train-frame
   count, per-epoch loss and seconds) so a re-run is reproducible.
 * **Two runs were thrown away and the reasons are recorded, not hidden.** Run 1 named an
