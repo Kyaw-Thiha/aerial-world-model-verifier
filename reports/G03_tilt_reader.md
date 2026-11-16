@@ -7,7 +7,32 @@ Track G. Written 2026-11-16. Pre-registration `configs/g03_tilt_reader_prereg.ya
 
 ## Plain-language summary
 
-<!--SUMMARY-->
+1. **The reader improves: pooled held-out median error 3.97 -> 2.87 deg (-28 %), trimmed
+   RMSE 4.81 -> 3.71, and the frames above 10 deg error fall from 12.7 % to 10.8 %.** Every one
+   of the eight leave-one-flight-out folds improves at the median; the two hard track flights
+   improve most in the tail (13p trimmed RMSE 18.4 -> 9.9, 16p 14.1 -> 9.2).
+2. **The pre-registered success criterion is met on one of its two clauses**: the median falls
+   by at least 25 % (it falls 28 %); the fraction above 10 deg does not fall by a third (12.7 ->
+   10.8 %, a sixth). So this is a real but partial improvement, and the detection-relevant tail
+   is what did not move far enough.
+3. **Downstream, the clip-level median residual drops on six of eight flights** (for example
+   `flight-01p-ellipse` 10.2 -> 7.7 deg, `flight-13p-trackRATM` 16.3 -> 13.7, `flight-13a-trackRATM`
+   7.8 -> 4.7) and rises on two (`flight-16p-trackRATM` 17.9 -> 18.2 and `flight-07a-lemniscate`
+   1.0 -> 3.0, a flight whose clips were nearly perfect before). A better per-frame estimate does
+   not by itself give a better clip score on every flight.
+4. **With the frozen gate and a leave-one-flight-out threshold calibrated on gate-kept clips,
+   the new reader false-rejects 5 of 72 clips (6.9 %) and flags 55 of 72 (76.4 %) under a full
+   tilt removal** — against a frozen reader that at the same threshold flags 2/3 of 3 on the
+   held-out block (report G01). The per-flight spread is still the binding constraint: one
+   flight (`07p`) flags 2 of its 25 own real clips because the threshold fitted on the other
+   seven does not transfer to it.
+5. **Abstention does not move: 18 of 100 real clips abstain under the frozen rules that do not
+   need a bootstrap, and that is the same 18 with the frozen reader.** The improvement is in the
+   estimate, not in admissibility: abstention is set by the path's excitation and by frames with
+   no estimate, not by how large the error is. The published 43 % includes the gain tier's
+   bootstrap-CI rule, which is not recomputed here.
+6. **UZH transfer is reported separately and is weak**: UZH's fold results are
+   <!--UZH-->
 
 ## Question
 
@@ -53,11 +78,70 @@ estimate). Thresholds are leave-one-flight-out on the fit flights.
 
 ## Results
 
-<!--RESULTS-->
+### Per-frame error, held-out unit of each fold
+
+Each frame is scored by the model of the fold that held its flight out; the baseline column is
+the frozen reader's stored estimate on the same frame.
+
+| unit | n | baseline median (deg) | fine-tuned median | baseline trim RMSE | fine-tuned trim RMSE | baseline >10 deg | fine-tuned >10 deg |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| flight-01a-ellipse | 270 | 4.20 | 3.45 | 4.27 | 3.39 | 0.111 | 0.048 |
+| flight-01p-ellipse | 1267 | 3.13 | 1.87 | 3.27 | 1.88 | 0.008 | 0.003 |
+| flight-04a-ellipse | 350 | 3.23 | 2.70 | 3.25 | 2.74 | 0.057 | 0.011 |
+| flight-07a-lemniscate | 370 | 2.54 | 1.90 | 6.54 | 5.22 | 0.176 | 0.168 |
+| flight-07p-lemniscate | 1284 | 3.60 | 2.70 | 3.71 | 2.82 | 0.005 | 0.001 |
+| flight-13a-trackRATM | 557 | 7.43 | 4.42 | 34.66 | 31.53 | 0.336 | 0.327 |
+| flight-13p-trackRATM | 536 | 7.75 | 6.52 | 18.40 | 9.86 | 0.354 | 0.278 |
+| flight-16p-trackRATM | 373 | 7.32 | 6.96 | 14.14 | 9.21 | 0.346 | 0.332 |
+
+**Pooled TII (5,007 frames):** baseline median 3.97 deg, trimmed RMSE 4.81, 12.7 % above 10 deg,
+7.6 % above 20 deg, p90 13.1; fine-tuned median 2.87 deg, trimmed RMSE 3.71, 10.8 % above
+10 deg, 6.5 % above 20 deg, p90 10.7. Per-fold training: 700 frames from seven units, two
+epochs, 740-780 s of A10G per fold (`history` in each fold file).
+
+The per-fold pattern matters more than the pooled number: the flights that were already good
+(01p 3.13, 07p 3.60) improve by 35-40 % at the median, while the track flights (13a, 13p, 16p)
+improve mainly in the tail — 13a's trimmed RMSE stays at 31.5 because its worst frames are
+near-ceiling views that no amount of TII attitude supervision fixes.
+
+### Downstream, clip level
+
+`depicted_lean` rebuilt from the fine-tuned gravity on each clip's own frames; path side,
+statistics and gate frozen; threshold is the leave-one-flight-out 95th percentile of the clip
+median residual, computed twice (all real clips, and the gate-kept clips only).
+
+| flight | tau ungated / gated (deg) | real flagged (gated) | removal flagged (gated) | abstained | median residual frozen -> ft |
+| --- | --- | --- | --- | --- | --- |
+| flight-01a-ellipse | 23.0 / 12.4 | 0/5 | 2/5 | 3/5 | 5.1 -> 3.3 |
+| flight-01p-ellipse | 33.2 / 12.9 | 0/26 | 24/26 | 0/26 | 10.2 -> 7.7 |
+| flight-04a-ellipse | 24.1 / 12.4 | 0/6 | 1/6 | 4/7 | 3.2 -> 2.4 |
+| flight-07p-lemniscate | 33.2 / 12.2 | 2/25 | 24/25 | 1/26 | 10.7 -> 8.6 |
+| flight-13a-trackRATM | 18.0 / 12.4 | 0/6 | 0/6 | 6/11 | 7.8 -> 4.7 |
+| flight-16p-trackRATM | 22.9 / 12.2 | 1/1 | 1/1 | 0/7 | 17.9 -> 18.2 |
+| flight-13p-trackRATM | 26.3 / 11.8 | 2/3 | 3/3 | 0/11 | 16.3 -> 13.7 |
+| flight-07a-lemniscate | 19.4 / 12.4 | 0/0 | 0/0 | 4/7 | 1.0 -> 3.0 |
+| **total** | | **5/72 (6.9 %)** | **55/72 (76.4 %)** | **18/100** | |
+
+The ungated threshold is 18-33 deg, i.e. still set by the flights with catastrophic clips: the
+same threshold pathology as G01, and the reason both calibrations are reported. Two readings are
+honest and both belong here: (i) on the gate-kept population the reader reaches 76 % detection
+of a full tilt removal at a 6.9 % false-reject, which no configuration in G01 or G02 matches;
+(ii) the *threshold* still does not transfer (`07p` flags 2 of its 25 own clips, `16p` has one
+gate-kept clip and flags it), so a per-flight threshold, not a per-flight reader, remains the
+open problem.
 
 ## What this supports
 
-<!--SUPPORTS-->
+* Fine-tuning on mocap-labelled frames is a real lever on the reader: -28 % pooled median error
+  and -23 % trimmed RMSE with a strictly held-out fold structure, and gains concentrated exactly
+  where the frozen reader is worst in the tail (13p's trimmed RMSE halves).
+* The reader is not what sets abstention: the same 18 of 100 clips abstain with either reader
+  under the rules that do not need a bootstrap. Any expectation that a better estimate buys
+  testability is wrong on this evidence, and the segment/combined-score work (G01, G02) is not
+  limited by the reader's abstentions either.
+* **The two failures are attributable**: the >10 deg tail barely moves (the near-ceiling views
+  are not an attitude-supervision problem), and the clip-level threshold still does not transfer
+  between flights, which is the same per-flight calibration spread G01 and G02 ran into.
 
 ## What this does not show
 
@@ -68,8 +152,14 @@ estimate). Thresholds are leave-one-flight-out on the fit flights.
   verdict, pre-registered as out of scope here, and not run.
 * **Not UZH transfer of the verdict.** The UZH fine-tune is a per-frame experiment; no UZH clip
   statistics are reported, because the UZH clip population is too small to calibrate (E05).
-* **Not a claim that the reader's failures are gone.** Anything the fine-tune does to the
-  12.7 % > 10 deg tail is reported as a fraction, not explained.
+* **Not a claim that the reader's failures are gone.** The >10 deg fraction moves only from
+  12.7 % to 10.8 %; whatever the tail is (near-ceiling views, motion blur, gate geometry), two
+  epochs of attitude fine-tuning on 700 frames per fold does not fix it, and this report does
+  not diagnose it.
+* **Not a detection-floor measurement.** The floor the verdict reports (14-17 deg of required
+  tilt) is set by the *threshold* rule on real clips as much as by the reader; the downstream
+  block shows the reader's contribution and the threshold's pathology separately, not one
+  number that merges them.
 
 ## Caveats
 
@@ -80,6 +170,11 @@ estimate). Thresholds are leave-one-flight-out on the fit flights.
   <!--CONFABLATION-->.
 * Fold files record the exact settings (`epochs`, `lr`, `batch`, `lm_steps`, seed, train-frame
   count, per-epoch loss and seconds) so a re-run is reproducible.
+* **Two runs were thrown away and the reasons are recorded, not hidden.** Run 1 named an
+  undefined volume handle and died at the write step after training every fold; run 2's UZH part
+  used labels with the mount transposed and is discarded (the TII part is unaffected — its
+  baseline reproduces the published number). `docs/COST_LEDGER.md` charges the wasted GPU time
+  to this track.
 * Compute: see `docs/COST_LEDGER.md`; the pre-registered estimate was 5 USD against a 50 USD
   ceiling.
 

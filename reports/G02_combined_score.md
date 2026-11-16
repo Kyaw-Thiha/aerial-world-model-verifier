@@ -25,8 +25,10 @@ Track G. Written 2026-11-16. Pre-registration `configs/g02_combined_prereg.yaml`
    the gain tier is the tier most exposed to it.
 4. **Implementation verified against the frozen tables**: the recomputed per-clip axis gains match
    Track D's frozen `results/d_eval/d02/gain_table.csv` exactly (max |Δgx| = max |Δgy| = 0) and
-   the coherence scores match `results/d_coherence/d01` to 0.025, so the tiers in this report are
-   the published ones, not a look-alike.
+   the coherence scores match `results/d_coherence/d01` to 0.103 (the frozen table uses each
+   condition's own fitted lag; this report uses the clip's real-condition lag for every variant,
+   so a mirror-roll window can pick a different lag). The tiers here are the published ones, not
+   a look-alike.
 
 ## Question
 

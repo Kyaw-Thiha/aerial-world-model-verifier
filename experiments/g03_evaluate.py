@@ -20,6 +20,7 @@ from pathlib import Path
 import numpy as np
 
 from src.perception.frames import camera_to_body_pitched
+from src.verdict.abstain import gate_kept_from_conf
 from src.verdict.coherence import coherence
 from src.verdict.fit import FitOptions, fit_gain
 from src.verdict.lean import depicted_lean_from_gravity
@@ -27,6 +28,7 @@ from src.verdict.schema import load_clip
 from src.verdict.segments import frame_residual_deg
 
 CLIP_ROOT = Path("data/processed/track_d/clips")
+GATE = __import__("yaml").safe_load(Path("configs/gate_frozen.yaml").read_text())
 SPECS = Path("data/processed/p3a/p3a_v1")
 DEV = ["flight-01a-ellipse", "flight-01p-ellipse", "flight-04a-ellipse",
        "flight-07p-lemniscate", "flight-13a-trackRATM", "flight-16p-trackRATM"]
@@ -103,7 +105,8 @@ def downstream(fold_rows: dict[str, dict], flights: list[str], tag: str) -> dict
                          "coherence_ft": coh.correlation_score,
                          "usable": float(np.mean(np.isfinite(lean_ft).all(axis=1))),
                          "frac_signal": float(np.mean(np.asarray(clip_obj.tilt_req_deg) >= 10)),
-                         "n_signal": int(np.sum(np.asarray(clip_obj.tilt_req_deg) >= 10))})
+                         "n_signal": int(np.sum(np.asarray(clip_obj.tilt_req_deg) >= 10)),
+                         "gate_kept": gate_kept_from_conf(clip_obj.depicted_conf, GATE)})
         out[flight] = rows
     return out
 
@@ -176,22 +179,43 @@ def main() -> int:
         out["downstream"]["clips"] = ds
         allc = [r for rows in ds.values() for r in rows]
         # LOFO conformal thresholds on the dev flights' real clips
+        # Two calibrations, both leave-one-flight-out: every real clip, and the frozen
+        # gate-kept real clips (the frozen S3 gate, applied to the frozen reader's confidence
+        # because the fine-tuned pass does not store its own confidence).
         tau = {}
         for target in ds:
-            fit = [r["median_ft"] for fl, rows in ds.items() if fl != target for r in rows]
-            fit = [v for v in fit if np.isfinite(v)]
-            tau[target] = float(np.quantile(fit, 0.95)) if len(fit) >= 8 else float("nan")
+            for gated in (False, True):
+                fit = [r["median_ft"] for fl, rows in ds.items() if fl != target
+                       for r in rows if r["gate_kept"] or not gated]
+                fit = [v for v in fit if np.isfinite(v)]
+                tau[(target, gated)] = (float(np.quantile(fit, 0.95))
+                                        if len(fit) >= 8 else float("nan"))
         for target, rows in ds.items():
             for r in rows:
-                r["flagged_ft"] = bool(np.isfinite(r["median_ft"]) and r["median_ft"] > tau[target])
-                r["flagged_removal_ft"] = bool(np.isfinite(r["median_removal_frozen"])
-                                               and r["median_removal_frozen"] > tau[target])
+                for gated in (False, True):
+                    if gated and not r["gate_kept"]:
+                        r[f"flagged_ft_{gated}"] = None
+                        r[f"flagged_removal_ft_{gated}"] = None
+                        continue
+                    t = tau[(target, gated)]
+                    r[f"flagged_ft_{gated}"] = bool(np.isfinite(r["median_ft"])
+                                                    and r["median_ft"] > t)
+                    r[f"flagged_removal_ft_{gated}"] = bool(
+                        np.isfinite(r["median_removal_frozen"])
+                        and r["median_removal_frozen"] > t)
         by_flight = {}
         for target, rows in ds.items():
-            by_flight[target] = {"tau_median_residual": tau[target],
-                                 "n": len(rows),
-                                 "flagged_real": int(sum(r["flagged_ft"] for r in rows)),
-                                 "flagged_removal": int(sum(r["flagged_removal_ft"] for r in rows)),
+            kept = [r for r in rows if r["gate_kept"]]
+            by_flight[target] = {"tau_median_residual": tau[(target, False)],
+                                 "tau_median_residual_gated": tau[(target, True)],
+                                 "n": len(rows), "n_gate_kept": len(kept),
+                                 "flagged_real": int(sum(bool(r["flagged_ft_False"]) for r in rows)),
+                                 "flagged_removal": int(sum(bool(r["flagged_removal_ft_False"])
+                                                            for r in rows)),
+                                 "flagged_real_gated": int(sum(bool(r["flagged_ft_True"])
+                                                               for r in kept)),
+                                 "flagged_removal_gated": int(sum(
+                                     bool(r["flagged_removal_ft_True"]) for r in kept)),
                                  "abstain_ft": abstain_rate(rows),
                                  "median_residual_frozen": float(np.nanmedian(
                                      [r["median_frozen"] for r in rows])),
@@ -213,11 +237,12 @@ def main() -> int:
                   f"trimRMSE {s['trimmed_rmse']:.2f} >10 {s['frac_gt10']:.3f} "
                   f">20 {s['frac_gt20']:.3f}")
     for fl, v in out["downstream"].get("per_flight", {}).items():
-        print(f"  {fl:24s} tau {v['tau_median_residual']:.1f} deg  real flagged "
-              f"{v['flagged_real']}/{v['n']}  removal {v['flagged_removal']}/{v['n']}  "
-              f"abstain {v['abstain_ft']['k']}/{v['abstain_ft']['n']}  "
-              f"median resid frozen {v['median_residual_frozen']:.1f} -> ft "
-              f"{v['median_residual_ft']:.1f}")
+        print(f"  {fl:24s} tau {v['tau_median_residual']:.1f}/{v['tau_median_residual_gated']:.1f} "
+              f"(ungated/gated)  flagged real {v['flagged_real']}/{v['n']} "
+              f"(gated {v['flagged_real_gated']}/{v['n_gate_kept']})  removal "
+              f"{v['flagged_removal']}/{v['n']} (gated {v['flagged_removal_gated']}/"
+              f"{v['n_gate_kept']})  abstain {v['abstain_ft']['k']}/{v['abstain_ft']['n']}  "
+              f"median resid {v['median_residual_frozen']:.1f} -> {v['median_residual_ft']:.1f}")
     return 0
 
 
