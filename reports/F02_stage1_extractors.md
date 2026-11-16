@@ -2,8 +2,8 @@
 
 Track F. Written 2026-11-16. Report `F01` decided stage 0: the pixel-path statistics work,
 the path does not. This report is the stage-1 table for that question — can another extractor
-produce a path the same statistics can use? — and it extends E7's bake-off with the three
-systems Track C never ran.
+produce a path the same statistics can use? — and it extends E7's bake-off with two of the
+three systems Track C never ran (MegaSaM is blocked by its weight distribution).
 
 **Decision: the bake-off is answered, the gate is not moved.** ViPE passes Track C's
 bake-off 10/10 without the Kalibr intrinsics and beats DPVO's median direction error
