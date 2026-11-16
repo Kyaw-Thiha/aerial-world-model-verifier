@@ -59,6 +59,7 @@ def main() -> int:
 
     # ---------------- Part 2
     for tag, path in (("lingbot", "results/h01_lingbot"),
+                      ("lingbot_b", "results/h01_lingbot_b"),
                       ("wan", "results/h01_wan")):
         d = ROOT / path
         if not (d / "clips.csv").exists():

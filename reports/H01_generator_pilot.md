@@ -9,11 +9,11 @@ is in `docs/COST_LEDGER.md`.
 
 **Can sampling save ANWM? No.** ANWM's depicted tilt barely moves between sampling seeds:
 for the five paths that already had three seeds the seed-to-seed range of the clip median is
-0.11–0.16 deg. The new 20-path, 5-seed set (TBD) widens this picture but not the conclusion:
-picking the best of five seeds moves the median residual by far less than the 2 deg the
-pre-registration required to call sampling useful, and no designed path that was infeasible
-at one seed becomes feasible at five. A best-of-N search over seeds cannot repair a generator
-that does not bank.
+0.11–0.16 deg; on the full 20-path, 5-seed set the median seed standard deviation is 0.17 deg
+(median range 0.43, worst path 2.48). Picking the best of five seeds moves the median residual
+by **0.24 deg** (mean 0.31), against the 2 deg the pre-registration required to call sampling
+useful, and **one path of twenty** moves from infeasible to feasible, against the required
+20 %. A best-of-N search over seeds cannot repair a generator that does not bank.
 
 **LingBot-World does not follow a 20 deg roll command at the tested rate.** Over 49 frames the
 +20 deg ramp (0.42 deg/frame) moved the depicted tilt from 3.21 to 3.30 deg and the -20 deg
@@ -126,7 +126,68 @@ of the pilot set had a single seed before this work, which is why seeds 1–4 we
 the 8.55 deg the cruise path actually requires at 5 m/s with drag, and against 5–20 deg on the
 designed manoeuvres.
 
-**The 20-path, 5-seed set.** TBD (new generation).
+**The 20-path, 5-seed set.** One hundred clips (seed 0 existing, seeds 1–4 new); every
+expected clip has reader rows (`new_clips_missing: []`). The per-path spread is small and
+path-dependent: the median seed standard deviation of the clip's depicted tilt is
+**0.17 deg** (median range
+0.43 deg), but the worst path
+(`C_climb_turn_20_fixed_0`) moves 2.48 deg. The
+residual spread is similar (median sd 0.24 deg,
+median range 0.62 deg).
+
+| base_path | maneuver | designed_tilt_deg | n_seeds | depicted_median_deg | depicted_seed_sd_deg | depicted_seed_range_deg | residual_median_deg | residual_seed_range_deg | n_feasible_seeds |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| C_accel_brake_10_course_0 | accel_brake | 10.00 | 5 | 0.65 | 0.15 | 0.33 | 8.08 | 0.15 | 0 |
+| C_accel_brake_20_course_0 | accel_brake | 20.00 | 5 | 0.45 | 0.11 | 0.30 | 8.19 | 0.30 | 0 |
+| C_accel_brake_20_course_1 | accel_brake | 20.00 | 5 | 2.64 | 0.62 | 1.53 | 6.21 | 1.52 | 4 |
+| C_accel_brake_5_course_0 | accel_brake | 5.00 | 5 | 0.54 | 0.12 | 0.29 | 7.34 | 1.24 | 0 |
+| C_climb_turn_10_fixed_0 | climb_turn | 10.00 | 5 | 1.39 | 0.18 | 0.48 | 11.03 | 0.75 | 0 |
+| C_climb_turn_20_fixed_0 | climb_turn | 20.00 | 5 | 2.00 | 0.96 | 2.48 | 18.25 | 2.46 | 0 |
+| C_climb_turn_20_fixed_1 | climb_turn | 20.00 | 5 | 2.45 | 0.54 | 1.33 | 18.04 | 1.02 | 0 |
+| C_climb_turn_5_course_0 | climb_turn | 5.00 | 5 | 0.86 | 0.17 | 0.44 | 8.54 | 0.26 | 0 |
+| C_climb_turn_5_fixed_0 | climb_turn | 5.00 | 5 | 0.70 | 0.13 | 0.34 | 8.67 | 0.47 | 0 |
+| C_cruise_ctl_course_0 | cruise | — | 5 | 0.57 | 0.07 | 0.16 | 8.00 | 0.20 | 0 |
+| C_cruise_ctl_course_1 | cruise | — | 5 | 2.40 | 0.26 | 0.64 | 6.25 | 0.75 | 4 |
+| C_slalom_10_fixed_0 | slalom | 10.00 | 5 | 0.55 | 0.14 | 0.30 | 9.43 | 0.72 | 0 |
+| C_slalom_10_fixed_1 | slalom | 10.00 | 5 | 2.26 | 0.28 | 0.65 | 7.14 | 1.55 | 1 |
+| C_slalom_5_course_0 | slalom | 5.00 | 5 | 0.52 | 0.13 | 0.30 | 8.41 | 0.20 | 0 |
+| C_slalom_5_fixed_0 | slalom | 5.00 | 5 | 0.53 | 0.11 | 0.28 | 8.62 | 0.54 | 0 |
+| C_turn_10_fixed_0 | turn | 10.00 | 5 | 0.74 | 0.16 | 0.41 | 12.22 | 0.38 | 0 |
+| C_turn_20_fixed_0 | turn | 20.00 | 5 | 0.79 | 0.25 | 0.67 | 20.47 | 0.69 | 0 |
+| C_turn_20_fixed_1 | turn | 20.00 | 5 | 2.77 | 0.83 | 1.98 | 18.46 | 1.98 | 0 |
+| C_turn_5_course_0 | turn | 5.00 | 5 | 0.89 | 0.17 | 0.42 | 8.98 | 0.52 | 0 |
+| C_turn_5_fixed_0 | turn | 5.00 | 5 | 0.65 | 0.21 | 0.54 | 9.21 | 0.55 | 0 |
+
+**Oracle best-of-N.** Picking the lowest-residual seed over the first N seeds moves the mean
+residual from 10.46 deg at N = 1 to
+10.16 deg at N = 5. Per path the median reduction is
+**0.24 deg** (path-clustered 95 % interval
+[0.14, 0.38], 20 clusters) and the mean
+reduction is 0.31 deg. **One path of twenty**
+(`C_slalom_10_fixed_1`, residual 7.14 -> below 6.46 on one seed) moves from infeasible to
+feasible, i.e. 1/20 = 5 %, against the pre-registered 20 % requirement; the median reduction
+is an order of magnitude below the required 2 deg. Under the drag-free sensitivity
+(k_d = 0) 14/20 paths are already feasible at N = 1 and the rate does not improve.
+
+| N | n_paths | mean_oracle_residual_deg | median_oracle_residual_deg | feasible_k | feasible_n | feasible_rate | feasible_k0_rate |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | 20 | 10.46 | 8.66 | 2 | 20 | 0.10 | 0.70 |
+| 2 | 20 | 10.39 | 8.66 | 2 | 20 | 0.10 | 0.70 |
+| 3 | 20 | 10.29 | 8.64 | 2 | 20 | 0.10 | 0.70 |
+| 4 | 20 | 10.26 | 8.39 | 2 | 20 | 0.10 | 0.70 |
+| 5 | 20 | 10.16 | 8.39 | 3 | 20 | 0.15 | 0.70 |
+
+**Same-seed repeat.** Four clips were regenerated with the same seed, path, start state and
+checkpoint. Their pixels are **bit-identical** (MD5 equal on every frame checked; mean
+absolute pixel difference 0.0), and the depicted tilt differs by at most 0.33 deg. The seed
+spread is therefore a seed effect, not run-to-run noise.
+
+**Design contrast on this set.** Mean depicted tilt is 0.67 deg at designed 5 deg, 1.12 at 10
+and 1.85 at 20, a per-path regression slope of 0.08; the
+seed-0 per-clip slope is 0.103. The
+all-49-Regime-C-clip slope quoted by the earlier track is 0.0397; the pilot set over-weights
+the high-bias paths, so the two are not in conflict. Every version is far below the ~0.5-1.0
+a consistent flight would need.
 
 ### 2. LingBot-World roll injection
 
@@ -162,7 +223,7 @@ artefact.
 
 | model | GPU | s/clip (median) | peak VRAM | USD/clip | 200 clips |
 | --- | --- | --- | --- | --- | --- |
-| ANWM (16 frames, 250 steps) | A10 | 217.9 (n = 5 measured) | 7.3 GB | 0.067 | 12.1 GPU-hours, US$13.3 |
+| ANWM (16 frames, 250 steps) | A10 | 218.6 (n = 80) | 7.3 GB | 0.067 | 12.1 GPU-hours, US$13.4 |
 | LingBot-World NF4 (49 frames, 40 steps) | A100-80GB | 652.0 (n = 5 probes) | 21.1 GB | 0.453 | 36.2 GPU-hours, US$91 |
 | Wan 2.2 TI2V-5B (49 frames, 40 steps) | A10 | 135.0 (n = 5) | 15.2 GB | 0.041 | 7.5 GPU-hours, US$8.3 |
 
@@ -202,8 +263,8 @@ No residual is computed: there is no commanded path, so this is not a feasibilit
 ## What this supports
 
 * **ANWM's failure is not sampling noise.** Within a fixed path and start state, the depicted
-  tilt moves by a few tenths of a degree across seeds, and the oracle best-of-N curve is
-  flat. The path-dependence of the bias (some paths depict 0.5 deg, others 3.7 deg) is much
+  tilt moves by a median 0.17 deg across seeds (worst path 2.48 deg), and the oracle
+  best-of-N reduction is 0.24 deg median. The path-dependence of the bias (some paths depict 0.5 deg, others 3.7 deg) is much
   larger than the seed-dependence, so seed search is the wrong lever; the model's action
   interface (4-DoF, no roll/pitch) is the right target.
 * **A pose-conditioned generator can be measured with the same reader.** LingBot-World's
@@ -242,8 +303,8 @@ No residual is computed: there is no commanded path, so this is not a feasibilit
   spread therefore includes any run-to-run nondeterminism, not only the seed, which is the
   quantity a deployable best-of-N would face.
 * **The 20-path set is designed, not random.** It is one start per design cell plus a second
-  start on the sharpest cells, so its design slope (0.103 deg per designed deg) differs from
-  the all-49-clip slope (0.0397). Both are reported; neither changes the conclusion.
+  start on the sharpest cells, so its design slope (0.103 deg per designed deg at seed 0, 0.078
+  using each path's mean over seeds) differs from the all-49-clip slope (0.0397). Both are reported; neither changes the conclusion.
 * **The LingBot probes are one first frame, one seed, 40 steps, NF4.** They establish that
   this build does not follow a roll command on this frame; they do not prove that the full
   precision weights would fail. The level baseline is 3.2 deg, so a 3 deg response is within
@@ -272,12 +333,12 @@ No residual is computed: there is no commanded path, so this is not a feasibilit
 ## Go/no-go and cost of 200 clips
 
 **ANWM seed sampling: no-go.** The per-path seed spread of the depicted tilt is a few tenths
-of a degree (TBD final median), the oracle best-of-N reduction is far below the 2 deg the
-pre-registration required, and no path that was infeasible at one seed becomes feasible at
-five. Sampling seeds cannot repair a generator whose bias is in the decoupling of planned
+of a degree (median seed sd 0.17, median range 0.43), the oracle best-of-N reduction is 0.24
+deg (median; 0.31 mean) against the 2 deg the
+pre-registration required, and only one path of twenty (5 %) moves from infeasible to feasible. Sampling seeds cannot repair a generator whose bias is in the decoupling of planned
 acceleration from depicted attitude, not in the noise.
 
-**ANWM scale-up (without seed search):** 200 clips x 217.9 s = 12.1 GPU-hours, **US$13.3** at
+**ANWM scale-up (without seed search):** 200 clips x 218.6 s = 12.1 GPU-hours, **US$13.4** at
 the A10 list price, plus the one-time checkpoint load. This is the cheapest arm by a wide
 margin and the only one whose model is already known to be infeasible on designed paths; the
 value of 200 more clips is in covering scenes, not in changing the verdict.
@@ -345,4 +406,8 @@ Unit tests: `tests/test_h01_generator_pilot.py` (3 tests; the suite is 224 passe
 
 Every manifest records the code commit, the GPU, per-clip seconds and peak VRAM. The
 pre-registration hash was recomputed from the committed file before writing this report.
+The Modal call ids for the two ANWM shards are in `results/h01_seed_specs/spawn_b.json` and
+`spawn_c.json`; every table above is generated by `experiments/h01_seed_variance.py`,
+`experiments/h01_generated_tilt.py` and `experiments/h01_report_tables.py` from the stored
+rows under `results/`, which are committed with this report.
 
