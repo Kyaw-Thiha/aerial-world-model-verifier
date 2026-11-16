@@ -1,8 +1,8 @@
 # G02 — One decision from three tiers: max of standardised statistics, calibrated conformally
 
 Track G. Written 2026-11-16. Pre-registration `configs/g02_combined_prereg.yaml`. Code:
-`experiments/g02_combined_score.py`. Results: `results/g02_combined/{dev,heldout_devfit}/`
-(commit `7074f9d` for the code and config). CPU only; **zero GPU spend**.
+`experiments/g02_combined_score.py` and config `configs/g02_combined_prereg.yaml`, both at
+`7074f9d`. Results: `results/g02_combined/{dev,heldout_devfit}/`, committed at `2ba24a3`. CPU only; **zero GPU spend**.
 
 ## Plain-language summary
 

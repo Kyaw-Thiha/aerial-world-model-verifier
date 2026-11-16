@@ -248,15 +248,20 @@ def run_fold(dataset: str, holdout: str, epochs: int = 2, lr: float = 2e-5,
            "batch": batch, "lm_steps": lm_steps, "seed": seed,
            "n_train_frames": len(train_rows), "history": hist,
            "held_out": eval_hold, "fit_sample": eval_fit}
-    vol.mkdir(exist_ok=True)
     out_dir = Path(VOL) / "folds"
     out_dir.mkdir(parents=True, exist_ok=True)
-    (out_dir / f"{dataset}__{holdout}.json").write_text(json.dumps(rec))
-    volume.commit()
-    print(f"[{dataset}/{holdout}] wrote {out_dir / (dataset + '__' + holdout + '.json')}",
-          flush=True)
+    path = out_dir / f"{dataset}__{holdout}.json"
+    wrote = True
+    try:
+        path.write_text(json.dumps(rec))
+        volume.commit()
+    except Exception as exc:   # never lose a fold to a volume problem
+        wrote = False
+        print(f"[{dataset}/{holdout}] volume write failed: {exc}", flush=True)
+    print(f"[{dataset}/{holdout}] wrote={wrote} {path}", flush=True)
     return {"dataset": dataset, "holdout": holdout, "n": len(eval_hold),
-            "seconds": time.time() - t0, "loss_last": hist[-1]["loss"] if hist else None}
+            "seconds": time.time() - t0, "loss_last": hist[-1]["loss"] if hist else None,
+            "wrote": wrote, "record": rec if not wrote else None}
 
 
 @app.local_entrypoint()
@@ -274,5 +279,14 @@ def main(mode: str = "smoke", dataset: str = "tii", holdout: str = "",
                        if p.is_dir() and (p / "labels.json").exists())
     calls = [run_fold.spawn(dataset, u, epochs, lr, batch, lm_steps, 1 + i, max_frames)
              for i, u in enumerate(units)]
+    out = []
     for c in calls:
-        print(c.get())
+        r = c.get()
+        if isinstance(r, dict) and r.get("record"):
+            local = Path("results/g03_tilt_reader/folds")
+            local.mkdir(parents=True, exist_ok=True)
+            (local / f"{r['dataset']}__{r['holdout']}.json").write_text(
+                json.dumps(r["record"]))
+            r.pop("record", None)
+        out.append(r)
+        print(r)

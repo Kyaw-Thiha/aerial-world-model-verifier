@@ -3,7 +3,7 @@
 Track G. Written 2026-11-16. Pre-registration `configs/g01_segment_prereg.yaml`; amendment
 `configs/g01_segment_amendment_a.yaml`. Code: `src/verdict/segments.py`,
 `experiments/g01_segment_detection.py`. Results: `results/g01_segments/` (two population
-blocks × two window lengths, all from commit `a794380`). CPU only; **zero GPU spend**.
+blocks × two window lengths, committed at `2ba24a3`). CPU only; **zero GPU spend**.
 
 ## Plain-language summary
 
@@ -263,5 +263,6 @@ PYTHONPATH=. python experiments/g01_segment_detection.py --population heldout --
 
 Outputs: `results/g01_segments/dev_w8_{all,gate_kept}/summary.json`, `..._w12_...`,
 `heldout_w8_gate_kept/`, `heldout_w12_gate_kept/`, plus `variants.csv` (one row per clip,
-family, fraction and persistence). Configs: `configs/g01_segment_prereg.yaml`,
-`configs/g01_segment_amendment_a.yaml`. Code commit: `a794380`.
+family, fraction and persistence). Configs: `configs/g01_segment_prereg.yaml` (`3fe20cc`),
+`configs/g01_segment_amendment_a.yaml` (`7d44d3c`). Code: `src/verdict/segments.py` and
+`experiments/g01_segment_detection.py` at `2ba24a3`. Stored results: `2ba24a3`.
