@@ -1,0 +1,126 @@
+version: 1
+date: '2026-11-16'
+status: preregistered
+track: G
+owner_branch: track-g-segments
+written: before any combined score, ROC or minimum-detectable-violation curve was computed
+question: >
+  Do the three existing verdict tiers, combined into one calibrated decision, buy detection at
+  a fixed whole-clip false-reject rate over the best single tier - and what is the smallest
+  violation they detect half the time?
+
+inputs_frozen:
+  clips: data/processed/track_d/clips   # verdict_clip v2
+  gain: configs/gain_frozen.yaml        # R2_axis_gains, per-fold centers/scales/threshold
+  coherence: configs/coherence_frozen.yaml
+  gate: configs/gate_frozen.yaml
+
+population:  # identical to configs/g01_segment_prereg.yaml
+  n_real_clips: 100
+  flights: 8
+  dev_flights:
+    - flight-01a-ellipse
+    - flight-01p-ellipse
+    - flight-04a-ellipse
+    - flight-07p-lemniscate
+    - flight-13a-trackRATM
+    - flight-16p-trackRATM
+  held_out_flights: [flight-13p-trackRATM, flight-07a-lemniscate]
+  note: >
+    The held-out flights are named here, before any score exists, and are scored once at the
+    end with every constant fitted on the dev flights. The combination rule has no free weights
+    to tune: it is a maximum of standardized tiers, so there is nothing to fit on either block.
+
+tiers:
+  residual:
+    statistic: clip median of the per-frame depicted-vs-required thrust-axis angle (degrees)
+    window: whole clip (no windows); identical definition to report G01's window statistic
+    direction: larger is more suspicious
+  coherence:
+    statistic: 1 - min(r_x, r_y) from src.verdict.coherence, lag taken from the clip's own gain fit
+    direction: larger is more suspicious
+  sign:
+    statistic: 1 - min(s_x, s_y)
+    direction: larger is more suspicious
+    use: secondary only (it is a coarser view of the same information as coherence)
+  gain:
+    statistic: >
+      the frozen JointBand statistic M = max(|gx - c_x|/s_x, |gy - c_y|/s_y) with the centers and
+      scales of configs/gain_frozen.yaml (per-fold bands, never refit here)
+    direction: larger is more suspicious
+
+standardisation:
+  rule: >
+    Each tier statistic is standardized on the FIT flights of its fold by
+    z = (T - median_fit) / max((q97.5_fit - q2.5_fit) / 3.92, 1e-6), the same robust scale the
+    frozen JointBand uses. No tier is weighted: the combination is the maximum of the z-scores.
+  no_fitting_on_held_out: true
+
+combination:
+  primary:
+    name: G_max3
+    score: max(z_residual, z_coherence, z_gain)
+    threshold_rule: >
+      leave-one-flight-out conformal 95th percentile of the score over the real clips of the
+      fit flights; flag when score > tau. One false-reject budget for the whole decision.
+    alpha: 0.05
+  secondaries:   # reported beside the primary, never selected on their outcome
+    - name: G_max2_no_resid
+      score: max(z_coherence, z_gain)
+      rationale: does the residual tier add anything to the two frozen tiers?
+    - name: G_fisher
+      score: >
+        -2 * sum_i log(p_i) with p_i the one-sided conformal p-value of tier i on the fit
+        flights (p = (1 + #{fit clips >= T}) / (n_fit + 1)), calibrated by the same max-statistic
+        conformal rule
+    - name: G_max3_sign
+      score: max(z_residual, z_coherence, z_sign, z_gain)
+
+abstention:
+  rule: >
+    A clip enters the combined score only when all three tiers are computable under the frozen
+    abstention rules: the gain tier's frozen rules (configs/gain_frozen.yaml: min 24 frames,
+    usable fraction 0.50, 12 signal frames, excitation 2 deg, condition number 1000, CI half
+    width 0.35) and a finite coherence and residual. Everything else is reported as abstained
+    with its reason, never scored as a pass.
+  gate: >
+    Primary block ungated (so the combination is measured without a second selection step); the
+    frozen S3 gate block is reported as a secondary with its kept count.
+
+evaluation:
+  roc: >
+    Pooled across folds using the leave-one-flight-out standardized score (each clip scored by a
+    model fitted without its flight). AUC per condition, with flight-clustered bootstrap
+    (5,000 replicates, numpy.random.default_rng(1)); 8 clusters, descriptive.
+  mdv_primary:
+    definition: >
+      Minimum-detectable-violation curve on a graded violation built by scaling the real clip's
+      depicted lean vector, l_dep -> s * l_dep, for s in {1.0, 0.95, 0.9, 0.85, 0.8, 0.7, 0.6,
+      0.5, 0.4, 0.3, 0.2, 0.0}. Violation size = 1 - s. This is a synthetic manipulation of the
+      depicted side, stated as such: no pixels are re-estimated, so it measures the statistic,
+      not the reader.
+    readout: >
+      detection rate at the 5 % conformal threshold versus 1 - s; the minimum detectable
+      violation is the smallest 1 - s reaching 0.5 detection, with its flight-clustered spread.
+  mdv_pixel:
+    definition: >
+      The same readout on the pixel edit families (tilt removal, mirrored roll, x0.5, x1.5) and
+      on the partial-injection fractions of report G01, so the synthetic sweep is anchored to
+      measured edits.
+  controls:
+    list: [yaw_control, null_edit]
+    reporting: beside every rate
+
+success_criterion:
+  primary: >
+    G_max3 reaches at least +0.05 AUC over the best single tier on tilt removal and mirrored roll
+    at the same 5 % false-reject, and its minimum detectable violation is smaller than that of
+    the best single tier. Reported with k/n; if it does not, that is the finding.
+  null_result_is_allowed: true
+
+held_out_reporting:
+  once: true
+  content: AUC and detection for the primary and every secondary, bands fitted on dev flights
+
+cost:
+  gpu_usd: 0
