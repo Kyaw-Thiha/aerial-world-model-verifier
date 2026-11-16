@@ -1,0 +1,108 @@
+% Track F, stage 0 — candidate section for the report.
+% Numbers from results/f01_stage0/summary.json at commit 3aa8a13 (run provenance in the file).
+% Assets: report_candidates/tab_e11_pixel-path-verdict_{1,2}.tex (built by
+% experiments/f01_tables.py). Do not edit the main LaTeX files from this branch.
+
+\section{The pixel-path verdict without a second derivative}
+\label{sec:pixel-path-stage0}
+
+\paragraph{Question.}
+When the flight path has to come from the pixels, the earlier pilot failed for two reasons
+that are easy to conflate: it differentiated the recovered path twice, where noise grows as
+frequency squared, and it needed a metric scale. This section asks whether five statistics
+that avoid the second derivative can carry a verdict on the stored UZH-FPV DPVO paths, and
+separates path error from depicted-lean error with an oracle ladder. It is pre-registered in
+\texttt{configs/f01\_pixel\_path\_prereg.yaml} (commit \texttt{6b88d5a}), with one amendment
+(\texttt{f01\_pixel\_path\_prereg\_amend1.yaml}, \texttt{17d21c6}) that fixes the path scale
+and yaw offset on each clip's \emph{real} condition before its edits are scored: with a free
+scale the tilt-removed condition is absorbed by $s\to0$ and the test cannot see it.
+
+\paragraph{Setup.}
+The path is Track C's DPVO run on the prepared UZH pinhole frames (150 frames per sequence,
+15.07\,Hz, Kalibr intrinsics supplied; direction error 1.5--20.9$^\circ$ against truth). The
+depicted lean is Track E's v3 fixed-crop GeoCalib output through the published Kalibr mount,
+at the official schema-v2 0.37\,s window. The attitude source supplies the up direction
+(truth quaternion, or the depicted lean inverted to a body-frame up) and a heading; a constant
+yaw offset and a positive scale are fitted per clip, because yaw and scale are unconstrained in
+this project.
+
+The five statistics are: \textbf{V2 shooting} (integrate $a_h = g\,\mathrm{Rz}(\psi+\text{yaw})\,l_d
+- k_d v_h$ twice and least-squares the observed path \emph{undifferentiated}; statistic is the
+unexplained fraction $\rho$), \textbf{V1 preintegration} (one derivative of the path, integrate
+the same ODE once, statistic $\rho_v$), \textbf{V3 band-limited coherence}
+($1-|\rho_{\mathbb C}|$ between the depicted lean and the path's horizontal acceleration inside
+$[0.05, f_{95}]$\,Hz), \textbf{V4 velocity-drag} ($l \approx k_d v/g$, one derivative), and
+\textbf{V5 physics scale} (the scale the shooting fit recovers, checked for identifiability
+and against a depth prior). V2 is primary because it uses the path undifferentiated.
+Thresholds are leave-one-sequence-out conformal 95th percentiles on real clips; edits are
+scored against the threshold of their held-out sequence, so no edited clip helps set its own
+bar. The population is the eight real clips in four indoor-forward sequences that Track E
+finds testable \emph{and} that the stored path covers in full; intervals are
+sequence-clustered (5{,}000 replicates) and descriptive at four clusters.
+
+\begin{table}[t]
+\centering
+\caption{Pixel-path verdict, estimated attitude and the stored DPVO path, 0.37\,s window.
+Rates are flags and are printed as rate ($k/n$); $n=8$ real clips in four indoor-forward
+sequences. Thresholds are leave-one-sequence-out conformal 95th percentiles on the real
+clips. V4 is untestable here: its pre-registered drag-dominated condition
+($\mathrm{median}\,|a_h|/(k_d|v_h|)<0.5$) holds on no clip (observed 0.73--9.35).}
+\label{tab:pixel-path-primary}
+\input{report_candidates/tab_e11_pixel-path-verdict_1}
+\end{table}
+
+\begin{table}[t]
+\centering
+\caption{The oracle ladder for the shooting statistic: the same fit with the truth path in
+place of the pixel path, and with the truth attitude in place of the depicted lean. Swap the
+path and removal/mirror detection returns; swap the attitude and every edit becomes invisible
+(the attitude arm then never reads the pixels). Rates are rate ($k/n$) over the same eight
+clips.}
+\label{tab:pixel-path-ladder}
+\input{report_candidates/tab_e11_pixel-path-verdict_2}
+\end{table}
+
+\paragraph{Result.}
+Table~\ref{tab:pixel-path-primary} gives the gate. With estimated attitude and the pixel path
+the primary statistic flags 1/8 real clips (0.125), 6/8 tilt removals (0.750) and 4/8 mirrored
+rolls (0.500); the null edit sits at 1/8 and the yaw control at 2/8. The false-reject budget
+is met, the detection bar of 0.90 is not, and no secondary variant does better: preintegration
+detects 1/8 removals and 5/8 mirrors, the band-limited coherence 1/8 and 0/8. The
+\textbf{decision is fail}.
+
+Table~\ref{tab:pixel-path-ladder} says why, and it is the useful part. With the truth path in
+place of the pixel path the same code reaches 8/8 removal and 8/8 mirror under preintegration
+and 8/8 and 7/8 under shooting, at a false-reject rate of 1--2/8. Swapping the attitude instead
+leaves every condition identical, by construction, because the oracle-attitude arm never reads
+the pixels. The statistic is therefore sound and the path is the binding error. Rank AUCs on
+the same eight clips agree: shooting 0.95 for removal and 0.89 for mirror on the pixel path
+against 1.00 and 0.98 on the truth path; preintegration 0.75/0.89 against 1.00/0.98. The gap
+between those AUCs and the 0.75/0.50 rates in the table is the conformal threshold itself:
+with four clusters a 95th percentile over six calibration clips is nearly their maximum, so a
+statistic that separates well still misses the 0.90 detection bar. Lowering the level would
+trade the (met) false-reject budget for detection; that was not pre-registered and is not done.
+
+Two mechanical findings qualify the failure. First, detection collapses with the number of
+derivatives of the observed path: no derivative (shooting) 0.75/0.50, one (preintegration)
+0.125/0.625, two inside the band (coherence) 0.125/0.00. Second, the mirror rate is not ordered
+by roll excitation in this sample (detected clips have roll spread 0.019--0.158, undetected
+0.058--0.293), so the sample cannot support a claim that banking explains it; the per-clip
+table is in the report. V5's ruler is identifiable on all eight real clips and its depth
+consistency band holds, but it flags only 2/8 removals as unidentifiable and no scale edit,
+because the pre-registered band is deliberately loose; the scale it recovers is 0.44--0.84
+of the Sim(3) truth scale (median 0.59), a systematic bias the data here cannot attribute
+between estimator attenuation and the drag/scale coupling.
+
+\paragraph{Scope and caveats.}
+The eight clips carry the gate; the exploratory set of fourteen further real clips (outdoor
+rigs, truncated windows, the clip Track E scores but the path only partly covers) does not
+separate at the pooled threshold either, with four testable real clips in its denominators.
+The real path is reused for every edit condition: the v3 edits are pixel-space rotations, a
+rotation about the optical centre leaves the camera's translation in its own frame unchanged,
+and the one sequence where DPVO was run on edited frames (indoor\_forward\_5) reproduces the
+real path to 4.98 units of rigid ATE on a 105.6-unit path with a 0.81$^\circ$ median step
+direction difference. That is one sequence, and the estimator's sensitivity to the re-render
+is otherwise unmeasured; it needs DPVO on the edited frames. Finally, with four clusters the
+sequence-clustered intervals are descriptive, and one clip (indoor\_forward\_9\#01) is a false
+reject whose edits are all flagged, so the unconditional detection rate is slightly flattering:
+conditional on the real clip passing, shooting detects 5/7 removals and 3/7 mirrors.

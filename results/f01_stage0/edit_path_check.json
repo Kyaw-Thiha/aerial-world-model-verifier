@@ -1,0 +1,19 @@
+{
+ "sequence": "indoor_forward_5",
+ "n_frames": 150,
+ "source": "Track C DPVO poses on the edited frames (C09 pilot)",
+ "real_path_len_units": 105.55710223702592,
+ "pairs": {
+  "indoor_forward_5_tilt_removed": {
+   "rigid_ate_units": 4.9750592745350755,
+   "ate_fraction_of_path": 0.04713144988921447,
+   "step_direction_median_deg": 0.8073649951118381
+  },
+  "indoor_forward_5_yaw_control": {
+   "rigid_ate_units": 4.927878387855749,
+   "ate_fraction_of_path": 0.04668447961739531,
+   "step_direction_median_deg": 0.8217901427573454
+  }
+ },
+ "reading": "a rotation about the optical centre leaves the camera's translation in its own frame unchanged, so reusing the real path for rotation edits is accurate to the estimator's re-render sensitivity; measured here on one sequence only"
+}

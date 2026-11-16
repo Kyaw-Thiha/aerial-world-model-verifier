@@ -1,0 +1,3208 @@
+{
+ "provenance": {
+  "commit": "3aa8a135b8ab500d2e7bd6e4265077b352d9493b",
+  "prereg_commit": "6b88d5a",
+  "amendment": "configs/f01_pixel_path_prereg_amend1.yaml",
+  "inputs": {
+   "poses": "data/pathrec/poses/dpvo",
+   "clips": "data/clips_v2_w370ms",
+   "uzh": "data/uzh",
+   "window_rule": "results/e_window_rule.json",
+   "depth": "results/pathrec_calib/depth.json"
+  },
+  "pose_sha256": {
+   "indoor_forward_3": "2c76c4d5954c2b9b23f65b87ab0d2fa915bc305f9d183bdb25eadb0aa364179d",
+   "indoor_forward_5": "513e418d8cff2db29183066a2d4f02b5b6307d2a82adec8aebdc8d44ecd7cfcd",
+   "indoor_forward_6": "fe55df4e2a7441f7ae63a36b2966089cf0a73586751b586c5387a210f5d61526",
+   "indoor_forward_7": "312dc4cbd62a402274ecd69ab79599933bf801e4f4194647e496a26844e8b8f5",
+   "indoor_forward_9": "84fd3571c3828ea47d8755292a885a35e672675ddbf05364d7ab5e9bdf2bfa0f",
+   "indoor_forward_10": "78aa45e6850f52e505cab3d22a9de204dc8032ac7d5ec02cbc53ec38893c3489",
+   "outdoor_forward_1": "6ba6cebd98945a159635532bbc7fbb3d7661e2d13e2a266c84adb27ef8478094",
+   "outdoor_forward_3": "cd6119c1759cca4cce585cce184615352e781d723b309de0e461b8627fddf778",
+   "outdoor_forward_5": "d496d8c0fb88b01d3ae4ad1db98e8be760a831cb0e5295e31e0010794fe6d2a7"
+  },
+  "n_rows": 3430
+ },
+ "summary": {
+  "V1_preintegration": {
+   "oracle_attitude": {
+    "pixel": {
+     "primary": {
+      "n_clips": 8,
+      "n_sequences": 4,
+      "rates": {
+       "real": {
+        "n": 8,
+        "k": 1,
+        "rate": 0.125,
+        "n_sequences": 4
+       },
+       "null_edit": {
+        "n": 8,
+        "k": 1,
+        "rate": 0.125,
+        "n_sequences": 4
+       },
+       "yaw_control": {
+        "n": 8,
+        "k": 1,
+        "rate": 0.125,
+        "n_sequences": 4
+       },
+       "tilt_removal": {
+        "n": 8,
+        "k": 1,
+        "rate": 0.125,
+        "n_sequences": 4
+       },
+       "mirror_roll": {
+        "n": 8,
+        "k": 1,
+        "rate": 0.125,
+        "n_sequences": 4
+       },
+       "scale_0.5": {
+        "n": 8,
+        "k": 1,
+        "rate": 0.125,
+        "n_sequences": 4
+       },
+       "scale_1.5": {
+        "n": 8,
+        "k": 1,
+        "rate": 0.125,
+        "n_sequences": 4
+       }
+      },
+      "tau": {
+       "indoor_forward_3": 0.2185242359038889,
+       "indoor_forward_5": 0.272070887623921,
+       "indoor_forward_9": 0.2643854278626556,
+       "indoor_forward_10": 0.272070887623921
+      },
+      "clustered": {
+       "real": {
+        "lo": 0.0,
+        "hi": 0.375,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "null_edit": {
+        "lo": 0.0,
+        "hi": 0.375,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "yaw_control": {
+        "lo": 0.0,
+        "hi": 0.375,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "tilt_removal": {
+        "lo": 0.0,
+        "hi": 0.375,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "mirror_roll": {
+        "lo": 0.0,
+        "hi": 0.375,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "scale_0.5": {
+        "lo": 0.0,
+        "hi": 0.375,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "scale_1.5": {
+        "lo": 0.0,
+        "hi": 0.375,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       }
+      },
+      "abstained_real": 0
+     },
+     "exploratory": {
+      "n_clips": 17,
+      "n_sequences": 9,
+      "rates": {
+       "real": {
+        "n": 4,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "null_edit": {
+        "n": 4,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "yaw_control": {
+        "n": 4,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "tilt_removal": {
+        "n": 4,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "mirror_roll": {
+        "n": 4,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "scale_0.5": {
+        "n": 4,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "scale_1.5": {
+        "n": 4,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       }
+      }
+     }
+    },
+    "oracle": {
+     "primary": {
+      "n_clips": 8,
+      "n_sequences": 4,
+      "rates": {
+       "real": {
+        "n": 8,
+        "k": 1,
+        "rate": 0.125,
+        "n_sequences": 4
+       },
+       "null_edit": {
+        "n": 8,
+        "k": 1,
+        "rate": 0.125,
+        "n_sequences": 4
+       },
+       "yaw_control": {
+        "n": 8,
+        "k": 1,
+        "rate": 0.125,
+        "n_sequences": 4
+       },
+       "tilt_removal": {
+        "n": 8,
+        "k": 1,
+        "rate": 0.125,
+        "n_sequences": 4
+       },
+       "mirror_roll": {
+        "n": 8,
+        "k": 1,
+        "rate": 0.125,
+        "n_sequences": 4
+       },
+       "scale_0.5": {
+        "n": 8,
+        "k": 1,
+        "rate": 0.125,
+        "n_sequences": 4
+       },
+       "scale_1.5": {
+        "n": 8,
+        "k": 1,
+        "rate": 0.125,
+        "n_sequences": 4
+       }
+      },
+      "tau": {
+       "indoor_forward_3": 0.22177648367059255,
+       "indoor_forward_5": 0.27397317949457123,
+       "indoor_forward_9": 0.2690520636739192,
+       "indoor_forward_10": 0.27397317949457123
+      },
+      "clustered": {
+       "real": {
+        "lo": 0.0,
+        "hi": 0.375,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "null_edit": {
+        "lo": 0.0,
+        "hi": 0.375,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "yaw_control": {
+        "lo": 0.0,
+        "hi": 0.375,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "tilt_removal": {
+        "lo": 0.0,
+        "hi": 0.375,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "mirror_roll": {
+        "lo": 0.0,
+        "hi": 0.375,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "scale_0.5": {
+        "lo": 0.0,
+        "hi": 0.375,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "scale_1.5": {
+        "lo": 0.0,
+        "hi": 0.375,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       }
+      },
+      "abstained_real": 0
+     },
+     "exploratory": {
+      "n_clips": 19,
+      "n_sequences": 9,
+      "rates": {
+       "real": {
+        "n": 5,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 3
+       },
+       "null_edit": {
+        "n": 5,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 3
+       },
+       "yaw_control": {
+        "n": 5,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 3
+       },
+       "tilt_removal": {
+        "n": 5,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 3
+       },
+       "mirror_roll": {
+        "n": 5,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 3
+       },
+       "scale_0.5": {
+        "n": 5,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 3
+       },
+       "scale_1.5": {
+        "n": 5,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 3
+       }
+      }
+     }
+    }
+   },
+   "estimated_attitude": {
+    "pixel": {
+     "primary": {
+      "n_clips": 8,
+      "n_sequences": 4,
+      "rates": {
+       "real": {
+        "n": 8,
+        "k": 1,
+        "rate": 0.125,
+        "n_sequences": 4
+       },
+       "null_edit": {
+        "n": 8,
+        "k": 1,
+        "rate": 0.125,
+        "n_sequences": 4
+       },
+       "yaw_control": {
+        "n": 8,
+        "k": 2,
+        "rate": 0.25,
+        "n_sequences": 4
+       },
+       "tilt_removal": {
+        "n": 8,
+        "k": 1,
+        "rate": 0.125,
+        "n_sequences": 4
+       },
+       "mirror_roll": {
+        "n": 8,
+        "k": 5,
+        "rate": 0.625,
+        "n_sequences": 4
+       },
+       "scale_0.5": {
+        "n": 8,
+        "k": 2,
+        "rate": 0.25,
+        "n_sequences": 4
+       },
+       "scale_1.5": {
+        "n": 8,
+        "k": 6,
+        "rate": 0.75,
+        "n_sequences": 4
+       }
+      },
+      "tau": {
+       "indoor_forward_3": 0.8968727216780351,
+       "indoor_forward_5": 1.3096471654314004,
+       "indoor_forward_9": 1.1418409070895719,
+       "indoor_forward_10": 1.3096471654314004
+      },
+      "clustered": {
+       "real": {
+        "lo": 0.0,
+        "hi": 0.375,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "null_edit": {
+        "lo": 0.0,
+        "hi": 0.375,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "yaw_control": {
+        "lo": 0.0,
+        "hi": 0.5,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "tilt_removal": {
+        "lo": 0.0,
+        "hi": 0.375,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "mirror_roll": {
+        "lo": 0.25,
+        "hi": 1.0,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "scale_0.5": {
+        "lo": 0.0,
+        "hi": 0.5,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "scale_1.5": {
+        "lo": 0.25,
+        "hi": 1.0,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       }
+      },
+      "abstained_real": 0
+     },
+     "exploratory": {
+      "n_clips": 14,
+      "n_sequences": 8,
+      "rates": {
+       "real": {
+        "n": 4,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "null_edit": {
+        "n": 4,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "yaw_control": {
+        "n": 4,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "tilt_removal": {
+        "n": 4,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "mirror_roll": {
+        "n": 4,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "scale_0.5": {
+        "n": 4,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "scale_1.5": {
+        "n": 4,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       }
+      }
+     }
+    },
+    "oracle": {
+     "primary": {
+      "n_clips": 8,
+      "n_sequences": 4,
+      "rates": {
+       "real": {
+        "n": 8,
+        "k": 2,
+        "rate": 0.25,
+        "n_sequences": 4
+       },
+       "null_edit": {
+        "n": 8,
+        "k": 2,
+        "rate": 0.25,
+        "n_sequences": 4
+       },
+       "yaw_control": {
+        "n": 8,
+        "k": 2,
+        "rate": 0.25,
+        "n_sequences": 4
+       },
+       "tilt_removal": {
+        "n": 8,
+        "k": 8,
+        "rate": 1.0,
+        "n_sequences": 4
+       },
+       "mirror_roll": {
+        "n": 8,
+        "k": 8,
+        "rate": 1.0,
+        "n_sequences": 4
+       },
+       "scale_0.5": {
+        "n": 8,
+        "k": 8,
+        "rate": 1.0,
+        "n_sequences": 4
+       },
+       "scale_1.5": {
+        "n": 8,
+        "k": 8,
+        "rate": 1.0,
+        "n_sequences": 4
+       }
+      },
+      "tau": {
+       "indoor_forward_3": 0.21481857087065903,
+       "indoor_forward_5": 0.29190477142847204,
+       "indoor_forward_9": 0.29190477142847204,
+       "indoor_forward_10": 0.29190477142847204
+      },
+      "clustered": {
+       "real": {
+        "lo": 0.0,
+        "hi": 0.75,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "null_edit": {
+        "lo": 0.0,
+        "hi": 0.75,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "yaw_control": {
+        "lo": 0.0,
+        "hi": 0.75,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "tilt_removal": {
+        "lo": 1.0,
+        "hi": 1.0,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "mirror_roll": {
+        "lo": 1.0,
+        "hi": 1.0,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "scale_0.5": {
+        "lo": 1.0,
+        "hi": 1.0,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "scale_1.5": {
+        "lo": 1.0,
+        "hi": 1.0,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       }
+      },
+      "abstained_real": 0
+     },
+     "exploratory": {
+      "n_clips": 16,
+      "n_sequences": 8,
+      "rates": {
+       "real": {
+        "n": 5,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 3
+       },
+       "null_edit": {
+        "n": 5,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 3
+       },
+       "yaw_control": {
+        "n": 5,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 3
+       },
+       "tilt_removal": {
+        "n": 5,
+        "k": 5,
+        "rate": 1.0,
+        "n_sequences": 3
+       },
+       "mirror_roll": {
+        "n": 5,
+        "k": 5,
+        "rate": 1.0,
+        "n_sequences": 3
+       },
+       "scale_0.5": {
+        "n": 5,
+        "k": 4,
+        "rate": 0.8,
+        "n_sequences": 3
+       },
+       "scale_1.5": {
+        "n": 5,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 3
+       }
+      }
+     }
+    }
+   }
+  },
+  "V2_shooting": {
+   "oracle_attitude": {
+    "pixel": {
+     "primary": {
+      "n_clips": 8,
+      "n_sequences": 4,
+      "rates": {
+       "real": {
+        "n": 8,
+        "k": 1,
+        "rate": 0.125,
+        "n_sequences": 4
+       },
+       "null_edit": {
+        "n": 8,
+        "k": 1,
+        "rate": 0.125,
+        "n_sequences": 4
+       },
+       "yaw_control": {
+        "n": 8,
+        "k": 1,
+        "rate": 0.125,
+        "n_sequences": 4
+       },
+       "tilt_removal": {
+        "n": 8,
+        "k": 1,
+        "rate": 0.125,
+        "n_sequences": 4
+       },
+       "mirror_roll": {
+        "n": 8,
+        "k": 1,
+        "rate": 0.125,
+        "n_sequences": 4
+       },
+       "scale_0.5": {
+        "n": 8,
+        "k": 1,
+        "rate": 0.125,
+        "n_sequences": 4
+       },
+       "scale_1.5": {
+        "n": 8,
+        "k": 1,
+        "rate": 0.125,
+        "n_sequences": 4
+       }
+      },
+      "tau": {
+       "indoor_forward_3": 0.2234687556541464,
+       "indoor_forward_5": 0.2234687556541464,
+       "indoor_forward_9": 0.13203620004549474,
+       "indoor_forward_10": 0.21481533893363644
+      },
+      "clustered": {
+       "real": {
+        "lo": 0.0,
+        "hi": 0.375,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "null_edit": {
+        "lo": 0.0,
+        "hi": 0.375,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "yaw_control": {
+        "lo": 0.0,
+        "hi": 0.375,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "tilt_removal": {
+        "lo": 0.0,
+        "hi": 0.375,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "mirror_roll": {
+        "lo": 0.0,
+        "hi": 0.375,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "scale_0.5": {
+        "lo": 0.0,
+        "hi": 0.375,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "scale_1.5": {
+        "lo": 0.0,
+        "hi": 0.375,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       }
+      },
+      "abstained_real": 0
+     },
+     "exploratory": {
+      "n_clips": 17,
+      "n_sequences": 9,
+      "rates": {
+       "real": {
+        "n": 4,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "null_edit": {
+        "n": 4,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "yaw_control": {
+        "n": 4,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "tilt_removal": {
+        "n": 4,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "mirror_roll": {
+        "n": 4,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "scale_0.5": {
+        "n": 4,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "scale_1.5": {
+        "n": 4,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       }
+      }
+     }
+    },
+    "oracle": {
+     "primary": {
+      "n_clips": 8,
+      "n_sequences": 4,
+      "rates": {
+       "real": {
+        "n": 8,
+        "k": 1,
+        "rate": 0.125,
+        "n_sequences": 4
+       },
+       "null_edit": {
+        "n": 8,
+        "k": 1,
+        "rate": 0.125,
+        "n_sequences": 4
+       },
+       "yaw_control": {
+        "n": 8,
+        "k": 1,
+        "rate": 0.125,
+        "n_sequences": 4
+       },
+       "tilt_removal": {
+        "n": 8,
+        "k": 1,
+        "rate": 0.125,
+        "n_sequences": 4
+       },
+       "mirror_roll": {
+        "n": 8,
+        "k": 1,
+        "rate": 0.125,
+        "n_sequences": 4
+       },
+       "scale_0.5": {
+        "n": 8,
+        "k": 1,
+        "rate": 0.125,
+        "n_sequences": 4
+       },
+       "scale_1.5": {
+        "n": 8,
+        "k": 1,
+        "rate": 0.125,
+        "n_sequences": 4
+       }
+      },
+      "tau": {
+       "indoor_forward_3": 0.22382183093565125,
+       "indoor_forward_5": 0.22382183093565125,
+       "indoor_forward_9": 0.13433580737649045,
+       "indoor_forward_10": 0.21467722361345712
+      },
+      "clustered": {
+       "real": {
+        "lo": 0.0,
+        "hi": 0.375,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "null_edit": {
+        "lo": 0.0,
+        "hi": 0.375,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "yaw_control": {
+        "lo": 0.0,
+        "hi": 0.375,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "tilt_removal": {
+        "lo": 0.0,
+        "hi": 0.375,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "mirror_roll": {
+        "lo": 0.0,
+        "hi": 0.375,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "scale_0.5": {
+        "lo": 0.0,
+        "hi": 0.375,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "scale_1.5": {
+        "lo": 0.0,
+        "hi": 0.375,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       }
+      },
+      "abstained_real": 0
+     },
+     "exploratory": {
+      "n_clips": 19,
+      "n_sequences": 9,
+      "rates": {
+       "real": {
+        "n": 5,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 3
+       },
+       "null_edit": {
+        "n": 5,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 3
+       },
+       "yaw_control": {
+        "n": 5,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 3
+       },
+       "tilt_removal": {
+        "n": 5,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 3
+       },
+       "mirror_roll": {
+        "n": 5,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 3
+       },
+       "scale_0.5": {
+        "n": 5,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 3
+       },
+       "scale_1.5": {
+        "n": 5,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 3
+       }
+      }
+     }
+    }
+   },
+   "estimated_attitude": {
+    "pixel": {
+     "primary": {
+      "n_clips": 8,
+      "n_sequences": 4,
+      "rates": {
+       "real": {
+        "n": 8,
+        "k": 1,
+        "rate": 0.125,
+        "n_sequences": 4
+       },
+       "null_edit": {
+        "n": 8,
+        "k": 1,
+        "rate": 0.125,
+        "n_sequences": 4
+       },
+       "yaw_control": {
+        "n": 8,
+        "k": 2,
+        "rate": 0.25,
+        "n_sequences": 4
+       },
+       "tilt_removal": {
+        "n": 8,
+        "k": 6,
+        "rate": 0.75,
+        "n_sequences": 4
+       },
+       "mirror_roll": {
+        "n": 8,
+        "k": 4,
+        "rate": 0.5,
+        "n_sequences": 4
+       },
+       "scale_0.5": {
+        "n": 8,
+        "k": 3,
+        "rate": 0.375,
+        "n_sequences": 4
+       },
+       "scale_1.5": {
+        "n": 8,
+        "k": 6,
+        "rate": 0.75,
+        "n_sequences": 4
+       }
+      },
+      "tau": {
+       "indoor_forward_3": 0.405159171334541,
+       "indoor_forward_5": 0.4189426199473521,
+       "indoor_forward_9": 0.2609399490437563,
+       "indoor_forward_10": 0.4189426199473521
+      },
+      "clustered": {
+       "real": {
+        "lo": 0.0,
+        "hi": 0.375,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "null_edit": {
+        "lo": 0.0,
+        "hi": 0.375,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "yaw_control": {
+        "lo": 0.0,
+        "hi": 0.5,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "tilt_removal": {
+        "lo": 0.5,
+        "hi": 1.0,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "mirror_roll": {
+        "lo": 0.0,
+        "hi": 1.0,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "scale_0.5": {
+        "lo": 0.0,
+        "hi": 0.75,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "scale_1.5": {
+        "lo": 0.5,
+        "hi": 1.0,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       }
+      },
+      "abstained_real": 0
+     },
+     "exploratory": {
+      "n_clips": 14,
+      "n_sequences": 8,
+      "rates": {
+       "real": {
+        "n": 4,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "null_edit": {
+        "n": 4,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "yaw_control": {
+        "n": 4,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "tilt_removal": {
+        "n": 4,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "mirror_roll": {
+        "n": 4,
+        "k": 1,
+        "rate": 0.25,
+        "n_sequences": 4
+       },
+       "scale_0.5": {
+        "n": 4,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "scale_1.5": {
+        "n": 4,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       }
+      }
+     }
+    },
+    "oracle": {
+     "primary": {
+      "n_clips": 8,
+      "n_sequences": 4,
+      "rates": {
+       "real": {
+        "n": 8,
+        "k": 1,
+        "rate": 0.125,
+        "n_sequences": 4
+       },
+       "null_edit": {
+        "n": 8,
+        "k": 1,
+        "rate": 0.125,
+        "n_sequences": 4
+       },
+       "yaw_control": {
+        "n": 8,
+        "k": 1,
+        "rate": 0.125,
+        "n_sequences": 4
+       },
+       "tilt_removal": {
+        "n": 8,
+        "k": 8,
+        "rate": 1.0,
+        "n_sequences": 4
+       },
+       "mirror_roll": {
+        "n": 8,
+        "k": 7,
+        "rate": 0.875,
+        "n_sequences": 4
+       },
+       "scale_0.5": {
+        "n": 8,
+        "k": 7,
+        "rate": 0.875,
+        "n_sequences": 4
+       },
+       "scale_1.5": {
+        "n": 8,
+        "k": 8,
+        "rate": 1.0,
+        "n_sequences": 4
+       }
+      },
+      "tau": {
+       "indoor_forward_3": 0.19608060687183976,
+       "indoor_forward_5": 0.19608060687183976,
+       "indoor_forward_9": 0.15569487952604838,
+       "indoor_forward_10": 0.18885114119548663
+      },
+      "clustered": {
+       "real": {
+        "lo": 0.0,
+        "hi": 0.375,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "null_edit": {
+        "lo": 0.0,
+        "hi": 0.375,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "yaw_control": {
+        "lo": 0.0,
+        "hi": 0.375,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "tilt_removal": {
+        "lo": 1.0,
+        "hi": 1.0,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "mirror_roll": {
+        "lo": 0.625,
+        "hi": 1.0,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "scale_0.5": {
+        "lo": 0.625,
+        "hi": 1.0,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "scale_1.5": {
+        "lo": 1.0,
+        "hi": 1.0,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       }
+      },
+      "abstained_real": 0
+     },
+     "exploratory": {
+      "n_clips": 16,
+      "n_sequences": 8,
+      "rates": {
+       "real": {
+        "n": 5,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 3
+       },
+       "null_edit": {
+        "n": 5,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 3
+       },
+       "yaw_control": {
+        "n": 5,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 3
+       },
+       "tilt_removal": {
+        "n": 5,
+        "k": 5,
+        "rate": 1.0,
+        "n_sequences": 3
+       },
+       "mirror_roll": {
+        "n": 5,
+        "k": 3,
+        "rate": 0.6,
+        "n_sequences": 3
+       },
+       "scale_0.5": {
+        "n": 5,
+        "k": 1,
+        "rate": 0.2,
+        "n_sequences": 3
+       },
+       "scale_1.5": {
+        "n": 5,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 3
+       }
+      }
+     }
+    }
+   }
+  },
+  "V3_band_coherence": {
+   "oracle_attitude": {
+    "pixel": {
+     "primary": {
+      "n_clips": 8,
+      "n_sequences": 4,
+      "rates": {
+       "real": {
+        "n": 8,
+        "k": 2,
+        "rate": 0.25,
+        "n_sequences": 4
+       },
+       "null_edit": {
+        "n": 8,
+        "k": 2,
+        "rate": 0.25,
+        "n_sequences": 4
+       },
+       "yaw_control": {
+        "n": 8,
+        "k": 2,
+        "rate": 0.25,
+        "n_sequences": 4
+       },
+       "tilt_removal": {
+        "n": 8,
+        "k": 2,
+        "rate": 0.25,
+        "n_sequences": 4
+       },
+       "mirror_roll": {
+        "n": 8,
+        "k": 2,
+        "rate": 0.25,
+        "n_sequences": 4
+       },
+       "scale_0.5": {
+        "n": 8,
+        "k": 2,
+        "rate": 0.25,
+        "n_sequences": 4
+       },
+       "scale_1.5": {
+        "n": 8,
+        "k": 2,
+        "rate": 0.25,
+        "n_sequences": 4
+       }
+      },
+      "tau": {
+       "indoor_forward_3": 0.4135903370559862,
+       "indoor_forward_5": 0.4326586743340969,
+       "indoor_forward_9": 0.5141938387747751,
+       "indoor_forward_10": 0.5141938387747751
+      },
+      "clustered": {
+       "real": {
+        "lo": 0.0,
+        "hi": 0.5,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "null_edit": {
+        "lo": 0.0,
+        "hi": 0.5,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "yaw_control": {
+        "lo": 0.0,
+        "hi": 0.5,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "tilt_removal": {
+        "lo": 0.0,
+        "hi": 0.5,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "mirror_roll": {
+        "lo": 0.0,
+        "hi": 0.5,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "scale_0.5": {
+        "lo": 0.0,
+        "hi": 0.5,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "scale_1.5": {
+        "lo": 0.0,
+        "hi": 0.5,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       }
+      },
+      "abstained_real": 0
+     },
+     "exploratory": {
+      "n_clips": 17,
+      "n_sequences": 9,
+      "rates": {
+       "real": {
+        "n": 4,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "null_edit": {
+        "n": 4,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "yaw_control": {
+        "n": 4,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "tilt_removal": {
+        "n": 4,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "mirror_roll": {
+        "n": 4,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "scale_0.5": {
+        "n": 4,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "scale_1.5": {
+        "n": 4,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       }
+      }
+     }
+    },
+    "oracle": {
+     "primary": {
+      "n_clips": 8,
+      "n_sequences": 4,
+      "rates": {
+       "real": {
+        "n": 8,
+        "k": 2,
+        "rate": 0.25,
+        "n_sequences": 4
+       },
+       "null_edit": {
+        "n": 8,
+        "k": 2,
+        "rate": 0.25,
+        "n_sequences": 4
+       },
+       "yaw_control": {
+        "n": 8,
+        "k": 2,
+        "rate": 0.25,
+        "n_sequences": 4
+       },
+       "tilt_removal": {
+        "n": 8,
+        "k": 2,
+        "rate": 0.25,
+        "n_sequences": 4
+       },
+       "mirror_roll": {
+        "n": 8,
+        "k": 2,
+        "rate": 0.25,
+        "n_sequences": 4
+       },
+       "scale_0.5": {
+        "n": 8,
+        "k": 2,
+        "rate": 0.25,
+        "n_sequences": 4
+       },
+       "scale_1.5": {
+        "n": 8,
+        "k": 2,
+        "rate": 0.25,
+        "n_sequences": 4
+       }
+      },
+      "tau": {
+       "indoor_forward_3": 0.4323757623472238,
+       "indoor_forward_5": 0.4326398589506065,
+       "indoor_forward_9": 0.5209251902385925,
+       "indoor_forward_10": 0.5209251902385925
+      },
+      "clustered": {
+       "real": {
+        "lo": 0.0,
+        "hi": 0.5,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "null_edit": {
+        "lo": 0.0,
+        "hi": 0.5,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "yaw_control": {
+        "lo": 0.0,
+        "hi": 0.5,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "tilt_removal": {
+        "lo": 0.0,
+        "hi": 0.5,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "mirror_roll": {
+        "lo": 0.0,
+        "hi": 0.5,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "scale_0.5": {
+        "lo": 0.0,
+        "hi": 0.5,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "scale_1.5": {
+        "lo": 0.0,
+        "hi": 0.5,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       }
+      },
+      "abstained_real": 0
+     },
+     "exploratory": {
+      "n_clips": 19,
+      "n_sequences": 9,
+      "rates": {
+       "real": {
+        "n": 5,
+        "k": 1,
+        "rate": 0.2,
+        "n_sequences": 3
+       },
+       "null_edit": {
+        "n": 5,
+        "k": 1,
+        "rate": 0.2,
+        "n_sequences": 3
+       },
+       "yaw_control": {
+        "n": 5,
+        "k": 1,
+        "rate": 0.2,
+        "n_sequences": 3
+       },
+       "tilt_removal": {
+        "n": 5,
+        "k": 1,
+        "rate": 0.2,
+        "n_sequences": 3
+       },
+       "mirror_roll": {
+        "n": 5,
+        "k": 1,
+        "rate": 0.2,
+        "n_sequences": 3
+       },
+       "scale_0.5": {
+        "n": 5,
+        "k": 1,
+        "rate": 0.2,
+        "n_sequences": 3
+       },
+       "scale_1.5": {
+        "n": 5,
+        "k": 1,
+        "rate": 0.2,
+        "n_sequences": 3
+       }
+      }
+     }
+    }
+   },
+   "estimated_attitude": {
+    "pixel": {
+     "primary": {
+      "n_clips": 8,
+      "n_sequences": 4,
+      "rates": {
+       "real": {
+        "n": 8,
+        "k": 2,
+        "rate": 0.25,
+        "n_sequences": 4
+       },
+       "null_edit": {
+        "n": 8,
+        "k": 2,
+        "rate": 0.25,
+        "n_sequences": 4
+       },
+       "yaw_control": {
+        "n": 8,
+        "k": 1,
+        "rate": 0.125,
+        "n_sequences": 4
+       },
+       "tilt_removal": {
+        "n": 8,
+        "k": 1,
+        "rate": 0.125,
+        "n_sequences": 4
+       },
+       "mirror_roll": {
+        "n": 8,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "scale_0.5": {
+        "n": 8,
+        "k": 2,
+        "rate": 0.25,
+        "n_sequences": 4
+       },
+       "scale_1.5": {
+        "n": 8,
+        "k": 1,
+        "rate": 0.125,
+        "n_sequences": 4
+       }
+      },
+      "tau": {
+       "indoor_forward_3": 0.7707780093237528,
+       "indoor_forward_5": 0.6517089496522032,
+       "indoor_forward_9": 0.7070588220708659,
+       "indoor_forward_10": 0.7707780093237528
+      },
+      "clustered": {
+       "real": {
+        "lo": 0.0,
+        "hi": 0.5,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "null_edit": {
+        "lo": 0.0,
+        "hi": 0.5,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "yaw_control": {
+        "lo": 0.0,
+        "hi": 0.375,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "tilt_removal": {
+        "lo": 0.0,
+        "hi": 0.375,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "mirror_roll": {
+        "lo": 0.0,
+        "hi": 0.0,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "scale_0.5": {
+        "lo": 0.0,
+        "hi": 0.5,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "scale_1.5": {
+        "lo": 0.0,
+        "hi": 0.375,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       }
+      },
+      "abstained_real": 0
+     },
+     "exploratory": {
+      "n_clips": 14,
+      "n_sequences": 8,
+      "rates": {
+       "real": {
+        "n": 4,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "null_edit": {
+        "n": 4,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "yaw_control": {
+        "n": 4,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "tilt_removal": {
+        "n": 4,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "mirror_roll": {
+        "n": 4,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "scale_0.5": {
+        "n": 4,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "scale_1.5": {
+        "n": 4,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       }
+      }
+     }
+    },
+    "oracle": {
+     "primary": {
+      "n_clips": 8,
+      "n_sequences": 4,
+      "rates": {
+       "real": {
+        "n": 8,
+        "k": 1,
+        "rate": 0.125,
+        "n_sequences": 4
+       },
+       "null_edit": {
+        "n": 8,
+        "k": 1,
+        "rate": 0.125,
+        "n_sequences": 4
+       },
+       "yaw_control": {
+        "n": 8,
+        "k": 1,
+        "rate": 0.125,
+        "n_sequences": 4
+       },
+       "tilt_removal": {
+        "n": 8,
+        "k": 4,
+        "rate": 0.5,
+        "n_sequences": 4
+       },
+       "mirror_roll": {
+        "n": 8,
+        "k": 4,
+        "rate": 0.5,
+        "n_sequences": 4
+       },
+       "scale_0.5": {
+        "n": 8,
+        "k": 2,
+        "rate": 0.25,
+        "n_sequences": 4
+       },
+       "scale_1.5": {
+        "n": 8,
+        "k": 1,
+        "rate": 0.125,
+        "n_sequences": 4
+       }
+      },
+      "tau": {
+       "indoor_forward_3": 0.46093958230841686,
+       "indoor_forward_5": 0.3462225890482548,
+       "indoor_forward_9": 0.5075688932543582,
+       "indoor_forward_10": 0.5075688932543582
+      },
+      "clustered": {
+       "real": {
+        "lo": 0.0,
+        "hi": 0.375,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "null_edit": {
+        "lo": 0.0,
+        "hi": 0.375,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "yaw_control": {
+        "lo": 0.0,
+        "hi": 0.375,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "tilt_removal": {
+        "lo": 0.125,
+        "hi": 0.875,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "mirror_roll": {
+        "lo": 0.0,
+        "hi": 1.0,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "scale_0.5": {
+        "lo": 0.0,
+        "hi": 0.5,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "scale_1.5": {
+        "lo": 0.0,
+        "hi": 0.375,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       }
+      },
+      "abstained_real": 0
+     },
+     "exploratory": {
+      "n_clips": 16,
+      "n_sequences": 8,
+      "rates": {
+       "real": {
+        "n": 5,
+        "k": 1,
+        "rate": 0.2,
+        "n_sequences": 3
+       },
+       "null_edit": {
+        "n": 5,
+        "k": 1,
+        "rate": 0.2,
+        "n_sequences": 3
+       },
+       "yaw_control": {
+        "n": 5,
+        "k": 1,
+        "rate": 0.2,
+        "n_sequences": 3
+       },
+       "tilt_removal": {
+        "n": 5,
+        "k": 1,
+        "rate": 0.2,
+        "n_sequences": 3
+       },
+       "mirror_roll": {
+        "n": 5,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 3
+       },
+       "scale_0.5": {
+        "n": 5,
+        "k": 1,
+        "rate": 0.2,
+        "n_sequences": 3
+       },
+       "scale_1.5": {
+        "n": 5,
+        "k": 1,
+        "rate": 0.2,
+        "n_sequences": 3
+       }
+      }
+     }
+    }
+   }
+  },
+  "V4_velocity_drag": {
+   "oracle_attitude": {
+    "pixel": {
+     "primary": {
+      "n_clips": 8,
+      "n_sequences": 4,
+      "rates": {
+       "real": {
+        "n": 0,
+        "k": 0,
+        "rate": null,
+        "n_sequences": 0
+       },
+       "null_edit": {
+        "n": 0,
+        "k": 0,
+        "rate": null,
+        "n_sequences": 0
+       },
+       "yaw_control": {
+        "n": 0,
+        "k": 0,
+        "rate": null,
+        "n_sequences": 0
+       },
+       "tilt_removal": {
+        "n": 0,
+        "k": 0,
+        "rate": null,
+        "n_sequences": 0
+       },
+       "mirror_roll": {
+        "n": 0,
+        "k": 0,
+        "rate": null,
+        "n_sequences": 0
+       },
+       "scale_0.5": {
+        "n": 0,
+        "k": 0,
+        "rate": null,
+        "n_sequences": 0
+       },
+       "scale_1.5": {
+        "n": 0,
+        "k": 0,
+        "rate": null,
+        "n_sequences": 0
+       }
+      },
+      "tau": {
+       "indoor_forward_3": NaN,
+       "indoor_forward_5": NaN,
+       "indoor_forward_9": NaN,
+       "indoor_forward_10": NaN
+      },
+      "clustered": {
+       "real": {
+        "note": "fewer than 3 clusters; not computed"
+       },
+       "null_edit": {
+        "note": "fewer than 3 clusters; not computed"
+       },
+       "yaw_control": {
+        "note": "fewer than 3 clusters; not computed"
+       },
+       "tilt_removal": {
+        "note": "fewer than 3 clusters; not computed"
+       },
+       "mirror_roll": {
+        "note": "fewer than 3 clusters; not computed"
+       },
+       "scale_0.5": {
+        "note": "fewer than 3 clusters; not computed"
+       },
+       "scale_1.5": {
+        "note": "fewer than 3 clusters; not computed"
+       }
+      },
+      "abstained_real": 8
+     },
+     "exploratory": {
+      "n_clips": 17,
+      "n_sequences": 9,
+      "rates": {
+       "real": {
+        "n": 0,
+        "k": 0,
+        "rate": null,
+        "n_sequences": 0
+       },
+       "null_edit": {
+        "n": 0,
+        "k": 0,
+        "rate": null,
+        "n_sequences": 0
+       },
+       "yaw_control": {
+        "n": 0,
+        "k": 0,
+        "rate": null,
+        "n_sequences": 0
+       },
+       "tilt_removal": {
+        "n": 0,
+        "k": 0,
+        "rate": null,
+        "n_sequences": 0
+       },
+       "mirror_roll": {
+        "n": 0,
+        "k": 0,
+        "rate": null,
+        "n_sequences": 0
+       },
+       "scale_0.5": {
+        "n": 0,
+        "k": 0,
+        "rate": null,
+        "n_sequences": 0
+       },
+       "scale_1.5": {
+        "n": 0,
+        "k": 0,
+        "rate": null,
+        "n_sequences": 0
+       }
+      }
+     }
+    },
+    "oracle": {
+     "primary": {
+      "n_clips": 8,
+      "n_sequences": 4,
+      "rates": {
+       "real": {
+        "n": 0,
+        "k": 0,
+        "rate": null,
+        "n_sequences": 0
+       },
+       "null_edit": {
+        "n": 0,
+        "k": 0,
+        "rate": null,
+        "n_sequences": 0
+       },
+       "yaw_control": {
+        "n": 0,
+        "k": 0,
+        "rate": null,
+        "n_sequences": 0
+       },
+       "tilt_removal": {
+        "n": 0,
+        "k": 0,
+        "rate": null,
+        "n_sequences": 0
+       },
+       "mirror_roll": {
+        "n": 0,
+        "k": 0,
+        "rate": null,
+        "n_sequences": 0
+       },
+       "scale_0.5": {
+        "n": 0,
+        "k": 0,
+        "rate": null,
+        "n_sequences": 0
+       },
+       "scale_1.5": {
+        "n": 0,
+        "k": 0,
+        "rate": null,
+        "n_sequences": 0
+       }
+      },
+      "tau": {
+       "indoor_forward_3": NaN,
+       "indoor_forward_5": NaN,
+       "indoor_forward_9": NaN,
+       "indoor_forward_10": NaN
+      },
+      "clustered": {
+       "real": {
+        "note": "fewer than 3 clusters; not computed"
+       },
+       "null_edit": {
+        "note": "fewer than 3 clusters; not computed"
+       },
+       "yaw_control": {
+        "note": "fewer than 3 clusters; not computed"
+       },
+       "tilt_removal": {
+        "note": "fewer than 3 clusters; not computed"
+       },
+       "mirror_roll": {
+        "note": "fewer than 3 clusters; not computed"
+       },
+       "scale_0.5": {
+        "note": "fewer than 3 clusters; not computed"
+       },
+       "scale_1.5": {
+        "note": "fewer than 3 clusters; not computed"
+       }
+      },
+      "abstained_real": 8
+     },
+     "exploratory": {
+      "n_clips": 19,
+      "n_sequences": 9,
+      "rates": {
+       "real": {
+        "n": 0,
+        "k": 0,
+        "rate": null,
+        "n_sequences": 0
+       },
+       "null_edit": {
+        "n": 0,
+        "k": 0,
+        "rate": null,
+        "n_sequences": 0
+       },
+       "yaw_control": {
+        "n": 0,
+        "k": 0,
+        "rate": null,
+        "n_sequences": 0
+       },
+       "tilt_removal": {
+        "n": 0,
+        "k": 0,
+        "rate": null,
+        "n_sequences": 0
+       },
+       "mirror_roll": {
+        "n": 0,
+        "k": 0,
+        "rate": null,
+        "n_sequences": 0
+       },
+       "scale_0.5": {
+        "n": 0,
+        "k": 0,
+        "rate": null,
+        "n_sequences": 0
+       },
+       "scale_1.5": {
+        "n": 0,
+        "k": 0,
+        "rate": null,
+        "n_sequences": 0
+       }
+      }
+     }
+    }
+   },
+   "estimated_attitude": {
+    "pixel": {
+     "primary": {
+      "n_clips": 8,
+      "n_sequences": 4,
+      "rates": {
+       "real": {
+        "n": 0,
+        "k": 0,
+        "rate": null,
+        "n_sequences": 0
+       },
+       "null_edit": {
+        "n": 0,
+        "k": 0,
+        "rate": null,
+        "n_sequences": 0
+       },
+       "yaw_control": {
+        "n": 0,
+        "k": 0,
+        "rate": null,
+        "n_sequences": 0
+       },
+       "tilt_removal": {
+        "n": 0,
+        "k": 0,
+        "rate": null,
+        "n_sequences": 0
+       },
+       "mirror_roll": {
+        "n": 0,
+        "k": 0,
+        "rate": null,
+        "n_sequences": 0
+       },
+       "scale_0.5": {
+        "n": 0,
+        "k": 0,
+        "rate": null,
+        "n_sequences": 0
+       },
+       "scale_1.5": {
+        "n": 0,
+        "k": 0,
+        "rate": null,
+        "n_sequences": 0
+       }
+      },
+      "tau": {
+       "indoor_forward_3": NaN,
+       "indoor_forward_5": NaN,
+       "indoor_forward_9": NaN,
+       "indoor_forward_10": NaN
+      },
+      "clustered": {
+       "real": {
+        "note": "fewer than 3 clusters; not computed"
+       },
+       "null_edit": {
+        "note": "fewer than 3 clusters; not computed"
+       },
+       "yaw_control": {
+        "note": "fewer than 3 clusters; not computed"
+       },
+       "tilt_removal": {
+        "note": "fewer than 3 clusters; not computed"
+       },
+       "mirror_roll": {
+        "note": "fewer than 3 clusters; not computed"
+       },
+       "scale_0.5": {
+        "note": "fewer than 3 clusters; not computed"
+       },
+       "scale_1.5": {
+        "note": "fewer than 3 clusters; not computed"
+       }
+      },
+      "abstained_real": 8
+     },
+     "exploratory": {
+      "n_clips": 14,
+      "n_sequences": 8,
+      "rates": {
+       "real": {
+        "n": 0,
+        "k": 0,
+        "rate": null,
+        "n_sequences": 0
+       },
+       "null_edit": {
+        "n": 0,
+        "k": 0,
+        "rate": null,
+        "n_sequences": 0
+       },
+       "yaw_control": {
+        "n": 0,
+        "k": 0,
+        "rate": null,
+        "n_sequences": 0
+       },
+       "tilt_removal": {
+        "n": 0,
+        "k": 0,
+        "rate": null,
+        "n_sequences": 0
+       },
+       "mirror_roll": {
+        "n": 0,
+        "k": 0,
+        "rate": null,
+        "n_sequences": 0
+       },
+       "scale_0.5": {
+        "n": 0,
+        "k": 0,
+        "rate": null,
+        "n_sequences": 0
+       },
+       "scale_1.5": {
+        "n": 0,
+        "k": 0,
+        "rate": null,
+        "n_sequences": 0
+       }
+      }
+     }
+    },
+    "oracle": {
+     "primary": {
+      "n_clips": 8,
+      "n_sequences": 4,
+      "rates": {
+       "real": {
+        "n": 0,
+        "k": 0,
+        "rate": null,
+        "n_sequences": 0
+       },
+       "null_edit": {
+        "n": 0,
+        "k": 0,
+        "rate": null,
+        "n_sequences": 0
+       },
+       "yaw_control": {
+        "n": 0,
+        "k": 0,
+        "rate": null,
+        "n_sequences": 0
+       },
+       "tilt_removal": {
+        "n": 0,
+        "k": 0,
+        "rate": null,
+        "n_sequences": 0
+       },
+       "mirror_roll": {
+        "n": 0,
+        "k": 0,
+        "rate": null,
+        "n_sequences": 0
+       },
+       "scale_0.5": {
+        "n": 0,
+        "k": 0,
+        "rate": null,
+        "n_sequences": 0
+       },
+       "scale_1.5": {
+        "n": 0,
+        "k": 0,
+        "rate": null,
+        "n_sequences": 0
+       }
+      },
+      "tau": {
+       "indoor_forward_3": NaN,
+       "indoor_forward_5": NaN,
+       "indoor_forward_9": NaN,
+       "indoor_forward_10": NaN
+      },
+      "clustered": {
+       "real": {
+        "note": "fewer than 3 clusters; not computed"
+       },
+       "null_edit": {
+        "note": "fewer than 3 clusters; not computed"
+       },
+       "yaw_control": {
+        "note": "fewer than 3 clusters; not computed"
+       },
+       "tilt_removal": {
+        "note": "fewer than 3 clusters; not computed"
+       },
+       "mirror_roll": {
+        "note": "fewer than 3 clusters; not computed"
+       },
+       "scale_0.5": {
+        "note": "fewer than 3 clusters; not computed"
+       },
+       "scale_1.5": {
+        "note": "fewer than 3 clusters; not computed"
+       }
+      },
+      "abstained_real": 8
+     },
+     "exploratory": {
+      "n_clips": 16,
+      "n_sequences": 8,
+      "rates": {
+       "real": {
+        "n": 0,
+        "k": 0,
+        "rate": null,
+        "n_sequences": 0
+       },
+       "null_edit": {
+        "n": 0,
+        "k": 0,
+        "rate": null,
+        "n_sequences": 0
+       },
+       "yaw_control": {
+        "n": 0,
+        "k": 0,
+        "rate": null,
+        "n_sequences": 0
+       },
+       "tilt_removal": {
+        "n": 0,
+        "k": 0,
+        "rate": null,
+        "n_sequences": 0
+       },
+       "mirror_roll": {
+        "n": 0,
+        "k": 0,
+        "rate": null,
+        "n_sequences": 0
+       },
+       "scale_0.5": {
+        "n": 0,
+        "k": 0,
+        "rate": null,
+        "n_sequences": 0
+       },
+       "scale_1.5": {
+        "n": 0,
+        "k": 0,
+        "rate": null,
+        "n_sequences": 0
+       }
+      }
+     }
+    }
+   }
+  },
+  "V5_physics_scale": {
+   "oracle_attitude": {
+    "pixel": {
+     "primary": {
+      "n_clips": 8,
+      "n_sequences": 4,
+      "rates": {
+       "real": {
+        "n": 8,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "null_edit": {
+        "n": 8,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "yaw_control": {
+        "n": 8,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "tilt_removal": {
+        "n": 8,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "mirror_roll": {
+        "n": 8,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "scale_0.5": {
+        "n": 8,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "scale_1.5": {
+        "n": 8,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       }
+      },
+      "tau": {
+       "indoor_forward_3": 0.0,
+       "indoor_forward_5": 0.0,
+       "indoor_forward_9": 0.0,
+       "indoor_forward_10": 0.0
+      },
+      "clustered": {
+       "real": {
+        "lo": 0.0,
+        "hi": 0.0,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "null_edit": {
+        "lo": 0.0,
+        "hi": 0.0,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "yaw_control": {
+        "lo": 0.0,
+        "hi": 0.0,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "tilt_removal": {
+        "lo": 0.0,
+        "hi": 0.0,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "mirror_roll": {
+        "lo": 0.0,
+        "hi": 0.0,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "scale_0.5": {
+        "lo": 0.0,
+        "hi": 0.0,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "scale_1.5": {
+        "lo": 0.0,
+        "hi": 0.0,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       }
+      },
+      "abstained_real": 0
+     },
+     "exploratory": {
+      "n_clips": 17,
+      "n_sequences": 9,
+      "rates": {
+       "real": {
+        "n": 4,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "null_edit": {
+        "n": 4,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "yaw_control": {
+        "n": 4,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "tilt_removal": {
+        "n": 4,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "mirror_roll": {
+        "n": 4,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "scale_0.5": {
+        "n": 4,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "scale_1.5": {
+        "n": 4,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       }
+      }
+     }
+    },
+    "oracle": {
+     "primary": {
+      "n_clips": 8,
+      "n_sequences": 4,
+      "rates": {
+       "real": {
+        "n": 8,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "null_edit": {
+        "n": 8,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "yaw_control": {
+        "n": 8,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "tilt_removal": {
+        "n": 8,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "mirror_roll": {
+        "n": 8,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "scale_0.5": {
+        "n": 8,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "scale_1.5": {
+        "n": 8,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       }
+      },
+      "tau": {
+       "indoor_forward_3": 0.0,
+       "indoor_forward_5": 0.0,
+       "indoor_forward_9": 0.0,
+       "indoor_forward_10": 0.0
+      },
+      "clustered": {
+       "real": {
+        "lo": 0.0,
+        "hi": 0.0,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "null_edit": {
+        "lo": 0.0,
+        "hi": 0.0,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "yaw_control": {
+        "lo": 0.0,
+        "hi": 0.0,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "tilt_removal": {
+        "lo": 0.0,
+        "hi": 0.0,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "mirror_roll": {
+        "lo": 0.0,
+        "hi": 0.0,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "scale_0.5": {
+        "lo": 0.0,
+        "hi": 0.0,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "scale_1.5": {
+        "lo": 0.0,
+        "hi": 0.0,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       }
+      },
+      "abstained_real": 0
+     },
+     "exploratory": {
+      "n_clips": 19,
+      "n_sequences": 9,
+      "rates": {
+       "real": {
+        "n": 5,
+        "k": 1,
+        "rate": 0.2,
+        "n_sequences": 3
+       },
+       "null_edit": {
+        "n": 5,
+        "k": 1,
+        "rate": 0.2,
+        "n_sequences": 3
+       },
+       "yaw_control": {
+        "n": 5,
+        "k": 1,
+        "rate": 0.2,
+        "n_sequences": 3
+       },
+       "tilt_removal": {
+        "n": 5,
+        "k": 1,
+        "rate": 0.2,
+        "n_sequences": 3
+       },
+       "mirror_roll": {
+        "n": 5,
+        "k": 1,
+        "rate": 0.2,
+        "n_sequences": 3
+       },
+       "scale_0.5": {
+        "n": 5,
+        "k": 1,
+        "rate": 0.2,
+        "n_sequences": 3
+       },
+       "scale_1.5": {
+        "n": 5,
+        "k": 1,
+        "rate": 0.2,
+        "n_sequences": 3
+       }
+      }
+     }
+    }
+   },
+   "estimated_attitude": {
+    "pixel": {
+     "primary": {
+      "n_clips": 8,
+      "n_sequences": 4,
+      "rates": {
+       "real": {
+        "n": 8,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "null_edit": {
+        "n": 8,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "yaw_control": {
+        "n": 8,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "tilt_removal": {
+        "n": 8,
+        "k": 2,
+        "rate": 0.25,
+        "n_sequences": 4
+       },
+       "mirror_roll": {
+        "n": 8,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "scale_0.5": {
+        "n": 8,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "scale_1.5": {
+        "n": 8,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       }
+      },
+      "tau": {
+       "indoor_forward_3": 0.0,
+       "indoor_forward_5": 0.0,
+       "indoor_forward_9": 0.0,
+       "indoor_forward_10": 0.0
+      },
+      "clustered": {
+       "real": {
+        "lo": 0.0,
+        "hi": 0.0,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "null_edit": {
+        "lo": 0.0,
+        "hi": 0.0,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "yaw_control": {
+        "lo": 0.0,
+        "hi": 0.0,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "tilt_removal": {
+        "lo": 0.0,
+        "hi": 0.5,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "mirror_roll": {
+        "lo": 0.0,
+        "hi": 0.0,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "scale_0.5": {
+        "lo": 0.0,
+        "hi": 0.0,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "scale_1.5": {
+        "lo": 0.0,
+        "hi": 0.0,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       }
+      },
+      "abstained_real": 0
+     },
+     "exploratory": {
+      "n_clips": 14,
+      "n_sequences": 8,
+      "rates": {
+       "real": {
+        "n": 4,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "null_edit": {
+        "n": 4,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "yaw_control": {
+        "n": 4,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "tilt_removal": {
+        "n": 4,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "mirror_roll": {
+        "n": 4,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "scale_0.5": {
+        "n": 4,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "scale_1.5": {
+        "n": 4,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       }
+      }
+     }
+    },
+    "oracle": {
+     "primary": {
+      "n_clips": 8,
+      "n_sequences": 4,
+      "rates": {
+       "real": {
+        "n": 8,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "null_edit": {
+        "n": 8,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "yaw_control": {
+        "n": 8,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "tilt_removal": {
+        "n": 8,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "mirror_roll": {
+        "n": 8,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "scale_0.5": {
+        "n": 8,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       },
+       "scale_1.5": {
+        "n": 8,
+        "k": 0,
+        "rate": 0.0,
+        "n_sequences": 4
+       }
+      },
+      "tau": {
+       "indoor_forward_3": 0.0,
+       "indoor_forward_5": 0.0,
+       "indoor_forward_9": 0.0,
+       "indoor_forward_10": 0.0
+      },
+      "clustered": {
+       "real": {
+        "lo": 0.0,
+        "hi": 0.0,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "null_edit": {
+        "lo": 0.0,
+        "hi": 0.0,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "yaw_control": {
+        "lo": 0.0,
+        "hi": 0.0,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "tilt_removal": {
+        "lo": 0.0,
+        "hi": 0.0,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "mirror_roll": {
+        "lo": 0.0,
+        "hi": 0.0,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "scale_0.5": {
+        "lo": 0.0,
+        "hi": 0.0,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       },
+       "scale_1.5": {
+        "lo": 0.0,
+        "hi": 0.0,
+        "n_boot": 5000,
+        "n_clusters": 4,
+        "note": "sequence-clustered; descriptive below ~10 clusters"
+       }
+      },
+      "abstained_real": 0
+     },
+     "exploratory": {
+      "n_clips": 16,
+      "n_sequences": 8,
+      "rates": {
+       "real": {
+        "n": 5,
+        "k": 1,
+        "rate": 0.2,
+        "n_sequences": 3
+       },
+       "null_edit": {
+        "n": 5,
+        "k": 1,
+        "rate": 0.2,
+        "n_sequences": 3
+       },
+       "yaw_control": {
+        "n": 5,
+        "k": 1,
+        "rate": 0.2,
+        "n_sequences": 3
+       },
+       "tilt_removal": {
+        "n": 5,
+        "k": 1,
+        "rate": 0.2,
+        "n_sequences": 3
+       },
+       "mirror_roll": {
+        "n": 5,
+        "k": 1,
+        "rate": 0.2,
+        "n_sequences": 3
+       },
+       "scale_0.5": {
+        "n": 5,
+        "k": 1,
+        "rate": 0.2,
+        "n_sequences": 3
+       },
+       "scale_1.5": {
+        "n": 5,
+        "k": 1,
+        "rate": 0.2,
+        "n_sequences": 3
+       }
+      }
+     }
+    }
+   }
+  }
+ },
+ "skipped": [
+  {
+   "seq": "indoor_forward_7",
+   "idx": 0,
+   "arm": "estimated_attitude",
+   "path": "pixel",
+   "why": "no full real path"
+  },
+  {
+   "seq": "indoor_forward_7",
+   "idx": 0,
+   "arm": "estimated_attitude",
+   "path": "oracle",
+   "why": "no full real path"
+  },
+  {
+   "seq": "indoor_forward_7",
+   "idx": 1,
+   "arm": "estimated_attitude",
+   "path": "pixel",
+   "why": "no full real path"
+  },
+  {
+   "seq": "indoor_forward_7",
+   "idx": 1,
+   "arm": "estimated_attitude",
+   "path": "oracle",
+   "why": "no full real path"
+  },
+  {
+   "seq": "indoor_forward_7",
+   "idx": 2,
+   "arm": "estimated_attitude",
+   "path": "pixel",
+   "why": "no full real path"
+  },
+  {
+   "seq": "indoor_forward_7",
+   "idx": 2,
+   "arm": "estimated_attitude",
+   "path": "oracle",
+   "why": "no full real path"
+  },
+  {
+   "seq": "outdoor_forward_1",
+   "idx": 3,
+   "arm": "oracle_attitude",
+   "path": "pixel",
+   "why": "no full real path"
+  },
+  {
+   "seq": "outdoor_forward_1",
+   "idx": 3,
+   "arm": "estimated_attitude",
+   "path": "pixel",
+   "why": "no full real path"
+  },
+  {
+   "seq": "outdoor_forward_3",
+   "idx": 3,
+   "arm": "oracle_attitude",
+   "path": "pixel",
+   "why": "no full real path"
+  },
+  {
+   "seq": "outdoor_forward_3",
+   "idx": 3,
+   "arm": "estimated_attitude",
+   "path": "pixel",
+   "why": "no full real path"
+  }
+ ],
+ "path_quality": [
+  {
+   "seq": "indoor_forward_3",
+   "n": 150,
+   "scale_sim3": 0.6793831946745769,
+   "ate_sim3_m": 0.15469233943959293,
+   "path_len_units": 70.34426621149734
+  },
+  {
+   "seq": "indoor_forward_5",
+   "n": 150,
+   "scale_sim3": 0.22651407814112584,
+   "ate_sim3_m": 0.1395995424526075,
+   "path_len_units": 105.55710223702592
+  },
+  {
+   "seq": "indoor_forward_6",
+   "n": 150,
+   "scale_sim3": 0.2586305736114226,
+   "ate_sim3_m": 1.038643157372979,
+   "path_len_units": 212.59200170276526
+  },
+  {
+   "seq": "indoor_forward_7",
+   "n": 150,
+   "scale_sim3": 0.9945634897746277,
+   "ate_sim3_m": 2.205857018922197,
+   "path_len_units": 40.65448281885669
+  },
+  {
+   "seq": "indoor_forward_9",
+   "n": 150,
+   "scale_sim3": 0.2633007780504071,
+   "ate_sim3_m": 0.09960378547639864,
+   "path_len_units": 121.47060575033571
+  },
+  {
+   "seq": "indoor_forward_10",
+   "n": 150,
+   "scale_sim3": 0.23674383487082595,
+   "ate_sim3_m": 0.16492061324292648,
+   "path_len_units": 134.03966661330358
+  },
+  {
+   "seq": "outdoor_forward_1",
+   "n": 150,
+   "scale_sim3": 0.17199842098181073,
+   "ate_sim3_m": 0.8231557139970044,
+   "path_len_units": 208.36127584850982
+  },
+  {
+   "seq": "outdoor_forward_3",
+   "n": 150,
+   "scale_sim3": 0.2203493165062294,
+   "ate_sim3_m": 0.7497520955691277,
+   "path_len_units": 186.40969176740253
+  },
+  {
+   "seq": "outdoor_forward_5",
+   "n": 150,
+   "scale_sim3": 0.2564488614390857,
+   "ate_sim3_m": 3.323416791012344,
+   "path_len_units": 318.8846390455785
+  }
+ ],
+ "notes": [
+  "Primary: 4 indoor-forward sequences, E's R2/coherence-testable real clips with a full 60-frame path. Exploratory: outdoor, and shorter overlaps.",
+  "Thresholds are leave-one-sequence-out conformal 95th percentiles on real clips.",
+  "Sequence-clustered intervals are descriptive below ~10 clusters."
+ ]
+}
