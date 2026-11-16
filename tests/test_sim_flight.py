@@ -134,3 +134,37 @@ def test_nonuniform_or_ragged_input_is_rejected():
     with pytest.raises(ValueError):
         F.Flight(name="bad", t=np.arange(3) * 0.004, pos=np.zeros((2, 3)),
                  vel=np.zeros((2, 3)), acc=np.zeros((2, 3)), yaw=np.zeros(2))
+
+
+def test_mirrored_roll_flips_the_roll_axis_only():
+    f = F.turn(speed=12.0, radius=8.0, arc_deg=60.0)
+    phys = f.camera_poses(uptilt_deg=0.0)
+    mirror = f.camera_poses(uptilt_deg=0.0, mirror_roll=True)
+    # the two renders see the same path, at the same place, with the roll sign flipped
+    assert np.allclose(phys["poses"][:, :3, 3], mirror["poses"][:, :3, 3])
+    from src.verdict.lean import depicted_lean_from_gravity, roll_pitch_to_lean
+    e3 = np.array([0.0, 0.0, 1.0])
+    up_p = np.einsum("nji,j->ni", phys["poses"][:, :3, :3], e3)
+    up_m = np.einsum("nji,j->ni", mirror["poses"][:, :3, :3], e3)
+    lean_p = depicted_lean_from_gravity(up_p, f.camera_R_cb)
+    lean_m = depicted_lean_from_gravity(up_m, f.camera_R_cb)
+    assert np.allclose(lean_p[:, 0], lean_m[:, 0], atol=1e-9)      # forward unchanged
+    assert np.allclose(lean_p[:, 1], -lean_m[:, 1], atol=1e-9)     # roll flipped
+    # and the required lean is the physical one, so the roll axis disagrees by design
+    req = roll_pitch_to_lean(f.roll, f.pitch)[phys["frame_idx"]]
+    assert np.allclose(req[:, 0], lean_p[:, 0], atol=1e-9)
+
+
+def test_level_camera_lean_is_zero_where_attitude_lean_is_not():
+    f = F.turn(speed=12.0, radius=8.0, arc_deg=60.0)
+    from src.verdict.lean import depicted_lean_from_gravity
+    e3 = np.array([0.0, 0.0, 1.0])
+    for clip, expect_zero in (("level", True), ("feasible", False)):
+        out = f.camera_poses(uptilt_deg=0.0, level_camera=(clip == "level"))
+        up = np.einsum("nji,j->ni", out["poses"][:, :3, :3], e3)
+        lean = depicted_lean_from_gravity(up, f.camera_R_cb)
+        mag = np.linalg.norm(lean, axis=1).max()
+        if expect_zero:
+            assert mag < 1e-9
+        else:
+            assert mag > 0.2

@@ -163,17 +163,48 @@ for the verifier.
    which is expected — no motion blur, no rolling shutter, no lens flare — and it means the
    sim-to-real gap in the reported numbers will be dominated by the look of the scene, not by
    the geometry.
-3. **The gain statistic read early.** Regressing depicted lean on required lean per axis:
+3. **The verdict statistics read early**, on three clips of the same flight (feasible,
+   tilt removed, mirrored roll). Upper block: the depicted-lean gain (slope of depicted on
+   required, per axis) and its correlation, which is Track D's frozen R2 statistic. Lower
+   block: the two residual statistics the classic verdict uses. Every number 91 frames.
 
-   | clip | slope, forward | slope, left | correlation, forward / left |
+   | clip | gain, forward | gain, left | correlation, forward / left |
    | --- | --- | --- | --- |
    | feasible | 0.93 | 0.99 | 0.996 / 0.99998 |
-   | level (tilt removed) | -0.01 | -0.004 | 0.43 / -0.26 |
+   | tilt removed | -0.01 | -0.004 | 0.43 / -0.26 |
+   | mirrored roll | 0.91 | **-1.00** | 0.996 / **-0.99992** |
 
-   That is the verifier's own R2 statistic on data where the answer is known: it reads ~1 on
-   the feasible clip and ~0 on the tilt-removed one. It is the cheapest possible evidence that
-   the pipeline, not just the renderer, survives the move to simulation — and it is a single
-   flight, so it is a demonstration, not a detection rate.
+   | clip | depicted tilt (median) | required tilt | median abs tilt residual | lean-direction residual |
+   | --- | --- | --- | --- | --- |
+   | feasible | 24.77 deg | 25.33 deg | **0.62 deg** | 1.44 deg |
+   | tilt removed | 0.36 deg | 25.33 deg | **24.72 deg** | 124.5 deg |
+   | mirrored roll | 24.41 deg | 25.33 deg | **0.79 deg** | 125.7 deg |
+
+   Two things follow. The pipeline, not just the renderer, survives the move to simulation:
+   the gain reads ~1 on the feasible clip, ~0 on tilt removal, and ~-1 on the roll axis for
+   mirrored roll — the exact pattern the real flights produced (Track D: 100% detection on
+   both families with the gain test, 67.2% and 94.8% with the median-residual baseline). And
+   the *baseline* residual statistic is nearly blind to mirrored roll here (0.79 deg, below
+   any threshold the real flights would set), which is why the gain test exists. That
+   agreement between a real-data finding and a constructed one is the strongest single reason
+   to build the set. It is still one flight per defect: a demonstration, not a rate.
+
+## Detection floor implied by the reader's error
+
+Handoff 15 Step 3 asks for the detection floor in simulation against the real-flight floor
+(14-17 deg). The spike can state the first term of it but not the floor itself:
+
+* the reader's median error on the rendered feasible clip is **0.62 deg of tilt** (p90 1.11)
+  and **1.44 deg of lean direction** (p90 3.02);
+* the tilt-removed clip, on the same path, produces a depicted tilt of 0.36 deg where the
+  path requires 25.33 deg, i.e. a median residual of **24.7 deg** (p90 31.7) under the same
+  statistic the real-flight verdicts use.
+
+So a full-flight tilt removal of 25 deg sits a factor of ~40 above the reader's error here,
+against the real-flight floor of 14-17 deg where the reader's own error (~4 deg per frame) and
+the estimator's view dependence set the distance. The number that matters for Step 3 is not
+this ratio but the *remainder after the reader's error is measured on frames from the final
+scene library*: one scene, one flight and no motion blur is not a floor.
 
 ## Cost model for the labelled set
 

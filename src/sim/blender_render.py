@@ -353,8 +353,12 @@ def _gpu_name() -> str:
 
 def main() -> int:
     argv = sys.argv
-    idx = argv.index("--") if "--" in argv else len(argv)
-    args = argv[idx + 1:]
+    if "--" in argv:
+        args = argv[argv.index("--") + 1:]
+    else:
+        # Blender consumes the "--" separator in some invocations; the job file is then the
+        # only argument that is a .json path.
+        args = [a for a in argv[1:] if a.endswith(".json")]
     if not args:
         print("usage: blender -b -P src/sim/blender_render.py -- job.json")
         return 2

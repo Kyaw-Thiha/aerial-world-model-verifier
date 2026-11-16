@@ -33,13 +33,14 @@ image = (
         "blender --version | head -3",
     )
     .pip_install("numpy", "pillow")
+    .add_local_file("src/sim/blender_render.py", "/root/blender_render.py", copy=True)
     .env({"BLENDER_EGL": "1"})
     .add_local_python_source("src")
 )
 
 
 @app.function(image=image, gpu="L40S", volumes={"/vol": volume}, timeout=3600)
-def benchmark(tag: str = "i01_feasible", n_frames: int = 8) -> dict:
+def benchmark(tag: str = "i01_feasible", n_frames: int = 6) -> dict:
     """Throughput per renderer setting on this GPU, on the first ``n_frames`` frames.
 
     This is the number that sets the dataset cost: frames per GPU-hour times the frame
@@ -86,7 +87,10 @@ def benchmark(tag: str = "i01_feasible", n_frames: int = 8) -> dict:
                 entry["render"] = json.loads(line[len("RENDER_RESULT "):])
         results[key] = entry
         volume.commit()
-    return results
+    import pathlib as _pl
+    _pl.Path("/vol/spike/l40s_benchmark.json").write_text(json.dumps(results, indent=2))
+    volume.commit()
+    return {k: v.get("render") for k, v in results.items()}
 
 
 @app.function(image=image, gpu="L40S", volumes={"/vol": volume}, timeout=3600)
@@ -119,9 +123,8 @@ def render(tag: str = "i01_feasible", samples: int = 48, engine: str = "CYCLES",
     jp = Path(f"/tmp/job_{tag}.json")
     jp.write_text(json.dumps(job))
 
-    p = subprocess.run([sys.executable, "-m", "src.sim.blender_render", str(jp)],
-                       capture_output=True, text=True, timeout=3300,
-                       cwd="/root")
+    p = subprocess.run(["blender", "-b", "-P", "/root/blender_render.py", "--", str(jp)],
+                       capture_output=True, text=True, timeout=3300, cwd="/root")
     log = (p.stdout or "") + "\n--stderr--\n" + (p.stderr or "")
     volume.commit()
     out = {"returncode": p.returncode, "log_tail": log[-3000:]}

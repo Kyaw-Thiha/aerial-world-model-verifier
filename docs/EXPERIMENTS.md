@@ -180,3 +180,25 @@ during consolidation — see `docs/DATA.md` for the current status of listing ac
 * **Regenerate**: `report/scripts/e10_window_rule.py`.
 * **Open discrepancy (recorded, not resolved)**: D's 0.07-0.12 s window "at the truth rate" is
   superseded by E05 (0.34-1.42 s at 500 Hz; 0.07-0.11 s only at the 15 Hz clip rate).
+
+---
+
+## Track I — simulated labelled flights (in progress, branch `track-i-simset`)
+
+Not part of the E1-E10 asset set: no report table is built from it yet.
+
+* **I01 — simulator spike** (`reports/I01_simulator_spike.md`). Four renderer candidates
+  assessed on headless cloud GPU, licence, pose rate, camera mount, throughput and effort;
+  Blender with the project's own dynamics recommended. Executed: Blender renders (local RTX
+  3050 and Modal L40S), Isaac Sim headless probe on L40S, Flightmare build probe, GeoCalib on
+  the rendered clips, and a pose-to-pixel check against Blender's own camera.
+* Code: `src/sim/flight.py` (analytic flights, flatness attitude, mounts), `src/sim/scene.py`
+  (one procedural scene), `src/sim/blender_render.py` (adapter that runs inside Blender).
+* Scripts: `experiments/i01_spike_flight.py` (flight + labels),
+  `experiments/i01_render_job.py` (per-renderer job), `experiments/i01_horizon_check.py`
+  (geometric check), `experiments/i01_geocalib_sim.py` is not a script: scoring runs through
+  `remote/i_geocalib.py`.
+* Remote apps: `remote/i_blender.py`, `remote/i_geocalib.py`, `remote/i_isaac.py`,
+  `remote/i_flightmare.py`; volume `awmv-i-data`; R2 prefix `track-i/` (reserved, empty).
+* Results: `results/i01_spike/` (`flight_summary.json`, `labels.json`, `projection_check.json`,
+  `horizon_bare_flight.json`, `renders_local.json`, `geocalib/*.json`).

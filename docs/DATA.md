@@ -56,6 +56,7 @@ Volumes present:
 | `awmv-c-models`, `awmv-c-data` | 2026-11-10 | Track C (extractors, UZH inputs) |
 | `awmv-e-data` | 2026-11-13 | Track E (UZH exports, backups) |
 | `awmv-smoke-vol` | 2026-11-07 | compute-plumbing smoke test |
+| `awmv-i-data` | 2026-11-16 | Track I (simulated labelled set): `spike/` job specs and pose files, `frames/<clip>/` rendered clips, `geocalib/` per-clip scoring |
 
 Pull something off a volume with `scripts/pull_volume.py <volume> <path> <dest>` (the `modal volume
 get` CLI trips on an existing local directory in this version). Nothing was stopped, moved or

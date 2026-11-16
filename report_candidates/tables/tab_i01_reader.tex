@@ -1,0 +1,13 @@
+\begin{tabular}{lrrrr}
+\toprule
+clip & depicted tilt & required tilt & tilt residual & gain (fwd / left) \\
+ & (deg, median) & (deg) & (deg, median) & \\
+\midrule
+feasible        & 24.77 & 25.33 & 0.62  & 0.93 / 0.99 \\
+tilt removed    & 0.36  & 25.33 & 24.72 & $-0.01$ / $-0.004$ \\
+mirrored roll   & 24.41 & 25.33 & 0.79  & 0.91 / $-1.00$ \\
+\midrule
+\multicolumn{5}{l}{\footnotesize GeoCalib on 91 rendered frames per clip, 3\,s slalom, truth at 250\,Hz.}\\
+\multicolumn{5}{l}{\footnotesize Reader's up-vector error: 1.14$^\circ$ median (feasible), 0.36$^\circ$ (tilt removed).}\\
+\bottomrule
+\end{tabular}

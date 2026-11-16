@@ -49,6 +49,12 @@ out = {"steps": [], "python": sys.version}
 def note(k, v):
     out["steps"].append({k: v})
 
+import signal
+class _TO(Exception):
+    pass
+def _alarm(signum, frame):
+    raise _TO("step timed out")
+signal.signal(signal.SIGALRM, _alarm)
 from isaacsim import SimulationApp
 t0 = time.time()
 sim_app = SimulationApp({"headless": True, "width": 640, "height": 360})
@@ -97,7 +103,6 @@ def add_cube(path, size, loc):
     x = UsdGeom.Xformable(c)
     x.AddTranslateOp().Set(Gf.Vec3d(*loc))
     x.AddScaleOp().Set(Gf.Vec3f(*size))
-    m = UsdGeom.MaterialBindingAPI.Apply(c.GetPrim())
     return c
 
 def add_plane(path, size, z=0.0):
@@ -138,8 +143,12 @@ try:
     writer.initialize(output_dir=outdir, rgb=True)
     writer.attach(rp)
     t0 = time.time()
-    for i in range(3):
-        rep.orchestrator.step(rt_subframes=4)
+    signal.setitimer(signal.ITIMER_REAL, 240)
+    try:
+        for i in range(3):
+            rep.orchestrator.step(rt_subframes=4)
+    finally:
+        signal.setitimer(signal.ITIMER_REAL, 0)
     rep.orchestrator.wait_until_complete()
     result["replicator_basicwriter"] = {
         "ok": True, "seconds_for_3": round(time.time() - t0, 2),
@@ -155,7 +164,11 @@ try:
     from omni.replicator.core import annotator_lookup  # noqa: F401
     rgb_annot = rep.AnnotatorRegistry.get_annotator("rgb")
     rgb_annot.attach([rp2])
-    rep.orchestrator.step(rt_subframes=4)
+    signal.setitimer(signal.ITIMER_REAL, 240)
+    try:
+        rep.orchestrator.step(rt_subframes=4)
+    finally:
+        signal.setitimer(signal.ITIMER_REAL, 0)
     data = rgb_annot.get_data()
     result["replicator_annotator"] = {"ok": True, "shape": list(getattr(data, "shape", [])),
                                       "dtype": str(getattr(data, "dtype", None))}
@@ -169,14 +182,20 @@ try:
     from isaacsim.sensors.camera import Camera
     c = Camera(prim_path="/World/cam2", resolution=(640, 360), translation=(0, 0, 12))
     c.initialize()
-    rgb = c.get_rgba()
+    signal.setitimer(signal.ITIMER_REAL, 240)
+    try:
+        rgb = c.get_rgba()
+    finally:
+        signal.setitimer(signal.ITIMER_REAL, 0)
     result["sensors_camera"] = {"ok": True, "shape": list(rgb.shape)}
 except Exception as e:
     result["sensors_camera"] = {"ok": False, "error": repr(e),
                                 "trace": traceback.format_exc()[-1200:]}
 
-print("PROBE_RESULT " + json.dumps({**out, **result}))
+print("PROBE_RESULT " + json.dumps({**out, **result}), flush=True)
 sim_app.close()
+import os as _os
+_os._exit(0)
 '''
 
 
