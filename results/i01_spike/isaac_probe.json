@@ -1,0 +1,43 @@
+{
+  "source": "Modal app awmv-i-isaac, function probe; full log on volume awmv-i-data at spike/isaac_probe.log",
+  "image": {
+    "base": "nvidia/cuda:12.8.1-devel-ubuntu22.04",
+    "python": "3.12",
+    "package": "isaacsim[extscache,all]==6.2.0.0 from https://pypi.nvidia.com",
+    "build_seconds": 633,
+    "approx_size_gb": 15
+  },
+  "app_start": {
+    "reached_startup_complete": true,
+    "startup_seconds": 24.2,
+    "warp_devices": "cpu (x86_64), cuda:0 NVIDIA L40S (44 GiB, sm_89)"
+  },
+  "missing_system_libs_found": [
+    "libXt.so.6",
+    "libxkbcommon0"
+  ],
+  "render_attempts": {
+    "replicator_basicwriter": "not reached: driver script failed earlier",
+    "replicator_annotator": "not reached: driver script failed earlier",
+    "sensors_camera": "not reached: driver script failed earlier"
+  },
+  "driver_script_failures": [
+    "TypeError: add_cube() missing 1 required positional argument: 'colour' (our bug)",
+    "AttributeError: module 'pxr.UsdGeom' has no attribute 'MaterialBindingAPI' (it is UsdShade; our bug)",
+    "one iteration did not return before the client timeout, so no PROBE_RESULT line"
+  ],
+  "api_notes": {
+    "4x_names_used_in_docs": [
+      "rep.create.render_product",
+      "rep.AnnotatorRegistry.get_annotator",
+      "isaacsim.sensors.camera.Camera",
+      "Camera.get_rgba"
+    ],
+    "6_2_names_seen_in_docs": [
+      "rep.functional.create.render_product",
+      "CameraSensor",
+      "CameraSensor.get_data"
+    ]
+  },
+  "conclusion": "Isaac Sim starts headless on L40S; no frame was obtained within the spike's time box. No throughput number is claimed."
+}

@@ -55,7 +55,7 @@ Everything below was executed, not read: the adapter code is in `src/sim/`, the 
 | 3 | pose→pixel model checked against Blender's own `world_to_camera_view` | local | `results/i01_spike/projection_check.json` |
 | 4 | flight-wide geometric check: bare-ground render, horizon against the pose | local | `results/i01_spike/horizon_bare_flight.json` |
 | 5 | GeoCalib on the rendered clips against exact truth | Modal A10 | `results/i01_spike/geocalib/` |
-| 6 | Flightmare build + Unity renderer probe | Modal (CPU) | `results/i01_spike/flightmare_probe.json` |
+| 6 | Flightmare build + Unity renderer probe | Modal (CPU) | `results/i01_spike/flightmare_probe.json` (facts + log tails) |
 | 7 | Isaac Sim headless probe: image build, app start, API discovery, render attempts | Modal L40S | `results/i01_spike/isaac_probe.json` (log) |
 
 The flight is one 3 s slalom (8 m/s, 2 m amplitude, 30 m wavelength, 12 m altitude, `k_d` =
