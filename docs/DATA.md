@@ -111,3 +111,19 @@ Or, inside the repository, `git checkout archive/track-d-pre-consolidation`.
 
 Results needed by the report scripts are already in git under `results/`; nothing else is required
 to rebuild `report/` (see `docs/REPRODUCE.md`).
+
+## 7. Track G artefacts (2026-11-16)
+
+Nothing large is committed. Track G reads existing clips and writes small summaries.
+
+| path | size | what | rebuild |
+| --- | --- | --- | --- |
+| `data/g03_frames/<flight>/` | 372 MB | the 5,007 TII camera frames the verdict scores, extracted from the release zips, plus `labels.json` with the mocap attitude label per frame | `experiments/g03_prepare_frames.py` |
+| `data/g03_uzh/<sequence>/` | 144 MB | 1,097 UZH forward-rig pinhole frames with Kalibr+Leica labels | `experiments/g03_prepare_uzh.py` |
+| `data/raw/tii_video_full/` | 3.6 GB | the eight `camera_<flight>.zip` members pulled from R2 `track-a/tii_video/{autonomous,piloted}/` (until 2026-11-16 only `flight-01a` was local) | `scripts`-style ranged or plain GET against the bucket keys listed there |
+| Modal volume `awmv-g-data` | small | per-fold fine-tune outputs, `<dataset>__<holdout>.json`, written by `remote/g_tilt_reader.py` | re-run the app |
+| `results/g01_segments/`, `results/g02_combined/`, `results/g03_tilt_reader/` | < 2 MB each | every number in reports G01-G03, in git | the three experiment scripts + `experiments/g03_evaluate.py` |
+
+R2 listing worked again on 2026-11-16 (the 403 recorded in section 2 was not reproduced), so the
+TII video zips can be fetched by key without a Modal volume. Nothing was written or deleted on
+R2 or on the other tracks' volumes; Track G created exactly one volume, `awmv-g-data`.
