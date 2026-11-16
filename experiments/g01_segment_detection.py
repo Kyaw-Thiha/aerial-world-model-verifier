@@ -175,7 +175,13 @@ def main() -> int:
     if args.population == "heldout" and not args.confirm_once:
         raise SystemExit("the held-out flights are scored once, on purpose: pass --confirm-once")
     flights = dev if args.population == "dev" else held
+    # The held-out block is scored with every threshold fitted on the dev flights only:
+    # the fit rows are loaded too, but they are never evaluated or reported here.
+    fit_flights = dev if args.population == "heldout" else flights
+    all_flights = list(dict.fromkeys(fit_flights + flights))
     clip_ids = real_clip_ids(flights)
+    fit_clip_ids = [c for c in real_clip_ids(fit_flights) if c not in set(clip_ids)]
+    flights_for_folds = fit_flights
     print(f"population {args.population}: {len(clip_ids)} real clips over {len(flights)} "
           f"flights; window {args.length} hop {args.hop}, calibration "
           f"{args.calib_population}")
@@ -186,7 +192,7 @@ def main() -> int:
         assert_composable(conds)
         flight = conds["real"].flight
         real = variant_stats(conds["real"], args.length, args.hop)
-        real_records.append({"clip": cid, "flight": flight,
+        real_records.append({"clip": cid, "flight": flight, "scored": True,
                              "n_frames": conds["real"].n_frames, **real,
                              "gate_kept": gate_kept_from_conf(conds["real"].depicted_conf, GATE)})
         for fam in FAMILIES + CONTROLS:
@@ -196,13 +202,24 @@ def main() -> int:
                 variant_records.append({"clip": cid, "flight": flight, "family": fam,
                                         "fraction": frac, "truth": truth, **v})
 
-    calib = ([r for r in real_records if r["gate_kept"]]
-             if args.calib_population == "gate_kept" else real_records)
+    for cid in fit_clip_ids:
+        conds = load_conditions(cid)
+        assert_composable(conds)
+        real = variant_stats(conds["real"], args.length, args.hop)
+        real_records.append({"clip": cid, "flight": conds["real"].flight, "scored": False,
+                             "n_frames": conds["real"].n_frames, **real,
+                             "gate_kept": gate_kept_from_conf(conds["real"].depicted_conf, GATE)})
+
+    pool = ([r for r in real_records if r["gate_kept"]]
+            if args.calib_population == "gate_kept" else real_records)
+    # held-out block: every threshold is fitted on the dev clips only
+    calib = ([r for r in pool if not r["scored"]] if args.population == "heldout" else pool)
     keep = {r["clip"] for r in calib}
     print(f"calibration population: {args.calib_population} ({len(calib)} real clips, "
           f"{len(real_records) - len(calib)} excluded)")
 
     out = {"population": args.population, "flights": flights,
+           "fit_flights": fit_flights, "n_fit_clips": len(fit_clip_ids),
            "n_real_clips": len(clip_ids), "calibration_population": args.calib_population,
            "n_calibration_clips": len(calib), "window_frames": args.length,
            "hop_frames": args.hop, "alpha": ALPHA, "n_boot": N_BOOT, "seed": SEED,
@@ -215,8 +232,15 @@ def main() -> int:
         for r in calib:
             for t in TIERS:
                 r[f"stat_{t}_p{p}"] = r["max"][t] if p == 1 else r["max_p2"][t]
-        taus = {t: fold_thresholds(calib, flights, f"stat_{t}_p{p}") for t in TIERS}
-        tau_whole = fold_thresholds(calib, flights, "whole")
+        taus = {t: fold_thresholds(calib, flights_for_folds, f"stat_{t}_p{p}") for t in TIERS}
+        tau_whole = fold_thresholds(calib, flights_for_folds, "whole")
+        if args.population == "heldout":
+            # one threshold for the whole held-out block, fitted on all dev fit clips
+            for fold in flights:
+                for t in TIERS:
+                    taus[t][fold] = conformal_threshold(
+                        [r[f"stat_{t}_p{p}"] for r in calib], ALPHA)
+                tau_whole[fold] = conformal_threshold([r["whole"] for r in calib], ALPHA)
 
         def stat_of(rec, tier):
             return rec["max"][tier] if p == 1 else rec["max_p2"][tier]
@@ -229,7 +253,7 @@ def main() -> int:
             rec["flags"][f"whole_p{p}"] = bool(np.isfinite(rec["whole"])
                                                and rec["whole"] > tau_whole[rec["flight"]])
 
-        scored_real = [r for r in real_records if r["clip"] in keep]
+        scored_real = [r for r in real_records if r["clip"] in keep and r["scored"]]
         block = {"taus": taus, "tau_whole": tau_whole,
                  "real_false_reject": {f"{t}_p{p}": rate_by_flight(scored_real, f"{t}_p{p}", flights)
                                        for t in TIERS + ("whole",)},
