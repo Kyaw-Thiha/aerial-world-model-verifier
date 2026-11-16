@@ -30,10 +30,10 @@ SEQS = ["indoor_forward_3", "indoor_forward_5", "indoor_forward_6", "indoor_forw
 
 vipe_image = (
     modal.Image.from_registry("nvidia/cuda:12.8.0-devel-ubuntu22.04", add_python="3.11")
-    .apt_install("git", "libgl1", "libglib2.0-0", "ffmpeg", "libopenexr-dev", "build-essential")
+    .apt_install("git", "libgl1", "libglib2.0-0", "ffmpeg", "libopenexr-dev", "build-essential", "clang")
     .pip_install("torch==2.8.0", "torchvision==0.23.0",
                  index_url="https://download.pytorch.org/whl/cu128")
-    .pip_install("numpy<2.3", "wheel", "setuptools", "ninja", "packaging")
+    .pip_install("numpy<2.3", "wheel", "pip>=24.2", "setuptools>=77", "ninja", "packaging")
     .env({"TORCH_CUDA_ARCH_LIST": "8.0", "CUDA_HOME": "/usr/local/cuda"})
     .run_commands(
         "MAX_JOBS=8 pip install --no-build-isolation nvidia-vipe==1.2.0",
@@ -128,8 +128,14 @@ def vipe_run(seqs: list[str]) -> str:
             recs.append(rec)
             continue
         z = np.load(npzs[0])
-        key = "pose" if "pose" in z.files else ("c2w" if "c2w" in z.files else z.files[0])
-        arr = np.asarray(z[key], dtype=np.float64)
+        if "data" in z.files and "inds" in z.files:
+            # ViPE stores a sparse (index, pose) pair; order by the index
+            inds = np.asarray(z["inds"]).astype(int)
+            arr = np.asarray(z["data"], dtype=np.float64)[np.argsort(inds)]
+            key = "data+inds"
+        else:
+            key = "pose" if "pose" in z.files else ("c2w" if "c2w" in z.files else z.files[0])
+            arr = np.asarray(z[key], dtype=np.float64)
         if arr.shape[-2:] == (3, 4):
             c2w = np.tile(np.eye(4), (arr.shape[0], 1, 1))
             c2w[:, :3, :4] = arr

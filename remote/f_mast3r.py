@@ -29,7 +29,7 @@ SEQS = ["indoor_forward_3", "indoor_forward_5", "indoor_forward_6", "indoor_forw
 
 mast3r_image = (
     modal.Image.from_registry("nvidia/cuda:12.4.1-devel-ubuntu22.04", add_python="3.11")
-    .apt_install("git", "libgl1", "libglib2.0-0", "build-essential", "wget")
+    .apt_install("git", "libgl1", "libglib2.0-0", "build-essential", "wget", "clang")
     .pip_install("torch==2.5.1", "torchvision==0.20.1",
                  index_url="https://download.pytorch.org/whl/cu124")
     .pip_install("numpy<2", "wheel", "setuptools", "ninja", "packaging", "cython")
@@ -39,6 +39,10 @@ mast3r_image = (
         "git clone --recursive https://github.com/rmurai0610/MASt3R-SLAM /opt/mast3r-slam",
         "cd /opt/mast3r-slam && pip install -e thirdparty/mast3r",
         "cd /opt/mast3r-slam && pip install -e thirdparty/in3d",
+        # setup.py gates its CUDA extension on torch.cuda.is_available(), which is False in a
+        # build container with no GPU; force the branch (the arch list it hard-codes includes
+        # sm_80, the target GPU) rather than skip the backend the tracker needs
+        "cd /opt/mast3r-slam && sed -i 's/has_cuda = torch.cuda.is_available()/has_cuda = True/' setup.py",
         "cd /opt/mast3r-slam && pip install --no-build-isolation -e .",
         "mkdir -p /opt/mast3r-slam/checkpoints && cd /opt/mast3r-slam/checkpoints && "
         "wget -q https://download.europe.naverlabs.com/ComputerVision/MASt3R/"
