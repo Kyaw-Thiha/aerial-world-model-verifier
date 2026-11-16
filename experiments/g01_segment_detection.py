@@ -215,6 +215,9 @@ def main() -> int:
     # held-out block: every threshold is fitted on the dev clips only
     calib = ([r for r in pool if not r["scored"]] if args.population == "heldout" else pool)
     keep = {r["clip"] for r in calib}
+    # clips this block evaluates: the block's own population, restricted to the scored rows
+    eval_ids = {r["clip"] for r in (pool if args.calib_population == "gate_kept"
+                                   else real_records) if r["scored"]}
     print(f"calibration population: {args.calib_population} ({len(calib)} real clips, "
           f"{len(real_records) - len(calib)} excluded)")
 
@@ -241,30 +244,9 @@ def main() -> int:
                     taus[t][fold] = conformal_threshold(
                         [r[f"stat_{t}_p{p}"] for r in calib], ALPHA)
                 tau_whole[fold] = conformal_threshold([r["whole"] for r in calib], ALPHA)
-    out = {"population": args.population, "flights": flights,
-           "n_real_clips": len(clip_ids), "calibration_population": args.calib_population,
-           "n_calibration_clips": len(calib), "window_frames": args.length,
-           "hop_frames": args.hop, "alpha": ALPHA, "n_boot": N_BOOT, "seed": SEED,
-           "n_windows_median": float(np.median([r["n_windows"] for r in real_records])),
-           "n_abstained_clips": int(sum(1 for r in real_records if r["abstained"])),
-           "blocks": {}}
 
         def stat_of(rec, tier):
             return rec["max"][tier] if p == 1 else rec["max_p2"][tier]
-    for p in PERSISTENCE:
-        # thresholds on the persistence statistic itself
-        for r in calib:
-            for t in TIERS:
-                r[f"stat_{t}_p{p}"] = r["max"][t] if p == 1 else r["max_p2"][t]
-        taus = {t: fold_thresholds(calib, flights_for_folds, f"stat_{t}_p{p}") for t in TIERS}
-        tau_whole = fold_thresholds(calib, flights_for_folds, "whole")
-        if args.population == "heldout":
-            # one threshold for the whole held-out block, fitted on all dev fit clips
-            for fold in flights:
-                for t in TIERS:
-                    taus[t][fold] = conformal_threshold(
-                        [r[f"stat_{t}_p{p}"] for r in calib], ALPHA)
-                tau_whole[fold] = conformal_threshold([r["whole"] for r in calib], ALPHA)
 
         for rec in real_records + variant_records:
             rec.setdefault("flags", {})
@@ -274,7 +256,7 @@ def main() -> int:
             rec["flags"][f"whole_p{p}"] = bool(np.isfinite(rec["whole"])
                                                and rec["whole"] > tau_whole[rec["flight"]])
 
-        scored_real = [r for r in real_records if r["clip"] in keep and r["scored"]]
+        scored_real = [r for r in real_records if r["clip"] in eval_ids and r["scored"]]
         block = {"taus": taus, "tau_whole": tau_whole,
                  "real_false_reject": {f"{t}_p{p}": rate_by_flight(scored_real, f"{t}_p{p}", flights)
                                        for t in TIERS + ("whole",)},
@@ -284,17 +266,10 @@ def main() -> int:
                                              and r["flags"][f"residual_p{p}"]))}
                      for f in flights},
                  "false_segments_per_minute": {}, "rates": {}, "incremental": {}}
-        for rec in real_records + variant_records:
-            rec.setdefault("flags", {})
-            for t in TIERS:
-                rec["flags"][f"{t}_p{p}"] = bool(np.isfinite(stat_of(rec, t))
-                                                 and stat_of(rec, t) > taus[t][rec["flight"]])
-            rec["flags"][f"whole_p{p}"] = bool(np.isfinite(rec["whole"])
-                                               and rec["whole"] > tau_whole[rec["flight"]])
 
         # false segments per minute on the scored real clips
         minutes, seg_counts = 0.0, {t: 0 for t in TIERS}
-        for cid in [i for i in clip_ids if i in keep]:
+        for cid in [i for i in clip_ids if i in eval_ids]:
             conds_real = load_clip(CLIP_ROOT / cid.split("#")[0] / f"{cid}__real")
             stats = window_statistics(conds_real, args.length, args.hop)
             minutes += float(conds_real.t[-1] - conds_real.t[0])
@@ -302,52 +277,10 @@ def main() -> int:
                 mask = (flagged_windows_persistent(stats, t, taus[t][cid.split("#")[0]], p)
                         if p > 1 else flagged_windows(stats, t, taus[t][cid.split("#")[0]]))
                 seg_counts[t] += len(merge_intervals(mask))
-        block["false_segments_per_minute"] = {t: seg_counts[t] / (minutes / 60.0) for t in TIERS}
+        block["false_segments_per_minute"] = {
+            t: (seg_counts[t] / (minutes / 60.0) if minutes > 0 else float("nan"))
+            for t in TIERS}
         block["real_minutes"] = minutes / 60.0
-
-        # interval metrics + aggregate rates
-        for v in variant_records:
-            flight = v["flight"]
-            v["interval"] = {}
-            for t in TIERS:
-                stats = v["stats"]
-                mask = (flagged_windows_persistent(stats, t, taus[t][flight], p) if p > 1
-                        else flagged_windows(stats, t, taus[t][flight]))
-                sc = interval_scores(mask, v["truth"])
-                sc["severity"] = float(stat_of(v, t))
-                v["interval"][t] = sc
-
-        real_flag = {r["clip"]: r["flags"][f"residual_p{p}"] for r in real_records}
-        for fam in FAMILIES + CONTROLS:
-            for frac in FRACTIONS + (1.0,):
-                key = f"{fam}@{frac:g}"
-                entry = {}
-                for t in TIERS + ("whole",):
-                    recs = [v for v in variant_records
-                            if v["family"] == fam and v["fraction"] == frac and v["clip"] in keep]
-                    entry[f"{t}_p{p}"] = clustered_rate(
-                        {f: [bool(v["flags"][f"{t}_p{p}"]) for v in recs if v["flight"] == f]
-                         for f in flights})
-                    # post-hoc diagnostic: detection among clips that pass as real
-                    clean = [v for v in recs if not real_flag[v["clip"]]]
-                    entry[f"{t}_p{p}_incremental"] = clustered_rate(
-                        {f: [bool(v["flags"][f"{t}_p{p}"]) for v in clean if v["flight"] == f]
-                         for f in flights})
-                recs = [v for v in variant_records
-                        if v["family"] == fam and v["fraction"] == frac and v["clip"] in keep]
-                entry["iou_residual_mean"] = float(np.nanmean(
-                    [v["interval"]["residual"]["iou"] for v in recs]))
-                entry["f1_residual_mean"] = float(np.nanmean(
-                    [v["interval"]["residual"]["f1"] for v in recs]))
-                entry["iou_coherence_mean"] = float(np.nanmean(
-                    [v["interval"]["coherence"]["iou"] for v in recs]))
-                onsets = [v["interval"]["residual"]["onset_err_frames"] for v in recs
-                          if v["flags"][f"residual_p{p}"]]
-                entry["onset_err_frames_median"] = (float(np.nanmedian(onsets)) if onsets else None)
-                entry["onset_err_frames_all"] = [None if not np.isfinite(x) else float(x)
-                                                 for x in onsets]
-                block["rates"][key] = entry
-        out["blocks"][f"p{p}"] = block
 
         # interval metrics + aggregate rates
         for v in variant_records:

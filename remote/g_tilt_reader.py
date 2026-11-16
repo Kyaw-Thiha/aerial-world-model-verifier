@@ -38,14 +38,15 @@ image = (
                  "torch==2.4.1", "torchvision==0.19.1", "matplotlib")
     .pip_install("kornia", "omegaconf", "poselib", "huggingface_hub")
     .run_commands(f"pip install git+https://github.com/cvg/GeoCalib@{GEOCALIB_COMMIT}")
+    .env({"PYTORCH_CUDA_ALLOC_CONF": "expandable_segments:True"})
     .add_local_dir("data/g03_frames", "/frames/tii")
     .add_local_dir("data/g03_uzh", "/frames/uzh")
 )
 
 DATASETS = {"tii": {"weights": "distorted", "camera_model": "simple_divisional",
-                    "root": "/frames/tii", "key": "flight"},
+                    "root": "/frames/tii", "local": "data/g03_frames"},
             "uzh": {"weights": "pinhole", "camera_model": "pinhole",
-                    "root": "/frames/uzh", "key": "sequence"}}
+                    "root": "/frames/uzh", "local": "data/g03_uzh"}}
 
 
 def _units(dataset: str) -> list[str]:
@@ -95,9 +96,24 @@ def smoke(dataset: str = "tii", n: int = 2, lm_steps: int = 10) -> dict:
     loss.backward()
     gnorm = float(sum((p.grad.detach().norm() ** 2).item() for p in net.parameters()
                       if p.grad is not None) ** 0.5)
+    # a few real optimisation steps, so the per-fold cost can be estimated before a long run
+    import time
+    t0 = time.time()
+    n_steps = 5
+    for _ in range(n_steps):
+        data = calib.image_processor(x)
+        net.optimizer.set_camera_model(cfg["camera_model"])
+        out = net(data | {"camera_R_rig": None})
+        up = torch.nn.functional.normalize(out["gravity"].vec3d, dim=-1)
+        step_loss = (1.0 - (up * y).sum(-1)).mean()
+        opt.zero_grad(set_to_none=True)
+        step_loss.backward()
+        opt.step()
+    sec_per_step = (time.time() - t0) / n_steps
     with torch.no_grad():
-        err = torch.degrees(torch.arccos(torch.clamp((up * y).sum(-1), -1, 1)))
-    return {"dataset": dataset, "unit": unit, "n": n, "lm_steps": lm_steps,
+        err = torch.rad2deg(torch.arccos(torch.clamp((up * y).sum(-1), -1, 1)))
+    return {"dataset": dataset, "unit": unit, "n": n, "lm_steps": lm_steps, "batch": n,
+            "sec_per_step_batch": sec_per_step,
             "loss": float(loss), "grad_norm": gnorm,
             "per_frame_err_deg": [float(v) for v in err],
             "n_tensors_with_grad": sum(1 for p in net.parameters() if p.grad is not None),
@@ -106,7 +122,7 @@ def smoke(dataset: str = "tii", n: int = 2, lm_steps: int = 10) -> dict:
 
 @app.function(image=image, gpu="A10G", volumes={VOL: volume}, timeout=6 * 3600)
 def run_fold(dataset: str, holdout: str, epochs: int = 2, lr: float = 2e-5,
-             batch: int = 8, lm_steps: int = 10, seed: int = 1,
+             batch: int = 2, lm_steps: int = 10, seed: int = 1,
              max_frames_per_unit: int = 0) -> dict:
     """Fine-tune on every unit except ``holdout``, then score ``holdout`` and the fit units."""
     import math
@@ -187,14 +203,16 @@ def run_fold(dataset: str, holdout: str, epochs: int = 2, lr: float = 2e-5,
             nb += 1
         hist.append({"epoch": epoch, "loss": run / max(nb, 1), "steps": nb,
                      "seconds": time.time() - t0})
+        torch.cuda.empty_cache()
         print(f"[{dataset}/{holdout}] epoch {epoch} loss {run / max(nb,1):.4f}", flush=True)
 
     @torch.no_grad()
     def evaluate(rows):
         net.eval()
         out_rows = []
-        for k in range(0, len(rows), batch):
-            chunk = rows[k:k + batch]
+        ev_batch = 2   # the LM keeps a graph-sized working set even under no_grad
+        for k in range(0, len(rows), ev_batch):
+            chunk = rows[k:k + ev_batch]
             xs, keep = [], []
             for r in chunk:
                 x, _ = to_tensor(r)
@@ -243,12 +261,17 @@ def run_fold(dataset: str, holdout: str, epochs: int = 2, lr: float = 2e-5,
 
 @app.local_entrypoint()
 def main(mode: str = "smoke", dataset: str = "tii", holdout: str = "",
-         epochs: int = 2, lr: float = 2e-5, batch: int = 8, lm_steps: int = 10,
+         epochs: int = 2, lr: float = 2e-5, batch: int = 2, lm_steps: int = 10,
          max_frames: int = 0):
     if mode == "smoke":
         print(smoke.remote(dataset))
         return
-    units = [holdout] if holdout else _units(dataset)
+    if holdout:
+        units = [holdout]
+    else:  # the container path does not exist locally; enumerate from the prepared tree
+        root = Path(DATASETS[dataset]["local"])
+        units = sorted(p.name for p in root.iterdir()
+                       if p.is_dir() and (p / "labels.json").exists())
     calls = [run_fold.spawn(dataset, u, epochs, lr, batch, lm_steps, 1 + i, max_frames)
              for i, u in enumerate(units)]
     for c in calls:
