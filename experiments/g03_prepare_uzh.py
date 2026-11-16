@@ -28,10 +28,14 @@ def main() -> int:
         meta = json.loads((src / "meta.json").read_text())
         truth = np.load(src / "truth.npz")
         T = np.asarray(meta["kalibr_imu_cam0"]["T_cam_imu"], dtype=np.float64)
-        R_cb = T[:3, :3]                                   # cam <- imu
+        # T_cam_imu maps imu -> camera. The project's R_cb is camera -> body (the transpose),
+        # and up_cam = R_cb^T @ up_body = R_cam_imu @ up_body. Using T's rotation directly as
+        # R_cb transposes the mount and put a ~60 deg error into the first UZH label pass.
+        R_ci = T[:3, :3]                                   # imu -> camera
+        R_cb = R_ci.T                                      # camera -> body (project convention)
         R_bw = Rotation.from_quat(np.asarray(truth["quat"], dtype=np.float64)).as_matrix()
         up_body = np.einsum("nji,j->ni", R_bw, np.array([0.0, 0.0, 1.0]))
-        up_cam = np.einsum("ji,nj->ni", R_cb, up_body)
+        up_cam = np.einsum("ji,nj->ni", R_cb, up_body)     # = R_ci @ up_body
         frames = sorted((src / "frames_pinhole").glob("*.png"))
         if len(frames) != len(up_cam):
             raise SystemExit(f"{seq}: {len(frames)} frames vs {len(up_cam)} labels")
