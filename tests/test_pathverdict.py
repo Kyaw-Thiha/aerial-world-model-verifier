@@ -65,15 +65,29 @@ def test_shooting_recovers_scale_and_explains_path():
 
 
 def test_tilt_removal_and_mirror_raise_the_statistic():
+    """Amendment 1: the real-condition fit sets the scale and yaw for every edit."""
     t, lean = _clip(amp=0.3)
     dt = float(t[1] - t[0])
     x_path, _ = _simulate(lean, dt, 0.295, v0=(1.0, 0.5), scale=0.5)
-    rho_real = shooting_fit(x_path, np.zeros(len(t)), lean, t).statistic
-    rho_removed = shooting_fit(x_path, np.zeros(len(t)), np.zeros_like(lean), t).statistic
-    mirror = lean * np.array([1.0, -1.0])
-    rho_mirror = shooting_fit(x_path, np.zeros(len(t)), mirror, t).statistic
-    assert rho_removed > 3 * rho_real
-    assert rho_mirror > 3 * rho_real
+    yaw0 = np.zeros(len(t))
+    real = shooting_fit(x_path, yaw0, lean, t)
+    rho_real = real.statistic
+    removed = shooting_fit(x_path, yaw0, np.zeros_like(lean), t,
+                           scale=real.scale, psi=np.deg2rad(real.psi_deg))
+    mirror = shooting_fit(x_path, yaw0, lean * np.array([1.0, -1.0]), t,
+                          scale=real.scale, psi=np.deg2rad(real.psi_deg))
+    assert removed.statistic > 0.3
+    assert mirror.statistic > 3 * rho_real
+    assert mirror.statistic > 0.1
+
+
+def test_free_scale_cannot_see_tilt_removal():
+    """The finding behind amendment 1: a free scale absorbs the removal (s -> 0)."""
+    t, lean = _clip(amp=0.3)
+    dt = float(t[1] - t[0])
+    x_path, _ = _simulate(lean, dt, 0.295, v0=(1.0, 0.5), scale=0.5)
+    free = shooting_fit(x_path, np.zeros(len(t)), np.zeros_like(lean), t)
+    assert not np.isfinite(free.statistic) or free.statistic < 0.05
 
 
 def test_shooting_is_yaw_invariant():

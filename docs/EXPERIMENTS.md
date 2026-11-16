@@ -26,6 +26,7 @@ results; none of them runs an experiment.
 | E8 | gain and coherence tests | D | `track-d-verdict-stat` (`2a91765`) | `results/d_eval/`, `d_decomposition/`, `d_coherence/`, `d_deming/`, `d_window/`, `d_shrinkage/`, `d_flights/`, `d_calibrate/` | D01, D02, D03 |
 | E9 | UZH transfer | E (+ A estimator) | `track-e-depicted-uzh` (`dd209bf`) | `results/e_audit/`, `e_mount/`, `e_perframe/`, `e_verdict_v3/`, `e_calib/` | E01-E04 |
 | E10 | window rule and prototype | D (+ E independent test) | `track-d-verdict-stat`, `track-e-depicted-uzh` | `results/d_window_rates/`, `d_bandwidth/`, `d_uzh_v2/`, `e_verdict_v3/rule/` | D03, D04, E05 |
+| E11 | pixel-path verdict, stage 0 (Track F) | F | `track-f-pixel-path` | `results/f01_stage0/` | F01 |
 
 R2 prefixes are `track-a/`, `track-a/a2/`, `track-b/`, `track-c/`, `track-d/`, `track-e/`
 (counts and bytes: `report/data/r2_counts.json`, measured 2026-11-15; verified read-only again
@@ -180,3 +181,31 @@ during consolidation — see `docs/DATA.md` for the current status of listing ac
 * **Regenerate**: `report/scripts/e10_window_rule.py`.
 * **Open discrepancy (recorded, not resolved)**: D's 0.07-0.12 s window "at the truth rate" is
   superseded by E05 (0.34-1.42 s at 500 Hz; 0.07-0.11 s only at the 15 Hz clip rate).
+
+---
+
+## E11 — pixel-path verdict, stage 0 (Track F)
+
+* **Owning track / branch**: F, `track-f-pixel-path`. Report `reports/F01_pixel_path_stage0.md`;
+  this is the experiment indexed as E11 in the report candidate
+  `report_candidates/e11_pixel_path_verdict.tex`.
+* **What it is**: five verdict statistics that avoid double-differentiating the DPVO path
+  (shooting primary, preintegration, band-limited coherence, velocity-drag, physics scale),
+  each under oracle and estimated attitude and with the pixel path or the truth path, on
+  UZH-FPV forward rigs. The edit family, population rules and thresholds follow E8/E9.
+* **Configs**: `configs/f01_pixel_path_prereg.yaml` (`6b88d5a`), amendment 1
+  `configs/f01_pixel_path_prereg_amend1.yaml` (`17d21c6`, paired scale/yaw ruler).
+* **Inputs**: Track C's DPVO poses on the Modal volume `awmv-c-data` at `poses/dpvo/*.npz`
+  (150 frames per sequence, 15.07 Hz; local copy `data/pathrec/poses/dpvo/`, sha256 in the
+  summary), Track E's schema-v2 clips `data/clips_v2_w370ms/`, UZH truth `data/uzh/`, the E05
+  window rule `results/e_window_rule.json`, and the DA3 depth prior
+  `results/pathrec_calib/depth.json`.
+* **Results**: `results/f01_stage0/summary.json`, `rows.csv`, `table_stage0.md`,
+  `edit_path_check.json`.
+* **Regenerate**: `experiments/f01_stage0.py` (CPU, no spend), then
+  `experiments/f01_tables.py`; the one-sequence edit-invariance check is
+  `experiments/f01_edit_path_check.py`.
+* **Caveats**: the stored paths cover prepared frames 0-149, so only clips ending by frame
+  150 are in the primary population; the real path is reused for the edits (one-sequence
+  check only); the primary population has 8 clips in 4 sequences, so intervals are
+  descriptive.

@@ -80,7 +80,14 @@ python scripts/fetch_anwm_frames.py
 python scripts/fetch_track_e_clips.py  # UZH-FPV clip exports
 python scripts/uzh_prepare.py
 git clone https://github.com/EmbodiedCity/ANWM.code third_party/anwm && git -C third_party/anwm checkout 657a802
+pixi run python scripts/pull_volume.py awmv-c-data poses/dpvo data/pathrec/poses/dpvo
 ```
+
+`data/pathrec/poses/dpvo/` holds Track C's DPVO camera-to-world poses for the ten UZH
+sequences, pulled from the Modal volume `awmv-c-data` on 2026-11-16 (12 files, 140 KB; the
+sha256 of each sequence file is recorded in `results/f01_stage0/summary.json`). The volume
+copies do not carry timestamps, so the frame grid is the prepared-frame order (150 frames at
+15.07 Hz), which is how Track C ran them.
 
 ## 5. What is not recoverable from anywhere
 

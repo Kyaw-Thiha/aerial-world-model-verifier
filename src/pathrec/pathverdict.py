@@ -234,7 +234,8 @@ def _scaled_fit(model_free: np.ndarray, observed: np.ndarray, offset: np.ndarray
 
 def shooting_fit(X_h: np.ndarray, yaw: np.ndarray, lean: np.ndarray, t: np.ndarray,
                  k_d: float = KD_DEFAULT, g: float = G0,
-                 psi_grid: np.ndarray | None = None) -> FitResult:
+                 psi_grid: np.ndarray | None = None, scale: float | None = None,
+                 psi: float | None = None) -> FitResult:
     """V2. Integrate the depicted lean twice; fit scale, yaw, initial velocity and position.
 
     ``X_h`` (N, 2) is the observed horizontal path, ``lean`` (N, 2) the depicted/attitude lean
@@ -255,24 +256,34 @@ def shooting_fit(X_h: np.ndarray, yaw: np.ndarray, lean: np.ndarray, t: np.ndarr
         raise ValueError("length mismatch")
     dt = float(np.median(np.diff(t)))
     grid = _psi_grid() if psi_grid is None else np.asarray(psi_grid, dtype=np.float64)
+    if psi is not None:
+        grid = np.asarray([psi], dtype=np.float64)
     Xc = X_h - X_h.mean(axis=0)
     eye_x = np.tile([1.0, 0.0], (n, 1)).ravel()
     eye_y = np.tile([0.0, 1.0], (n, 1)).ravel()
     best: FitResult | None = None
-    for psi in grid:
-        forcing = g * apply_rot2(psi + yaw, lean)
+    for psi_v in grid:
+        forcing = g * apply_rot2(psi_v + yaw, lean)
         resp = drag_response(forcing, dt, k_d)
         basis = np.column_stack([resp.H_x[:, 0, :].ravel(), resp.H_x[:, 1, :].ravel(),
                                  eye_x, eye_y])
-        out = _scaled_fit(basis, Xc.ravel(), resp.F_x.ravel())
-        if out is None:
-            continue
-        s, sse, rel_se, beta = out
+        if scale is None:
+            out = _scaled_fit(basis, Xc.ravel(), resp.F_x.ravel())
+            if out is None:
+                continue
+            s, sse, rel_se, beta = out
+        else:
+            s = float(scale)
+            rhs = s * Xc.ravel() - resp.F_x.ravel()
+            beta, *_ = np.linalg.lstsq(basis, rhs, rcond=None)
+            resid = rhs - basis @ beta
+            sse = float(resid @ resid)
+            rel_se = float("nan")
         sst = float(s * s * np.sum(np.sum(Xc ** 2, axis=1)))
         if sst <= 0 or not np.isfinite(sst):
             continue
         rho = float(np.sqrt(sse / sst))
-        cand = FitResult(statistic=rho, psi_deg=float(np.degrees(psi)), scale=s,
+        cand = FitResult(statistic=rho, psi_deg=float(np.degrees(psi_v)), scale=s,
                          scale_rel_se=rel_se, sse=sse, sst=sst, r2=1.0 - sse / sst,
                          extra={"v0": [float(beta[0]), float(beta[1])],
                                 "x0": [float(beta[2]) + float(X_h.mean(axis=0)[0]),
@@ -287,7 +298,8 @@ def shooting_fit(X_h: np.ndarray, yaw: np.ndarray, lean: np.ndarray, t: np.ndarr
 
 def preintegration_fit(v_obs: np.ndarray, yaw: np.ndarray, lean: np.ndarray, t: np.ndarray,
                        k_d: float = KD_DEFAULT, g: float = G0,
-                       psi_grid: np.ndarray | None = None) -> FitResult:
+                       psi_grid: np.ndarray | None = None, scale: float | None = None,
+                       psi: float | None = None) -> FitResult:
     """V1. Integrate the ODE once and fit scale and initial velocity to the observed velocity.
 
     ``v_obs`` is one derivative of the pixel path, so the statistic is exposed to a single
@@ -301,21 +313,31 @@ def preintegration_fit(v_obs: np.ndarray, yaw: np.ndarray, lean: np.ndarray, t: 
     n = len(t)
     dt = float(np.median(np.diff(t)))
     grid = _psi_grid() if psi_grid is None else np.asarray(psi_grid, dtype=np.float64)
+    if psi is not None:
+        grid = np.asarray([psi], dtype=np.float64)
     best: FitResult | None = None
-    for psi in grid:
-        forcing = g * apply_rot2(psi + yaw, lean)
+    for psi_v in grid:
+        forcing = g * apply_rot2(psi_v + yaw, lean)
         resp = drag_response(forcing, dt, k_d)
         basis = np.column_stack([resp.H_v[:, 0, :].ravel(), resp.H_v[:, 1, :].ravel()])
-        out = _scaled_fit(basis, v_obs.ravel(), resp.F_v.ravel())
-        if out is None:
-            continue
-        s, sse, rel_se, beta = out
+        if scale is None:
+            out = _scaled_fit(basis, v_obs.ravel(), resp.F_v.ravel())
+            if out is None:
+                continue
+            s, sse, rel_se, beta = out
+        else:
+            s = float(scale)
+            rhs = s * v_obs.ravel() - resp.F_v.ravel()
+            beta, *_ = np.linalg.lstsq(basis, rhs, rcond=None)
+            resid = rhs - basis @ beta
+            sse = float(resid @ resid)
+            rel_se = float("nan")
         sst = float(s * s * np.sum(v_obs ** 2))
         if sst <= 0:
             continue
         rho = float(np.sqrt(sse / sst))
         v_model = (resp.H_v[:, 0, :] * beta[0] + resp.H_v[:, 1, :] * beta[1] + resp.F_v)
-        cand = FitResult(statistic=rho, psi_deg=float(np.degrees(psi)), scale=s,
+        cand = FitResult(statistic=rho, psi_deg=float(np.degrees(psi_v)), scale=s,
                          scale_rel_se=rel_se, sse=sse, sst=sst, r2=1.0 - sse / sst,
                          extra={"v_model": v_model, "v_obs": v_obs})
         if best is None or cand.statistic < best.statistic:
@@ -334,25 +356,31 @@ def preintegration_fit(v_obs: np.ndarray, yaw: np.ndarray, lean: np.ndarray, t: 
 
 def velocity_drag_fit(v_obs: np.ndarray, yaw: np.ndarray, lean: np.ndarray,
                       k_d: float = KD_DEFAULT, g: float = G0,
-                      psi_grid: np.ndarray | None = None) -> FitResult:
+                      psi_grid: np.ndarray | None = None, gain: float | None = None,
+                      psi: float | None = None) -> FitResult:
     """V4. Near-steady flight: ``v_h ~ (g / k_d) Rz(psi + yaw) lean``, scale fitted."""
     v_obs = np.asarray(v_obs, dtype=np.float64)
     yaw = np.asarray(yaw, dtype=np.float64).ravel()
     lean = np.asarray(lean, dtype=np.float64)
     grid = _psi_grid() if psi_grid is None else np.asarray(psi_grid, dtype=np.float64)
+    if psi is not None:
+        grid = np.asarray([psi], dtype=np.float64)
     best: FitResult | None = None
-    for psi in grid:
-        model = apply_rot2(psi + yaw, lean)
+    for psi_v in grid:
+        model = apply_rot2(psi_v + yaw, lean)
         denom = float(np.sum(model ** 2))
         if denom <= 1e-18:
             continue
-        s = float(np.sum(model * v_obs) / denom)
-        if s <= 0:
-            continue
+        if gain is None:
+            s = float(np.sum(model * v_obs) / denom)
+            if s <= 0:
+                continue
+        else:
+            s = float(gain)
         resid = v_obs - s * model
         sse = float(np.sum(resid ** 2))
         sst = float(np.sum(v_obs ** 2))
-        cand = FitResult(statistic=float(np.sqrt(sse / sst)), psi_deg=float(np.degrees(psi)),
+        cand = FitResult(statistic=float(np.sqrt(sse / sst)), psi_deg=float(np.degrees(psi_v)),
                          scale=s, scale_rel_se=float("nan"), sse=sse, sst=sst,
                          r2=1.0 - sse / sst)
         if best is None or cand.statistic < best.statistic:
