@@ -205,6 +205,11 @@ during consolidation — see `docs/DATA.md` for the current status of listing ac
   `results/h01_r2/*.json` (R2 manifest).
 * **Raw clips**: R2 `track-h/clips/anwm-seeds/`, `track-h/clips/lingbot/`,
   `track-h/clips/wan/`, with sha256 manifests in `results/h01_r2/`.
+* **Outcome**: ANWM seed sampling does not rescue the designed paths (oracle best-of-N
+  reduction about 0.2 deg, no feasibility flips); LingBot-World under the community NF4 build
+  translates but does not follow a roll command (20 and 60 deg ramps both stay within about
+  1 deg of the level baseline), so its 60-clip grid was **not run**; Wan 2.2 TI2V-5B is a
+  cost-only arm.
 * **Report**: `reports/H01_generator_pilot.md`.
 * **Cost**: `docs/COST_LEDGER.md`.
 * **Stop rule**: the pilot ends with the report; no scale-up until the user decides.

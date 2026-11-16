@@ -24,7 +24,7 @@ level baseline even at five times the rate. The model translates as commanded bu
 roll, so the 60-clip grid was not run.
 
 **Cost.** Per clip, with an extrapolation to 200: ANWM 218 s / 7.3 GB / US$0.067 (US$13 for
-200), LingBot-World NF4 652 s / 21.1 GB / US$0.45 (US$91 at 40 steps, US$45 at 20), Wan 2.2
+200), LingBot-World NF4 652 s / 21.1 GB / US$0.45 (US$91 at 40 steps, US$46 at 20), Wan 2.2
 TI2V-5B 135 s / 15.2 GB / US$0.041 (US$8.3 for 200). Pose-conditioned generation is the
 expensive arm, and in this build it is also the one that does not follow its control.
 
@@ -71,13 +71,13 @@ path (seed order 0,1,2,3,4), then average over paths. Intervals resample paths, 
 | model | weights | licence | route |
 | --- | --- | --- | --- |
 | ANWM | `EmbodiedCity/ANWM`, EMA checkpoint, checkout `59def562…` | Apache-2.0 | new `awmv-h-anwm` app with Track B's image pins, A10 |
-| LingBot-World | `cahlen/lingbot-world-base-cam-nf4` (community NF4 of `robbyant/lingbot-world-base-cam`) | Apache-2.0 basis | one A100-80GB (`awmv-h-lingbot`) |
-| Wan 2.2 | `Wan-AI/Wan2.2-TI2V-5B-Diffusers` | Apache-2.0 | one A100-80GB (`awmv-h-wan`) |
+| LingBot-World | `cahlen/lingbot-world-base-cam-nf4` (community NF4 of `robbyant/lingbot-world-base-cam`) | Apache-2.0 basis | A100-80GB (`awmv-h-lingbot`, `-b`) |
+| Wan 2.2 | `Wan-AI/Wan2.2-TI2V-5B-Diffusers` | Apache-2.0 | A10 (`awmv-h-wan`) |
 
 **Seed population.** Twenty Regime C designed paths, fixed by the pre-registration: the
 start-0 clip of each of the 15 unique (maneuver, designed_tilt, policy) cells, plus the
 start-1 clip of cruise, turn-20-fixed, slalom-10-fixed, accel-20-course and climb-20-fixed.
-Seeds 0–4; seed 0 is the existing Track B clip and seeds 1–4 are 80 new rollouts (A10G,
+Seeds 0–4; seed 0 is the existing Track B clip and seeds 1–4 are 80 new rollouts (A10,
 250 sampling steps, same checkpoint and start state). This set spans cruise, designed 5/10/20
 deg, turn, slalom, accelerate-brake and climb-and-turn, with two start states on the sharpest
 cells. It is a designed, not a random, sample of Regime C and over-weights the two
@@ -100,8 +100,9 @@ Three arms per frame and path: `level` (same translations and heading, level cam
 `flatness` (attitude from the verifier flatness expression at the 17 waypoints, k_d = 0.295,
 per-step acceleration, SLERP to 49 frames), `mirrored_roll` (roll angle negated). The pose
 is OpenCV camera-to-world, the model's own convention, built through the verified intrinsic
-ZYX construction and the `camera_to_body_pitched(0)` mount. Two convention probes apply a
-constant +20 and −20 deg camera roll to a straight translation.
+ZYX construction and the `camera_to_body_pitched(0)` mount. Four convention probes apply roll ramps to a straight
+translation: linear 0 -> +20, linear 0 -> -20, triangular 0 -> +20 -> 0, and linear 0 -> +60
+deg, plus a level control.
 
 **Wan 2.2**. Five clips, one per prompt in the pre-registration, each from one of the five
 first frames, 49 frames at 480x832, 40 sampling steps, guidance 5.0, seed 0. There is no
@@ -131,7 +132,7 @@ designed manoeuvres.
 
 **Convention gate.** The model conditions on framewise relative poses, so the probe ramps the
 roll from 0 to ±20 deg over 49 frames (a constant roll is invisible). The level control
-clip reads a depicted tilt of **3.29 deg** (median over 49 frames). The two ramp clips are
+clip reads a depicted tilt of **3.21 deg** (median over 49 frames). The ramp clips are
 reported below; no grid clip was generated before this gate was read.
 
 **Gate result: the slow ramp is not followed.** The level clip reads 3.21-3.24 deg; the
@@ -168,7 +169,7 @@ artefact.
 ANWM's per-clip seconds are the median of the new seed manifests; USD uses the Modal list
 price for A10 (1.10 USD/h). Wan's row is the median of the five manifests (133.9-137.0 s); it includes VAE decode and
 frame writing, and excludes the one-time model load (about 1-2 min from the volume). LingBot's row is the median of the five probe clips (647.9-658.2 s); at
-20 steps (the pre-registered grid setting) the cost is about half, 18.1 GPU-hours and US$45
+20 steps (the pre-registered grid setting) the cost is about half, 18.6 GPU-hours and US$46
 for 200 clips. Both exclude the one-time 30-40 min NF4 load, which is paid per container.
 
 ### 3b. Wan 2.2, descriptive
@@ -210,11 +211,11 @@ No residual is computed: there is no commanded path, so this is not a feasibilit
   the existing depicted-tilt estimator; the level control reads 3.2 deg and the frames are
   valid, so the measurement chain transfers to a new generator and resolution.
 * **A pose-conditioned generator must be shown to consume rotation, not assumed to.** The
-  three-clip roll probe (about US$2.2 including the model load) showed that LingBot-World
+  five-clip roll probe (about US$3.7 including two model loads) showed that LingBot-World
   translates as commanded but does not roll, so the 60-clip grid was not run. This is the
   cheapest result in the pilot and the one that stops a US$14-33 spend.
 * **The cost ordering is clear.** For the same 200 clips: ANWM about US$13, Wan 2.2 about
-  US$8, LingBot-World about US$47-91 depending on steps and excluding loads. Pose conditioning
+  US$8, LingBot-World about US$46-91 depending on steps and excluding loads. Pose conditioning
   is the expensive option, not the cheap one.
 
 ## What this does not show
@@ -243,6 +244,11 @@ No residual is computed: there is no commanded path, so this is not a feasibilit
 * **The 20-path set is designed, not random.** It is one start per design cell plus a second
   start on the sharpest cells, so its design slope (0.103 deg per designed deg) differs from
   the all-49-clip slope (0.0397). Both are reported; neither changes the conclusion.
+* **The LingBot probes are one first frame, one seed, 40 steps, NF4.** They establish that
+  this build does not follow a roll command on this frame; they do not prove that the full
+  precision weights would fail. The level baseline is 3.2 deg, so a 3 deg response is within
+  about one degree of the baseline and cannot be called a partial follow. Translation is
+  followed in the same clips, so the pose tensor is being consumed.
 * **LingBot is the community NF4 quantisation.** The quantisation is a confound for visual
   fidelity. The pose conditioning path is the model's own, but a failure to follow attitude
   could be caused by quantisation rather than the model; the pilot cannot separate those.
@@ -281,18 +287,49 @@ but does not roll: 20 deg and 60 deg roll commands move the depicted tilt by abo
 above the 3.2 deg level baseline. Running 60 arms on a control that is not followed would buy
 noise. If the route is pursued, the next step is the full-precision base-cam or the upstream
 fast variant with flash-attn, re-running the same three-clip roll probe first (about US$2).
-For reference, 200 clips at 20 steps cost about 18.1 GPU-hours, **US$45** on an A100-80GB,
+For reference, 200 clips at 20 steps cost about 18.6 GPU-hours, **US$46** on an A100-80GB,
 plus 30-40 min of NF4 loading per container; at 40 steps it is US$91.
 
 **Wan 2.2 TI2V-5B:** 200 clips x 135 s = 7.5 GPU-hours, **US$8.3**, but there is no commanded
 path and no feasibility test. It is not a substitute for a pose-conditioned generator; the
 useful next step would be a path-conditioned variant, not more clips from this one.
 
+## Reproduction
+
+```
+set -a; . ./.env; set +a
+
+# Part 1: 80 new ANWM rollouts, two A10 containers, then reader + analysis
+pixi run modal deploy remote/h01_anwm.py && pixi run modal deploy remote/h01_anwm_b.py
+#   (the spawn calls and their ids are in results/h01_seed_specs/spawn*.json)
+pixi run modal run remote/h01_gate.py::main --source anwm_b --out-tag anwm-b
+pixi run modal run remote/h01_gate.py::main --source anwm_c --out-tag anwm-c
+bash scripts/h01_finalize_seeds.sh
+
+# Part 2: LingBot inputs, probes, reader
+pixi run python experiments/h01_lingbot_inputs.py
+pixi run modal run remote/h01_lingbot.py::main --mode probe  --steps 40 --frame-num 49
+pixi run modal run remote/h01_lingbot_b.py::main --mode probe2 --steps 40 --frame-num 49
+pixi run modal run remote/h01_gate.py::main --source lingbot   --out-tag lingbot
+pixi run modal run remote/h01_gate.py::main --source lingbot_b --out-tag lingbot-b
+pixi run python experiments/h01_generated_tilt.py --depicted results/h01_lingbot_depicted/depicted.jsonl     --out results/h01_lingbot
+pixi run python experiments/h01_generated_tilt.py --depicted results/h01_lingbot_depicted_b/depicted.jsonl     --out results/h01_lingbot_b
+
+# Part 3: Wan 2.2
+pixi run modal run remote/h01_wan.py::main --mode clips --frame-num 49 --steps 40
+pixi run modal run remote/h01_gate.py::main --source wan --out-tag wan
+pixi run python experiments/h01_generated_tilt.py --depicted results/h01_wan_depicted/depicted.jsonl     --out results/h01_wan
+```
+
+The analysis scripts are CPU-only and read stored rows; none of them regenerates a clip.
+Unit tests: `tests/test_h01_generator_pilot.py` (3 tests; the suite is 224 passed, 3 skipped).
+
 ## Provenance
 
 | item | where |
 | --- | --- |
 | pre-registration | `configs/h01_pilot_prereg.yaml`, commit `245f7d9`, sha256 `3529b920…c0c2f` |
+| amendment 1 (LingBot grid, not run) | `configs/h01_pilot_prereg_amendment1.yaml`, sha256 `eabd250c…8b88` |
 | seed specs and path list | `results/h01_seed_specs/{specs,paths}.json` |
 | ANWM seed clips | Modal volume `awmv-h-anwm-results:/clips`, R2 `track-h/clips/anwm-seeds/` |
 | depicted rows, ANWM seeds | `results/h01_seed_depicted/depicted.jsonl` |

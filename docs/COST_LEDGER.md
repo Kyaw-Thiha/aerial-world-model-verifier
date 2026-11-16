@@ -14,3 +14,9 @@ to exceed US$20; `actual` rows are measured from the run's own manifest.
 | 2026-11-16 | H01 LingBot grid (60 clips at 20 steps) | A100-80GB | 0 | 0 | **not run** | conditional on a roll response; the probe failed, so the spend was avoided |
 | 2026-11-16 | H01 Wan 2.2 TI2V-5B: 5 clips | A10 | 0.2 (5 x 135 s + load) | 0.21 | done | 49 frames, 40 steps, CPU offload, 15.2 GB |
 | 2026-11-16 | H01 depicted-tilt extraction (ANWM seeds, LingBot, Wan) | A10G | ~0.3 | 0.33 | not started | 224 px GeoCalib, ~3 min per 82 clips measured previously |
+
+**Track H pilot total (estimate): about US$13 of the US$75 ceiling.** ANWM seed generation
+about US$5.6 (80 clips plus the early discarded runs), LingBot-World about US$6.5 (five probe
+clips plus four model loads, including the stopped/aborted attempts), Wan 2.2 about US$0.6,
+reader extractions about US$0.2. No scale-up job was run, so the conditional 60-clip LingBot
+grid (US$14) was not spent.

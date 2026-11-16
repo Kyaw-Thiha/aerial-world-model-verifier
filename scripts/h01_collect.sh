@@ -14,9 +14,8 @@ what="${1:?usage: h01_collect.sh anwm|lingbot|wan|gate}"
 
 case "$what" in
   anwm)
-    pixi run python scripts/pull_volume.py awmv-h-anwm-results /clips data/processed/h01_seed_clips_a
-    pixi run python scripts/pull_volume.py awmv-h-anwm-results-b /clips data/processed/h01_seed_clips_b
-    pixi run python scripts/pull_volume.py awmv-h-anwm-results-c /clips data/processed/h01_seed_clips_c
+    pixi run python scripts/pull_volume.py awmv-h-anwm-results-b /clips data/processed/h01_seed_clips
+    pixi run python scripts/pull_volume.py awmv-h-anwm-results-c /clips data/processed/h01_seed_clips
     ;;
   lingbot)
     pixi run python scripts/pull_volume.py awmv-h-lingbot-results /lingbot data/h01_lingbot_out
