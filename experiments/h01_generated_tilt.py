@@ -56,9 +56,9 @@ def main() -> int:
         level = [g for g in grid if g["path"] == "cruise" and g["arm"] == "level"
                  and g["traj"] == fr["traj"]][0]
         by_grid["probe_level"] = dict(level, arm="probe_level")
-        for key, label in (("20", "probe_rollramp_p20"), ("-20", "probe_rollramp_m20")):
-            by_grid[label] = dict(level, arm=f"probe_roll_{key}",
-                                  dir=probes[key]["dir"])
+        for key in ("20", "-20", "fast20", "60"):
+            by_grid[f"probe_rollramp_{key}"] = dict(level, arm=f"probe_roll_{key}",
+                                                    dir=probes[key]["dir"])
     by_clip: dict[str, list[dict]] = {}
     for r in rows:
         by_clip.setdefault(r["clip_id"], []).append(r)

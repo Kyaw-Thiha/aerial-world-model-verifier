@@ -26,16 +26,18 @@ vol_anwm = modal.Volume.from_name("awmv-h-anwm-results", create_if_missing=True)
 vol_anwm_b = modal.Volume.from_name("awmv-h-anwm-results-b", create_if_missing=True)
 vol_anwm_c = modal.Volume.from_name("awmv-h-anwm-results-c", create_if_missing=True)
 vol_lingbot = modal.Volume.from_name("awmv-h-lingbot-results", create_if_missing=True)
+vol_lingbot_b = modal.Volume.from_name("awmv-h-lingbot-results-b", create_if_missing=True)
 vol_wan = modal.Volume.from_name("awmv-h-wan-results", create_if_missing=True)
 SOURCES = {"anwm": ("/anwm", "clips/C"), "anwm_b": ("/anwmb", "clips/C"),
            "anwm_c": ("/anwmc", "clips/C"), "lingbot": ("/lingbot", "lingbot"),
-           "wan": ("/wan", "wan")}
+           "lingbot_b": ("/lingbotb", "lingbot"), "wan": ("/wan", "wan")}
 
 
 @app.function(image=image, gpu="A10G", volumes={VOLUME_MOUNT: vol_a, "/r": vol_r,
                                               "/anwm": vol_anwm, "/anwmb": vol_anwm_b,
                                               "/anwmc": vol_anwm_c,
-                                              "/lingbot": vol_lingbot, "/wan": vol_wan}, timeout=3 * 3600)
+                                              "/lingbot": vol_lingbot, "/lingbotb": vol_lingbot_b,
+                                              "/wan": vol_wan}, timeout=3 * 3600)
 def depicted(source: str = "anwm", clip_root: str = "", out_tag: str = "h01", size: int = 224,
              fov_deg: float = 90.0, limit: int = 0) -> dict:
     import time

@@ -314,8 +314,14 @@ def main() -> int:
                              "n_flipped": int(flip)})
     pd.DataFrame(fam_rows).to_csv(out / "best_of_n_by_family.csv", index=False)
 
+    expected_new = set(new_specs)
+    got_new = set(new_rows)
     summary = {
         "git": git_hash(), "prereg": "configs/h01_pilot_prereg.yaml",
+        "new_clips_expected": len(expected_new),
+        "new_clips_with_rows": len(expected_new & got_new),
+        "new_clips_missing": sorted(expected_new - got_new),
+        "unexpected_rows": sorted(got_new - expected_new),
         "best_of_n_by_family": fam_rows,
         "reader": "results/gate_a2/anwm/depicted.jsonl + results/h01_seed_depicted/depicted.jsonl",
         "threshold_deg": THRESH_DEG, "k_d": K_PRIMARY, "dt_s": DT_PRIMARY,

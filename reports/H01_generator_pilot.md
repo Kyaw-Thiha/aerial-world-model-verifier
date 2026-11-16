@@ -15,10 +15,18 @@ pre-registration required to call sampling useful, and no designed path that was
 at one seed becomes feasible at five. A best-of-N search over seeds cannot repair a generator
 that does not bank.
 
-**LingBot-World does/does not follow the commanded attitude.** TBD
+**LingBot-World does not follow a 20 deg roll command at the tested rate.** Over 49 frames the
++20 deg ramp (0.42 deg/frame) moved the depicted tilt from 3.21 to 3.30 deg and the -20 deg
+ramp to 3.77 deg, against a 20 deg command; the frames stay visually level and an independent
+vertical-edge check reads about 3 deg. Stronger diagnostics do not rescue it: a 0->20->0
+triangular roll reads 3.93 deg and a 0->60 deg ramp reads 4.05 deg, about 1 deg above the
+level baseline even at five times the rate. The model translates as commanded but does not
+roll, so the 60-clip grid was not run.
 
-**Cost.** TBD — a table of seconds per clip, peak VRAM and USD per clip for ANWM, LingBot-World
-(NF4) and Wan 2.2 (TI2V-5B), with an extrapolation to 200 clips.
+**Cost.** Per clip, with an extrapolation to 200: ANWM 218 s / 7.3 GB / US$0.067 (US$13 for
+200), LingBot-World NF4 652 s / 21.1 GB / US$0.45 (US$91 at 40 steps, US$45 at 20), Wan 2.2
+TI2V-5B 135 s / 15.2 GB / US$0.041 (US$8.3 for 200). Pose-conditioned generation is the
+expensive arm, and in this build it is also the one that does not follow its control.
 
 ## Question and pre-registered rules
 
@@ -126,21 +134,42 @@ roll from 0 to ±20 deg over 49 frames (a constant roll is invisible). The level
 clip reads a depicted tilt of **3.29 deg** (median over 49 frames). The two ramp clips are
 reported below; no grid clip was generated before this gate was read.
 
-TBD ramp result.
+**Gate result: the slow ramp is not followed.** The level clip reads 3.21-3.24 deg; the
++20 deg ramp reads 3.30 deg (median over the clip), with the first-10-frame median 3.45 and
+the last-10 3.44, while the injected tilt goes from 1.9 to 18.1 deg. The -20 deg ramp reads
+3.77 deg (first/last-10 2.85/4.22); both signs stay within about 0.6 deg of the level
+baseline, against a 20 deg command. The frame-level correlation
+between depicted and injected tilt is -0.12, and the depicted lean direction does not agree
+with the injected one (median cosine 0.34). A visual check of frames 0 and 48 shows a level
+horizon in both, and an independent edge check agrees: near-vertical building edges deviate
+0.0 deg from vertical at frame 0 and -3.45 deg at frame 24 (median over 10 lines), i.e. about
+3 deg of response to a 20 deg command, not 20. A first Hough pass on near-horizontal lines
+suggested -13 deg, but those lines are building and water edges rather than the horizon; the
+vertical-edge reading is the one quoted. So at 0.42 deg/frame the model does not follow the
+commanded roll.
+
+Two stronger stimuli were run as a diagnostic (not part of the pre-registered gate): a
+triangular 0 -> 20 -> 0 deg roll (peak rate 0.83 deg/frame, returning to level) and a linear
+0 -> 60 deg ramp (1.25 deg/frame). **Neither moves the depicted attitude appreciably**: the
+triangular clip reads 3.93 deg (first/last-10 3.42/3.83) and the 60 deg ramp reads 4.05 deg
+(first/last-10 3.25/4.39). A 60 deg command produces about 1 deg of extra depicted tilt
+above the level baseline, i.e. a gain of roughly 1/15 even at a five-times faster rate. The
+camera control is not usable for roll in this build; this is not a rate-sensitivity
+artefact.
 
 ### 3. Cost, time and VRAM
 
 | model | GPU | s/clip (median) | peak VRAM | USD/clip | 200 clips |
 | --- | --- | --- | --- | --- | --- |
 | ANWM (16 frames, 250 steps) | A10 | 217.9 (n = 5 measured) | 7.3 GB | 0.067 | 12.1 GPU-hours, US$13.3 |
-| LingBot-World NF4 (49 frames, 40 steps) | A100-80GB | 658.2 (n = 1 probe) | 20.9 GB | 0.457 | 36.6 GPU-hours, US$91 |
+| LingBot-World NF4 (49 frames, 40 steps) | A100-80GB | 652.0 (n = 5 probes) | 21.1 GB | 0.453 | 36.2 GPU-hours, US$91 |
 | Wan 2.2 TI2V-5B (49 frames, 40 steps) | A10 | 135.0 (n = 5) | 15.2 GB | 0.041 | 7.5 GPU-hours, US$8.3 |
 
 ANWM's per-clip seconds are the median of the new seed manifests; USD uses the Modal list
 price for A10 (1.10 USD/h). Wan's row is the median of the five manifests (133.9-137.0 s); it includes VAE decode and
-frame writing, and excludes the one-time model load (about 1-2 min from the volume). LingBot's row is the level probe clip; at 20
-steps (the pre-registered grid setting) the cost is about half, 18.8 GPU-hours and US$47 for
-200 clips. Both exclude the one-time 30-40 min NF4 load, which is paid per container.
+frame writing, and excludes the one-time model load (about 1-2 min from the volume). LingBot's row is the median of the five probe clips (647.9-658.2 s); at
+20 steps (the pre-registered grid setting) the cost is about half, 18.1 GPU-hours and US$45
+for 200 clips. Both exclude the one-time 30-40 min NF4 load, which is paid per container.
 
 ### 3b. Wan 2.2, descriptive
 
@@ -171,7 +200,22 @@ No residual is computed: there is no commanded path, so this is not a feasibilit
 
 ## What this supports
 
-TBD
+* **ANWM's failure is not sampling noise.** Within a fixed path and start state, the depicted
+  tilt moves by a few tenths of a degree across seeds, and the oracle best-of-N curve is
+  flat. The path-dependence of the bias (some paths depict 0.5 deg, others 3.7 deg) is much
+  larger than the seed-dependence, so seed search is the wrong lever; the model's action
+  interface (4-DoF, no roll/pitch) is the right target.
+* **A pose-conditioned generator can be measured with the same reader.** LingBot-World's
+  camera poses were built with the verifier's own flatness construction and read back with
+  the existing depicted-tilt estimator; the level control reads 3.2 deg and the frames are
+  valid, so the measurement chain transfers to a new generator and resolution.
+* **A pose-conditioned generator must be shown to consume rotation, not assumed to.** The
+  three-clip roll probe (about US$2.2 including the model load) showed that LingBot-World
+  translates as commanded but does not roll, so the 60-clip grid was not run. This is the
+  cheapest result in the pilot and the one that stops a US$14-33 spend.
+* **The cost ordering is clear.** For the same 200 clips: ANWM about US$13, Wan 2.2 about
+  US$8, LingBot-World about US$47-91 depending on steps and excluding loads. Pose conditioning
+  is the expensive option, not the cheap one.
 
 ## What this does not show
 
@@ -221,7 +265,28 @@ TBD
 
 ## Go/no-go and cost of 200 clips
 
-TBD
+**ANWM seed sampling: no-go.** The per-path seed spread of the depicted tilt is a few tenths
+of a degree (TBD final median), the oracle best-of-N reduction is far below the 2 deg the
+pre-registration required, and no path that was infeasible at one seed becomes feasible at
+five. Sampling seeds cannot repair a generator whose bias is in the decoupling of planned
+acceleration from depicted attitude, not in the noise.
+
+**ANWM scale-up (without seed search):** 200 clips x 217.9 s = 12.1 GPU-hours, **US$13.3** at
+the A10 list price, plus the one-time checkpoint load. This is the cheapest arm by a wide
+margin and the only one whose model is already known to be infeasible on designed paths; the
+value of 200 more clips is in covering scenes, not in changing the verdict.
+
+**LingBot-World: no-go for this build.** The pose-conditioned model translates as commanded
+but does not roll: 20 deg and 60 deg roll commands move the depicted tilt by about 0.1-1 deg
+above the 3.2 deg level baseline. Running 60 arms on a control that is not followed would buy
+noise. If the route is pursued, the next step is the full-precision base-cam or the upstream
+fast variant with flash-attn, re-running the same three-clip roll probe first (about US$2).
+For reference, 200 clips at 20 steps cost about 18.1 GPU-hours, **US$45** on an A100-80GB,
+plus 30-40 min of NF4 loading per container; at 40 steps it is US$91.
+
+**Wan 2.2 TI2V-5B:** 200 clips x 135 s = 7.5 GPU-hours, **US$8.3**, but there is no commanded
+path and no feasibility test. It is not a substitute for a pose-conditioned generator; the
+useful next step would be a path-conditioned variant, not more clips from this one.
 
 ## Provenance
 

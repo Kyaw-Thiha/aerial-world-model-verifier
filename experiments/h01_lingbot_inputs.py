@@ -208,23 +208,32 @@ def main() -> int:
     # across the clip, which is the smallest change the model can actually see.
     probes = {}
     ramp = np.linspace(0.0, 1.0, N_OUT)
-    for sign in (1.0, -1.0):
+    # (key, peak degrees, profile): the +/-20 linear ramps are the pre-registered gate;
+    # the triangular and 60-degree probes are stronger stimuli used only to separate
+    # "the control is too slow" from "the control is ignored".
+    profiles = {
+        "20": (20.0, ramp),
+        "-20": (-20.0, ramp),
+        "fast20": (20.0, 1.0 - np.abs(2.0 * ramp - 1.0)),
+        "60": (60.0, ramp),
+    }
+    for key, (peak, frac) in profiles.items():
         probe = base.copy()
-        for k, frac in enumerate(ramp):
-            ang = sign * roll * frac
+        for k, f in enumerate(frac):
+            ang = np.deg2rad(peak * f)
             Rs = np.array([[np.cos(ang), -np.sin(ang), 0.0],
                            [np.sin(ang), np.cos(ang), 0.0],
                            [0.0, 0.0, 1.0]])
             probe[k, :3, :3] = base[k, :3, :3] @ Rs
-        d = OUT / "convention_probe" / f"rollramp{int(sign * 20.0):+d}".replace("+", "p")
+        d = OUT / "convention_probe" / f"rollprobe_{key}"
         d.mkdir(parents=True, exist_ok=True)
         np.save(d / "poses.npy", probe)
         np.save(d / "thrust.npy", body_z_from_poses(probe, camera_to_body_pitched(0.0)))
         np.save(d / "intrinsics.npy", np.tile(np.array([F_PX, F_PX, PAD_W / 2, PAD_H / 2]),
                                               (N_OUT, 1)))
-        probes[str(int(sign * 20.0))] = {
-            "dir": str(d.relative_to(ROOT)), "roll_deg": float(sign * 20.0),
-            "roll_profile": "linear ramp 0 -> sign*20 deg",
+        probes[key] = {
+            "dir": str(d.relative_to(ROOT)), "roll_deg": float(peak),
+            "roll_profile": ("linear" if key in ("20", "-20", "60") else "triangular"),
             "image": f"frames/{frames[0]['traj']}_{frames[0]['frame']:03d}.png"}
     manifest["convention_probe"] = probes
     (OUT / "manifest.json").write_text(json.dumps(manifest, indent=1))

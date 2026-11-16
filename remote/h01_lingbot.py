@@ -203,6 +203,25 @@ def main(mode: str = "download", grid: str = "", limit: int = 0, steps: int = 40
         print(json.dumps(download.remote(), indent=1))
         return
     man = json.loads((INPUTS / "manifest.json").read_text())
+    if mode == "probe2":
+        probe = man["convention_probe"]
+        fr = man["frames"][0]
+        image = fr["file"].replace("data/h01_lingbot_inputs/", "")
+        jobs = []
+        for key in ("fast20", "60"):
+            jobs.append({"id": f"probe_rollramp_{key}",
+                         "pose_dir": probe[key]["dir"].replace(
+                             "data/h01_lingbot_inputs/", ""),
+                         "image": image, "path": "cruise", "arm": f"probe_roll_{key}",
+                         "traj": fr["traj"], "frame": fr["frame"],
+                         "prompt": "A quadrotor drone flies forward over a city, the "
+                                   "horizon visible.",
+                         "seed": 0})
+        print(f"{len(jobs)} strong probe jobs")
+        res = generate.remote(json.dumps(jobs), sampling_steps=steps, frame_num=frame_num)
+        print(json.dumps({k: v for k, v in res.items() if k != "clips"}, indent=1))
+        print(json.dumps(res["clips"], indent=1))
+        return
     if mode == "probe":
         probe = man["convention_probe"]
         fr = man["frames"][0]
@@ -215,8 +234,8 @@ def main(mode: str = "download", grid: str = "", limit: int = 0, steps: int = 40
                  "traj": fr["traj"], "frame": fr["frame"],
                  "prompt": "A quadrotor drone flies forward over a city, the horizon "
                            "visible.", "seed": 0}]
-        for key, label in (("20", "probe_rollramp_p20"), ("-20", "probe_rollramp_m20")):
-            jobs.append({"id": label,
+        for key in ("20", "-20", "fast20", "60"):
+            jobs.append({"id": f"probe_rollramp_{key}",
                          "pose_dir": probe[key]["dir"].replace(
                              "data/h01_lingbot_inputs/", ""),
                          "image": image, "path": "cruise", "arm": f"probe_roll_{key}",
