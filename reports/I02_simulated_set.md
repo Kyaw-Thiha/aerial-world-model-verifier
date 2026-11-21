@@ -54,9 +54,17 @@ Every clip is one row of the frozen table, so the manifest describes the data ra
 
 ## First batch
 
-`X` clips are on R2 (`track-i/videos/…`, `track-i/gt/…`), listed in
-`results/i02/manifest.csv`, covering every defect family and both splits. Their labels are in
-the manifest with the exact intervals.
+**23 clips are on R2** (`track-i/videos/<split>/<family>/<clip_id>.mp4`,
+`track-i/gt/<clip_id>.npz`), listed row by row in `results/i02/manifest.csv`: 20 development
+and 3 held-out, covering every defect family, all three development scene families, the two
+held-out families and all four mounts. The manifest carries, per clip, the split, the scene and
+its seed, the maneuver and parameters, the mount, the label, the violation, its magnitude in
+degrees and the exact interval `[interval_start_s, interval_end_s]`. `docs/DATA.md` publishes
+the split and the batch composition; `experiments/i02_build_manifest.py --verify` re-hashes
+every object on R2 (**46 objects, 0 mismatches**).
+
+The remaining 277 clips are rendering in 50-clip slices; the render is resumable (a clip whose
+video is on the volume is skipped) and publishing is idempotent.
 
 ## The reader on the new families
 
@@ -72,14 +80,43 @@ GeoCalib with the project's settings, no tuning):
 | `i02_dev_134` | forest_ridge | ellipse | 30 deg | 4.72 | 10.41 | 11.90 (15.29) | -0.51 / 0.65 |
 | `i02_dev_135` | industrial | lemniscate | 45 deg | 12.90 | 8.21 | 7.58 (12.30) | 1.43 / 0.57 |
 
-Two regimes, and they are not the defect: the two clips with a clear horizon and a small mount
-angle are read essentially perfectly (0.28 deg up error, gain 1.00), while the four clips in
-`forest_ridge` or at a 30-45 deg mount are read with 6-12 deg of error even when the truth is
-zero. The confound in this six-clip sample is family with mount (three of the four hard clips
-are forest), so a 3 x 4 feasible grid (family x mount, no defect) is rendered and scored before
-any detection number is claimed; the result goes in the next section. The 1.19 deg bias on a
-level hover in the industrial scene is systematic, not noise (p90 1.22), and is the kind of
-intercept the verdict already absorbs.
+The six clips above confound family with mount (three of the four hard ones are forest), so a
+3 x 4 feasible grid -- one clip per (family, mount), no defect, all development scenes -- was
+rendered and scored before any detection number was claimed. 1,700 development clips are not
+needed to see the structure; 12 are enough to see that it exists:
+
+| family | mount | clip | up error, median (p90) | gain fwd / left |
+| --- | --- | --- | --- | --- |
+| urban_checker | 0 | `i02_dev_004` | 0.80 (1.41) | 0.88 / 0.99 |
+| urban_checker | 15 | `i02_dev_001` | 0.28 (0.57) | 1.00 / 1.01 |
+| urban_checker | 30 | `i02_dev_022` | 1.13 (1.98) | 1.05 / 0.99 |
+| urban_checker | 45 | `i02_dev_007` | 1.95 (2.93) | 1.10 / 1.00 |
+| industrial | 0 | `i02_dev_012` | 1.14 (1.61) | 0.70 / 0.97 |
+| industrial | 15 | `i02_dev_009` | 1.45 (1.92) | 0.86 / 0.92 |
+| industrial | 30 | `i02_dev_006` | 1.42 (7.87) | 0.89 / -- |
+| industrial | 45 | `i02_dev_003` | 4.94 (28.06) | 0.88 / 0.70 |
+| forest_ridge | 0 | `i02_dev_008` | **6.32** (9.26) | 0.27 / 1.07 |
+| forest_ridge | 15 | `i02_dev_005` | **8.31** (11.33) | 0.53 / 1.29 |
+| forest_ridge | 30 | `i02_dev_002` | **9.40** (13.56) | 0.61 / 0.56 |
+| forest_ridge | 45 | `i02_dev_011` | **10.54** (14.18) | 1.22 / 0.80 |
+
+Three conclusions, and they are findings about the *reader*, not about the defects:
+
+* **the scene sets the floor, not the violation.** The six-clip sample's 6-12 deg errors on
+  forest clips reappear on forest *feasible* clips (6.3-10.5 deg), so they are the family's
+  bias (canopy occludes the horizon and the ground texture), not an effect of the defect;
+* **mount angle matters where the scene is open**: urban and industrial go from 0.3-1.2 deg at
+  0-30 deg of uptilt to 2-5 deg at 45 deg, with a heavy tail (p90 28 deg on one industrial
+  clip) -- the 45 deg camera looks mostly at sky;
+* **the gain is ~1 where the lean is measurable** (0.86-1.10 on urban and industrial) and
+  noisy in the forest (0.27-1.29), which is the same pattern the real TII analysis found
+  between the piloted and the two trackRATM flights.
+
+The practical consequence for Tracks F2 and G2 is that a pooled detection rate over this set
+would be an average over two very different readers. The report and the manifest therefore
+carry the family and the mount on every row, and the evaluation protocol stratifies by
+family (the pre-registration's `primary_outcomes` are per defect family; the scene family is
+the stratification this evidence now requires).
 
 ## What this supports
 
