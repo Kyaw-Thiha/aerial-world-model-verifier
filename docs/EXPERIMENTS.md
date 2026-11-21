@@ -202,3 +202,22 @@ Not part of the E1-E10 asset set: no report table is built from it yet.
   `remote/i_flightmare.py`; volume `awmv-i-data`; R2 prefix `track-i/` (reserved, empty).
 * Results: `results/i01_spike/` (`flight_summary.json`, `labels.json`, `projection_check.json`,
   `horizon_bare_flight.json`, `renders_local.json`, `geocalib/*.json`).
+
+### I02 — the simulated labelled flight set (Step 2)
+
+* **Pre-registration** `configs/sim_prereg.yaml` (committed 2026-11-21, before any clip);
+  **frozen clip table** `configs/sim_splits_frozen.json` (300 rows, sha256 in `docs/DATA.md`).
+* **Generator**: `src/sim/flight.py` (analytic maneuvers, flatness attitude), `src/sim/scenes.py`
+  (five scene families), `src/sim/labels.py` (defects and intervals), `src/sim/dataset.py`
+  (clip -> truth + labels), `src/sim/blender_render.py` (the adapter).
+* **Scripts**: `experiments/i02_freeze_splits.py` (writes/checks the frozen table),
+  `experiments/i02_export_gt.py` (`results/i02/gt_video_rate.csv`, `composition.json`),
+  `experiments/i02_build_manifest.py` (manifest + docs block), `experiments/i02_publish.py`
+  (volume -> R2 with sha256 verification).
+* **Remote apps**: `remote/i_dataset.py` (render on L40S with EEVEE), `remote/i_score.py`
+  (the reader on rendered clips; refuses held-out clips until the development pass is closed).
+* **R2**: `track-i/videos/<split>/<family>/<clip_id>.mp4`, `track-i/gt/<clip_id>.npz`.
+* **Manifest**: `results/i02/manifest.csv` (per clip: split, family, scene seed, maneuver,
+  mount, label, violation, magnitude, exact interval, sha256 of both objects).
+* **Results**: `results/i02/composition.json`, `results/i02/gt_video_rate.csv`; scores land on
+  the volume at `i02/scores/<clip_id>_score.json` and are copied into `results/i02/scores/`.

@@ -151,7 +151,8 @@ def render_clips(clip_ids: str = "", split: str = "", limit: int = 0, start: int
             m["sha256_video"], m["sha256_gt"] = up_v["sha256"], up_g["sha256"]
             m["bytes_video"], m["bytes_gt"] = up_v["bytes"], up_g["bytes"]
         else:
-            m["r2_video"], m["r2_gt"] = str(mp4), str(gt_path)
+            # not published here: r2_* stay empty until experiments/i02_publish.py moves the
+            # objects, so the manifest never claims an object that does not exist
             m["sha256_video"] = hashlib.sha256(mp4.read_bytes()).hexdigest()
             m["sha256_gt"] = hashlib.sha256(gt_path.read_bytes()).hexdigest()
 

@@ -81,6 +81,7 @@ def publish(limit: int = 0) -> dict:
     for cid in todo:
         row = rows[cid]
         local_dir = tmp / cid
+        shutil.rmtree(local_dir, ignore_errors=True)     # `volume get` refuses an existing path
         local_dir.mkdir(parents=True, exist_ok=True)
         _modal("volume", "get", "awmv-i-data", f"i02/clips/{cid}/{cid}.mp4", str(local_dir))
         _modal("volume", "get", "awmv-i-data", f"i02/clips/{cid}/gt.npz", str(local_dir))

@@ -45,6 +45,9 @@ def _modal(*args: str) -> None:
 
 def pull() -> list[dict]:
     """Download the most recent batch's rows and merge them into the manifest."""
+    # `modal volume get` fails if the destination exists (the CLI's documented quirk in
+    # docs/DATA.md), so remove it first
+    Path("/tmp/i02_last_batch.json").unlink(missing_ok=True)
     _modal("volume", "get", "awmv-i-data", "i02/last_batch.json", "/tmp/i02_last_batch.json")
     batch = json.loads(Path("/tmp/i02_last_batch.json").read_text())
     rows = batch["rows"]
@@ -54,7 +57,11 @@ def pull() -> list[dict]:
             for r in csv.DictReader(fh):
                 existing[r["clip_id"]] = r
     for r in rows:
-        existing[r["clip_id"]] = {k: r.get(k, "") for k in FIELDS}
+        row = {k: r.get(k, "") for k in FIELDS}
+        # a row that was never published must not carry a volume/tmp path in the R2 columns
+        if not str(row.get("r2_video", "")).startswith("track-i/"):
+            row["r2_video"] = row["r2_gt"] = ""
+        existing[r["clip_id"]] = row
     MANIFEST.parent.mkdir(parents=True, exist_ok=True)
     with MANIFEST.open("w", newline="") as fh:
         w = csv.DictWriter(fh, fieldnames=FIELDS)
