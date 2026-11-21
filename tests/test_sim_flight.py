@@ -168,3 +168,40 @@ def test_level_camera_lean_is_zero_where_attitude_lean_is_not():
             assert mag < 1e-9
         else:
             assert mag > 0.2
+
+
+def test_climb_turn_and_accel_brake_derivatives():
+    for f in (F.climb_turn(speed=8.0, radius=10.0, vz=1.5, arc_deg=360.0),
+              F.accel_brake(v0=2.0, v_peak=10.0, ramp_s=2.5, hold_s=3.0)):
+        dt = 1.0 / f.gt_hz
+        sl = slice(5, -5)
+        assert np.abs(np.gradient(f.pos, dt, axis=0) - f.vel)[sl].max() < 1e-3, f.name
+        assert np.abs(np.gradient(f.vel, dt, axis=0) - f.acc)[sl].max() < 2e-2, f.name
+
+
+def test_accel_brake_lean_is_all_on_one_axis():
+    f = F.accel_brake(v0=1.0, v_peak=9.0, ramp_s=2.0, hold_s=6.0, yaw=0.0)
+    # straight run, constant heading: the roll axis must carry no lean at all
+    assert np.abs(f.roll).max() < 1e-9
+    assert np.rad2deg(f.pitch).max() > 10.0
+
+
+def test_frozen_table_invariants():
+    """Every clip in the frozen table must build, respect the duration window and the limit."""
+    import json
+    from pathlib import Path
+
+    path = Path(__file__).resolve().parents[1] / "configs/sim_splits_frozen.json"
+    if not path.is_file():
+        pytest.skip("frozen table not present")
+    table = json.loads(path.read_text())
+    assert len(table["clips"]) == 300
+    for row in table["clips"]:
+        f = F.build(row["maneuver"], **row["params"])
+        dur = float(f.t[-1])
+        assert 10.0 - 1e-9 <= dur <= 30.0 + 1e-9, (row["clip_id"], dur)
+        need = float((1.0 / np.cos(np.radians(f.tilt_deg()))).max())
+        if row["defect_family"] == "thrust_limit":
+            assert need > 2.0, (row["clip_id"], need)
+        else:
+            assert need <= 2.0 + 1e-9, (row["clip_id"], need)

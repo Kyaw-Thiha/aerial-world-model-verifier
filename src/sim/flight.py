@@ -187,11 +187,12 @@ def _rollout(name: str, t: np.ndarray, pos, vel, acc, yaw, **meta) -> Flight:
                   yaw=np.broadcast_to(np.asarray(yaw, dtype=np.float64), (n,)).copy(), meta=meta)
 
 
-def hover(duration: float = 4.0, pos=(0.0, 0.0, 10.0), yaw: float = 0.0,
+def hover(duration: float = 4.0, pos=None, yaw: float = 0.0, height: float = 10.0,
           gt_hz: float = GT_HZ) -> Flight:
     """Level hover: zero acceleration, so the thrust axis is world up and tilt is 0 deg."""
     t = np.arange(0.0, duration + 1e-9, 1.0 / gt_hz)
-    p = np.tile(np.asarray(pos, dtype=np.float64), (len(t), 1))
+    p0 = np.asarray((0.0, 0.0, height) if pos is None else pos, dtype=np.float64)
+    p = np.tile(p0, (len(t), 1))
     z = np.zeros_like(p)
     return _rollout("hover", t, p, z, z, yaw, maneuver="hover")
 
@@ -275,8 +276,75 @@ def turn(speed: float = 12.0, radius: float = 6.0, arc_deg: float = 180.0,
                     speed=speed, radius=radius, arc_deg=arc_deg)
 
 
+def climb_turn(speed: float = 8.0, radius: float = 10.0, vz: float = 1.5,
+               arc_deg: float = 360.0, height: float = 12.0,
+               gt_hz: float = GT_HZ) -> Flight:
+    """Constant-speed circular arc with a steady climb: lateral a = v^2/r, vertical 0.
+
+    The vertical rate is constant, so it contributes nothing to the acceleration and therefore
+    nothing to the thrust axis beyond the drag term; the manoeuvre exercises sustained lateral
+    acceleration while the scene scrolls vertically.
+    """
+    w = speed / radius
+    duration = np.radians(arc_deg) / w
+    t = np.arange(0.0, duration + 1e-9, 1.0 / gt_hz)
+    u = w * t
+    pos = np.column_stack([radius * np.sin(u), radius * (1 - np.cos(u)),
+                           height + vz * t])
+    vel = np.column_stack([speed * np.cos(u), speed * np.sin(u), np.full_like(u, vz)])
+    acc = np.column_stack([-speed * w * np.sin(u), speed * w * np.cos(u), np.zeros_like(u)])
+    return _rollout("climb_turn", t, pos, vel, acc, u, maneuver="climb_turn",
+                    speed=speed, radius=radius, vz=vz, arc_deg=arc_deg)
+
+
+def accel_brake(v0: float = 2.0, v_peak: float = 10.0, ramp_s: float = 2.5,
+                hold_s: float = 3.0, height: float = 12.0, yaw: float = 0.0,
+                gt_hz: float = GT_HZ) -> Flight:
+    """Straight-line accelerate, hold, brake, with a smoothstep velocity profile.
+
+    ``v(t) = v0 + (v_peak - v0) S(t/tau)`` with ``S(u) = 3u^2 - 2u^3`` on the ramp, ``v_peak``
+    on the hold and the mirror image on the brake. Position is the exact integral and
+    acceleration the exact derivative, so ``a = 6 (v_peak - v0) (u - u^2) / tau`` peaks at
+    ``1.5 (v_peak - v0) / tau`` in the middle of each ramp. Heading is constant, so the roll
+    axis carries no acceleration and the whole lean is on the pitch axis: that is the point of
+    the manoeuvre -- it separates the two gain axes.
+    """
+    tau = float(ramp_s)
+    total = 2 * tau + float(hold_s)
+    t = np.arange(0.0, total + 1e-9, 1.0 / gt_hz)
+    x = np.zeros_like(t)
+    v = np.zeros_like(t)
+    a = np.zeros_like(t)
+    dv = v_peak - v0
+    # phase 1: accelerate over [0, tau]
+    m1 = t < tau
+    u1 = t[m1] / tau
+    v[m1] = v0 + dv * (3 * u1 ** 2 - 2 * u1 ** 3)
+    x[m1] = v0 * t[m1] + dv * tau * (u1 ** 3 - 0.5 * u1 ** 4)
+    a[m1] = dv * (6 * u1 - 6 * u1 ** 2) / tau
+    x_tau = v0 * tau + dv * tau * (1 - 0.5)
+    # phase 2: hold
+    m2 = (t >= tau) & (t < tau + hold_s)
+    v[m2] = v_peak
+    x[m2] = x_tau + v_peak * (t[m2] - tau)
+    # phase 3: brake over [tau + hold, total]
+    m3 = t >= tau + hold_s
+    u3 = np.clip((t[m3] - tau - hold_s) / tau, 0.0, 1.0)
+    v[m3] = v_peak - dv * (3 * u3 ** 2 - 2 * u3 ** 3)
+    x_start = x_tau + v_peak * hold_s
+    x[m3] = x_start + v_peak * (u3 * tau) - dv * tau * (u3 ** 3 - 0.5 * u3 ** 4)
+    a[m3] = -dv * (6 * u3 - 6 * u3 ** 2) / tau
+    zeros = np.zeros_like(t)
+    pos = np.column_stack([x, zeros, np.full_like(t, height)])
+    vel = np.column_stack([v, zeros, zeros])
+    acc = np.column_stack([a, zeros, zeros])
+    return _rollout("accel_brake", t, pos, vel, acc, yaw, maneuver="accel_brake",
+                    v0=v0, v_peak=v_peak, ramp_s=ramp_s, hold_s=hold_s)
+
+
 MANEUVERS = {"hover": hover, "ellipse": ellipse, "lemniscate": lemniscate,
-             "slalom": slalom, "turn": turn}
+             "slalom": slalom, "turn": turn, "climb_turn": climb_turn,
+             "accel_brake": accel_brake}
 
 
 def build(maneuver: str, **kwargs) -> Flight:
