@@ -1,0 +1,46 @@
+% Track H2 candidate section. Compile with the main report preamble; no new packages.
+\section{Generator coverage with path control}
+\label{sec:h02-generator-coverage}
+
+\paragraph{Scope.}
+Only world models that accept a path or camera pose as control are in scope, because the
+verifier asks whether the depicted attitude follows the attitude the commanded path requires.
+Text-intention models and models without camera control are listed as excluded.
+
+\paragraph{Inventory.}
+Table~\ref{tab:h02-inventory} records the control parameterization, whether roll is carried,
+the released weights, licence, gating and expected cost. SolarWM-Wan2.2-5B is the only
+released model that both takes a camera trajectory and is practical for this pilot;
+Aero-World has no public code or weights, CT-1 predicts a trajectory rather than video, and
+CameraCtrl/MotionCtrl/ReCamMaster are older smaller-backbone controllers not run here.
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{@{}lllll@{}}
+\toprule
+Model & Control & Roll & Weights & Licence / access \\
+\midrule
+SolarWM-5B & absolute c2w + K, first-frame relative & yes & 5B Stage2 81f & Apache-2.0, gated \\
+Aero-World & 30\,Hz IMU action & yes & none public & paper CC BY 4.0 \\
+CameraCtrl & c2w + K to Pl\"ucker & yes & 3\,GB & MIT weights, ungated \\
+MotionCtrl & relative RT trajectory & yes & 22\,GB & Apache-2.0, ungated \\
+ReCamMaster & source video + target path & yes & 2\,GB & Apache-2.0 weights, ungated \\
+CT-1 & predicts trajectory only & n/a & none located & MIT code \\
+\bottomrule
+\end{tabular}
+\caption{Path/pose-controlled generator inventory (verified 2026-11-21).}
+\label{tab:h02-inventory}
+\end{table}
+
+\paragraph{SolarWM roll injection.}
+TBD after the pilot.
+
+\paragraph{Seed variance and verdict.}
+TBD.
+
+\paragraph{Full-precision LingBot.}
+TBD.
+
+\paragraph{Cost and go/no-go.}
+TBD.

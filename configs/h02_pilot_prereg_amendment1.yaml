@@ -1,0 +1,29 @@
+# H02 pre-registration — amendment 1 (SolarWM arm realization)
+#
+# Written 2026-11-21 BEFORE any SolarWM clip is generated or scored. Parent:
+# configs/h02_pilot_prereg.yaml, commit 5c6e5c6. No threshold, statistic, population or
+# success criterion changes; this records two implementation facts required by the
+# released model's contract.
+prereg_amendment: 1
+date: 2026-11-21
+tag: "[H2]"
+branch: track-h2-generator-coverage
+
+reason:
+  relative_pose_after_rebasing: >
+    SolarWM accepts absolute C2W but the Wan backend rebases it to the first frame. A
+    constant absolute attitude is therefore discarded. The flatness and mirrored arms are
+    realized as a bank-in from level over the first 12 of 81 frames, then hold the
+    path-required attitude. The convention probes remain roll ramps.
+  camera_guard_scale: >
+    SolarWM rejects first-frame-relative translations above 20 m. The designed paths span
+    about 77 m, so positions are uniformly scaled to a 16 m maximum. Rotations/attitudes are
+    unchanged; the verdict's required tilt uses the unscaled path, which is the conservative
+    reading.
+
+unchanged:
+  - "grid: 5 frames x 5 paths x 3 arms = 75 clips"
+  - "four-step Stage2 SGF inference, 81 frames, 480x864"
+  - "roll-following thresholds: >=50 % of injected tilt on >=3/5 paths, lean cosine >0 on >=4/5, mirror flip on >=4/5"
+  - "seed variance: 10 paths x 3 seeds, 2 deg / 20 % criterion"
+  - "verdict threshold 6.46 deg and testability rule"
