@@ -35,7 +35,7 @@ usable as designed on TII.
    score them at all. The mechanism is visible: the maximum-residual window is a demand window
    in only 47 % of admissible clips, but the windows that actually cross the threshold are
    almost always demand windows, so removing the others changes almost nothing (the flagged
-   frame masks differ in 2 of 82 real clips).
+   frame masks differ in 2 of the dev block's 82 real clips).
 3. **The quiet test finds unrequited tilt, but its threshold does not transfer.** On real
    gate-kept clips with a quiet window the false-reject is 25 % (4/16) at persistence 1 and 20 %
    (3/15) at 2, not the nominal 5 %: the failure is a per-flight *level* bias, and it sits

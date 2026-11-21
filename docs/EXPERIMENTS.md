@@ -180,3 +180,24 @@ during consolidation — see `docs/DATA.md` for the current status of listing ac
 * **Regenerate**: `report/scripts/e10_window_rule.py`.
 * **Open discrepancy (recorded, not resolved)**: D's 0.07-0.12 s window "at the truth rate" is
   superseded by E05 (0.34-1.42 s at 500 Hz; 0.07-0.11 s only at the 15 Hz clip rate).
+
+---
+
+## Track G2 — segment detection, round 2 (branch `track-g2-segments`, off `main` `41d1dad`)
+
+Round 2 continues Track G (branch `track-g-segments2`, unmerged when this started). It reads
+Track D's schema-v2 clips, round 1's segment code, and — read-only — Track I's I01 spike.
+Everything here is CPU; nothing was spent.
+
+| ID | experiment | stored results | report | configs |
+| --- | --- | --- | --- | --- |
+| G04 | path-demand windows (item 1): demand windows (≥6/8 frames at ≥15 deg) and quiet windows (all 8 ≤3 deg) selected from the path alone, residual and depicted-tilt statistics, LOFO conformal calibration on the gate-kept population, partial-edit injections, synthetic unrequited-tilt injection | `results/g04_path_demand/` | `reports/G04_path_demand_segments.md` | `g04_path_demand_prereg.yaml` |
+| G05 | segments on the simulated set (items 1-6): **blocked**, no I02 labelled set; the design is frozen unexecuted and one exploratory 3-clip pilot is run | `results/g05_spike_pilot/` | `reports/G05_segments_on_simulated_set.md` | `g05_round2_design_prereg.yaml` |
+
+Regenerate: `experiments/g04_path_demand.py` (CPU, ~50 s) and `experiments/g05_spike_pilot.py`
+(CPU, reads `../awmv-track-i/results/i01_spike`). The every-window arm of G04 reproduces round
+1's published detection counts exactly, which is the correctness check for the ablation.
+
+Dependency to record: G05 needs Track I report I02 (≥8 dev + ≥4 holdout scenes with partial
+violation intervals and controls). Until it exists, no item 2-6 ablation can be pre-registered
+honestly and no confirmatory evaluation can run.

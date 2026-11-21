@@ -111,3 +111,14 @@ Or, inside the repository, `git checkout archive/track-d-pre-consolidation`.
 
 Results needed by the report scripts are already in git under `results/`; nothing else is required
 to rebuild `report/` (see `docs/REPRODUCE.md`).
+
+## 8. Track G2 artefacts (2026-11-21)
+
+| path | size | what | rebuild |
+| --- | --- | --- | --- |
+| `results/g04_path_demand/` | < 1 MB | every number in report G04 (`summary.json`, `variants.csv`) | `experiments/g04_path_demand.py` |
+| `results/g05_spike_pilot/` | < 10 KB | the exploratory 3-clip pilot on Track I's I01 renders | `experiments/g05_spike_pilot.py` |
+
+No new bulk data: G2 reads `data/processed/track_d/clips` (already documented), and the pilot
+reads Track I's worktree `../awmv-track-i/results/i01_spike` read-only. No Modal volume and no
+R2 object was created or written by this track.
