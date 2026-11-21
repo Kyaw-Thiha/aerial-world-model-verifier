@@ -58,11 +58,11 @@ def _row_ids(table: dict, split: str | None, limit: int, start: int) -> list[str
     return ids
 
 
-@app.function(image=image, gpu="L40S", timeout=3 * 3600, volumes={"/vol": volume},
+@app.function(image=image, gpu="L40S", timeout=6 * 3600, volumes={"/vol": volume},
               secrets=[r2_secret])
 def render_clips(clip_ids: str = "", split: str = "", limit: int = 0, start: int = 0,
                  samples: int = 16, exposure: float = -3.0, upload: str = "no",
-                 keep_frames: bool = False, commit: str = "") -> dict:
+                 keep_frames: bool = False, commit: str = "", force: bool = False) -> dict:
     import hashlib
     import os
     import shutil
@@ -85,6 +85,11 @@ def render_clips(clip_ids: str = "", split: str = "", limit: int = 0, start: int
     out_rows, timings = [], []
     for cid in ids:
         row = by_id[cid]
+        # resume: a clip whose video is already on the volume is never re-rendered
+        existing = Path("/vol/i02/clips") / cid / f"{cid}.mp4"
+        if existing.is_file() and not force:
+            out_rows.append({"clip_id": cid, "status": "skipped_existing"})
+            continue
         t0 = time.time()
         clip = build_clip(row)
         work = Path(f"/tmp/render/{cid}")

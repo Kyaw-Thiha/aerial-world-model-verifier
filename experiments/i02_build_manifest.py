@@ -57,6 +57,8 @@ def pull() -> list[dict]:
             for r in csv.DictReader(fh):
                 existing[r["clip_id"]] = r
     for r in rows:
+        if r.get("status") == "skipped_existing":
+            continue          # no metadata in this row; the existing row keeps its values
         row = {k: r.get(k, "") for k in FIELDS}
         # a row that was never published must not carry a volume/tmp path in the R2 columns
         if not str(row.get("r2_video", "")).startswith("track-i/"):

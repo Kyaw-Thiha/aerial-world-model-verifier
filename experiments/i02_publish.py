@@ -63,12 +63,31 @@ def save_rows(rows: dict[str, dict]) -> None:
             w.writerow({k: rows[cid].get(k, "") for k in FIELDS})
 
 
+def volume_clips() -> list[str]:
+    """Clip ids that exist on the volume, so a resumed batch is published too."""
+    out = subprocess.run(
+        [str(_modal_exe()), "volume", "ls", "--json", "awmv-i-data", "i02/clips"],
+        check=True, capture_output=True, text=True, cwd=ROOT).stdout
+    entries = json.loads(out)
+    return sorted(Path(e["filename"]).name for e in entries if e.get("type") == "dir")
+
+
+def _modal_exe() -> Path | str:
+    pixi = Path.home() / "Documents/Projects/aerial-world-model-verifier/.pixi/envs/default/bin/modal"
+    return pixi if pixi.is_file() else "modal"
+
+
 def publish(limit: int = 0) -> dict:
     from src.utils import r2 as r2mod
 
     rows = load_rows()
+    # every clip on the volume is a candidate, not only the last batch's rows: a resumed
+    # render reports "skipped_existing" and still needs publishing
+    for cid in volume_clips():
+        if cid not in rows:
+            rows[cid] = {"clip_id": cid, "status": "ok"}
     todo = [cid for cid, r in sorted(rows.items())
-            if r.get("status") == "ok" and not r.get("r2_video")]
+            if not r.get("r2_video") and r.get("status") in ("ok", "skipped_existing", "")]
     if limit:
         todo = todo[:limit]
     if not todo:
@@ -83,6 +102,12 @@ def publish(limit: int = 0) -> dict:
         local_dir = tmp / cid
         shutil.rmtree(local_dir, ignore_errors=True)     # `volume get` refuses an existing path
         local_dir.mkdir(parents=True, exist_ok=True)
+        _modal("volume", "get", "awmv-i-data", f"i02/clips/{cid}/manifest_row.json", str(local_dir))
+        with (local_dir / "manifest_row.json").open() as fh:
+            meta = json.load(fh)
+        keep = {k: rows.get(cid, {}).get(k, "") for k in ("r2_video", "r2_gt")}
+        rows[cid] = {**meta, **keep}
+        row = rows[cid]              # the loop's binding must see the refreshed row
         _modal("volume", "get", "awmv-i-data", f"i02/clips/{cid}/{cid}.mp4", str(local_dir))
         _modal("volume", "get", "awmv-i-data", f"i02/clips/{cid}/gt.npz", str(local_dir))
         mp4 = local_dir / f"{cid}.mp4"

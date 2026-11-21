@@ -164,3 +164,32 @@ PY
 
 Every listed `commit` is reachable from `main` (checked with `git merge-base --is-ancestor`
 during consolidation; see `docs/CONSOLIDATION_REPORT.md`).
+
+## 8. Track I: the simulated labelled set
+
+Everything below is deterministic from `configs/sim_prereg.yaml` +
+`configs/sim_splits_frozen.json`; the table's sha256 is published in `docs/DATA.md` and the
+prereg's in the same block.
+
+```
+# 1. the frozen table (writes or checks configs/sim_splits_frozen.json)
+python experiments/i02_freeze_splits.py            # write
+python experiments/i02_freeze_splits.py --check    # verify it still reproduces
+
+# 2. ground truth at the video rate and the composition summary (no GPU)
+python experiments/i02_export_gt.py
+
+# 3. render a slice on Modal (EEVEE, L40S); --clip-ids, or --split dev --start N --limit M
+pixi run modal run remote/i_dataset.py --split dev --start 0 --limit 50 --commit <sha>
+
+# 4. move the slice to R2 and update the manifest + docs/DATA.md
+python experiments/i02_build_manifest.py --pull --verify --docs
+
+# 5. the reader on rendered clips (development clips only until the dev pass is closed)
+pixi run modal run remote/i_score.py --clip-ids i02_dev_000,i02_dev_001 --stride 2
+```
+
+Rendering is resumable: a clip whose `i02/clips/<id>/<id>.mp4` is already on the volume is
+skipped (`--force` re-renders). Publishing is idempotent: rows with an `r2_video` key are not
+uploaded again. The render app writes video and truth to the volume and nothing to R2 because
+the Modal secret cannot write to `track-i/` (`docs/decisions.md`); the workstation's key can.

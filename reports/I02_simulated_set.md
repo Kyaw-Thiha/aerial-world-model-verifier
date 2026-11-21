@@ -60,7 +60,26 @@ the manifest with the exact intervals.
 
 ## The reader on the new families
 
-`Y` — the number Step 3 asks for first, measured on development clips only.
+The number Step 3 asks for first, measured on development clips only (six clips, 3,058 frames,
+GeoCalib with the project's settings, no tuning):
+
+| clip | family | maneuver | mount | truth (tilt med) | reader (tilt med) | up error, med (p90) | gain fwd / left |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `i02_dev_000` | industrial | hover | 0 deg | 0.00 | 1.19 | 1.19 (1.22) | — / — |
+| `i02_dev_001` | urban_checker | ellipse | 15 deg | 22.21 | 22.33 | 0.28 (0.57) | 1.001 / 1.005 |
+| `i02_dev_080` | forest_ridge | ellipse | 0 deg | 0.00 | 7.54 | 7.54 (11.44) | -0.29 / 0.25 |
+| `i02_dev_107` | forest_ridge | ellipse | 45 deg | 7.87 | 5.41 | 6.38 (10.66) | 0.82 / -0.11 |
+| `i02_dev_134` | forest_ridge | ellipse | 30 deg | 4.72 | 10.41 | 11.90 (15.29) | -0.51 / 0.65 |
+| `i02_dev_135` | industrial | lemniscate | 45 deg | 12.90 | 8.21 | 7.58 (12.30) | 1.43 / 0.57 |
+
+Two regimes, and they are not the defect: the two clips with a clear horizon and a small mount
+angle are read essentially perfectly (0.28 deg up error, gain 1.00), while the four clips in
+`forest_ridge` or at a 30-45 deg mount are read with 6-12 deg of error even when the truth is
+zero. The confound in this six-clip sample is family with mount (three of the four hard clips
+are forest), so a 3 x 4 feasible grid (family x mount, no defect) is rendered and scored before
+any detection number is claimed; the result goes in the next section. The 1.19 deg bias on a
+level hover in the industrial scene is systematic, not noise (p90 1.22), and is the kind of
+intercept the verdict already absorbs.
 
 ## What this supports
 
