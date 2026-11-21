@@ -1,0 +1,108 @@
+# H02 — generator coverage with path control: pre-registration (Track H2).
+#
+# Committed BEFORE any SolarWM or full-precision LingBot clip is generated or scored.
+# Every statistic, population, threshold and success criterion below is fixed. A change
+# after a held-out outcome is an amendment commit with a stated reason and must be
+# labelled exploratory in the report.
+prereg_version: 1
+date: 2026-11-21
+tag: "[H2]"
+handoff: "17 (Track H2 generator coverage)"
+branch: track-h2-generator-coverage
+
+reader:
+  description: >
+    The existing depicted-attitude reader: GeoCalib on square 224 px pinhole frames
+    (f = 112 px), gravity -> body attitude through camera_to_body_pitched, tilt of body z
+    from world up. Non-square frames are centre-cropped to a square before the resize, so
+    roll is not distorted. Same rows/schema as results/gate_a2/anwm/depicted.jsonl.
+  geocalib_commit: 1dedb29f94fc11b896c5f572005978aeebccd67f
+  gate: configs/gate_frozen.yaml
+  noise_floor_deg: 0.57
+
+required_tilt:
+  expression: "z_B ~ (a + g e3 + k_d v)/norm"
+  dt_s_primary: 1.0
+  k_d_primary: 0.295
+  k_d_sensitivity: [0.0]
+  clip_statistic: "median over frames of |required_tilt - depicted_tilt|"
+verdict_threshold_deg: 6.46
+testability_rule:
+  gate_kept: true
+  collapsed: false
+  min_frames_required_ge_10_deg: 12
+
+# ---------------------------------------------------------------- Part 2: SolarWM
+part2_solarwm:
+  model:
+    family: SolarWM-Wan2.2-5B
+    checkpoint: SolarWM-5B-sgf-stage2-81f
+    base: SolarWM-5B-base
+    sampling_steps: 4
+    frames: 81
+    resolution: "480x864"
+    pose_input: "absolute OpenCV c2w [T,4,4] plus per-frame intrinsics; the model rebases to the first frame and consumes a first-frame-relative trajectory"
+  first_frames:
+    five ANWM release frames, the five lexicographically first trajectories under
+    data/raw/anwm_frames, smallest recorded frame each, padded/resized to 864x480
+  paths: [cruise, turn5, turn10, turn20, slalom10]
+  arms:
+    level: "same translations and heading, level camera"
+    flatness: "verifier flatness attitude at the designed waypoints (k_d=0.295), SLERP to 81 frames"
+    mirrored_roll: "flatness arm with roll negated"
+  grid: "5 first frames x 5 paths x 3 arms = 75 clips"
+  convention_probe:
+    profiles: ["level", "linear 0->+20", "linear 0->-20", "triangular 0->+20->0", "linear 0->+60"]
+    frames: 81
+    pass: >
+      the +20 ramp must move the depicted tilt by at least 10 deg above the level control,
+      or (if the reader fails) the independent vertical-edge check must show at least 10 deg
+      of horizon rotation; otherwise no roll-following claim is made.
+  roll_injection:
+    statistic: "clip-median depicted tilt and depicted lean vector per arm/path"
+    follows_if: >
+      on at least 3 of 5 paths the flatness arm's depicted tilt exceeds the level arm by at
+      least 50 % of the injected tilt magnitude; AND its lean direction has positive cosine
+      with the injected lean on at least 4 of 5 paths; AND the mirrored arm's horizontal
+      lean x-component flips sign relative to flatness on at least 4 of 5 paths.
+  verdict:
+    population: "flatness arm, seed 0, five paths; created and uncreated controls where possible"
+    report: "testable k/n, feasible k/n, median residual, abstentions; no new threshold"
+  seed_variance:
+    paths: 10 designed path instances spanning cruise, 5/10/20 deg, turn, slalom, accel and climb
+    seeds: [0, 1, 2]
+    n_clips: 30
+    statistic: "per-path depicted-tilt spread and oracle best-of-3 residual reduction"
+    sampling_helps_if: >
+      median over paths of (r_1 - r_3) >= 2.0 deg AND at least 20 % of paths move from
+      infeasible to feasible.
+  cost: "seconds/clip, peak VRAM, GPU, USD/clip, 200-clip extrapolation"
+
+# ---------------------------------------------------------------- Part 3: LingBot full precision
+part3_lingbot_full:
+  model: "robbyant/lingbot-world-fast (bf16/fp16), with VAE/T5 from robbyant/lingbot-world-base-cam"
+  clips: "the same five roll-probe clips as H01: level, +20 ramp, -20 ramp, triangular 0->20->0, 0->60 ramp"
+  frames: 49
+  question: "was H01's roll blindness caused by the NF4 quantisation?"
+  comparison: "depicted tilt and vertical-edge check beside the H01 NF4 values"
+  cap_usd: 25
+  estimate_before_job: true
+
+# ---------------------------------------------------------------- inventory
+part1_inventory:
+  scope: "only models that take a path or camera pose as control"
+  candidates: [SolarWM, Aero-World, CameraCtrl, MotionCtrl, ReCamMaster, CT-1]
+  excluded: [AirScape, Cosmos-Predict2.5, Wan2.2, HunyuanVideo]
+  sources: "primary model cards, GitHub, papers; no guessing of links"
+
+# ---------------------------------------------------------------- statistics
+statistics:
+  intervals: "path-clustered bootstrap, 5000 replicates, numpy.random.default_rng(1)"
+  tiny_sample: "fewer than 10 clusters is descriptive, marked with a dagger"
+  controls: "level arm and mirrored-roll arm beside every detection rate"
+  no_tuning: "the 5 first frames and paths are reused from H01; no new selection on outcomes"
+
+spend:
+  ceiling_usd: 90
+  post_estimate_usd: 20
+  stop_after_pilot: true
