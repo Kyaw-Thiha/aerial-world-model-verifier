@@ -84,3 +84,11 @@ Files live in `reports/` at the repository root. Numbering restarts per track: T
   ("Known open discrepancies"). Nothing was re-analysed during consolidation.
 * Superseded material is listed in `docs/archive/README.md`; it stays where the reports and
   scripts expect it.
+
+## Track F2 — pixel-path round 2 (branch `track-f2-pixel-path`)
+
+| report | title | status |
+| --- | --- | --- |
+| `F04_spline_fit.md` | Spline-smoothed joint fit | current; **decision: fail** (pixel path 1/8 removal, 2/8 mirror; truth path 8/8, 6/8); the joint fit's scale collapse is a finding |
+| `F05_lean_error_scoring.md` | What path error the verifier needs | current; windowed thrust-axis error ranks paths differently from the bake-off metric (correlation 0.65) and does not predict per-clip verdict quality |
+| `F06_feedforward_and_sim.md` | MapAnything, Pi3X, and the simulated set | current; MapAnything 0/10 with metric scale, Pi3X 6/10 with Kalibr K; no extractor moves the gate; part 4 waiting on Track I (8/300 clips, no I02 report) |

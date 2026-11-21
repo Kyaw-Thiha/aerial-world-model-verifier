@@ -82,6 +82,13 @@ python scripts/uzh_prepare.py
 git clone https://github.com/EmbodiedCity/ANWM.code third_party/anwm && git -C third_party/anwm checkout 657a802
 ```
 
+Stored pose sets (gitignored; each 150 frames per sequence at 15.07 Hz) are pulled with
+`scripts/pull_volume.py`: DPVO from `awmv-c-data:poses/dpvo` (Track C), ViPE and MASt3R-SLAM
+from `awmv-f-data:poses/{vipe,mast3r}` (Track F), and MapAnything and Pi3X from
+`awmv-f2-data:poses/{mapanything,pi3x}` (Track F2). The round-2 scores record the code commit
+and the volume paths; the per-file sha256 is in `results/f01_stage0/summary.json` (round 1) and
+the round-2 summaries.
+
 ## 5. What is not recoverable from anywhere
 
 * **`.env`** (R2, Modal, RunPod, W&B keys). If it is lost, re-mint the keys.

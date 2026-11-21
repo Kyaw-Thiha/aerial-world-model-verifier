@@ -26,6 +26,7 @@ results; none of them runs an experiment.
 | E8 | gain and coherence tests | D | `track-d-verdict-stat` (`2a91765`) | `results/d_eval/`, `d_decomposition/`, `d_coherence/`, `d_deming/`, `d_window/`, `d_shrinkage/`, `d_flights/`, `d_calibrate/` | D01, D02, D03 |
 | E9 | UZH transfer | E (+ A estimator) | `track-e-depicted-uzh` (`dd209bf`) | `results/e_audit/`, `e_mount/`, `e_perframe/`, `e_verdict_v3/`, `e_calib/` | E01-E04 |
 | E10 | window rule and prototype | D (+ E independent test) | `track-d-verdict-stat`, `track-e-depicted-uzh` | `results/d_window_rates/`, `d_bandwidth/`, `d_uzh_v2/`, `e_verdict_v3/rule/` | D03, D04, E05 |
+| E12 | pixel-path round 2: spline joint fit, lean-error scoring, feed-forward extractors | F2 | `track-f2-pixel-path` | `results/f04_spline/`, `f05_lean_error/`, `f06_feedforward/` | F04, F05, F06 (round 1: E11 on `track-f-pixel-path`) |
 
 R2 prefixes are `track-a/`, `track-a/a2/`, `track-b/`, `track-c/`, `track-d/`, `track-e/`
 (counts and bytes: `report/data/r2_counts.json`, measured 2026-11-15; verified read-only again
@@ -180,3 +181,31 @@ during consolidation — see `docs/DATA.md` for the current status of listing ac
 * **Regenerate**: `report/scripts/e10_window_rule.py`.
 * **Open discrepancy (recorded, not resolved)**: D's 0.07-0.12 s window "at the truth rate" is
   superseded by E05 (0.34-1.42 s at 500 Hz; 0.07-0.11 s only at the 15 Hz clip rate).
+
+---
+
+## E12 — pixel-path round 2 (Track F2)
+
+* **Owning track / branch**: F2, `track-f2-pixel-path`, branched from `main` at
+  `41d1dad`. Round 1 (`reports/F01`-`F03`, branch `track-f-pixel-path`, head `a9dc5cf`) is a
+  dependency: the population, edits, controls and the amendment-1 pairing are carried over
+  unchanged.
+* **What it is**: (i) a cubic B-spline path with analytic acceleration and a joint flatness
+  fit in positive scale and initial velocity, tested against the round-1 gate; (ii) a windowed
+  thrust-axis ("lean") error metric for stored paths, and whether it predicts verdict quality;
+  (iii) MapAnything and Pi3X run on UZH-FPV with the Kalibr intrinsics, scored with (ii);
+  (iv) the simulated calibration set, waiting on Track I.
+* **Configs**: `configs/f04_round2_prereg.yaml` (`63002b8`).
+* **Inputs**: the stored poses `data/pathrec/poses/{dpvo,vipe,mast3r}` (round 1) plus
+  `{mapanything,pi3x}` pulled from the `awmv-f2-data` volume; Track E clips
+  `data/clips_v2_w370ms`; UZH truth `data/uzh`; E05 window rule `results/e_window_rule.json`.
+* **Results**: `results/f04_spline/` (combined run; `summary.json`, `rows.csv`,
+  `diagnostic.json`, `pi3x/`), `results/f05_lean_error/` (`lean_error.json`,
+  `sequences.csv`), `results/f06_feedforward/summary.json`.
+* **Regenerate**: `experiments/f04_spline_fit.py` (CPU), `experiments/f05_lean_error.py`
+  (CPU), `experiments/f06_score_extractors.py` (CPU); the GPU runs are `remote/f2_extractors.py`
+  (`--method map|pi3`).
+* **Outcome**: the registered spline statistic fails the gate on every stored path while
+  detecting 8/8 and 6/8 on the truth path; its joint fit is degenerate (scale collapse); Pi3X
+  is the best new extractor (6/10 bake-off, 4.2 deg lean error) and does not change the gate;
+  the simulated set is 8/300 rendered.
