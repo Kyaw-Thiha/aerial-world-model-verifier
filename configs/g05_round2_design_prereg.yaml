@@ -1,0 +1,111 @@
+version: 1
+date: '2026-11-21'
+status: frozen_design_not_executed
+track: G2
+owner_branch: track-g2-segments
+written: before the simulated development set exists; nothing in this file has been run
+why_frozen_now: >
+  Handoff 18 requires the full design to be frozen in a pre-registration before the frozen
+  evaluation. The development set (Track I report I02) does not exist yet, so the design is
+  fixed here and left unexecuted rather than designed after seeing simulated outcomes.
+
+blocking_dependency:
+  dataset: Track I simulated flights with exact violation intervals (report I02)
+  required_from_track_i:
+    min_dev_scenes: 8
+    min_holdout_scenes: 4
+    frame_rate_min_hz: 30
+    truth_rate_min_hz: 200
+    violations: [tilt_removal, mirror_roll, scale_0.5, scale_1.5, none]
+    interval_design: >
+      partial intervals as well as full-clip ones, at 10 / 25 / 50 / 100 % of the clip, with
+      exact onset and offset in seconds, plus yaw-rotation and null (re-render) controls.
+    render_fields: per-frame camera pose, intrinsics, the reader's output, and the path's
+      required lean computed from the commanded path with k_d = 0.295
+  current_state: >
+    branch `track-i-simset` carries the I01 spike only: one flight rendered three ways
+    (feasible / level camera / mirrored roll), 91 frames each, full-clip violations. Three clips
+    cannot calibrate a threshold or choose a knot, so they support a pipeline check (report G05,
+    exploratory) and nothing else.
+
+items:
+  item1_path_demand:
+    status: run on real clips (report G04); to be re-run on the simulated dev set
+    rule: as configs/g04_path_demand_prereg.yaml (demand >= 6 of 8 frames at >= 15 deg,
+      quiet all 8 frames <= 3 deg; residual / depicted-tilt statistics)
+    sim_specific_knob_to_set_on_dev: the demand floor (15 deg is the real-corpus published
+      detection floor; on sim the floor is a design choice and must be chosen on dev scenes)
+  item2_robust_weighted:
+    primary: >
+      Huber location of the per-frame residual inside the window, scale fixed at 5.0 deg (the
+      TII trimmed reader spread, report 02), frame weights w_i = clip(conf_i / median(conf),
+      0.1, 10) from the reader's confidence (G03 shows a per-frame confidence exists).
+    ablations: [trimmed 20 % mean instead of Huber, unweighted instead of weighted,
+                per-clip MAD scale instead of the fixed 5 deg]
+    persistence:
+      windows: [1, 2, 3]
+      calibration: each with its own conformal threshold
+    tie_to_round1: the median is the special case of the 50 % trimmed mean; the median arm is
+      carried as the reference everywhere
+  item3_fdr:
+    primary: >
+      Benjamini-Hochberg within each clip on window p-values, q = 0.10. p-values from the
+      empirical CDF of the window statistic over the fit-flight real clips of the same selection
+      class (demand / quiet), p = (1 + #{fit windows >= T}) / (n_fit + 1).
+    clip_decision: any window rejected
+    ablations:
+      q_values: [0.05, 0.10, 0.20]
+      variant: corpus-level BH instead of per-clip
+    reported: false segments per real minute; realised false-discovery proportion at the window
+      level on injected clips (flagged windows outside the true interval / flagged windows)
+  item4_boundaries:
+    rule: >
+      Inside each merged flagged region, fit a two-state model: per-frame residual absolute
+      values, state 0 ~ half-normal with sigma from the real-clip median absolute residual of
+      that flight's fit clips, state 1 ~ half-normal with free mean mu >= 0 and the same sigma;
+      grid search the onset and offset over the region extended by two windows at 1-frame
+      resolution; maximise the summed log likelihood.
+    reported: delta IoU, delta F1, delta onset error, against the unrefined segments
+    constraint: refit only inside flagged regions; no global smoothing
+  item5_alignment:
+    rule: >
+      One lag per clip, chosen by maximising the correlation between |depicted lean| and
+      |lean_req| over the frozen gain tier's grid (plus/minus 150 ms in 25 ms steps), applied to
+      the required side before any window is scored.
+    reported: lag distribution per flight/rig; delta false segments per minute; delta IoU
+    known_limitation: at 12 Hz TII clip rate the grid is effectively {0, plus/minus 1, plus/minus 2}
+      frames; item 5 is designed for the 30 fps simulated set
+  item6_multiscale:
+    lengths_frames: [8, 12, 16]
+    rule: >
+      Each length's statistic is standardised on the fit clips (median, robust scale
+      (q97.5 - q2.5)/3.92) and the clip statistic is the maximum over lengths and windows of the
+      standardised value, with one conformal threshold; segments come from the windows of the
+      length that produced the maximum, with the shorter lengths preferred on ties.
+    ablations: each length alone versus the joint rule
+
+stacking_rule: >
+  Each item is reported alone against the round-1/round-2 base, and the stacked version is
+  reported beside it. The stacked version is never the only number.
+
+protocol_for_the_frozen_evaluation:
+  design_choices_made_on: simulated DEV scenes only (knots, floors, persistence, FDR level,
+    Huber scale, lengths, refinement grid)
+  frozen_then_evaluated_once_on:
+    - held-out simulated scenes
+    - the real held-out block frozen in round 1: flight-13p-trackRATM and flight-07a-lemniscate
+  real_clip_calibration: leave-one-flight-out conformal thresholds, as in rounds 1 and 2
+  metrics: >
+    clip-level detection versus the whole-clip median baseline at matched false-reject; detection
+    by edit size (10/25/50/100 %) and family; interval IoU, F1, onset error; false segments per
+    real minute; minimum detectable violation; yaw and null controls beside every rate;
+    denominators k/n; flight- or scene-clustered bootstrap, 5,000 replicates, seed 1; fewer than
+    ten clusters marked descriptive.
+  localisation_claim_rule: >
+    No localisation claim below the reader's noise: state the smallest window and violation
+    duration at which IoU > 0.3 is reached, and put the noise-floor arithmetic beside it.
+  out_of_scope: ANWM's 1 Hz, 16-point paths (no window statistic possible)
+
+cost:
+  gpu_usd: 0
+  note: CPU throughout unless the reader is re-run, which this design does not require

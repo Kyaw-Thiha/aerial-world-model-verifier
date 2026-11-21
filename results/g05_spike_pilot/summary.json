@@ -1,0 +1,41 @@
+{
+ "status": "EXPLORATORY pilot; 3 clips; no calibration",
+ "clips": {
+  "feasible": {
+   "n_frames": 91,
+   "n_windows": 22,
+   "n_demand": 17,
+   "n_quiet": 0,
+   "req_tilt_median_deg": 25.329776769734107,
+   "demand_residual_median_deg": 1.0233005543634635,
+   "demand_residual_max_deg": 1.3717355882436788,
+   "quiet_dep_tilt_median_deg": null,
+   "frame_residual_median_deg": 1.0417283681861638,
+   "truth_residual_median_deg": 0.0
+  },
+  "level_camera": {
+   "n_frames": 91,
+   "n_windows": 22,
+   "n_demand": 17,
+   "n_quiet": 0,
+   "req_tilt_median_deg": 25.329776769734107,
+   "demand_residual_median_deg": 27.68982116954242,
+   "demand_residual_max_deg": 32.30143669592898,
+   "quiet_dep_tilt_median_deg": null,
+   "frame_residual_median_deg": 25.895604268944968,
+   "truth_residual_median_deg": 25.329776769734117
+  },
+  "mirror_roll": {
+   "n_frames": 91,
+   "n_windows": 22,
+   "n_demand": 17,
+   "n_quiet": 0,
+   "req_tilt_median_deg": 25.329776769734107,
+   "demand_residual_median_deg": 51.229391269869765,
+   "demand_residual_max_deg": 58.14210130556825,
+   "quiet_dep_tilt_median_deg": null,
+   "frame_residual_median_deg": 43.384180573476065,
+   "truth_residual_median_deg": 43.718161984035866
+  }
+ }
+}
