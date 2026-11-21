@@ -456,9 +456,7 @@ def main() -> int:
                 path_block["by_arm"][arm][path_kind] = block
         path_block["knots_median"] = float(np.median(
             [r["knots"] for r in all_rows if r["cond"] == "real"]))
-        # one compact copy for downstream joins; the full row set is rows.csv
-        path_block["rows"] = [{k: r.get(k) for k in ("seq", "idx", "cond", "arm", "path",
-                                                     "rho", "testable")} for r in all_rows]
+        # per-row values live in rows.csv; the summary holds aggregates only
         summary["paths"][path_name] = path_block
 
     out_root.mkdir(parents=True, exist_ok=True)

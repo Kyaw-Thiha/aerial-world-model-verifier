@@ -233,15 +233,22 @@ def main() -> int:
 
     # --- does either path metric predict per-clip verdict quality? (needs part 1)
     part1 = Path(args.part1)
-    if part1.exists():
-        d = json.loads(part1.read_text())
+    rows_csv = part1.parent / "rows.csv"
+    if rows_csv.exists():
+        import csv as _csv
+        with open(rows_csv, newline="") as fh:
+            all_rows = list(_csv.DictReader(fh))
         per_clip = {}
-        for path_name, block in d.get("paths", {}).items():
-            if "rows" not in block:
-                continue
-            real = {(r["seq"], r["idx"]): r for r in block["rows"]
-                    if r["cond"] == "real" and r["arm"] == "estimated_attitude"
-                    and r["path"] == "pixel"}
+        for path_name in sorted({r["path"] for r in all_rows}):
+            real = {}
+            for r in all_rows:
+                if (r["path"] == path_name and r["cond"] == "real"
+                        and r["arm"] == "estimated_attitude" and r["testable"] == "True"):
+                    try:
+                        r["rho"] = float(r["rho"])
+                    except (TypeError, ValueError):
+                        r["rho"] = float("nan")
+                    real[(r["seq"], r["idx"])] = r
             per_clip[path_name] = real
         link = {}
         for path_name, reals in per_clip.items():
@@ -259,7 +266,7 @@ def main() -> int:
                                "clustered": clustered_corr(x, y, g) if len(x) >= 3 else None}
         out["prediction"] = link
     else:
-        out["prediction"] = {"note": f"{part1} absent; per-clip link not computed"}
+        out["prediction"] = {"note": f"{rows_csv} absent; per-clip link not computed"}
 
     Path(args.out).mkdir(parents=True, exist_ok=True)
     (Path(args.out) / "lean_error.json").write_text(json.dumps(_py(out), indent=1))
