@@ -60,32 +60,50 @@ def _matrix_world(pose: np.ndarray):
 
 
 # --------------------------------------------------------------------------- scene
+def _material(bpy, cache, color, roughness=0.85, metallic=0.0):
+    """One material per colour, shared across objects (544 trees must not be 544 materials)."""
+    key = (tuple(round(float(c), 4) for c in color), round(roughness, 2), round(metallic, 2))
+    if key in cache:
+        return cache[key]
+    mat = bpy.data.materials.new(f"mat_{len(cache)}")
+    mat.use_nodes = True
+    bsdf = mat.node_tree.nodes["Principled BSDF"]
+    bsdf.inputs["Base Color"].default_value = (*key[0], 1.0)
+    bsdf.inputs["Roughness"].default_value = roughness
+    bsdf.inputs["Metallic"].default_value = metallic
+    cache[key] = mat
+    return mat
+
+
 def build_scene(seed: int = 7, kind: str = "outdoor", sun_energy: float | None = None,
                 sky_strength: float | None = None, view_transform: str = "Filmic",
                 layout_dict: dict | None = None):
-    """Procedural outdoor scene from ``src/sim/scene.py::layout`` (shared with Isaac Sim).
+    """Procedural scene from a layout dict (``src/sim/scenes.py``), or the spike's scene.
 
-    Deterministic in ``seed``. Content is chosen for a gravity estimator, not for beauty:
-    a checker ground gives a perspective texture gradient, blocks give vertical edges
-    (vanishing points), a hill ring gives a crisp horizon silhouette and the sky gives an
-    unambiguous up.
+    Deterministic in (family, seed). Content is chosen for a gravity estimator, not for
+    beauty: textured ground for a perspective gradient, vertical edges for a roll reference,
+    a horizon silhouette and an unambiguous sky.
     """
     import bpy
     import math as _m
 
-    if layout_dict is None:            # local use: build from the shared module
+    if layout_dict is None:            # local use: the spike's single-family scene
         from src.sim.scene import layout
         lay = layout(seed)
     else:                              # in a renderer container: the job carries the layout
         lay = layout_dict
-    sun_energy = lay["sun_energy"] if sun_energy is None else sun_energy
-    sky_strength = lay["sky_strength"] if sky_strength is None else sky_strength
+
+    sun_energy = lay.get("sun_energy", 1.6) if sun_energy is None else sun_energy
+    sky_strength = lay.get("sky_strength", 0.5) if sky_strength is None else sky_strength
+    ground_colors = lay.get("ground_colors", [[0.10, 0.13, 0.08], [0.26, 0.24, 0.18]])
 
     bpy.ops.wm.read_factory_settings(use_empty=True)
     scene = bpy.context.scene
+    cache: dict = {}
 
-    # --- ground: checker texture, large enough that the horizon is always inside frame
-    bpy.ops.mesh.primitive_plane_add(size=lay["ground_m"], location=(0.0, 0.0, 0.0))
+    # --- ground
+    bpy.ops.mesh.primitive_plane_add(size=float(lay.get("ground_m", 800.0)),
+                                     location=(0.0, 0.0, 0.0))
     ground = bpy.context.object
     ground.name = "ground"
     mat = bpy.data.materials.new("ground_mat")
@@ -94,48 +112,47 @@ def build_scene(seed: int = 7, kind: str = "outdoor", sun_energy: float | None =
     bsdf = nt.nodes["Principled BSDF"]
     bsdf.inputs["Roughness"].default_value = 0.9
     checker = nt.nodes.new("ShaderNodeTexChecker")
-    checker.inputs["Scale"].default_value = 1.0 / lay["checker_m"]
-    checker.inputs["Color1"].default_value = (0.10, 0.13, 0.08, 1.0)
-    checker.inputs["Color2"].default_value = (0.26, 0.24, 0.18, 1.0)
+    checker.inputs["Scale"].default_value = 1.0 / float(lay.get("checker_m", 20.0))
+    checker.inputs["Color1"].default_value = (*[float(c) for c in ground_colors[0]], 1.0)
+    checker.inputs["Color2"].default_value = (*[float(c) for c in ground_colors[1]], 1.0)
     coord = nt.nodes.new("ShaderNodeTexCoord")
     nt.links.new(coord.outputs["Object"], checker.inputs["Vector"])
     nt.links.new(checker.outputs["Color"], bsdf.inputs["Base Color"])
     ground.data.materials.append(mat)
+    cache[("ground",)] = mat
 
-    block_mat = bpy.data.materials.new("block_mat")
-    block_mat.use_nodes = True
-    b = block_mat.node_tree.nodes["Principled BSDF"]
-    b.inputs["Base Color"].default_value = (0.42, 0.40, 0.36, 1.0)
-    b.inputs["Roughness"].default_value = 0.8
-    leaf = bpy.data.materials.new("leaf_mat")
-    leaf.use_nodes = True
-    leaf.node_tree.nodes["Principled BSDF"].inputs["Base Color"].default_value = (0.10, 0.22, 0.08, 1.0)
-    hill = bpy.data.materials.new("hill_mat")
-    hill.use_nodes = True
-    hill.node_tree.nodes["Principled BSDF"].inputs["Base Color"].default_value = (0.16, 0.18, 0.20, 1.0)
-
-    for ob in lay["objects"]:
-        if ob["kind"] == "block":
-            bpy.ops.mesh.primitive_cube_add(size=1.0, location=(ob["x"], ob["y"], ob["h"] / 2.0))
+    for ob in lay.get("objects", []):
+        kind_name = ob.get("kind", "block")
+        color = ob.get("color", [0.4, 0.4, 0.4])
+        z = float(ob.get("z", 0.0))
+        if kind_name in ("block", "hedge", "road"):
+            bpy.ops.mesh.primitive_cube_add(size=1.0,
+                                            location=(ob["x"], ob["y"], z + ob["h"] / 2.0))
             o = bpy.context.object
             o.scale = (ob["w"], ob["d"], ob["h"])
-            o.data.materials.append(block_mat)
-        elif ob["kind"] == "tree":
-            bpy.ops.mesh.primitive_cone_add(radius1=ob["w"] * 1.4, depth=ob["h"],
-                                            location=(ob["x"], ob["y"], ob["h"] / 2.0))
-            bpy.context.object.data.materials.append(leaf)
-        else:  # hill: a shallow cone reads as a ridge at 300 m
-            bpy.ops.mesh.primitive_cone_add(radius1=ob["w"] / 2.0, depth=ob["h"],
-                                            location=(ob["x"], ob["y"], ob["h"] / 2.0))
-            bpy.context.object.data.materials.append(hill)
+            rough = 0.95 if kind_name == "road" else 0.8
+            o.data.materials.append(_material(bpy, cache, color, rough))
+        elif kind_name == "tree":
+            bpy.ops.mesh.primitive_cone_add(radius1=float(ob["w"]), depth=float(ob["h"]),
+                                            location=(ob["x"], ob["y"], z + ob["h"] / 2.0))
+            bpy.context.object.data.materials.append(_material(bpy, cache, color, 0.9))
+        elif kind_name == "water":
+            bpy.ops.mesh.primitive_plane_add(size=float(ob["w"]),
+                                             location=(ob["x"], ob["y"], z))
+            bpy.context.object.data.materials.append(
+                _material(bpy, cache, color, roughness=0.08, metallic=0.25))
+        else:
+            raise KeyError(f"unknown object kind {kind_name!r}")
+        if ob.get("rotate_z_deg"):
+            bpy.context.object.rotation_euler = (0.0, 0.0, _m.radians(ob["rotate_z_deg"]))
 
     # --- sun + sky
     bpy.ops.object.light_add(type="SUN", location=(0.0, 0.0, 60.0))
     sun = bpy.context.object
     sun.data.energy = float(sun_energy)
     sun.data.angle = _m.radians(0.6)
-    sun.rotation_euler = (_m.radians(90.0 - lay["sun_elevation_deg"]), 0.0,
-                          _m.radians(lay["sun_azimuth_deg"]))
+    sun.rotation_euler = (_m.radians(90.0 - float(lay.get("sun_elevation_deg", 45.0))), 0.0,
+                          _m.radians(float(lay.get("sun_azimuth_deg", 35.0))))
     world = bpy.data.worlds.new("sky")
     scene.world = world
     world.use_nodes = True
@@ -144,8 +161,8 @@ def build_scene(seed: int = 7, kind: str = "outdoor", sun_energy: float | None =
     sky = wnt.nodes.new("ShaderNodeTexSky")
     try:
         sky.sky_type = "NISHITA"
-        sky.sun_elevation = _m.radians(lay["sun_elevation_deg"])
-        sky.sun_rotation = _m.radians(lay["sun_azimuth_deg"])
+        sky.sun_elevation = _m.radians(float(lay.get("sun_elevation_deg", 45.0)))
+        sky.sun_rotation = _m.radians(float(lay.get("sun_azimuth_deg", 35.0)))
     except Exception:
         sky.sky_type = "HOSEK_WILKIE"
     wnt.links.new(sky.outputs["Color"], bg.inputs["Color"])

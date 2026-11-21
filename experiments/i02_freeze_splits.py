@@ -157,6 +157,11 @@ def build_table() -> dict:
                     "violation": None if defect == "feasible" else defect,
                     "magnitude": None,
                     "interval_seed": int(rng.integers(0, 2**31 - 1)),
+                    # The mount varies across the set (0/15/30/45 deg of uptilt, as TII flies
+                    # 30-50) and is part of the frozen row, not a generator-side draw: the
+                    # manifest has to say what camera made the clip.
+                    "uptilt_deg": [0.0, 15.0, 30.0, 45.0][(i + j) % 4],
+                    "mount_yaw_deg": 0.0,
                 }
                 if defect == "tilt_removed":
                     row["magnitude"] = 1.0            # fraction of the tilt removed

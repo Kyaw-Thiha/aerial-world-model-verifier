@@ -105,6 +105,58 @@ def benchmark(tag: str = "i01_feasible", n_frames: int = 6) -> dict:
     return {k: v.get("render") for k, v in results.items()}
 
 
+@app.function(image=image, gpu="L40S", volumes={"/vol": volume}, timeout=1800)
+def preview(families: str = "", seed: int = 101, samples: int = 32,
+            frames: int = 1) -> dict:
+    """One static frame per scene family, for eyeballing the families before the batch.
+
+    The camera is level at 12 m looking along +x, which is the worst case for the estimate
+    (no tilt, so any error the reader makes is visible as a bias rather than masked by
+    signal) and the cheapest way to see whether a family has a horizon and texture at all.
+    """
+    import json
+    import os
+    import subprocess
+    from pathlib import Path
+
+    import numpy as np
+
+    from src.sim.scenes import FAMILIES, layout
+
+    families = [f for f in families.split(",") if f] or list(FAMILIES)
+    T = np.eye(4)
+    T[:3, 3] = [0.0, 0.0, 12.0]
+    T[:3, :3] = np.array([[0.0, 0.0, 1.0], [1.0, 0.0, 0.0], [0.0, -1.0, 0.0]])
+    poses = np.tile(T, (frames, 1, 1))
+    # a short forward drift so the second frame is not identical
+    for i in range(frames):
+        poses[i, 0, 3] = 3.0 * i
+    np.save("/tmp/preview_poses.npy", poses)
+    out = {}
+    for fam in families:
+        lay = layout(fam, seed)
+        job = {"poses": "/tmp/preview_poses.npy", "out_dir": f"/vol/previews/{fam}",
+               "result_json": f"/vol/previews/{fam}/timing.json",
+               "width": 640, "height": 360, "hfov_deg": 90.0, "scene": lay,
+               "samples": samples, "engine": "EEVEE", "device": "GPU",
+               "exposure": -2.0, "denoise": False,
+               "frame_names": [f"{i:04d}.png" for i in range(frames)]}
+        jp = Path(f"/tmp/preview_{fam}.json")
+        jp.write_text(json.dumps(job))
+        p = subprocess.run(["blender", "-b", "-P", "/root/blender_render.py"],
+                           capture_output=True, text=True, timeout=900, cwd="/root",
+                           env={**os.environ, "BLENDER_JOB": str(jp)})
+        log = (p.stdout or "") + (p.stderr or "")
+        entry = {"rc": p.returncode, "n_objects": len(lay["objects"]),
+                 "log_tail": log[-600:]}
+        for line in log.splitlines():
+            if line.startswith("RENDER_RESULT "):
+                entry["render"] = json.loads(line[len("RENDER_RESULT "):])
+        out[fam] = entry
+        volume.commit()
+    return out
+
+
 @app.function(image=image, gpu="L40S", volumes={"/vol": volume}, timeout=3600)
 def render(tag: str = "i01_feasible", samples: int = 48, engine: str = "CYCLES",
            denoise: bool = True, limit: int = 0, out_tag: str = "") -> dict:
