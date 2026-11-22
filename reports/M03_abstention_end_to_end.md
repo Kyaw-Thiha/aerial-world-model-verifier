@@ -14,8 +14,10 @@ false-flag rate from 18/69 (26 %) to 16/22 (73 %), and the fixed-calibration tie
 false-reject from 4/69 to 2/22 while its own yaw rate rises from 7/69 to 10/22 — because the
 accepted population collapses to two flights and its threshold is refitted on them. **On the
 simulated set, where the threshold is transferred from the real clips instead of refitted,
-Gate B halves the false-reject at 46 % coverage (20/80 to 2/42 for F0) and Gate B alone keeps
-the yaw control clean, so the two populations say different things and both are reported.**
+Gate B halves the false-reject at 46 % coverage (20/80 to 2/42 for F0), so the two populations
+say different things and both are reported.** On the real clips Gate B's own yaw-control count
+is not robust: it is 1/40 with a leave-one-flight-out cut and 17/40 with a pooled cut at the
+same threshold, because 40 accepted clips over four flights cannot pin the cut.
 
 ## Plain-language summary
 
