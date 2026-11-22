@@ -95,7 +95,56 @@ part of the noise floor quoted in section 6.
 
 ### 1. A1 — the window statistic
 
-<!-- FILL: detection per family/fraction, IoU, F1, onset, false segments/min, FRR, controls -->
+**The feasible population is complete** (80 of 80 dev feasible clips scored), so the
+false-reject table and every threshold below are final, not provisional.
+
+**Testability.** A clip is testable for an arm when at least one window is eligible. The
+residual arms are testable on 64 of 80 feasible clips; the coherence arms on 17 of 80, and only
+on the two manoeuvres whose lean direction rotates in both body axes (slalom 13/16, lemniscate
+4/8; zero on ellipse, turn, climb-turn and accel-brake, whose lean is nearly constant on one
+axis). Hover clips are not testable under any arm. This is the structural scope limit of the
+coherence tier and it is a property of the manoeuvre, not of the violation.
+
+**Calibration saturates.** The conformal 95th percentile of the clip maximum (leave-one-scene-out
+spread in brackets):
+
+| arm | threshold | fold spread | testable clips |
+| --- | --- | --- | --- |
+| coh12_p1 | 1.934 (max possible 2.0) | 1.92-1.94 | 17 |
+| coh8_p1 | 1.970 | 1.94-1.97 | 13 |
+| coh12_p2 | 1.874 | 1.82-1.88 | 16 |
+| res12_p1 | 61.4 deg | 45.1-64.9 | 64 |
+| res8_p1 | 75.1 deg | 45.1-82.8 | 64 |
+| res8_p2 | 66.6 deg | 44.6-70.8 | 64 |
+| sign12_p1 | 1.000 | 1.00-1.00 | 17 |
+| whole-clip median | 11.18 deg | 9.37-11.33 | 80 |
+
+Two mechanisms, both measured. (i) A clip has about 100 windows where the real TII clips had
+10-11, so the maximum over windows sits on a far more extreme order statistic; the coherence
+threshold reaches within 0.07 of the statistic's ceiling, and the sign threshold reaches the
+ceiling exactly (no clip can exceed it, so that arm has no power by construction). (ii) Three
+feasible clips carry catastrophic reader windows (one window at 90 deg of residual on an
+otherwise 1-2 deg clip), and with 55 feasible clips a 95th percentile sits on them.
+
+**False-reject** at the nominal 5 % (k/testable):
+
+| arm | urban | forest | industrial | all |
+| --- | --- | --- | --- | --- |
+| res8_p1 | 2/22 (9.1 %) | 1/22 (4.5 %) | 1/20 (5.0 %) | 4/64 (6.2 %) |
+| res12_p1 | — | — | — | 4/64 (6.2 %) |
+| coh12_p1 | 0/5 (0 %) | 1/6 (16.7 %) | 0/6 (0 %) | 1/17 (5.9 %) |
+| coh8_p1 | 1/5 (20 %) | 1/4 (25 %) | 0/4 (0 %) | 2/13 (15.4 %) |
+| sign12_p1 | 0/5 | 0/6 | 0/6 | 0/17 (0 %) |
+| whole-clip median | 0/27 (0 %) | **8/26 (30.8 %)** | 0/27 (0 %) | 8/80 (10.0 %) |
+
+The whole-clip median baseline is the worst-behaved rule on the forest family: it false-flags
+30.8 % of feasible forest clips, because the reader's forest bias (7-10 deg) is comparable to
+the threshold. That is the practical content of the scene stratification: a pooled false-reject
+of 10 % hides a 0.8 % rate on two families and a 31 % rate on the third.
+
+Detection, IoU, the ablations and the controls follow from the full defect set.
+
+
 
 ### 2. A2 — FDR control
 
