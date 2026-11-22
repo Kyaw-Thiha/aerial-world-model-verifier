@@ -2,8 +2,8 @@
 
 **Decision.** Training the reader on simulated scenes does not transfer to the real held-out
 flights: real-only is the best arm (7.51 deg pooled trimmed RMSE against G03's 8.29, a 9.4 % gain
-that misses the pre-registered 15 % bar), while simulated-only and mixed+DR are 2.4-2.5x worse
-(19.87 and 20.44, 2.6-2.7x), and no new reader lowers the coherence tier's false-reject (frozen 5/72,
+that misses the pre-registered 15 % bar), while simulated-only and mixed+DR are 2.6-2.7x worse
+(19.87 and 20.44), and no new reader lowers the coherence tier's false-reject (frozen 5/72,
 real-only 7/72, sim-only and mixed 6/72). The simulated scene-family spread does shrink
 (2.26 -> 1.05 and 0.63 deg), but by levelling the open families from 0.9-1.3 deg to 2-3.3 deg, and
 the simulated-only reader collapses full-removal detection from 70/72 to 43/72.
@@ -143,7 +143,7 @@ readers' larger per-frame view dependence, and is reported beside every detectio
 
 ## What this supports
 
-* **A clear negative answer on transfer.** Simulated-only and mixed+DR readers are 2.4-2.5x the
+* **A clear negative answer on transfer.** Simulated-only and mixed+DR readers are 2.6-2.7x the
   real-only reader's held-out trimmed RMSE (19.87 and 20.44 against 7.51), and both are worse than
   the *frozen* reader's 14.75 on the hard ceiling-view flight. Adding simulated data under this DR
   recipe actively hurt.
