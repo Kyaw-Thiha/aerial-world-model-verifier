@@ -514,3 +514,16 @@ Every row below was read from the project's own repo/HF card on 2026-11-10. "ver
   (commit recorded below): 12-frame coherence scan primary, 8-frame residual scan as comparison,
   no per-clip nuisance fit, no demand selection, no confidence weighting, FDR/boundary/alignment/
   multi-scale as separate pre-registered ablations.
+- [G3] **The reader is not bit-reproducible run to run, and the stride check had to become
+  distributional.** Two identical L40S runs of `i02_dev_002` (batch 8, deterministic flags) differ
+  by a median of 2.2e-3 lean units (p99 2.2e-2, max 5.5e-2); A10, A100 and L40S differ from each
+  other by the same amount, and the new stride-1 rows differ from Track I's stride-2 rows by
+  2.75e-3 median, which is inside that envelope. The best frame offset is 0, so the stride-2 row
+  mapping is right and no decode-path difference is detectable. `configs/g06_segments_prereg_amend1.yaml`
+  records this before production scoring and changes no statistic. Consequence for the science: the
+  reader's per-frame noise floor is stated in G06/G07 and enters the minimum-localisable-violation
+  section.
+- [G3] **Production scoring runs on L40S at batch 8, the cheapest per frame measured** (11.8 fps,
+  0.046 USD per 1,000 frames, against A10 4.8 fps / 0.065 and A100 11.6 fps / 0.060). Projected
+  spend 7.39 USD against the 8.00 ceiling. Batching does not change the measurement beyond the
+  reader's own stochasticity (batch-1 versus batch-8 median 2.7e-3).
