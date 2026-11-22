@@ -344,6 +344,10 @@ headroom is in the tail's admission decision, not in the fast component.**
   input, and on TII it would not.
 * **Not UZH verdict evidence.** The UZH rotation numbers are per-frame only; no UZH clip
   statistic is computed (E05's population is too small to calibrate).
+* **Not Stage 2.** Stage 2 (re-running the selected pipeline on Track I's simulated scenes) needs
+  a selected detection pipeline and a labelled simulated development set; no pipeline was
+  selected here, and report G05 already recorded that `track-i-simset` carries only the I01 spike
+  (one flight, three renders, full-clip violations). Nothing was re-run on it.
 * **The "slow" band is not drift over the whole flight in the sense of a fixed budget.** The
   flight mean is the bias, so slow covers 0.005-0.5 Hz around it; a drift with a period longer
   than the flight would be absorbed into the bias and is not measurable here.
@@ -365,6 +369,10 @@ headroom is in the tail's admission decision, not in the fast component.**
 * **TII DPVO poses are stride-8 (15 Hz)**, so the finest relative rotation available is 1/15 s,
   not the camera's 120 Hz; the 0.5 s and 1 s horizons have 7 and 15 samples. Amendment A records
   this.
+* The gate accounting assigns a frame to the clip whose index range in
+  `data/processed/p3a/p3a_v1/clips.json` contains it; 53 of the 5,007 frames fall outside every
+  range and are treated as kept. Five of them are tail frames, so the 87.5 % removal figure is
+  conservative (88.2 % if those are excluded) and the conclusion is unaffected.
 * The fine-tuned reader's per-frame predictions are the G03 out-of-fold ones; a frame's error is
   measured by a model that never saw its flight, which is the honest number but also the reason
   its tail is slightly better than the frozen reader's.

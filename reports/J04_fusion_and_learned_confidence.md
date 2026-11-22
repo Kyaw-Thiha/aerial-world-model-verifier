@@ -66,6 +66,9 @@ two held-out flights are untouched.
 | 13p-trackRATM | 536 | 190 | 0.847 | 0.858 | 0.765 |
 | 16p-trackRATM | 373 | 129 | 0.800 | 0.769 | 0.695 |
 
+† every row is a single flight, i.e. one cluster; these are per-unit descriptive numbers, not a
+rate with an interval.
+
 Pooled: **0.946** [0.882, 0.973] (flight-clustered bootstrap, 5,000 replicates, 8 clusters —
 descriptive). S3 alone on the same frames: 0.851. Tilt + speed alone: 0.866. Clip level (the mean
 predicted probability per clip, the unit of the published number): **0.961** on 114 clips, 9
