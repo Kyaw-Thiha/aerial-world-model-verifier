@@ -1,5 +1,5 @@
 {
- "run": "20261122T073814Z",
+ "run": "20261122T074020Z",
  "a2_modes": {
   "kd0.0_lag_only": {
    "pooled_threshold": 14.732514900359874,
@@ -93,19 +93,36 @@
   "stored_vs_dragfree": {
    "n": 4777,
    "median_deg": 0.01566971086551372,
+   "p95_deg": 0.15783474661546543,
    "p99_deg": 0.39755358251966094,
    "max_deg": 103.85396204794942
   },
   "stored_vs_kd295": {
    "n": 4777,
    "median_deg": 4.264227864549458,
+   "p95_deg": 11.776922092931947,
    "p99_deg": 18.033963745188135,
    "max_deg": 103.42954358833107
   },
   "stored_plus_kd295vel_vs_kd295": {
    "n": 4777,
    "median_deg": 1.399643522218797,
+   "p95_deg": 19.055400248561398,
    "p99_deg": 25.838345042994522,
+   "max_deg": 126.46563141039427
+  },
+  "linear_vs_exact_all": {
+   "n": 4777,
+   "median_deg": 1.399643522218797,
+   "p95_deg": 19.055400248561398,
+   "p99_deg": 25.838345042994522,
+   "max_deg": 126.46563141039427
+  },
+  "linear_vs_exact_testable": {
+   "n": 3521,
+   "median_deg": 2.1733345317128925,
+   "p95_deg": 20.41951614878332,
+   "p99_deg": 26.733832833857328,
    "max_deg": 126.46563141039427
   },
   "conclusion": "lean_req is the DRAG-FREE required lean; the required side at k_d=0.295 is lean_req + 0.295*vel_req"

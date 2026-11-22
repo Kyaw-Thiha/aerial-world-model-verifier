@@ -192,10 +192,22 @@ def schema_semantics(recs: list[dict]) -> dict:
             diffs.setdefault("stored_plus_kd295vel_vs_kd295", []).extend(
                 np.degrees(np.linalg.norm(
                     z["lean_req"][m2] + K0 * z["vel_req"][m2] - l1[m2], axis=1)).tolist())
+            # the schema's linear reparameterisation against the exact flatness lean
+            gap = np.degrees(np.linalg.norm(
+                z["lean_req"][m2] + K0 * z["vel_req"][m2] - l1[m2], axis=1))
+            diffs.setdefault("linear_vs_exact_all", []).extend(gap.tolist())
+            test = m2 & (np.asarray(z["tilt_req_deg"], float) >= 10.0)
+            qnorm = np.linalg.norm(aa + np.array([0.0, 0.0, G0]), axis=1)
+            test = test & (qnorm >= 2.0)
+            diffs.setdefault("linear_vs_exact_testable", []).extend(
+                np.degrees(np.linalg.norm(
+                    z["lean_req"][test] + K0 * z["vel_req"][test] - l1[test],
+                    axis=1)).tolist())
     out = {}
     for k, vv in diffs.items():
         vv = np.asarray(vv)
         out[k] = {"n": int(len(vv)), "median_deg": float(np.median(vv)),
+                  "p95_deg": float(np.percentile(vv, 95)),
                   "p99_deg": float(np.percentile(vv, 99)), "max_deg": float(vv.max())}
     out["conclusion"] = ("lean_req is the DRAG-FREE required lean; the required side at "
                          "k_d=0.295 is lean_req + 0.295*vel_req")
