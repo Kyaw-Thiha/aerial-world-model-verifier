@@ -138,11 +138,14 @@ def measure_sim(cid: str, family: str, mounts: str) -> list[dict]:
             speed = float(np.linalg.norm(dp) / dt)
             # OpenCV recoverPose convention (amendment C): t = -R_cw(j)^T d
             t_true = -(R_cw_f[j].T @ dp)
+            t_old = R_cw_f[i].T @ dp  # pre-amendment reference, kept as a diagnostic only
             delta = (angle_between(g["t_est"], t_true)
                      if g["t_est"] is not None else float("nan"))
             rows.append({"stratum": f"sim_{family}", "kind": "sim", "unit": cid,
                          "mount_deg": mounts, "gap_s": gap, "i": i, "j": j, "dt_s": dt,
                          "speed_mps": speed, "delta_deg": delta,
+                         "delta_old_deg": (angle_between(g["t_est"], t_old)
+                                           if g["t_est"] is not None else float("nan")),
                          "delta_amb_deg": min(delta, 180.0 - delta) if np.isfinite(delta) else float("nan"),
                          "n_matches": g["n_matches"], "n_inliers": g["n_inliers"],
                          "sampson_median_px": g["sampson_median_px"], "status": g["status"],
@@ -184,11 +187,14 @@ def measure_uzh(seq: str) -> list[dict]:
             dt = (j - i) / fps
             speed = float(np.linalg.norm(dp) / dt)
             t_true = -(R_cw[j].T @ dp)  # amendment C
+            t_old = R_cw[i].T @ dp      # pre-amendment reference, diagnostic only
             delta = (angle_between(g["t_est"], t_true)
                      if g["t_est"] is not None else float("nan"))
             rows.append({"stratum": "uzh_outdoor", "kind": "uzh", "unit": seq,
                          "mount_deg": "", "gap_s": gap, "i": i, "j": j, "dt_s": dt,
                          "speed_mps": speed, "delta_deg": delta,
+                         "delta_old_deg": (angle_between(g["t_est"], t_old)
+                                           if g["t_est"] is not None else float("nan")),
                          "delta_amb_deg": min(delta, 180.0 - delta) if np.isfinite(delta) else float("nan"),
                          "n_matches": g["n_matches"], "n_inliers": g["n_inliers"],
                          "sampson_median_px": g["sampson_median_px"], "status": g["status"],
@@ -248,7 +254,7 @@ def run_measure() -> None:
                 print(f"sim {k + 1}/{len(tasks)} clips, {len(rows)} pairs", flush=True)
     _write(rows, OUT / "pairs_sim.csv",
            ["stratum", "kind", "unit", "mount_deg", "gap_s", "i", "j", "dt_s", "speed_mps",
-            "delta_deg", "delta_amb_deg", "n_matches", "n_inliers", "sampson_median_px",
+            "delta_deg", "delta_old_deg", "delta_amb_deg", "n_matches", "n_inliers", "sampson_median_px",
             "status", "t_est", "t_true"])
     print(f"wrote {len(rows)} sim pairs")
 
@@ -259,7 +265,7 @@ def run_measure() -> None:
             urows += part
     _write(urows, OUT / "pairs_uzh.csv",
            ["stratum", "kind", "unit", "mount_deg", "gap_s", "i", "j", "dt_s", "speed_mps",
-            "delta_deg", "delta_amb_deg", "n_matches", "n_inliers", "sampson_median_px",
+            "delta_deg", "delta_old_deg", "delta_amb_deg", "n_matches", "n_inliers", "sampson_median_px",
             "status", "t_est", "t_true"])
     print(f"wrote {len(urows)} UZH pairs")
 

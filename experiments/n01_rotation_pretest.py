@@ -185,9 +185,14 @@ def reader_median_uzh(seq: str, variant: str = "a") -> float:
 
 
 def reader_median_tii(flight: str) -> float:
-    p = ROOT / f"results/gate_a2/tii/{flight}__identity.jsonl"
-    rows = [json.loads(l) for l in p.read_text().splitlines() if l.strip()]
-    return float(np.median([r["angle_deg"] for r in rows]))
+    """Median angle between the frozen reader's up and the mocap up (J01's FrameTable)."""
+    from src.depicted.anatomy import angle_deg as _angle_deg
+    from src.depicted.anatomy import load_flight
+
+    tab = load_flight(flight)
+    good = np.isfinite(tab.up_frozen).all(axis=1) & np.isfinite(tab.up_true).all(axis=1)
+    a = _angle_deg(tab.up_frozen[good], tab.up_true[good])
+    return float(np.median(a))
 
 
 # --------------------------------------------------------------------------- evaluation
@@ -300,9 +305,9 @@ def main() -> int:
         rows += rr
 
     # ---- validation checks before the rule
-    R = Rotation.from_euler("zyx", np.array([[10, -20, 30], [0, 0, 0], [-5, 40, 10]]),
-                            degrees=True).as_matrix()
-    ident = horizon_errors(R, R, np.arange(30) / 15.0, 1.0, 15.0, None)
+    R = Rotation.from_euler("zyx", [10, -20, 30], degrees=True).as_matrix()
+    Rseq = np.tile(R, (30, 1, 1))
+    ident = horizon_errors(Rseq, Rseq, np.arange(30) / 15.0, 1.0, 15.0, None)
     checks["identity_true_rotations"] = {"n": ident["n"], "max_deg": float(ident["errors_deg"].max())}
     checks["e01_variant_a_reproduction"] = {
         k: {"computed": readers["a"][k], "published": E01_VARIANT_A[k],
@@ -312,9 +317,10 @@ def main() -> int:
     geom = []
     for r in pop[:20]:
         d = np.load(L01 / "sim_dev/gt" / f"{r['clip_id']}.npz")
-        u = up_of(np.asarray(d["R_bw_cam"], float))
-        lean = lean_rp(u, np.asarray(d["R_cb"], float))
-        ref = np.degrees(np.asarray(d["lean_dep"], float))
+        R_cb = np.asarray(d["R_cb"], float)
+        R_cw = np.einsum("nij,jk->nik", np.asarray(d["R_bw_cam"], float), R_cb)
+        lean = depicted_lean_from_gravity(up_of(R_cw), R_cb)
+        ref = np.asarray(d["lean_dep"], float)
         geom.append(float(np.nanmax(np.abs(lean - ref))))
     checks["sim_geometry_lean_dep_max_abs_diff_deg"] = float(np.max(geom))
 
@@ -349,15 +355,27 @@ def main() -> int:
         rm = [u["reader_median_deg"] for u in usable if u["reader_median_deg"] is not None
               and np.isfinite(u["reader_median_deg"])]
         rec["reader_median_of_unit_medians_deg"] = float(np.median(rm)) if rm else float("nan")
-        rec["ratio_at_10s"] = (rec["horizons"]["10"]["median_of_unit_medians_deg"]
-                               / rec["reader_median_of_unit_medians_deg"]
-                               if rm and np.isfinite(rec["horizons"]["10"]["median_of_unit_medians_deg"])
+        den = rec["reader_median_of_unit_medians_deg"]
+        num = rec["horizons"]["10"]["median_of_unit_medians_deg"]
+        rec["ratio_at_10s"] = (num / den if np.isfinite(num) and np.isfinite(den) and den > 0
                                else float("nan"))
-        rec["ratio_at_10s_pooled"] = (rec["horizons"]["10"]["pooled_median_deg"]
-                                     / rec["reader_median_of_unit_medians_deg"]
-                                     if rm else float("nan"))
+        rec["ratio_at_10s_pooled"] = (rec["horizons"]["10"]["pooled_median_deg"] / den
+                                     if np.isfinite(den) and den > 0 else float("nan"))
         rec["pass_10s"] = bool(rec["ratio_at_10s"] <= 0.50) if np.isfinite(rec["ratio_at_10s"]) else None
         rec["pass_failures"] = bool(rec["failure_rate"] <= 0.20) if np.isfinite(rec["failure_rate"]) else None
+        # per-unit 10 s medians and the per-mount (sim) medians
+        rec["per_unit_10s"] = {u["unit"]: (u["per_h"].get(10, {}).get("median_deg")
+                                           if u["per_h"].get(10, {}).get("n", 0) else None)
+                               for u in usable}
+        if name.endswith("_sim"):
+            mt = {}
+            for u in usable:
+                if u["per_h"].get(10, {}).get("n", 0) == 0:
+                    continue
+                m = next((r["uptilt_deg"] for r in pop if r["clip_id"] == u["unit"]), None)
+                mt.setdefault(str(m), []).append(u["per_h"][10]["median_deg"])
+            rec["per_mount_10s"] = {k: {"n": len(v), "median_deg": float(np.median(v))}
+                                    for k, v in mt.items()}
         summary["strata"][name] = rec
 
     gate = ["forest_sim", "real_outdoor_uzh"]
