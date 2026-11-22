@@ -214,6 +214,54 @@ def schema_semantics(recs: list[dict]) -> dict:
     return out
 
 
+def _huber_offset(dep: np.ndarray, req: np.ndarray, delta: float, iters: int = 6) -> np.ndarray:
+    r = dep - req
+    ok = np.isfinite(r).all(1)
+    if ok.sum() < 4:
+        return np.zeros(2)
+    r = r[ok]
+    o = np.median(r, axis=0)
+    for _ in range(iters):
+        e = np.linalg.norm(r - o, axis=1)
+        w = np.where(e <= delta, 1.0, delta / np.maximum(e, 1e-12))
+        o = np.sum(w[:, None] * r, axis=0) / np.sum(w)
+    return o
+
+
+def _huber_loss(dep: np.ndarray, req: np.ndarray, delta_deg: float) -> float:
+    o = _huber_offset(dep, req, np.sin(np.deg2rad(delta_deg)))
+    e = np.linalg.norm(dep - req - o, axis=1)
+    e = e[np.isfinite(e)]
+    d = np.deg2rad(delta_deg)
+    h = np.where(e <= d, 0.5 * e ** 2, d * (e - 0.5 * d))
+    return float(np.mean(h)) if len(h) else np.inf
+
+
+def j03_drag_diagnostics(recs: list[dict], gate: dict[str, bool]) -> dict:
+    """J03's per-clip Huber drag fit, with the schema read physically.
+
+    J03 fitted ``lean_req + (k - 0.295) vel_req`` on k in [0, 0.40]. Here the same fit is
+    run on ``lean_req + k vel_req`` with k on the same physical grid, so the fitted value
+    is the drag coefficient, not an offset from 0.295.
+    """
+    grid = np.round(np.arange(0.0, 0.401, 0.05), 3)
+    ks = []
+    for r in recs:
+        if r["cond"] != "real" or not gate.get(r["clip_id"], False):
+            continue
+        dep, req, vel = r["depicted_lean"], r["lean_req"], r["vel_req"]
+        ok = np.isfinite(dep).all(1) & np.isfinite(req).all(1) & np.isfinite(vel).all(1)
+        loss = [(_huber_loss(dep[ok], (req[ok] + k * vel[ok]), 3.0), k) for k in grid]
+        ks.append(min(loss)[1])
+    hist = {f"{k:.2f}": int(sum(1 for x in ks if abs(x - k) < 1e-9)) for k in grid}
+    return {"n": len(ks), "grid": [float(k) for k in grid], "histogram": hist,
+            "median": float(np.median(ks)) if ks else float("nan"),
+            "p10": float(np.percentile(ks, 10)) if ks else float("nan"),
+            "p90": float(np.percentile(ks, 90)) if ks else float("nan"),
+            "note": "physical k_d grid; compare J03's shifted grid [0,0.40] = "
+                    "k_d,eff [-0.295,+0.105]"}
+
+
 def main() -> int:
     run = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     out = OUT / run
@@ -318,13 +366,15 @@ def main() -> int:
         exact[tag] = {"k_d": k_d, "median_residual_no_lag": float(np.nanmedian(vals_n)),
                       "threshold_no_lag": thr_n, "threshold_with_lag": thr_l, "n": len(real)}
 
-    doc = {"run": run, "a2_modes": a2, "exact_f0": exact, "anwm_nulls": nulls, "gt_level": gt_level,
+    j03_drag = j03_drag_diagnostics(recs, gate)
+    doc = {"run": run, "a2_modes": a2, "exact_f0": exact, "j03_drag_corrected": j03_drag, "anwm_nulls": nulls, "gt_level": gt_level,
            "schema_semantics": sem, "j03_f0": f0}
     (out / "k01.json").write_text(json.dumps(doc, indent=1, default=_jsonable))
     _mapping(out, doc)
     print(json.dumps(doc["a2_modes"], indent=1))
     print(json.dumps(doc["schema_semantics"], indent=1))
     print(json.dumps(doc["j03_f0"], indent=1))
+    print(json.dumps(doc["j03_drag_corrected"], indent=1))
     print("wrote", out)
     return 0
 

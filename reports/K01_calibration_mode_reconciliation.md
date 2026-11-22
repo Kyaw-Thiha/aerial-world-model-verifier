@@ -1,7 +1,7 @@
 # K01 — Reconciling the calibration-mode labels of every published floor
 
 Track K, Part 1. Written 2026-11-22. Code `experiments/k01_calibration_modes.py` (commit
-`16c0776`), results `results/k01/20261122T090804Z/` (`k01.json`, `mapping.csv`). CPU
+`16c0776`), results `results/k01/20261122T091406Z/` (`k01.json`, `mapping.csv`). CPU
 only, zero GPU, zero spend. No frozen config or published report was edited; the proposed
 corrections are a note in `docs/decisions.md` and §6 here.
 
@@ -146,9 +146,10 @@ is therefore worth **5.2°** of threshold, not 0.6°.
   wrong way). Its 4.9° "drag-free" MDV is likewise the negative-drag arm.
 * J03's F0 is the drag-free threshold on 69 dev clips without lag (14.05); A2's drag-free
   threshold with lag on 58 clips is 14.73. Mode-matched, population- and nuisance-different.
-* J03's per-clip drag fit, read physically, centres on **0.295** (histogram over the 72
-  gate-kept real clips: 7 at 0.00, 4 at 0.10, 3 at 0.15, 1 at 0.20, 12 at 0.25, 26 at 0.295,
-  10 at 0.35, 9 at 0.40). The earlier "65 of 72 at the bound" is 65 at `k_d,eff = +0.105`.
+* J03's per-clip drag fit, read physically, centres on **0.30** (the 0.05 grid's nearest
+  point to 0.295; histogram over the 72 gate-kept real clips: 8 at 0.00, 2 at 0.10, 3 at
+  0.15, 2 at 0.20, 15 at 0.25, 25 at 0.30, 8 at 0.35, 9 at 0.40; `k01.json`'s
+  `j03_drag_corrected`). The earlier "65 of 72 at the bound" is 65 at `k_d,eff = +0.105`.
 
 ## What this supports
 
