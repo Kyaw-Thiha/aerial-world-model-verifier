@@ -226,9 +226,12 @@ blindness. Cost: 51.7-62.9 s/clip, 55.2 GB peak VRAM, about US$0.04/clip on an A
 
 ## What this does not show
 
-* **SolarWM's result is one checkpoint and one resolution.** Five first frames and three seeds
-  per path are covered, but the 14B, LTX-22B and H3-33B routes are not run; a scaling estimate
-  is only meaningful if their control path behaves like the 5B's.
+* **SolarWM's result is one checkpoint and one resolution.** Five first frames and three
+  generations per path are covered, but the 14B, LTX-22B and H3-33B routes are not run; a
+  scaling estimate is only meaningful if their control path behaves like the 5B's. The
+  three "seeds" are independent validation draws: the release fixes `noise_seed: 42` and
+  derives the per-sample noise from the sample index, so no per-sample seed argument was
+  exposed. This measures sampling variance, not a controlled seed knob.
 * **The full-precision LingBot result is five probe clips, one first frame, one seed.** It can
   rule out a strong quantisation effect on this frame; it cannot rule out one on other scenes.
 * **The inventory is not a benchmark.** Licences, VRAM and cost are read from cards and
