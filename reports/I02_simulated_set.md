@@ -120,6 +120,28 @@ carry the family and the mount on every row, and the evaluation protocol stratif
 family (the pre-registration's `primary_outcomes` are per defect family; the scene family is
 the stratification this evidence now requires).
 
+## What the reader's floor implies for the violations in the set
+
+The violation magnitudes were drawn before the reader was measured (they come from the frozen
+table's maneuver targets), so comparing them now is a statement about the set's difficulty, not
+a post-hoc tuning:
+
+| family | reader up error (median of the grid) | defect magnitude, median | min | max | magnitude / reader |
+| --- | --- | --- | --- | --- | --- |
+| urban_checker | 0.90 | 13.9 | 1.1 | 61.7 | 15.5 |
+| industrial | 1.29 | 10.6 | 2.8 | 52.0 | 8.2 |
+| forest_ridge | 8.52 | 15.3 | 2.9 | 97.7 | 1.8 |
+
+So the open scenes carry violations 8-15 times the reader's own error, and the forest carries
+them at about 1.8 times -- which is where a clip-level verdict will start to fail, and why the
+forest clips are the ones the set most needs (they are what a reviewer would call the hard
+cases, and they are also the ones whose results must not be pooled with the rest).
+
+The thrust-limit family is measured differently on purpose: its `magnitude_deg` is the excess
+of the peak required tilt over the 60 deg / 2.0 g envelope (1.8-8.3 deg across the dev set),
+with the peak thrust ratio in its own column, because the violation is the path leaving the
+envelope, not a tilt that is visible in a frame.
+
 ## What this supports
 
 * A labelled set of feasible and infeasible flights with exact ground truth, exact violation
