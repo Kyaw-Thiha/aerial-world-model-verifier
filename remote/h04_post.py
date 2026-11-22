@@ -45,7 +45,7 @@ def warp_yaw(tag: str = "main", yaw_deg: float = 20.0, f_px: float = 240.0,
     out_root = Path("/r/solarwm") / f"{tag}_yaw{yaw_deg:+.0f}"
     done = 0
     for clip in sorted(root.iterdir()):
-        if not clip.name.endswith("_A_flatness_g0"):
+        if not (clip.name.startswith("main_") and clip.name.endswith("_A_flatness_g0")):
             continue
         name = clip.name[len("main_"):-len("_A_flatness_g0")]
         p = poses[name]
@@ -63,9 +63,12 @@ def warp_yaw(tag: str = "main", yaw_deg: float = 20.0, f_px: float = 240.0,
             img = cv2.imread(str(fp))
             if img is None or k >= len(M):
                 continue
-            out, valid = warp(img, M[k], "pinhole", K)
+            # the shared bilinear helper handles one channel; warping per channel is exact
+            chans = [warp(img[..., c], M[k], "pinhole", K)[0] for c in range(img.shape[2])]
+            out = np.clip(np.rint(np.stack(chans, axis=-1)), 0, 255).astype(np.uint8)
             cv2.imwrite(str(d / fp.name), out)
         done += 1
+        vol_r.commit()
         print(clip.name, flush=True)
     (out_root / "WARP.json").write_text(json.dumps(
         {"tag": tag, "yaw_deg": yaw_deg, "f_px": f_px, "size": [width, height],

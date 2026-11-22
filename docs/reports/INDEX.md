@@ -71,6 +71,18 @@ Files live in `reports/` at the repository root. Numbering restarts per track: T
 | `E04_v3_r2_coherence.md` | v3: fixed-crop edits, official schema v2, Track D's R2 + coherence on UZH | current |
 | `E05_window_rule.md` | Independent test of Track D's label-free window rule (`0.5 / f95`) | current; **supersedes** D04's UZH window numbers (0.07-0.12 s → 0.34-1.42 s at 500 Hz) |
 
+## Track H3 — reader validity on generated frames (branch `track-h3-reader-validity`, HEAD pending)
+
+| report | title | status |
+| --- | --- | --- |
+| `H03_reader_on_generated_frames.md` | Is the depicted-attitude reader valid on generated frames? | current; the pre-registered rule fails, carried by the non-learned estimator, and the LingBot eye-versus-reader case is resolved in the reader's favour |
+
+## Track H4 — SolarWM continuous-attitude campaign (branch `track-h3-reader-validity`)
+
+| report | title | status |
+| --- | --- | --- |
+| `H04_solarwm_continuous_attitude.md` | SolarWM-5B on continuously changing commanded attitude | current; two amendments before any clip existed (path realisation, and the forward-speed modulation forced by the frozen statistic's rank deficiency) |
+
 ## Notes
 
 * Report 04 quotes the pre-registration sha256 `b8fd7013…` for `configs/verdict_preregistration.yaml`

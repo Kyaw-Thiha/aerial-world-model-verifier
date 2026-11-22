@@ -215,7 +215,7 @@ def main() -> int:
         name, arm, draw_i, frame_key = parsed
         clip = make_clip(sid, name, arm, draw_i, "", d, rows, args.window, gain_cfg)
         s = score_clip(clip, gain_cfg, coh_cfg, gate_cfg)
-        s["scene"] = summ[name].get("first_frame") if name in summ else ""
+        s["scene"] = (frame_key or (summ[name].get("first_frame") if name in summ else ""))
         s["family"] = summ[name]["family"] if name in summ else ""
         s["requested_peak"] = summ[name]["requested_peak_bank_deg"] if name in summ else np.nan
         scored.append(s)
