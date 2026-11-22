@@ -102,6 +102,16 @@ def h01() -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
+def gate_mask(df: pd.DataFrame, cfg: str, fr: dict, dis_col: str | None):
+    keep = pd.Series(True, index=df.index)
+    if cfg in ("GA", "GAB"):
+        keep &= ((df.sigma_min >= fr["lam_a"]) & (df.tilt_max <= fr["near_vertical"])
+                 ).fillna(False)
+    if cfg in ("GB", "GAB") and dis_col is not None:
+        keep &= (df[dis_col] <= fr["tau_b"]).fillna(False)
+    return keep
+
+
 def counts(df: pd.DataFrame, fr: dict, label_col: str, dis_col: str | None) -> dict:
     out = {}
     for cfg in ("G0_S3_only", "GA", "GB", "GAB"):
@@ -149,18 +159,34 @@ def main() -> None:
     h4 = h04()
     h4["dis_med"] = h4.clip_id.map(dis)
     h4.to_csv(OUT / "h04_clips.csv", index=False)
+    h04_detail = {}
+    for cfg, ent in counts(h4, fr, "arm", "dis_med").items():
+        sub = h4[gate_mask(h4, cfg, fr, "dis_med")]
+        d = {}
+        for arm, g in sub.groupby("arm"):
+            t = g[g.testable]
+            d[arm] = {"kept": int(len(g)), "kept_testable": int(len(t)),
+                      "accepted": int(t.accepted.sum()),
+                      "rejected": int(len(t) - t.accepted.sum())}
+        h04_detail[cfg] = d
     res = {"frozen": fr,
-           "h04": {"by_arm_all": h4.groupby("arm").size().to_dict(),
-                   "accepted_by_arm_all": h4.groupby("arm").accepted.sum().to_dict(),
-                   "configs": counts(h4, fr, "arm", "dis_med")}}
+           "h04": {"by_arm_all": {k: int(v) for k, v in h4.groupby("arm").size().items()},
+                   "kept_by_config": counts(h4, fr, "arm", "dis_med"),
+                   "detail": h04_detail}}
 
     h1 = h01()
     h1["dis_med"] = h1.clip_id.map(dis)
-    h1.to_csv(OUT / "h01_clips.csv", index=False)
     thr = 8.87
     h1["infeasible"] = h1.residual_median_deg > thr
+    h1.to_csv(OUT / "h01_clips.csv", index=False)
+    h01_detail = {}
+    for cfg in ("G0_S3_only", "GA", "GB", "GAB"):
+        sub = h1[gate_mask(h1, cfg, fr, "dis_med")]
+        h01_detail[cfg] = {"kept": int(len(sub)),
+                           "infeasible": int(sub.infeasible.sum()),
+                           "feasible": int(len(sub) - sub.infeasible.sum())}
     res["h01"] = {"n": int(len(h1)), "infeasible_all": int(h1.infeasible.sum()),
-                  "configs": counts(h1, fr, "infeasible", "dis_med")}
+                  "detail": h01_detail}
     (OUT / "generators.json").write_text(json.dumps(res, indent=1))
     print(json.dumps(res, indent=1))
 
