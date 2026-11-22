@@ -1,0 +1,176 @@
+# H03 — Pre-registration: is the depicted-attitude reader valid on generated frames?
+#
+# Committed BEFORE any independent estimator is run on any sampled frame and BEFORE any
+# reader-versus-independent comparison is computed.  The reader's own existing rows are
+# not used to pick the sample; the sample is fixed by the rule in `sample` below.
+#
+# Any change after an outcome is an amendment commit with its reason, and must be labelled
+# exploratory in reports/H03_reader_on_generated_frames.md.
+prereg_version: 1
+date: 2026-11-22
+tag: "[H3]"
+track: H3
+branch: track-h3-reader-validity
+handoff: "20 (Track H3: reader validity on generated frames)"
+
+# ------------------------------------------------------------------ the reader under test
+reader:
+  name: GeoCalib
+  commit: 1dedb29f94fc11b896c5f572005978aeebccd67f
+  feed: "square centre crop, resized to 224x224, pinhole camera model with a scalar focal prior"
+  f_px: 112.0                       # fov_deg 90 on a 224 px square, as in H01/H02
+  output: "world-up unit vector in camera coordinates (gravity.vec3d)"
+  why_roll_is_the_metric: >
+    The horizontal azimuth of the up vector in the camera is invariant to focal length for a
+    pinhole camera and to any centred radial fisheye model, because such models preserve the
+    azimuthal direction of a ray.  Roll (= the azimuth of the up vector projected into the
+    image plane) is therefore comparable across the reader, both independent estimators and
+    the controls, while the tilt additionally needs focal length.  Roll is the primary
+    metric; tilt is secondary and focal-dependent.
+
+# ------------------------------------------------------------------ population (150 frames)
+sample:
+  total_frames: 150
+  frame_index_rule: >
+    For a clip with n frames, the five sampled frames are the indices
+    round(linspace(0, n - 1, 5)) (numpy, integer rounding); no frame is chosen by looking
+    at its content or at any estimator's output.
+  sources:
+    anwm:
+      n_frames: 30
+      clips: [C_cruise_ctl_course_0_s1, C_slalom_5_fixed_0_s1, C_slalom_10_fixed_0_s1,
+              C_climb_turn_10_fixed_0_s1, C_climb_turn_20_fixed_0_s1,
+              C_accel_brake_20_course_0_s1]
+      volume: "awmv-h-anwm-results:/clips/C/<clip>/frames/<NN>.png (seed-1 rollouts, 16 frames each)"
+      rationale: "six designed paths spanning level/cruise, 5 and 10 deg slalom, 10 and 20 deg
+                  climb-and-turn and a 20 deg accelerate-brake; seed 1 is one draw per path."
+    lingbot_nf4:
+      n_frames: 15
+      clips: [probe_level, probe_rollramp_p20, probe_rollramp_m20]
+      source: "data/h01_lingbot_out/<clip>/frames (H01 NF4 probes, 45 decoded frames)"
+      rationale: "H01's roll-blindness result was measured on these clips."
+    lingbot_bf16:
+      n_frames: 15
+      clips: [probe_level, probe_rollramp_fast20, probe_rollramp_m20]
+      source: "data/h02_lingbot_full_out/<clip>/frames (H02 bf16 probes)"
+      rationale: "the eye-versus-reader disagreement is on the bf16 +20/-20 ramps; the
+                  triangular probe ('fast20') replaces p20 because H02 generated that profile."
+    solarwm:
+      n_frames: 30
+      clips: [probe_level, probe_p20, probe_m20,
+              grid_302OLP89E75X7MFPRR58QG7CJPZCA7_processed_015_turn10_flatness,
+              grid_302OLP89E75X7MFPRR58QG7CJPZCA7_processed_015_turn20_mirrored_roll,
+              grid_302OLP89E75X7MFPRR58QG7CJPZCA7_processed_015_slalom10_flatness]
+      source: "data/h02_solarwm_probes_out and data/h02_solarwm_grid_out (mp4 decoded, 81 frames)"
+      rationale: "the ramps are the convention probe that passed; the three grid clips span a
+                  held 20 deg bank (mirrored), a held 10 deg bank and a 10 deg slalom."
+  controls:
+    simulated:
+      n_frames: 30
+      clips: [i02_dev_000, i02_dev_001, i02_dev_002, i02_dev_004, i02_dev_005, i02_dev_006]
+      volume: "awmv-i-data:/i02/clips/<clip>"
+      families: [industrial, urban_checker, forest_ridge]
+      mounts_deg: [0, 15, 30, 0, 15, 30]
+      truth: "render.npz pose per rendered frame: up_cam = R_cb^T R_bw^T e3, exactly the
+              convention the reader's gravity output is compared in"
+      rationale: "feasible clips only, three scene families, three mounts; the camera is a
+                  pinhole 640x360 render, so the reader feed matches the generated-frame feed."
+    real:
+      n_frames: 30
+      flights: [flight-01a-ellipse, flight-04a-ellipse, flight-13a-trackRATM,
+                flight-01p-ellipse, flight-07p-lemniscate, flight-13p-trackRATM]
+      source: "data/raw/tii_frames/<flight> (48 evenly spaced frames per flight, 640x480 fisheye)"
+      truth: "mocap rotation at the frame timestamp through camera_to_body_pitched(uptilt);
+              up_cam = R_cb^T R_bw^T e3"
+      rationale: "three autonomous and three piloted flights, both 30 and 50 deg mounts, so the
+                  control spans the attitude range the verifier was calibrated on."
+
+# ------------------------------------------------------------------ independent estimators
+independent_estimators:
+  classical:
+    name: C1_line_horizon
+    method: >
+      Two non-learned readings of the same frame, both focal-free for roll.
+      (a) Sky/ground split: an HSV+intensity sky mask (blue-dominant or bright, low-texture
+      top region) refined by a robust line fit (RANSAC, 2 px inlier tolerance) to the mask
+      boundary; the line's image angle is the roll.  (b) Rectilinear line family: LSD line
+      segments (minimum length 40 px), each line's angle taken mod 90 deg, the circular-median
+      deviation from image axes is the roll, with a concentration score.  The reading with the
+      larger support (sky-boundary inliers, or line-family size x concentration) is reported;
+      the frame abstains when neither reaches its support floor (>= 25 sky-boundary inliers and
+      a boundary longer than 60 % of the width, or >= 12 lines with concentration >= 0.6).
+    implementation: "experiments/h03_classical.py, pure OpenCV/numpy, validated on synthetic
+                     renders with known roll (tests/test_h03_classical.py)"
+    licence: "OpenCV (Apache-2.0), numpy (BSD); no learned weights"
+    roll_sign: "verified against synthetic rotations before any real frame is read"
+  perspective_fields:
+    name: P1_perspective_fields
+    method: >
+      Perspective Fields (CVPR 2023) 'Paramnet-360Cities-edina-centered'.  The predicted
+      per-pixel up-vector field is reduced to one up direction in camera coordinates by the
+      model's own parameter head (roll, pitch, vfov) and, independently, by a confidence-weighted
+      circular mean of the field's per-pixel up azimuths; the two must agree within 5 deg or the
+      frame is marked inconsistent and the parameter-head value is used with that flag.
+    weights: "paramnet_360cities_edina_rpf.pth from the project's model zoo (Dropbox link)"
+    licence: "Adobe Research License Terms — noncommercial academic research permitted,
+              redistribution prohibited.  Weights are cached locally/gitignored and never
+              committed or re-hosted; the licence is recorded in docs/decisions.md."
+    availability: "verified before use: repo installs, weights download, one demo image runs"
+    roll_sign: "verified against synthetic rotations before any real frame is read"
+
+# ------------------------------------------------------------------ statistic and rule
+statistic:
+  roll_error_deg: >
+    e = |wrap(roll_est - roll_truth)| in [0, 90], where roll = atan2(u_x, -u_y) in degrees
+    for a unit up vector u in camera coordinates (x right, y down, z forward).  The
+    difference is wrapped to [-90, 90] before the absolute value.
+  disagreement_deg: "the same wrapped absolute difference between the reader and an
+    independent estimator (no truth needed)."
+  aggregation: "median over the frames of a source; the frame-level median is the reported
+    number, with the interquartile range and n."
+
+rule:
+  primary: >
+    E_control = median roll error of the reader over ALL 60 controls (30 simulated + 30 real,
+    each scored in the reader's generated-frame feed).  The reader is VALID on a generated
+    source S if, for EVERY independent estimator X that returns a reading on at least 70 % of
+    S's frames, median_{frames in S} |roll_reader - roll_X| <= 1.5 * E_control.
+  overall: "the reader is valid on generated frames iff all four generated sources pass."
+  failure_report: >
+    If a source fails, the report names the source, the failing estimator(s), the failing
+    frames (scene family, arm, and injected roll where known) and the measured numbers.  A
+    source whose independent coverage is below 70 % for BOTH estimators is reported as
+    "not assessable", not as a pass.
+  secondary_reported_not_decisive:
+    - "E_control split into simulated-only and real-only control errors; the same rule against each."
+    - "the independent estimators' own control errors E_X, so a large disagreement can be attributed to the reader or to the estimator."
+    - "pairwise agreement between the two independent estimators on every source."
+    - "the tilt (not only roll) comparison -- full up-vector angle with each estimator's own focal/PF parameter head, and the reader at f = 112 px, reported with the focal caveat."
+    - "the optional human-labelled 60-frame subset (local HTML tool), if the user labels it; never decisive and reported as exploratory."
+    - "reader roll vs the generated clip's commanded attitude for the SolarWM arms (the injection knob), as a sanity check that a passing arm is not an artefact of a wrong truth sign."
+
+# ------------------------------------------------------------------ what happens if it fails
+if_reader_fails:
+  recompute: >
+    For each generator source that fails, recompute the affected H01/H02/E5 headline numbers
+    with that source's independent estimator in place of the reader, using the same statistic
+    (clip-median depicted tilt, required tilt at the designed path, 6.46 deg feasibility
+    threshold) and the same populations.  The report lists which H01/H02/E5 numbers change and
+    by how much; nothing in the earlier reports is edited.
+  lingbot_case: >
+    The eye-versus-reader disagreement on the LingBot bf16 +20/-20 ramps is settled by the
+    measured numbers: the independent rolling-horizon reading is compared with the reader's
+    3.9-4.9 deg on the same frames, and with the level control's independent reading.
+
+# ------------------------------------------------------------------ costs and statistics
+statistics:
+  intervals: "frame-level bootstrap (5,000 replicates, numpy.random.default_rng(1)) within a
+    source; frames are not independent within a clip, so the clip is the cluster where a
+    source has >= 10 clips (none does), and every interval is descriptive and marked daggers"
+  denominators: "k/n beside every rate; n = frames with a usable reading"
+  no_tuning: "no threshold, focal, sample or estimator setting is changed after any outcome"
+cost:
+  reader: "150 frames x 2 feeds (generated feed + TII native fisheye check) on one A10 container"
+  independent: "150 frames on one A10 container (Perspective Fields), classical on local CPU"
+  estimate_usd: 2.0
+  ceiling_usd: 60
