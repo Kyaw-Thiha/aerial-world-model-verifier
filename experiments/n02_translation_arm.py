@@ -122,12 +122,9 @@ def measure_sim(cid: str, family: str, mounts: str) -> list[dict]:
     t_gt, pos, R_bw_cam, R_cb = _sim_truth(cid)
     ft = np.arange(len(frames)) / fps
     pos_f = np.column_stack([np.interp(ft, t_gt, pos[:, k]) for k in range(3)])
+    from scipy.spatial.transform import Rotation, Slerp
     R_cw = np.einsum("nij,jk->nik", R_bw_cam, R_cb)
-    R_cw_f = np.stack([np.stack([np.interp(ft, t_gt, R_cw[:, r, c]) for c in range(3)])
-                       for r in range(3)], axis=1)
-    # re-orthonormalise the interpolated rotations
-    from scipy.spatial.transform import Rotation
-    R_cw_f = Rotation.from_matrix(R_cw_f).as_matrix()
+    R_cw_f = Slerp(t_gt, Rotation.from_quat(Rotation.from_matrix(R_cw).as_quat()))(ft).as_matrix()
     rows = []
     for i in range(0, len(frames) - 1, START_STRIDE):
         for gap in GAPS:
@@ -139,12 +136,14 @@ def measure_sim(cid: str, family: str, mounts: str) -> list[dict]:
             dp = pos_f[j] - pos_f[i]
             dt = ft[j] - ft[i]
             speed = float(np.linalg.norm(dp) / dt)
-            t_true = R_cw_f[i].T @ dp
+            # OpenCV recoverPose convention (amendment C): t = -R_cw(j)^T d
+            t_true = -(R_cw_f[j].T @ dp)
             delta = (angle_between(g["t_est"], t_true)
                      if g["t_est"] is not None else float("nan"))
             rows.append({"stratum": f"sim_{family}", "kind": "sim", "unit": cid,
                          "mount_deg": mounts, "gap_s": gap, "i": i, "j": j, "dt_s": dt,
                          "speed_mps": speed, "delta_deg": delta,
+                         "delta_amb_deg": min(delta, 180.0 - delta) if np.isfinite(delta) else float("nan"),
                          "n_matches": g["n_matches"], "n_inliers": g["n_inliers"],
                          "sampson_median_px": g["sampson_median_px"], "status": g["status"],
                          "t_est": None if g["t_est"] is None else g["t_est"].tolist(),
@@ -184,12 +183,13 @@ def measure_uzh(seq: str) -> list[dict]:
             dp = pos[j] - pos[i]
             dt = (j - i) / fps
             speed = float(np.linalg.norm(dp) / dt)
-            t_true = R_cw[i].T @ dp
+            t_true = -(R_cw[j].T @ dp)  # amendment C
             delta = (angle_between(g["t_est"], t_true)
                      if g["t_est"] is not None else float("nan"))
             rows.append({"stratum": "uzh_outdoor", "kind": "uzh", "unit": seq,
                          "mount_deg": "", "gap_s": gap, "i": i, "j": j, "dt_s": dt,
                          "speed_mps": speed, "delta_deg": delta,
+                         "delta_amb_deg": min(delta, 180.0 - delta) if np.isfinite(delta) else float("nan"),
                          "n_matches": g["n_matches"], "n_inliers": g["n_inliers"],
                          "sampson_median_px": g["sampson_median_px"], "status": g["status"],
                          "t_est": None if g["t_est"] is None else g["t_est"].tolist(),
@@ -248,8 +248,8 @@ def run_measure() -> None:
                 print(f"sim {k + 1}/{len(tasks)} clips, {len(rows)} pairs", flush=True)
     _write(rows, OUT / "pairs_sim.csv",
            ["stratum", "kind", "unit", "mount_deg", "gap_s", "i", "j", "dt_s", "speed_mps",
-            "delta_deg", "n_matches", "n_inliers", "sampson_median_px", "status",
-            "t_est", "t_true"])
+            "delta_deg", "delta_amb_deg", "n_matches", "n_inliers", "sampson_median_px",
+            "status", "t_est", "t_true"])
     print(f"wrote {len(rows)} sim pairs")
 
     uzh = ["outdoor_forward_1", "outdoor_forward_3", "outdoor_forward_5"]
@@ -259,8 +259,8 @@ def run_measure() -> None:
             urows += part
     _write(urows, OUT / "pairs_uzh.csv",
            ["stratum", "kind", "unit", "mount_deg", "gap_s", "i", "j", "dt_s", "speed_mps",
-            "delta_deg", "n_matches", "n_inliers", "sampson_median_px", "status",
-            "t_est", "t_true"])
+            "delta_deg", "delta_amb_deg", "n_matches", "n_inliers", "sampson_median_px",
+            "status", "t_est", "t_true"])
     print(f"wrote {len(urows)} UZH pairs")
 
 
