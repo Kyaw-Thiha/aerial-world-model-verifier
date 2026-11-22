@@ -120,7 +120,7 @@ def _build_data(sample_ids: list[str], out_root: Path, width: int = 832, height:
 
 
 def _write_config(release: Path, out: Path, count: int, steps: int, frames: int,
-                  world_size: int = 1) -> Path:
+                  world_size: int = 2) -> Path:
     import yaml
 
     template = Path("/solarwm/configs/solar_wm/wan22_i2v_a14b/infer_stage0p5_fm_81f.yaml")
@@ -142,19 +142,28 @@ def _write_config(release: Path, out: Path, count: int, steps: int, frames: int,
         "rollout_latent_frames": cfg["data"]["latent_frames"],
     }]
     cfg["inference"] = {"source": "validation"}
-    cfg["distributed"] = {"world_size": world_size,
-                          "sequence_parallel_size": world_size,
-                          "sequence_layout": "whole_frame_uneven"}
+    dist = dict(cfg.get("distributed", {}))
+    dist.update({"world_size": world_size, "sequence_parallel_size": world_size,
+                 "sample_sharding": "logical_dp"})
+    dist.setdefault("sequence_layout", "whole_frame_uneven")
+    cfg["distributed"] = dist
+    # training-only fields are still validated at config load: DP*micro*grad_accum must equal
+    # global_batch_size, and DP = world_size / sp
+    dp = max(1, world_size // max(1, dist.get("sequence_parallel_size", 1)))
+    cfg.setdefault("train", {})
+    cfg["train"]["micro_batch_size"] = 1
+    cfg["train"]["grad_accum"] = 1
+    cfg["train"]["global_batch_size"] = dp
     cfg["runtime"]["output_dir"] = str(out)
     path = Path("/tmp") / f"{out.name}.yaml"
     path.write_text(yaml.safe_dump(cfg))
     return path
 
 
-@app.function(gpu="A100-80GB", cpu=8, memory=131072, timeout=6 * 3600,
+@app.function(gpu="A100-80GB:2", cpu=8, memory=131072, timeout=6 * 3600,
               volumes={"/w": vol_w, "/r": vol_r}, env={"HF_HOME": "/tmp/hf"})
 def infer(sample_ids: str, tag: str, steps: int = 50, frames: int = 81,
-          measure: bool = False, world_size: int = 1) -> dict:
+          measure: bool = False, world_size: int = 2) -> dict:
     import shutil
     import subprocess
     import time
@@ -175,7 +184,9 @@ def infer(sample_ids: str, tag: str, steps: int = 50, frames: int = 81,
     cfg = _write_config(release, out, len(ids), steps, frames, world_size=world_size)
     env = dict(os.environ, PYTHONPATH="/solarwm")
     t0 = time.time()
-    proc = subprocess.run(["python", "-m", "solar", "infer", "--config", str(cfg)],
+    proc = subprocess.run(["torchrun", "--standalone",
+                           f"--nproc-per-node={world_size}",
+                           "-m", "solar", "infer", "--config", str(cfg)],
                           cwd="/solarwm", env=env, capture_output=True, text=True)
     secs = time.time() - t0
     (out_root / "infer.log").write_text(proc.stdout[-200000:] + "\n---STDERR---\n"
@@ -218,5 +229,5 @@ def main(mode: str = "download", ids: str = "", tag: str = "pilot14b", steps: in
     print(f"{len(chosen)} samples, tag {tag}, {steps} steps")
     print(json.dumps(infer.remote(json.dumps(chosen), tag=tag, steps=steps,
                                   measure=(mode == "timing"),
-                                  world_size=int(os.environ.get("H04_14B_WORLD", "1"))),
+                                  world_size=int(os.environ.get("H04_14B_WORLD", "2"))),
                      indent=1))
