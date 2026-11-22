@@ -95,6 +95,7 @@ def run_fdr_rates(man, dev, stats, seeds, feasible, out):
                 det = defaultdict(lambda: [0, 0])
                 fnum = fden = 0
                 fseg = minutes = 0.0
+                fk = fn = 0
                 for seed in seeds:
                     fit = [c for c in feasible if int(man[c]["scene_seed"]) != seed]
                     fit_vals = np.sort(np.concatenate([window_values(stats[(c, length)], tier)
@@ -122,6 +123,8 @@ def run_fdr_rates(man, dev, stats, seeds, feasible, out):
                             elif not dev[c].truth.any():
                                 fseg += len(merge_intervals(mask))
                                 minutes += len(dev[c]) / 30.0 / 60.0
+                                fk += int(bool(mask.any()))
+                                fn += 1
                     else:
                         for c in fold_clips:
                             ps, ss = [], []
@@ -142,6 +145,8 @@ def run_fdr_rates(man, dev, stats, seeds, feasible, out):
                             elif not dev[c].truth.any():
                                 fseg += len(merge_intervals(mask))
                                 minutes += len(dev[c]) / 30.0 / 60.0
+                                fk += int(bool(mask.any()))
+                                fn += 1
                 for (fam, tgt, frac), (k, n) in sorted(det.items()):
                     rows.append({"arm": arm["name"], "q": q, "mode": mode, "family": fam,
                                  "defect": tgt, "fraction": frac, "k": k, "n": n,
@@ -150,7 +155,9 @@ def run_fdr_rates(man, dev, stats, seeds, feasible, out):
                                  "fdp": (fnum / fden) if fden else None,
                                  "windows_outside": fnum, "windows_flagged": fden,
                                  "false_segments": fseg, "minutes": minutes,
-                                 "false_segments_per_min": (fseg / minutes) if minutes else None})
+                                 "false_segments_per_min": (fseg / minutes) if minutes else None,
+                                 "feasible_clips_flagged": fk, "feasible_clips_testable": fn,
+                                 "feasible_clip_rate": (fk / fn) if fn else None})
     dump(rows, out / "a2_fdr_rates.csv")
     dump(fdp_rows, out / "a2_fdr_realised.csv")
     return rows, fdp_rows
