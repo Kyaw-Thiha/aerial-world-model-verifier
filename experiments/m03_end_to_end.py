@@ -228,9 +228,7 @@ def build_sim(rows: pd.DataFrame) -> pd.DataFrame:
         out.append({"clip_id": cid, "family": man[cid]["family"],
                     "defect": man[cid]["defect_family"],
                     "mount": float(man[cid]["uptilt_deg"]), "n": int(len(dep)),
-                    "sigma_min": float(np.degrees(np.min(
-                        np.column_stack([dep.std(0), req.std(0)]).min(axis=1)
-                        * 0 + req.std(0).min()))),
+                    "sigma_min": float(np.degrees(req.std(0).min())),
                     "tilt_max": float(np.degrees(np.nanmax(np.arcsin(
                         np.clip(np.linalg.norm(req, axis=1), 0, 1))))),
                     "err_reader": float(np.degrees(np.median(

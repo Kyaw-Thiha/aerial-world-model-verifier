@@ -56,9 +56,14 @@ the reader, not of the path: under the exact required lean the yaw warp adds a s
 6. **Two yaw-invariant statistics were tried and both failed (exploratory, not pre-registered).**
    A complex correlation `|Σ l_dep conj(l_req)| / √(Σ|l_dep|²Σ|l_req|²)` is exactly invariant to a
    global azimuth rotation, and a magnitude correlation `corr(|l_dep|, |l_req|)` is invariant to
-   it too; on the same clips they flag the yaw control at 6/69 and 6/69 — but they also lose the
-   detections (removal 5/69 and 7/69 against the per-axis tier's 54/69). The invariance is
-   bought with the discrimination, which is why a *gate* cannot fix this and the report says so.
+   it too. Both are indeed immune to the yaw control (6/69 and 6/69, at their own false-reject
+   of 7/69) — and both lose the detections: tilt removal is flagged in 6/69 and 6/69, against
+   the per-axis tier's 54/69. The bulk separation is real (median score 0.232 for removal against
+   0.007 for real under the complex statistic) but the 95th-percentile threshold sits above the
+   removal bulk because the statistic is heavy-tailed on the real clips. The invariance is bought
+   with the discrimination, which is why a *gate* cannot fix this and the report says so.
+   Stored in `results/m01/exploratory_invariance.{json,csv}`
+   (`experiments/m01_exploratory_invariance.py`).
 
 ## Question
 
