@@ -31,7 +31,7 @@ from scipy.fft import dct, idct
 from scipy.spatial.transform import Rotation
 
 from src.airframe.kinematics import TII_FLIGHTS, load_tii_kinematics
-from src.airframe.models import axis_for, axis_of_lean, unit
+from src.airframe.models import axis_for, axis_of_lean, lean_of_axis, unit
 from src.airframe.schema_v3 import export_tree, sample_axis
 from src.depicted.clips import up_body_from_lean
 from src.depicted.stat_a2 import depicted_axis_from_up_body
@@ -298,6 +298,7 @@ def main() -> int:
     for (cid, cond), b in data.items():
         k = kd[b["flight"]]
         b["ax_v2"] = exact_v2_axis(k, b["t"], b["yaw"])
+        b["lean_v2"] = lean_of_axis(b["ax_v2"], b["yaw"])
         b["ax_v3"], b["lean_v3"] = v3_side(k, model, lofo_params[b["flight"]],
                                          b["t"], b["yaw"])
         b["lean_lin"] = b["lean_req_v2"] + K0 * b["vel_req_v2"]
@@ -310,7 +311,7 @@ def main() -> int:
         + "\n".join(f"{a},{b},{c},{d},{model}" for a, b, c, d in rows_v3) + "\n")
 
     # ---- rows for three required sides and both tiers
-    keys = {"v2_exact": ("ax_v2", None), "v2_linear": ("ax_lin", "lean_lin"),
+    keys = {"v2_exact": ("ax_v2", "lean_v2"), "v2_linear": ("ax_lin", "lean_lin"),
             "v3": ("ax_v3", "lean_v3")}
     rows = {k: [] for k in keys}
     for key, (ax_key, lean_key) in keys.items():

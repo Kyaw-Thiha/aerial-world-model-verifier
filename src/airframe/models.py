@@ -123,7 +123,8 @@ def _R_from_yaw_axis(yaw: np.ndarray, axis: np.ndarray) -> np.ndarray:
     K[:, 1, 2] = -vx[:, 0]
     K[:, 2, 0] = -vx[:, 1]
     K[:, 2, 1] = vx[:, 0]
-    fac = np.where(vv > 1e-12, 1.0 / (1.0 + cs), 0.0)
+    fac = np.where(vv > 1e-6, 1.0 / np.maximum(1.0 + cs, 1e-9), 0.0)
+    fac = np.clip(fac, 0.0, 1e6)
     Rt = np.eye(3)[None] + K + fac[:, None, None] * (K @ K)
     Rz = np.zeros((len(axis), 3, 3))
     Rz[:, 0, 0] = c

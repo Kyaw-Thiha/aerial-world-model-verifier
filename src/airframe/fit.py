@@ -117,11 +117,43 @@ def _unpack(model: str, x: np.ndarray) -> dict:
     return {n: float(v) for n, v in zip(parameter_names(model), x)}
 
 
+def _fit_m4_grid(units: list[Kinematics], lags: list[float]) -> dict:
+    """Deterministic coarse-to-fine grid for the rotor-drag coefficients.
+
+    M4 solves an implicit equation and its objective has a singularity near an inverted
+    axis, which makes Powell's line search unstable (amendment A).  The pre-registered
+    parameterisation and bounds are unchanged; only the search is a grid.
+    """
+    shifted = [shift_kinematics(k, lag) for k, lag in zip(units, lags)]
+    sub = [np.arange(0, len(k), 8) for k in shifted]
+
+    def loss(dx, dy):
+        return _objective(shifted, "M4", {"d_x": dx, "d_y": dy}, sub)
+
+    coarse = np.linspace(0.0, 1.0, 6)
+    best = (np.inf, 0.0, 0.0)
+    for dx in coarse:
+        for dy in coarse:
+            v = loss(dx, dy)
+            if v < best[0]:
+                best = (v, float(dx), float(dy))
+    fine_x = np.linspace(max(0.0, best[1] - 0.2), min(1.0, best[1] + 0.2), 9)
+    fine_y = np.linspace(max(0.0, best[2] - 0.2), min(1.0, best[2] + 0.2), 9)
+    for dx in fine_x:
+        for dy in fine_y:
+            v = loss(float(dx), float(dy))
+            if v < best[0]:
+                best = (v, float(dx), float(dy))
+    return {"d_x": best[1], "d_y": best[2]}
+
+
 def fit_parameters(units: list[Kinematics], model: str, lags: list[float],
                    init: dict | None = None, maxiter: int = 200) -> dict:
     """Fit one model's parameters on ``units`` with the given per-unit lags fixed."""
     if model == "M0":
         return {}
+    if model == "M4":
+        return _fit_m4_grid(units, lags)
     shifted = [shift_kinematics(k, lag) for k, lag in zip(units, lags)]
     # M4 solves an implicit equation inside every objective call; a coarser fitting
     # subsample and a lower Powell budget keep the job inside minutes without changing
@@ -143,7 +175,18 @@ def fit_parameters(units: list[Kinematics], model: str, lags: list[float],
 
 def fit_model(units: list[Kinematics], model: str, init: dict | None = None,
               passes: int = 2) -> tuple[dict, list[float], dict]:
-    """Alternate lag refits and parameter fits (``passes`` times)."""
+    """Alternate lag refits and parameter fits (``passes`` times).
+
+    M4 follows the pre-registration literally: lags are fixed from M0, the parameters are
+    fitted once, and the lags are refitted once. This also keeps the implicit solve out of
+    the lag search (amendment A).
+    """
+    if model == "M4":
+        _, m0_lags, _ = fit_model(units, "M0")
+        params = init or fit_parameters(units, model, m0_lags)
+        lags = [fit_lag(k, model, params)[0] for k in units]
+        return params, lags, {"model": model, "n_units": len(units), "lags_s": lags,
+                              "lags_from": "M0 then one refit"}
     params = {} if model == "M0" else (init or fit_parameters(units, model, [0.0] * len(units)))
     lags = []
     for _ in range(passes):

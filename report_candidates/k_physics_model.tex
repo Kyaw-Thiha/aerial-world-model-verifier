@@ -1,7 +1,6 @@
 % Candidate report section — Track K (2026-11-22).
 % Source: reports/K02_physics_model_refinement.md and results/k02_*.
 % Numbers that must be regenerated before this file is moved into report/:
-%   @M4RMS@ @M4DELTA@ @M4MEAN@ @SELECTED@ @V3THR@ @V3FR@ @THRESHDELTA@ @DETECTION
 % The Track K reports are the source of truth; this section is a candidate, not merged.
 
 \section{Offline airframe-model refinement and the calibration mode}
@@ -38,17 +37,17 @@ M0 current            & 3.648 & ---      & $k_d=0.295$ \\
 M1 per-axis linear    & 3.612 & $-1.0\%$ & $k_f=0.27$, $k_l=0.23$ \\
 M2 M1 + attitude lag  & 3.573 & $-2.1\%$ & $\tau=+12.5$ ms \\
 M3 M1 + quadratic     & 3.665 & $+0.5\%$ & $k_q\approx 4$--$9\times10^{-4}$ \\
-M4 rotor drag         & @M4RMS@ & @M4DELTA@ & @M4PARAMS@ \\
-M5 ridge residual     & 7.40  & $+103\%$ & $\alpha=0.1$ (inner LOFO) \\
+M4 rotor drag         & 3.695 & $+1.3\%$ & $d_x=d_y=0.25$ \\
+M5 ridge residual     & 4.95  & $+36\%$ & $\alpha=0.1$ (inner LOFO) \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 No candidate approaches the pre-registered 25\,\% RMS reduction, and the best
-(@SELECTED@) leaves the gate-kept-dev F0 threshold at @V3THR@ deg against 8.87 deg for the
-exact $k_d=0.295$ required side: a change of @THRESHDELTA@ deg, short of the 1.5 deg
-criterion.  The learned residual does not generalise: its selected regularisation more than
-doubles the held-out RMS, and at $\alpha=100$ it collapses to M1, because the held-out
+(M0, selected by the parsimony rule) leaves the gate-kept-dev F0 threshold at 8.87 deg
+against 8.87 deg for the exact $k_d=0.295$ required side: a change of 0.00 deg, short of
+the 1.5 deg criterion.  The learned residual does not generalise: its selected regularisation gives 4.95 deg
+against 3.65, and at $\alpha=100$ it collapses to the M1/M0 level (3.78 deg), because the held-out
 racing flights lie outside its feature range.
 
 The reason is measured rather than argued.  The M0 residual has 40--74\,\% of its variance
@@ -64,7 +63,11 @@ not a drag-model mismatch.
 Schema v3 stores the exact model required lean \emph{and} the required thrust axis at the
 clip's frame times, with explicit semantics (no $(k_d-0.295)$ rescaling), in new files; the
 axis is necessary because an inverted required axis cannot be represented by a lean.
-@DETECTION
+At the matched false reject (5/69 median tier, 3/55 coherence tier) the selected v3 is
+identical to the exact v2 required side by construction: median-tier detection of full
+tilt removal 55/69, mirrored roll 54/69, x0.5 48/69, x1.5 53/69, with the yaw control
+8/69 and null edit 5/69; coherence-tier 54/55, 55/55, 10/55 and 6/55, with the yaw
+control 15/56 and null edit 3/55.
 
 \begin{thebibliography}{9}
 \bibitem{faessler2018flatness}
