@@ -31,6 +31,7 @@ and `report/cutoff.json`:
 | `track-c/` | 0 | 0 | **empty** — Track C has no R2 objects; its record is the branch |
 | `track-d/` | 67 | 36,959,802 | Track D schema-v2 clips and statistic artefacts (includes the D branch bundle) |
 | `track-e/` | 595 | 31,612,527 | UZH-FPV clip exports, per-frame arrays, backups |
+| `track-h2/` | see `results/h02_r2/*.json` | see the same | Track H2 pilot clips: SolarWM grid/probes and full-precision LingBot probes, each with a sha256 manifest |
 
 Access status during consolidation: an `rclone size` against `r2remote:aerial-world-modal-verifier/track-d/`
 returned **403 AccessDenied**, so the counts above are the 2026-11-15T10:03Z measurement and were

@@ -27,6 +27,8 @@ results; none of them runs an experiment.
 | E9 | UZH transfer | E (+ A estimator) | `track-e-depicted-uzh` (`dd209bf`) | `results/e_audit/`, `e_mount/`, `e_perframe/`, `e_verdict_v3/`, `e_calib/` | E01-E04 |
 | E10 | window rule and prototype | D (+ E independent test) | `track-d-verdict-stat`, `track-e-depicted-uzh` | `results/d_window_rates/`, `d_bandwidth/`, `d_uzh_v2/`, `e_verdict_v3/rule/` | D03, D04, E05 |
 
+| E11 | generator coverage with path control (H2) | H2 | `track-h2-generator-coverage` | `results/h02_inventory.json`, `h02_solarwm*`, `h02_lingbot_full*` | H02 |
+
 R2 prefixes are `track-a/`, `track-a/a2/`, `track-b/`, `track-c/`, `track-d/`, `track-e/`
 (counts and bytes: `report/data/r2_counts.json`, measured 2026-11-15; verified read-only again
 during consolidation — see `docs/DATA.md` for the current status of listing access).
@@ -180,3 +182,22 @@ during consolidation — see `docs/DATA.md` for the current status of listing ac
 * **Regenerate**: `report/scripts/e10_window_rule.py`.
 * **Open discrepancy (recorded, not resolved)**: D's 0.07-0.12 s window "at the truth rate" is
   superseded by E05 (0.34-1.42 s at 500 Hz; 0.07-0.11 s only at the 15 Hz clip rate).
+
+---
+
+## E11 — generator coverage with path control (Track H2)
+
+* **Owning track / branch**: H2, `track-h2-generator-coverage`, based on `main` (`41d1dad`);
+  read-only dependency on `track-h-generator-pilot` (H01) for the reader, first frames and
+  designed paths.
+* **What it is**: inventory of path/pose-controlled world models; SolarWM-5B roll-injection,
+  seed variance and commanded-path verdict; full-precision LingBot roll probes beside H01's
+  NF4 result.
+* **Configs**: `configs/h02_pilot_prereg.yaml` (`5c6e5c6`) and amendment 1 (bank-in, 16 m
+  translation scale).
+* **Results**: `results/h02_inventory.json`, `results/h02_solarwm/`,
+  `results/h02_lingbot_full/`, `results/h02_*_depicted/`, `results/h02_r2/*.json`.
+* **R2**: `track-h2/clips/...` with sha256 manifests.
+* **Report**: `reports/H02_generator_coverage.md`; candidate section
+  `report_candidates/h02_generator_coverage.tex`.
+* **Stop rule**: pilot only; no scale-up until the user decides.

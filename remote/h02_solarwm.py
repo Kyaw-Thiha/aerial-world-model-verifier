@@ -180,7 +180,11 @@ def infer(sample_ids: str, tag: str, steps: int = 4, frame_num: int = 81) -> dic
     work = Path("/tmp") / f"data_{tag}"
     work.mkdir(parents=True, exist_ok=True)
     release = _build_data(ids, work)
-    out = out_root / "run"
+    # The Modal Volume rejects the atomic rename that the release's publication
+    # transaction uses, so generate on local disk and copy the finished mp4s to
+    # the volume afterwards.
+    out = Path("/tmp/solar_out") / tag / "run"
+    out.parent.mkdir(parents=True, exist_ok=True)
     cfg = _write_config(release, out, len(ids), steps, frame_num)
     t0 = time.time()
     env = dict(os.environ, PYTHONPATH="/solarwm")
@@ -192,16 +196,28 @@ def infer(sample_ids: str, tag: str, steps: int = 4, frame_num: int = 81) -> dic
         raise RuntimeError(f"solar infer failed: {proc.returncode}; see infer.log")
     # decode generated mp4s to PNG frames
     clips = {}
-    for mp4 in sorted(out.rglob("*.mp4")):
-        if "compare" in mp4.parts:
+    for mf in sorted(out.glob("generation/**/slot-*/manifest.json")):
+        doc = json.loads(mf.read_text())
+        case = doc.get("case", {}) if isinstance(doc, dict) else {}
+        sid = str(doc.get("sample_id") or case.get("sample_id") or case.get("key")
+                  or mf.parent.name)
+        mp4 = mf.parent / "video.mp4"
+        if not mp4.exists():
             continue
-        sid = mp4.stem
-        frames = list(imageio.get_reader(mp4))
         d = out_root / sid / "frames"
         d.mkdir(parents=True, exist_ok=True)
-        for i, fr in enumerate(frames):
-            Image.fromarray(np.asarray(fr)).save(d / f"{i:03d}.png")
-        clips[sid] = {"frames": len(frames), "mp4": str(mp4.relative_to(out_root))}
+        import shutil
+        shutil.copyfile(mp4, out_root / sid / "clip.mp4")
+        reader = imageio.get_reader(mp4)
+        n = 0
+        try:
+            for i, fr in enumerate(reader):
+                Image.fromarray(np.asarray(fr)).save(d / f"{i:03d}.png")
+                n += 1
+        finally:
+            reader.close()
+        clips[sid] = {"frames": n,
+                      "mp4": str((out_root / sid / "clip.mp4").relative_to(out_root))}
     vol_r.commit()
     return {"tag": tag, "n_samples": len(ids), "seconds": time.time() - t0,
             "returncode": proc.returncode, "clips": clips,
