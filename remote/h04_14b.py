@@ -120,7 +120,7 @@ def _build_data(sample_ids: list[str], out_root: Path, width: int = 832, height:
 
 
 def _write_config(release: Path, out: Path, count: int, steps: int, frames: int,
-                  world_size: int = 2) -> Path:
+                  world_size: int = 4, sp: int = 2) -> Path:
     import yaml
 
     template = Path("/solarwm/configs/solar_wm/wan22_i2v_a14b/infer_stage0p5_fm_81f.yaml")
@@ -143,13 +143,13 @@ def _write_config(release: Path, out: Path, count: int, steps: int, frames: int,
     }]
     cfg["inference"] = {"source": "validation"}
     dist = dict(cfg.get("distributed", {}))
-    dist.update({"world_size": world_size, "sequence_parallel_size": world_size,
+    dist.update({"world_size": world_size, "sequence_parallel_size": sp,
                  "sample_sharding": "logical_dp"})
     dist.setdefault("sequence_layout", "whole_frame_uneven")
     cfg["distributed"] = dist
     # training-only fields are still validated at config load: DP*micro*grad_accum must equal
     # global_batch_size, and DP = world_size / sp
-    dp = max(1, world_size // max(1, dist.get("sequence_parallel_size", 1)))
+    dp = max(1, world_size // max(1, sp))
     cfg.setdefault("train", {})
     cfg["train"]["micro_batch_size"] = 1
     cfg["train"]["grad_accum"] = 1
@@ -160,10 +160,10 @@ def _write_config(release: Path, out: Path, count: int, steps: int, frames: int,
     return path
 
 
-@app.function(gpu="A100-80GB:2", cpu=8, memory=131072, timeout=6 * 3600,
+@app.function(gpu="A100-80GB:4", cpu=8, memory=131072, timeout=6 * 3600,
               volumes={"/w": vol_w, "/r": vol_r}, env={"HF_HOME": "/tmp/hf"})
 def infer(sample_ids: str, tag: str, steps: int = 50, frames: int = 81,
-          measure: bool = False, world_size: int = 2) -> dict:
+          measure: bool = False, world_size: int = 4) -> dict:
     import shutil
     import subprocess
     import time
@@ -176,6 +176,11 @@ def infer(sample_ids: str, tag: str, steps: int = 50, frames: int = 81,
     ids = json.loads(sample_ids)
     out_root = Path("/r/solarwm") / tag
     out_root.mkdir(parents=True, exist_ok=True)
+    done = [s for s in ids if (out_root / s / "frames").exists()]
+    ids = [s for s in ids if s not in done]
+    if not ids:
+        return {"tag": tag, "clips": 0, "already_done": len(done), "seconds": 0.0,
+                "seconds_per_clip": 0.0, "measure": measure}
     work = Path("/tmp") / f"data_{tag}"
     work.mkdir(parents=True, exist_ok=True)
     release = _build_data(ids, work)
@@ -215,7 +220,7 @@ def infer(sample_ids: str, tag: str, steps: int = 50, frames: int = 81,
             reader.close()
         n += 1
     vol_r.commit()
-    return {"tag": tag, "clips": n, "seconds": secs,
+    return {"tag": tag, "clips": n, "already_done": len(done), "seconds": secs,
             "seconds_per_clip": secs / max(n, 1), "measure": measure}
 
 
@@ -229,5 +234,5 @@ def main(mode: str = "download", ids: str = "", tag: str = "pilot14b", steps: in
     print(f"{len(chosen)} samples, tag {tag}, {steps} steps")
     print(json.dumps(infer.remote(json.dumps(chosen), tag=tag, steps=steps,
                                   measure=(mode == "timing"),
-                                  world_size=int(os.environ.get("H04_14B_WORLD", "2"))),
+                                  world_size=int(os.environ.get("H04_14B_WORLD", "4"))),
                      indent=1))

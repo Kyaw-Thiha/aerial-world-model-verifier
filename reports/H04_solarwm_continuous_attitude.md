@@ -246,21 +246,59 @@ remain robust. The per-clip pairs are in `results/h04/scored_main.json`.
 not manufacture coherence from noise alone.
 
 
-### 7. Gated extension: 14B, LTX-22B and H3-33B
+### 7. Gated extension: 14B pilot, LTX-22B and H3-33B
 
-The three larger checkpoints were estimated from published parameter counts and the
-measured 5B rate, and were **not run**:
+The extension was re-scoped after inspecting the releases.  Only the 14B was run (a 35-clip
+pilot, amendment 3); the other two are estimated from their published weights and configs and
+were **not run**.
 
-| checkpoint | params | weights, bf16 | VRAM (estimate) | s/clip (estimate) | 200 clips (estimate) |
-| --- | --- | --- | --- | --- | --- |
-| SolarWM-Wan2.2-14B | 14B | ~28 GB + VAE/T5 | 80 GB (fits one A100/H100) | ~2.8x the 5B rate, ~90 s | ~5 GPU-h, ~US$12.50 |
-| SolarWM-LTX-2.5-22B | 22B | ~44 GB + VAE/T5 | 80 GB, tight | ~4.4x, ~140 s | ~7.8 GPU-h, ~US$19.50 |
-| SolarWM-H3-33B | 33B | ~66 GB + VAE/T5 | >80 GB for the realtime demo (8 Blackwell GPUs); packed interface | not estimable from the 5B | not estimable from the 5B |
+| checkpoint | release (inspected) | download | steps / resolution | per clip (est. unless measured) | 35 clips | 200 clips |
+| --- | --- | --- | --- | --- | --- | --- |
+| 5B (campaign) | Stage2 SGF, causal | 61 GB | 4 / 480x864 | **28 s (measured)** | ~0.3 GPU-h, ~US$0.7 | ~1.5 GPU-h, ~US$3.9 |
+| 14B (pilot) | `bid-stage0p5-81f` + `base-high`, I2V-A14B, bidirectional flow matching | **183 GB** | 50 / 480x832, **min 2 ranks (sp=2)** | not measurable here: the released path fails at DP 1 (dtype contract) and its trained topology is 16 ranks; **~20 min/clip at 8 GPUs** as a bound | ~US$230 (8 GPUs) | ~US$1,300 (8 GPUs) |
+| LTX-22B | `ltx-22B-bid-stage0p5-153f` (LoRA r384) + LTX-2.5-22B, video-only | 73.7 GB | 30 / 512x768, 153 frames | ~20 min | ~12 GPU-h, ~US$29 | ~92 GPU-h, ~US$230 |
+| H3-33B | `h3-33B-bid-stage0p5-158f` + MiniMax-H3, packed | 169 GB | 4 / 768x1344, 158 frames, **8 GPUs (SP 4)** | ~3-5 min wall on 8 GPUs | ~10 GPU-h, ~US$40-60 | ~60 GPU-h, ~US$400 |
 
-The gated 14B pilot (20 clips: five paths, one per family at peak 10, three arms, one draw,
-plus five level probes) is estimated at 20 x 90 s = 0.5 GPU-hours plus one load, **about
-US$2**, well under the US$25 condition.  It is run only if arm A shows non-zero acceptance in
-the 5B campaign: non-zero acceptance was observed, so the pilot condition was met and the pilot was not run within this campaign's stop rule — it is left for the user's decision.
+The 14B is **not a scaling point on the 5B curve**: different stage (stage0.5 flow matching with
+50 bidirectional steps vs Stage2 self-forcing with 4 causal steps), different base family
+(Wan2.2 I2V-A14B vs TI2V-5B) and a different resolution (832 vs 864 wide).  The LTX-22B and
+H3-33B rows are extrapolations from parameter counts, frame counts, pixel counts and steps, with
+the 5B measured rate as the anchor; they are order-of-magnitude numbers, not quotes.
+
+### 8. The 14B pilot
+
+The pilot was attempted and **no 14B clip exists**; the denominators below are 0/20 and 0/15.
+What was measured, in order:
+
+* the release is **183.4 GB** (81 files): `SolarWM-14B-base-high` (the Wan2.2 I2V-A14B
+  high-noise expert + T5) and `SolarWM-14B-bid-stage0p5-81f` (a 114.3 GB consolidated
+  stage0.5 checkpoint). Download took 13 minutes on 16 CPU cores;
+* the config contracts pin the topology. The A14B backend refused four configurations in turn
+  (`raw_world_size must be divisible by sp_size`; `wan22_i2v_a14b requires
+  sequence_parallel_size=2`; `sample_sharding must be logical_dp`; `global_batch_size must
+  equal DP*micro*grad_accum`), which fixes **two ranks minimum** and makes the pilot a 2-GPU
+  job at the smallest;
+* at two ranks (2x A100-80GB, `torchrun --nproc-per-node=2`) the model loaded in about
+  14.5 minutes and then failed **inside the generation pass** with `Input type (float) and bias
+  type (c10::BFloat16) should be the same` on both ranks — a dtype contract in the release's
+  stage0.5 camera/i2v conditioning, which the release exercises at its trained topology
+  (world size 16, DP 8). The same failure would apply to any DP-1 run;
+* a single-clip probe at four GPUs with the required `sp_size=2` (DP 2) is the last check;
+  @@PROBE@@
+
+**Cost of the attempt**: download 0.22 CPU-hours (~US$0.18), the four config failures
+(~US$0.13), the two-rank timing attempt (~US$1.67) and the probe. Nothing was scored, because
+nothing was generated.
+
+**What this means.** The 14B route is released as *training* code plus a stage0.5 checkpoint;
+its inference path is written for the 16-rank training topology and does not run, as released,
+at the small topologies this project can afford. Running it at its trained topology would cost
+roughly 8 GPUs x ~20 min per clip, i.e. **about US$6.7 per clip** at A100 list prices and
+US$230 for the 35-clip pilot — far outside the remaining allowance and outside the US$25
+condition in the pre-registration. **The pilot is therefore reported as not runnable here, not
+as a model result.** The 5B campaign stands on its own; the LTX-22B and H3-33B rows in §7
+carry the same caveat (H3's released inference config is 8 GPUs with sequence parallelism 4).
+
 
 
 ## What this supports
@@ -292,6 +330,10 @@ the 5B campaign: non-zero acceptance was observed, so the pilot condition was me
   the 14B, LTX-22B and H3-33B routes are estimated, not run.
 * **Three draws are not seeds.** The release exposes a single `noise_seed`; the three
   generations measure sampling variance, not a deployable seed knob.
+* **The 14B pilot did not produce a clip.** Its release is a stage0.5 *training* stack whose
+  inference path is written for a 16-rank topology; at the two ranks its config contracts
+  allow, it fails in the generation pass, and at its trained topology it costs about US$6.7
+  per clip. So nothing here says how a larger SolarWM would behave.
 * **The scenes are six first frames.** Three are ANWM's own city release, three are Blender
   renders that are out of distribution for SolarWM; scene is a factor with a few levels, not a
   sampled distribution.
