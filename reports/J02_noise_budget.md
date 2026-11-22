@@ -18,8 +18,9 @@ against the whole-clip median** (10.5 vs 6.9), recovering to within 0.5 deg only
 
 1. **Every construction in this report reproduces a published number before it adds one.** The
    analytic cross-check agrees with the exact frozen residual construction to 9e-13 deg; the
-   replay of the measured reader error gives a per-frame median of 3.97 deg, exactly report 02's
-   figure; and the handoff's own construction (mocap attitude as the perfect depiction) gives a
+   replay of the measured reader error gives a median clip residual of 3.97 deg, matching the
+   published per-frame median of 3.96-3.97 deg (a different statistic that agrees because the
+   error is stationary within a flight); and the handoff's own construction (mocap attitude as the perfect depiction) gives a
    leave-one-flight-out 95th percentile of **14.46 deg against the frozen verdict's 14.73**.
 2. **A uniform tilt reduction of 6.9 deg is found half the time** at σ = 4.8 deg, a 2 deg bias
    and a 0.5 s correlation time, with the clip-level median residual calibrated
@@ -156,7 +157,7 @@ worth 7.6 deg over the same span. The formula is answering a different question.
 | construction | H0 median | LOFO threshold | published |
 | --- | --- | --- | --- |
 | mocap attitude + synthetic centre-point error | 9.22 | **14.46** [13.21, 15.51] | frozen verdict **14.73** deg (drag-free, lag-only) |
-| perfect path + the frozen reader's measured error | 3.97 | 7.66 | per-frame median 3.97 deg (report 02) |
+| perfect path + the frozen reader's measured error | 3.97 | 7.66 | per-frame median 3.96-3.97 deg (report 02, G03) |
 
 The 14.73 deg threshold is not a property of the reader alone: about half of it is the natural
 mismatch between the attitude a real quadrotor flies and the attitude the drag-free path model
