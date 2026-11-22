@@ -12,21 +12,26 @@ Earlier tracks keep their ledgers on their own branches; this file starts at Tra
 
 | date | job | GPU | hours | USD | notes |
 | --- | --- | --- | --- | --- | --- |
-| 2026-11-22 | `awmv-l-reader` feasible-dev re-score with gate and confidence fields (80 clips, stride 2) | A10 | 1.2 (est.) | 1.32 (est.) | 19,081 frames at the 6.2 fps I02 measured; includes startup and image build |
+| 2026-11-22 | `awmv-l-reader` feasible-dev re-score with gate and confidence fields (80 clips, stride 1) | A10 | 2.7 (actual, 4 shards x 0.67 h) | 3.0 | 37,401 frames; 4 shards, about 2 min per clip including decode and the per-clip volume commit |
 
-Estimated before running: **USD 1.4** (1.2 GPU-h plus build). Below the USD 20 pre-post line.
+Estimated before running: **USD 3.0** (2.7 GPU-h). Below the USD 20 pre-post line. The estimate
+first written here (1.2 h at stride 2) was revised to stride 1 before the run, on the grounds
+that the anatomy split wants the full 30 Hz; recorded rather than overwritten.
 
 ## Track L — L02, reader fine-tune
 
 | date | job | GPU | hours | USD | notes |
 | --- | --- | --- | --- | --- | --- |
-| — | arms (a) real-only, (b) sim-only, (c) mixed + domain randomisation | A10 | — | — | estimate fixed in `configs/l02_reader_prereg.yaml` after the timing smoke |
-| — | final models and one held-out evaluation | A10 | — | — | |
+| 2026-11-22 | smoke: 32 frames, batch 1, mixed route | A10 | 0.01 | 0.01 | 0.67 s/frame measured |
+| — | arms (a) 6 folds, (b) 3 folds, (c) 9 folds | A10G | 7.2 (est.) | 7.9 | 18 models x 1200 frames x 2 epochs at about 0.5 s/frame |
+| — | 3 final models + all-real evaluation (5,007 frames each) | A10G | 1.5 (est.) | 1.7 | final models also write the checkpoint the edit pass reads |
+| — | downstream edit pass, 4 readers x 72 gate-kept clips x 5 conditions | A10G | 3.2 (est.) | 3.5 | about 17k frames per reader at 6 fps |
 
 ## Running total
 
 | item | USD |
 | --- | --- |
-| booked | 0.00 |
-| committed (L01 scoring) | 1.32 |
-| remaining against the 50.00 ceiling | 48.68 |
+| booked | 0.01 |
+| committed (L01 scoring, all 80 clips) | 3.00 |
+| committed (L02, estimate above) | 13.10 |
+| remaining against the 50.00 ceiling | 33.89 |

@@ -34,7 +34,7 @@ GEOCALIB_COMMIT = "1dedb29f94fc11b896c5f572005978aeebccd67f"
 image = (
     modal.Image.debian_slim(python_version="3.11")
     .apt_install("ffmpeg", "git", "libgl1", "libglib2.0-0")
-    .pip_install("numpy<2", "scipy", "opencv-python-headless==4.10.0.84",
+    .pip_install("numpy<2", "scipy", "pandas", "pyyaml", "opencv-python-headless==4.10.0.84",
                  "torch==2.4.1", "torchvision==0.19.1")
     .pip_install("kornia", "omegaconf", "poselib", "huggingface_hub")
     .run_commands(f"pip install git+https://github.com/cvg/GeoCalib@{GEOCALIB_COMMIT}")

@@ -1,0 +1,169 @@
+# Track L, L02 pre-registration: does training the reader on simulated scenes help it on real flights?
+#
+# Committed BEFORE the first training step of any arm. It fixes the arms, the folds, the
+# labels, the matched budget, the success criteria and the downstream protocol. Held-out real
+# flights (13p, 07a) never enter training, normalisation or gate calibration; no held-out
+# simulated scene exists yet (I02 incomplete), so the simulated held-out pass is DEFERRED and
+# the simulated development proxy below is a leave-one-family-out estimate, labelled as such.
+version: 1
+date: 2026-11-22
+owner: track-l
+handoff: "22 Part 2 (fine-tune with held-out discipline)"
+status: committed_before_training
+ceiling_usd: 50
+
+question: >
+  Does training the depicted-tilt reader on diverse simulated scenes (alone, and mixed with the
+  real flights under domain randomisation) reduce scene-dependent bias and improve the reader on
+  held-out real flights, relative to the G03 real-only fine-tune and the frozen reader? Where
+  does sim-to-real fail?
+
+# ------------------------------------------------------------------ labels and populations
+populations:
+  sim:
+    source: "Track I feasible development clips (configs/sim_splits_frozen.json), 80 clips, 18 scene units"
+    frames: "40 frames per clip, spread evenly over the flight, exact up_cam from the render pose"
+    label_check: "up_cam reproduces the published lean_dep and tilt_dep to 5.7e-12 deg (script asserts)"
+    units: "scene = (family, scene_seed); 6 seeds x 3 families"
+    folds: "leave-one-scene-family-out (3 folds); no clip of the held-out family is in the pool"
+    heldout_scenes: "field_settlement and coastal_cliff: not on R2 (I02 incomplete), not scored; deferred"
+  real:
+    source: "TII Race Against the Machine, the 8 flights / 5,007 frames G03 used, mocap labels"
+    dev: [flight-01a-ellipse, flight-01p-ellipse, flight-04a-ellipse, flight-07p-lemniscate,
+          flight-13a-trackRATM, flight-16p-trackRATM]
+    heldout: [flight-13p-trackRATM, flight-07a-lemniscate]
+    folds: "leave-one-flight-out over the six DEVELOPMENT flights only (6 folds, train on 5)"
+    rule: >
+      The two held-out flights are absent from every training pool, from every standardisation
+      and from every gate calibration. They are scored exactly once, by the final models, and
+      reported as a confirmatory block. The dev folds never see them either, so a fold model is
+      not the final model and cannot be selected on their scores.
+
+# ------------------------------------------------------------------ arms (pre-registered)
+arms:
+  a_real_only:
+    training: "TII dev frames only (G03 recipe)"
+    route: {weights: distorted, camera_model: simple_divisional}
+    folds: "6 real leave-one-flight-out folds"
+    final: "train on all six dev flights; score the two held-out flights once"
+    role: "baseline: what real-only fine-tuning buys with the same budget"
+  b_sim_only:
+    training: "simulated dev frames only"
+    route: {weights: pinhole, camera_model: pinhole}
+    folds: "3 leave-one-scene-family-out folds"
+    final: "train on all 18 scene units; score the real held-out flights once (sim-to-real gap)"
+    transfer_route: >
+      The final sim-trained model is run on the real raw fisheye with camera_model
+      "simple_divisional" (the adopted real route). The network weights are used unchanged; the
+      camera model is a forward-pass setting, not a weight. G03's rule (never mix two camera
+      models inside one fold) is respected: the sim folds are all pinhole.
+    role: "primary sim-to-real probe"
+  c_mixed_dr:
+    training: "both domains; simulated frames under the pre-registered domain randomisation"
+    route: {weights: distorted, camera_model: simple_divisional}
+    folds: "3 sim family folds + 6 real flight folds; each pool is the other-domain full dev set"
+    final: "train on all sim dev + all six real dev flights; score the real held-out flights once"
+    role: "primary arm for the success criteria"
+    domain_randomisation:
+      applies_to: "simulated frames only (real frames are the target domain)"
+      photometric: "gain U(0.75,1.25), bias U(-12,12) DN, Gaussian blur sigma U(0,1.5) px with p=0.5, N(0,2) DN noise with p=0.3"
+      camera_roll: "rotation about the optical axis U(-15,15) deg with p=0.7, label rotated by the same Rz (exact)"
+      fisheye: >
+        synthetic simple_divisional warp with s = f_out/f_in U(0.85,1.15) and k1 U(0.05,0.30),
+        using GeoCalib's own model (distort: p*(1-sqrt(1-4 k1 r^2))/(2 k1 r^2), inverted for the
+        backward map). The gravity direction is invariant to the camera model, so the label is
+        exact; the warp randomises lens geometry, not scene content, and reproduces the 90 deg
+        pinhole field only (it cannot invent rays the render never had).
+      mount: >
+        realised as the camera-roll term above. A pitch/yaw mount offset would require
+        re-rendering; it is not simulated. Stated as a scope limit, not hidden.
+      sampling: "per frame, drawn from the fold seed; no two epochs see the same draw"
+
+# ------------------------------------------------------------------ matched budget
+budget:
+  frames_per_epoch: 1200          # sampled from the training pool, so every fold takes the same steps
+  epochs: 2
+  batch: 2
+  lr: 2e-5                        # G03
+  weight_decay: 1e-4
+  schedule: cosine
+  lm_steps: 10                    # G03
+  seed: "1 + fold index; final models 101"
+  note: >
+    Budget is matched by gradient steps, not by dataset size: every fold in every arm takes
+    2 x 800 = 1600 steps. A fold whose pool is smaller than 1600 frames samples with
+    replacement. The cost therefore does not depend on the arm.
+  cost_estimate_usd: >
+    measured: the smoke gives 0.67 s per frame at batch 1 on an A10 (remote/l_tilt_reader.py
+    --mode smoke); at batch 2 the 1200 frames/epoch are 600 steps, about 20-25 min per model on
+    the A10G. 21 models (6 real folds, 3 sim folds, 9 mixed folds, 3 final) plus the 3 all-real
+    evaluation passes: about 9-11 A10G-hours, USD 10-12. The downstream edit pass adds about
+    4 A10G-hours (USD 4.4) and the L01 scoring about 2.7 (USD 3.0). Total round estimate
+    USD 18-20, recorded in docs/COST_LEDGER.md before the first fold.
+
+# ------------------------------------------------------------------ evaluation
+evaluation:
+  per_frame: [median, 90 % trimmed RMSE, fraction > 10 deg, fraction > 20 deg, p90]
+  per_unit: "bias per axis in the lean basis, with SE; the unit is a flight (real) or a scene (sim)"
+  sim_proxy: >
+    the leave-one-family-out predictions: each family's bias is estimated only by the model that
+    never saw that family. The three family biases then give a spread (max - min), the quantity
+    the success criterion shrinks. This is a dev-scene proxy; the held-out-scene version is
+    deferred with the data.
+  sim_to_real: "arm b's real held-out error beside its own out-of-family sim error, per flight and pooled"
+  downstream:
+    population: "the 100 TII real clips; gate-kept 72 for the primary rate (frozen S3, frozen tau)"
+    statistic: "the scale-free coherence tier (primary); the clip median residual (secondary)"
+    edits: >
+      Full tilt removal and mirrored roll are applied on the depicted side as the frozen
+      convention defines them for a depicted statistic (removal: depicted lean -> 0, the limit
+      of the pixel edit, as in G03; mirror: left component negated). The yaw control and the null
+      edit are measured on REGENERATED pixels with Track A's own edit pipeline
+      (src/negatives/edits.py + fisheye_warp.py, 175 deg equidistant, per-frame magnitude matched
+      as in phase3a_make_specs), so the reader sees what the frozen protocol showed it; the
+      frozen reader is run on the same regenerated frames as a pipeline check and must reproduce
+      the stored condition leans before any new-reader control is read.
+    threshold: >
+      leave-one-flight-out 95th percentile of the coherence score on the other flights' real
+      clips (the frozen rule), reported beside the frozen absolute 1.75; the median tier uses the
+      same LOFO rule.
+    controls: "yaw control and null edit beside every rate; denominators (k/n) everywhere"
+    intervals: >
+      flight-clustered bootstrap, 5,000 replicates, numpy.random.default_rng(1); 6-8 clusters,
+      so descriptive, not 95 % confidence intervals.
+    gate_confidence: >
+      The frozen gate is applied to the frozen reader's stored confidence, exactly as G03 did,
+      because the fine-tuned pass does not store its own confidence. This is held fixed across
+      arms so the gate cannot absorb a reader difference.
+
+# ------------------------------------------------------------------ confirmatory success criteria
+success:
+  s1_real_error:
+    statement: >
+      On the two held-out real flights, the primary arm (c, mixed+DR) lowers the pooled 90 %
+      trimmed RMSE by at least 15 % relative to the G03 fine-tuned reader on the same flights
+      and frames (G03: 13p 9.86 deg, 07a 5.22 deg, computed on the same population).
+    baseline: "G03 out-of-fold fine-tuned per-frame errors (results/g03_tilt_reader/folds), re-scored on the held-out flights' frames only"
+    secondary: "arm b (sim-only) reported on the same quantity; a miss is a result, not a failure to hide"
+  s2_scene_bias:
+    statement: >
+      The scene-family bias spread (max - min of the three out-of-fold family biases) shrinks by
+      at least 30 % relative to the frozen reader's spread on the same simulated clips.
+    measure: "out-of-family predictions for arms b and c; frozen reader is untrained, so its family bias is direct"
+  s3_downstream:
+    statement: >
+      The downstream false-reject on the gate-kept real clips does not rise: the new reader's
+      coherence-tier false-reject (k/72) is no larger than the frozen reader's, with the yaw and
+      null controls reported beside it.
+    note: "a rise of one clip at n=72 is 1.4 points; the number is reported either way"
+  reporting_when_met_or_not: >
+    Every criterion is reported as met or not met with its number. If a sim-trained reader hurts
+    on real, that is the finding and it is stated in the first two sentences of the report.
+
+# ------------------------------------------------------------------ prohibitions
+prohibitions:
+  - "no held-out flight or held-out scene in any training pool, normalisation, schedule or gate fit"
+  - "no hyper-parameter selected on a held-out flight; the budget is fixed here"
+  - "no EDIT of a frozen config (gate_frozen, coherence_frozen, sim_prereg, sim_splits_frozen, g03 prewreg); amendments are new files"
+  - "no pooling of the three racing flights with the piloted ones without saying so"
+  - "no pixel-path work; the physics statistics remain the decision layer"
