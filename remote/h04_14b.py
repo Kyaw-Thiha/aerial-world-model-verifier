@@ -119,7 +119,8 @@ def _build_data(sample_ids: list[str], out_root: Path, width: int = 832, height:
     return release
 
 
-def _write_config(release: Path, out: Path, count: int, steps: int, frames: int) -> Path:
+def _write_config(release: Path, out: Path, count: int, steps: int, frames: int,
+                  world_size: int = 1) -> Path:
     import yaml
 
     template = Path("/solarwm/configs/solar_wm/wan22_i2v_a14b/infer_stage0p5_fm_81f.yaml")
@@ -141,6 +142,9 @@ def _write_config(release: Path, out: Path, count: int, steps: int, frames: int)
         "rollout_latent_frames": cfg["data"]["latent_frames"],
     }]
     cfg["inference"] = {"source": "validation"}
+    cfg["distributed"] = {"world_size": world_size,
+                          "sequence_parallel_size": world_size,
+                          "sequence_layout": "whole_frame_uneven"}
     cfg["runtime"]["output_dir"] = str(out)
     path = Path("/tmp") / f"{out.name}.yaml"
     path.write_text(yaml.safe_dump(cfg))
@@ -150,7 +154,7 @@ def _write_config(release: Path, out: Path, count: int, steps: int, frames: int)
 @app.function(gpu="A100-80GB", cpu=8, memory=131072, timeout=6 * 3600,
               volumes={"/w": vol_w, "/r": vol_r}, env={"HF_HOME": "/tmp/hf"})
 def infer(sample_ids: str, tag: str, steps: int = 50, frames: int = 81,
-          measure: bool = False) -> dict:
+          measure: bool = False, world_size: int = 1) -> dict:
     import shutil
     import subprocess
     import time
@@ -168,7 +172,7 @@ def infer(sample_ids: str, tag: str, steps: int = 50, frames: int = 81,
     release = _build_data(ids, work)
     out = Path("/tmp/solar_out") / f"{tag}-{uuid.uuid4().hex[:8]}" / "run"
     out.parent.mkdir(parents=True, exist_ok=True)
-    cfg = _write_config(release, out, len(ids), steps, frames)
+    cfg = _write_config(release, out, len(ids), steps, frames, world_size=world_size)
     env = dict(os.environ, PYTHONPATH="/solarwm")
     t0 = time.time()
     proc = subprocess.run(["python", "-m", "solar", "infer", "--config", str(cfg)],
@@ -213,4 +217,6 @@ def main(mode: str = "download", ids: str = "", tag: str = "pilot14b", steps: in
         (INPUTS / "manifest.json").read_text())["samples"]
     print(f"{len(chosen)} samples, tag {tag}, {steps} steps")
     print(json.dumps(infer.remote(json.dumps(chosen), tag=tag, steps=steps,
-                                  measure=(mode == "timing")), indent=1))
+                                  measure=(mode == "timing"),
+                                  world_size=int(os.environ.get("H04_14B_WORLD", "1"))),
+                     indent=1))
