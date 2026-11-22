@@ -1,59 +1,137 @@
 {
  "real_clip": {
-  "n": 30,
-  "positives": 4,
+  "n": 69,
+  "positives": 9,
   "dis": {
-   "point": 0.7692307692307693,
-   "lo": 0.6666666666666666,
-   "hi": 0.875,
-   "n_clusters": 4,
+   "point": 0.8796296296296297,
+   "lo": 0.5666161616161616,
+   "hi": 0.9375558035714285,
+   "n_clusters": 6,
    "draws": 2000,
    "seed": 1,
    "note": "descriptive only: fewer than 10 clusters"
   },
   "s3": {
-   "point": 0.36538461538461536,
-   "lo": 0.21568627450980393,
-   "hi": 0.8888888888888888,
-   "n_clusters": 4,
+   "point": 0.22592592592592592,
+   "lo": 0.06045751633986928,
+   "hi": 0.6666666666666666,
+   "n_clusters": 6,
+   "draws": 2000,
+   "seed": 1,
+   "note": "descriptive only: fewer than 10 clusters"
+  },
+  "combined": {
+   "point": 0.6842592592592592,
+   "lo": 0.3888888888888889,
+   "hi": 0.8838383838383839,
+   "n_clusters": 6,
    "draws": 2000,
    "seed": 1,
    "note": "descriptive only: fewer than 10 clusters"
   }
  },
  "real_frame": {
-  "n": 781,
-  "positives": 255,
+  "n": 1971,
+  "positives": 661,
   "dis": {
-   "point": 0.7636770297472601,
-   "lo": 0.5399365079365079,
-   "hi": 0.9233870917126181,
-   "n_clusters": 4,
+   "point": 0.7586059752168239,
+   "lo": 0.6464167731589819,
+   "hi": 0.801925259854437,
+   "n_clusters": 6,
    "draws": 2000,
    "seed": 1,
    "note": "descriptive only: fewer than 10 clusters"
   },
   "s3": {
-   "point": 0.7140013419816595,
-   "lo": 0.4711111111111111,
-   "hi": 0.7564685953432756,
-   "n_clusters": 4,
+   "point": 0.7240117333210149,
+   "lo": 0.6099066817900598,
+   "hi": 0.7913541458417201,
+   "n_clusters": 6,
    "draws": 2000,
    "seed": 1,
    "note": "descriptive only: fewer than 10 clusters"
   },
   "combined": {
-   "point": 0.7776522776410945,
-   "lo": 0.561968253968254,
-   "hi": 0.9021068660022148,
-   "n_clusters": 4,
+   "point": 0.7734649097481262,
+   "lo": 0.672976654398499,
+   "hi": 0.8241114243268213,
+   "n_clusters": 6,
    "draws": 2000,
    "seed": 1,
    "note": "descriptive only: fewer than 10 clusters"
   }
  },
+ "sim_mount_0": {
+  "n": 20,
+  "positives": 6,
+  "auroc_dis": 0.4642857142857143,
+  "auroc_s3": 0.0
+ },
+ "sim_mount_15": {
+  "n": 20,
+  "positives": 7,
+  "auroc_dis": 1.0,
+  "auroc_s3": 0.0
+ },
+ "sim_mount_30": {
+  "n": 20,
+  "positives": 7,
+  "auroc_dis": 1.0,
+  "auroc_s3": 0.16483516483516483
+ },
+ "sim_mount_45": {
+  "n": 20,
+  "positives": 6,
+  "auroc_dis": 0.7619047619047619,
+  "auroc_s3": 0.16666666666666666
+ },
  "sim_clip": {
-  "n": 0,
-  "note": "no simulated rows loaded"
+  "n": 80,
+  "positives": 26,
+  "dis": {
+   "point": 0.8354700854700855,
+   "lo": 0.8062678062678063,
+   "hi": 0.8646723646723646,
+   "n_clusters": 3,
+   "draws": 2000,
+   "seed": 1,
+   "note": "descriptive only: fewer than 10 clusters"
+  },
+  "s3": {
+   "point": 0.0584045584045584,
+   "lo": 0.0,
+   "hi": 0.1168091168091168,
+   "n_clusters": 3,
+   "draws": 2000,
+   "seed": 1,
+   "note": "descriptive only: fewer than 10 clusters"
+  },
+  "combined": {
+   "point": 0.5416666666666666,
+   "lo": 0.3903133903133903,
+   "hi": 0.6930199430199431,
+   "n_clusters": 3,
+   "draws": 2000,
+   "seed": 1,
+   "note": "descriptive only: fewer than 10 clusters"
+  }
+ },
+ "sim_clip_urban_checker": {
+  "n": 27,
+  "positives": 0,
+  "auroc_dis": NaN,
+  "auroc_s3": NaN
+ },
+ "sim_clip_forest_ridge": {
+  "n": 26,
+  "positives": 26,
+  "auroc_dis": NaN,
+  "auroc_s3": NaN
+ },
+ "sim_clip_industrial": {
+  "n": 27,
+  "positives": 0,
+  "auroc_dis": NaN,
+  "auroc_s3": NaN
  }
 }

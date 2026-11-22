@@ -245,11 +245,17 @@ def crc_from_counts(lam, n_accept, k_risk, alpha: float = 0.05) -> CRCResult:
                              float(bound), alpha, True)
     if not len(order):
         return CRCResult(float("nan"), 0.0, 0, 0, float("nan"), alpha, False, "empty grid")
-    i = order[0]
-    return CRCResult(float("nan"), 0.0, 0, int(n[i]), float((k[i] + 1) / (n[i] + 1)), alpha,
-                     False,
-                     f"no threshold reaches alpha={alpha:g}; the full-coverage bound is "
-                     f"{(k[i] + 1.0) / (n[i] + 1.0):.3f}")
+    # report the best bound any candidate achieved, not the first one's
+    bounds = np.array([(k[i] + 1.0) / (n[i] + 1.0) for i in order if n[i] >= 1])
+    ns = np.array([n[i] for i in order if n[i] >= 1])
+    if not len(bounds):
+        return CRCResult(float("nan"), 0.0, 0, 0, float("nan"), alpha, False,
+                         "no candidate threshold accepts a clip")
+    j = int(np.argmin(bounds))
+    return CRCResult(float("nan"), 0.0, int(ns[j]), int(n[order][-1]), float(bounds[j]),
+                     alpha, False,
+                     f"no threshold reaches alpha={alpha:g}; the best bound any candidate "
+                     f"achieves is {bounds[j]:.3f} at {ns[j]} accepted")
 
 
 def pooled_rate_interval(hits, ns, clusters, alpha: float = 0.05,

@@ -19,7 +19,7 @@ def main() -> None:
         dst.mkdir(parents=True, exist_ok=True)
         proc = subprocess.run(["modal", "volume", "ls", "awmv-m-data",
                                f"/m02/scores/{tag}"], capture_output=True, text=True)
-        names = [w for w in proc.stdout.replace("│", " ").split()
+        names = [Path(w).name for w in proc.stdout.replace("│", " ").split()
                  if w.endswith(".jsonl")]
         for name in sorted(set(names)):
             target = dst / Path(name).name

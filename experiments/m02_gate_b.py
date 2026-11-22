@@ -199,7 +199,7 @@ def _tii_leans(g, meta, cid, cond, truth):
     idx_ = np.asarray(g.frame_index.values, int)
     m = meta[cid]
     R_cb = camera_to_body_pitched(np.deg2rad(m["uptilt_deg"]))
-    l_pf = lean_from_gravity(np.vstack(g.pf_gravity.values), R_cb)
+    l_pf = lean_from_gravity(np.vstack([gravity_pf(r) for _, r in g.iterrows()]), R_cb)
     l_gc = lean_from_gravity(np.vstack(g.gc_gravity.values), R_cb)
     z = np.load(CLIPS / m["flight"] / f"{cid}__{cond}" / "verdict_clip.npz")
     dep_all = np.asarray(z["depicted_lean"], float)
@@ -257,7 +257,7 @@ def build_sim_table(scores: pd.DataFrame) -> pd.DataFrame:
         g = g.sort_values("frame_index")
         gt = np.load(ROOT / "data/m02_inputs/sim/gt" / f"{cid}.npz")
         R_cb = np.asarray(gt["R_cb"], float)
-        l_pf = lean_from_gravity(np.vstack(g.pf_gravity.values), R_cb)
+        l_pf = lean_from_gravity(np.vstack([gravity_pf(r) for _, r in g.iterrows()]), R_cb)
         l_gc = lean_from_gravity(np.vstack(g.gc_gravity.values), R_cb)
         # truth and the frozen reader at the same frame times (30 Hz grid)
         t = np.asarray(g.frame_index.values, float) / 30.0
@@ -325,9 +325,19 @@ def gate_b_select(real: pd.DataFrame, tau_grid=TAU_GRID) -> dict:
     fr = crc_from_counts(curve.tau, curve.accepted, curve.real, ALPHA)
     yw = crc_from_counts(curve.tau, curve.accepted, curve.yaw_control, ALPHA)
     lams = [x.lam for x in (fr, yw) if np.isfinite(x.lam)]
-    joint = max(lams) if len(lams) == 2 else float("nan")
+    if len(lams) == 2:
+        joint = float(max(lams))
+        note = "both risks reached"
+    elif len(lams) == 1:
+        joint = float(max(lams))
+        note = ("only one risk reached; tau is that risk's threshold and the other risk's "
+                "achieved rate is reported beside it")
+    else:
+        joint = 1.0e9
+        note = ("no threshold reached either target; tau is set to +inf so Gate B accepts "
+                "everything and is reported as non-functional on this population")
     return {"curve": curve, "false_reject": fr.as_dict(), "yaw_control": yw.as_dict(),
-            "tau_joint": float(joint), "n_clips": int(n_total)}
+            "tau_joint": float(joint), "note": note, "n_clips": int(n_total)}
 
 
 def at_tau(real: pd.DataFrame, tau: float) -> dict:

@@ -152,7 +152,7 @@ def main() -> None:
         for cid, g in d.groupby("clip_id"):
             g = g.sort_values("frame_index")
             R_cb = np.eye(3)
-            l_pf = lean_from_gravity(np.vstack(g.pf_gravity.values), R_cb)
+            l_pf = lean_from_gravity(np.vstack([gravity_pf(r) for _, r in g.iterrows()]), R_cb)
             l_gc = lean_from_gravity(np.vstack(g.gc_gravity.values), R_cb)
             dis[cid] = disagreement(lean_difference_deg(l_pf, l_gc)).median
 

@@ -31,14 +31,22 @@ from src.verdict.lean import depicted_lean_from_gravity
 VAR_FLOOR = 1e-12
 
 
-def gravity_pf(row: dict, roll_sign: float = -1.0, pitch_sign: float = -1.0) -> np.ndarray:
+def gravity_pf(row: dict, roll_sign: float = -1.0, pitch_sign: float = 1.0) -> np.ndarray:
     """PF's world-up direction in camera coordinates.
 
     Built from PF's own predicted roll and pitch.  PF's angle signs are not documented in a
-    way that matches GeoCalib's, so both are fitted once on the rotation probe by minimising
-    the median angular disagreement with ``R_gc224`` on the same frames
-    (:func:`fit_pf_signs`), then held fixed.  Camera convention: x right, y down, z forward,
-    with ``roll = atan2(u_x, -u_y)``.
+    way that matches GeoCalib's, so both are fixed once from data and held fixed:
+
+    * ``roll_sign = -1``: on the rotation probe a +20 deg image rotation moves PF's
+      ``pred_roll`` by +18.7 deg and GeoCalib's roll by -19.3 deg, so PF's roll is negated
+      (H03's convention).  With it, PF's roll agrees with ``R_gc224`` to a median 1.41 deg
+      (p90 5.83) over the simulated frames.
+    * ``pitch_sign = +1``: the probe cannot resolve the pitch sign (its frames are near
+      level, so the two hypotheses differ by 0.5 deg), so it is fixed on the simulated
+      development clips against the render's own truth, where +1 gives 2.4-6.5 deg of lean
+      error against -1's 3-20 deg.
+
+    Camera convention: x right, y down, z forward, with ``roll = atan2(u_x, -u_y)``.
     """
     r = np.radians(roll_sign * float(row["pf_roll_deg"]))
     p = np.radians(pitch_sign * float(row["pf_pitch_deg"]))

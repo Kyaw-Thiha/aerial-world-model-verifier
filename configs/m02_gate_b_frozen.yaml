@@ -1,4 +1,49 @@
+# Track M, Stage 2 -- Gate B threshold, FROZEN after the development analysis.
+#
+# Fitted on the real development flights only (results/m02/gate_b_selection.json, produced by
+# `experiments/m02_gate_b.py --stage selection`).  Written BEFORE the held-out flights, the
+# H04 SolarWM clips and the H01 ANWM clips were read by this track.
+#
+# IMMUTABLE after this commit.
 version: 1
-status: placeholder
+date: '2026-11-22'
+status: frozen
+track: M
+stage: 2
+prereg: configs/m02_gate_b_prereg.yaml
+amendment_1: configs/m02_gate_b_amend1.yaml
+
 gate_b:
-  tau_deg: 5.0
+  tau_deg: 3.0
+  rule: abstain when the clip-median lean disagreement between R_pf and R_gc224 exceeds tau
+  reason_code: readers_disagree
+  selection:
+    method: conformal risk control, accept iff disagreement <= tau, bound (k+1)/(n+1)
+    alpha: 0.05
+    risks: [coherence_false_reject, yaw_control_flag_rate]
+    outcome: >
+      The yaw-control risk reaches the target at tau = 3.0 (0/35 accepted, bound 0.028).
+      The coherence false-reject risk does not: the best bound any threshold achieves is 0.056
+      at 17 accepted, just above 0.05. Per the pre-registration, the threshold of the risk
+      that reached is frozen and the other risk's achieved rate is reported beside every
+      Gate B number. No hand-set value is substituted.
+    coverage_at_tau: 0.5147058823529411
+    accepted: 35
+    total: 68
+  achieved_dev:
+    coherence_false_reject: 3/35
+    yaw_control: 0/35
+    null_edit: 0/35
+  reader_signs:
+    roll_sign: -1.0
+    pitch_sign: 1.0
+    note: >
+      roll from the rotation probe (a +20 deg image rotation moves PF's roll by +18.7 deg and
+      GeoCalib's by -19.3 deg); pitch from the simulated development clips against the
+      render's truth, where the probe cannot resolve it (its frames are near level). With
+      both fixed, PF's roll agrees with GeoCalib to a median 1.41 deg (p90 5.83) on the
+      simulated frames, and PF's lean error is 3.36 deg pooled against GeoCalib-224's 1.42.
+  feeds:
+    real_tii: 100 deg virtual pinhole view, f = 268.5 px
+    simulated: 224 px centre crop, f = 199.1 px
+    generators: 224 px, f = 112 px

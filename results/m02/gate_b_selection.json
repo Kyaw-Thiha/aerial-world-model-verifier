@@ -1,24 +1,25 @@
 {
  "false_reject": {
-  "lam": 20.25,
-  "achieved_coverage": 0.6551724137931034,
-  "n_accept": 19,
-  "n_total": 29,
-  "bound": 0.05,
+  "lam": NaN,
+  "achieved_coverage": 0.0,
+  "n_accept": 0,
+  "n_total": 0,
+  "bound": 1.0,
   "alpha": 0.05,
-  "reached": true,
-  "reason": ""
+  "reached": false,
+  "reason": "no threshold reaches alpha=0.05; the full-coverage bound is 1.000"
  },
  "yaw_control": {
-  "lam": 20.25,
-  "achieved_coverage": 0.6551724137931034,
-  "n_accept": 19,
-  "n_total": 29,
-  "bound": 0.05,
+  "lam": 3.0,
+  "achieved_coverage": 0.5147058823529411,
+  "n_accept": 35,
+  "n_total": 68,
+  "bound": 0.027777777777777776,
   "alpha": 0.05,
   "reached": true,
   "reason": ""
  },
- "tau_joint": 20.25,
- "n_clips": 30
+ "tau_joint": 3.0,
+ "note": "only one risk reached; tau is that risk's threshold and the other risk's achieved rate is reported beside it",
+ "n_clips": 69
 }
