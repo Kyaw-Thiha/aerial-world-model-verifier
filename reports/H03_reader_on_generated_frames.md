@@ -169,6 +169,45 @@ SolarWM's convention probes (the only generated clips with a 40° commanded roll
 Both track the ramp with the correct sign and within 2° of each other over the whole swing;
 the constant offset between them is the level-probe bias noted above.
 
+## 5. Recomputing the affected headline numbers with the independent estimator
+
+The pre-registered rule failed, so the numbers behind the H01/H02/E5 claims were recomputed
+with Perspective Fields on the **full clips** (not the 150-frame sample): every LingBot
+full-precision probe, the SolarWM convention probes, the 25 `flatness`-arm clips of H02's
+75-clip grid, and all 44 ANWM seed clips.  The reader's own rows are read read-only from the
+H01/H02 worktrees.  The depicted tilt is the angle between the body z axis and world up, with
+Perspective Fields' up direction built from its parameter head
+`rotz(roll) rotx(pitch) (0,1,0)` in its y-up frame, flipped to the project's y-down camera
+frame; that construction reproduces `-pf_roll` exactly and gives `(0,-1,0)` on a level frame.
+(The per-pixel field reconstruction was tried first and rejected: it returned exactly `-up`
+on level frames and drifted by 7 deg at a 25 deg roll, so the parameter head is used.)
+
+| population | clips | reader tilt, median (deg) | PF tilt, median (deg) | delta (PF - reader) | abs delta |
+| --- | --- | --- | --- | --- | --- |
+| LingBot bf16 probes | 5 | 4.29 | 2.28 | **-2.01** | 2.28 |
+| SolarWM probes | 5 | 9.94 | 13.57 | +1.94 | 2.21 |
+| SolarWM grid, flatness arm | 25 | 4.68 | 8.48 | +2.68 | 2.78 |
+| ANWM seed clips | 44 | 0.64 | 2.33 | +1.66 | 1.48 |
+
+**What changes.** Nothing in the classification, and the magnitudes move by 1.5-2.8 deg:
+
+* **LingBot (H01/H02).** With PF the probes read 1.3-2.4 deg of depicted tilt instead of
+  3.9-4.9 deg, still flat across the +20, -20, triangular and 60 deg ramps (the level probe is
+  2.12 deg, the largest ramp 2.35 deg). The roll-blindness conclusion is unchanged and if
+  anything stronger.
+* **SolarWM held banks (H02).** On the flatness arm of the grid PF reads 8.48 deg median
+  against the reader's 4.68, while the commanded required tilt on those paths is 9-21 deg. The
+  turn-10 and turn-20 clips stay infeasible; the five "feasible slalom" clips under H02's
+  absolute 12-frame rule move closer to the threshold but the direction of the result is the
+  same. The +2.7 deg offset is a systematic difference between the two estimators on this
+  imagery, not a change of classification.
+* **ANWM (E5).** PF reads 2.33 deg against the reader's 0.64 on the 44 seed clips; both are
+  far below the 8-20 deg the designed paths require, so the infeasibility finding is unchanged.
+* **The reader's own bias on generated frames is not resolvable from this.** PF reads higher
+  on ANWM and SolarWM and lower on LingBot; without truth on generated frames the sign of the
+  reader's bias cannot be established, which is exactly why the rule is stated on controls.
+
+
 ## What this supports
 
 * **The reader's roll is accurate on frames with known truth** (0.6° simulated, 1.3° real) and

@@ -77,7 +77,7 @@ def warp_yaw(tag: str = "main", yaw_deg: float = 20.0, f_px: float = 240.0,
 @app.function(image=image, gpu="A10", timeout=4 * 3600, volumes={"/r": vol_r},
               env={"HF_HOME": "/tmp/hf"})
 def depicted(tag: str = "main", size: int = 224, fov_deg: float = 90.0,
-             stride: int = 1) -> dict:
+             stride: int = 1, shard: int = 0, shards: int = 1) -> dict:
     import time
 
     import cv2
@@ -90,8 +90,8 @@ def depicted(tag: str = "main", size: int = 224, fov_deg: float = 90.0,
     device = "cuda" if torch.cuda.is_available() else "cpu"
     model = GeoCalib(weights="pinhole").to(device)
     root = Path("/r/solarwm") / tag
-    clips = sorted(p for p in root.iterdir() if (p / "frames").is_dir())
-    out_dir = Path("/r/h04") / f"depicted_{tag}"
+    clips = sorted(p for p in root.iterdir() if (p / "frames").is_dir())[shard::shards]
+    out_dir = Path("/r/h04") / f"depicted_{tag}_s{shard}"
     out_dir.mkdir(parents=True, exist_ok=True)
     f = (size / 2.0) / np.tan(np.deg2rad(fov_deg / 2.0))
     t0 = time.time()
@@ -122,7 +122,8 @@ def depicted(tag: str = "main", size: int = 224, fov_deg: float = 90.0,
                 fh.write(json.dumps(row) + "\n")
                 n += 1
             print(clip.name, len(frames), flush=True)
-    info = {"tag": tag, "root": str(root), "n_clips": len(clips), "n_rows": n,
+    info = {"tag": tag, "shard": shard, "shards": shards, "root": str(root),
+            "n_clips": len(clips), "n_rows": n,
             "size": size, "f_px": float(f), "stride": stride,
             "seconds": time.time() - t0, "geocalib_commit": GEOCALIB_COMMIT}
     (out_dir / "summary.json").write_text(json.dumps(info, indent=1))
@@ -131,8 +132,8 @@ def depicted(tag: str = "main", size: int = 224, fov_deg: float = 90.0,
 
 
 @app.local_entrypoint()
-def main(mode: str = "read", tag: str = "main"):
+def main(mode: str = "read", tag: str = "main", shard: int = 0, shards: int = 1):
     if mode == "yaw":
         print(json.dumps(warp_yaw.remote(tag=tag), indent=1))
     else:
-        print(json.dumps(depicted.remote(tag=tag), indent=1))
+        print(json.dumps(depicted.remote(tag=tag, shard=shard, shards=shards), indent=1))

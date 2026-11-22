@@ -35,10 +35,11 @@ image = (
 vol_out = modal.Volume.from_name("awmv-h3-data", create_if_missing=True)
 vol_h1 = modal.Volume.from_name("awmv-h-anwm-results", create_if_missing=False)
 vol_h2 = modal.Volume.from_name("awmv-h2-results", create_if_missing=False)
+vol_ling = modal.Volume.from_name("awmv-h-lingbot-results", create_if_missing=False)
 
 # (group, batch, directory holding <clip>/frames, clip-name filter)
 ROOTS = [
-    ("lingbot_nf4", "probes", "/h1/lingbot", ""),
+    ("lingbot_nf4", "probes", "/hling/lingbot", ""),
     ("lingbot_bf16", "probes", "/h2/lingbot_full", ""),
     ("solarwm", "probes", "/h2/solarwm/probes", ""),
     ("solarwm", "grid_flatness", "/h2/solarwm/grid", "flatness"),
@@ -94,7 +95,7 @@ def _up_from_field(up, lati, f_px: float = 112.0, stride: int = 8):
 
 
 @app.function(image=image, gpu="A10", timeout=6 * 3600,
-              volumes={"/out": vol_out, "/h1": vol_h1, "/h2": vol_h2},
+              volumes={"/out": vol_out, "/h1": vol_h1, "/h2": vol_h2, "/hling": vol_ling},
               env={"HF_HOME": "/tmp/hf"})
 def read_all(batch: int = 8) -> dict:
     import time

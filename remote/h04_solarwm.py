@@ -200,6 +200,7 @@ def infer(sample_ids: str, tag: str, steps: int = 4, frame_num: int = 81,
                               cwd="/solarwm", env=env, capture_output=True, text=True)
         (out_root / f"infer_{k0:04d}.log").write_text(
             proc.stdout[-200000:] + "\n---STDERR---\n" + proc.stderr[-100000:])
+        vol_r.commit()
         if proc.returncode != 0:
             raise RuntimeError(f"solar infer failed on sub-batch {k0}: {proc.returncode}")
         # decode generated mp4s to PNG frames
@@ -255,5 +256,4 @@ def main(mode: str = "download", tag: str = "test", ids: str = "", steps: int = 
         chosen = ids.split(",")
     print(f"{len(chosen)} samples, tag {tag}")
     res = infer.remote(json.dumps(chosen), tag=tag, steps=steps)
-    print(json.dumps({k: v for k, v in res.items() if k != "clips"}, indent=1))
-    print(json.dumps(res["clips"], indent=1)[:3000])
+    print(json.dumps(res, indent=1)[:3000])

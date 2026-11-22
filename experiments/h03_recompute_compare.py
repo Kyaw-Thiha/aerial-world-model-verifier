@@ -33,8 +33,15 @@ def roll_of(up):
     return np.degrees(np.arctan2(up[..., 0], -up[..., 1]))
 
 
-def tilt_of(up):
-    up = np.asarray(up, float)
+def tilt_of(up, mount_deg: float = 0.0):
+    """Depicted tilt: angle between the body z axis and world up.
+
+    ``up`` is the world-up direction in *camera* coordinates, so it is rotated into the body
+    frame through the recorded mount before the z-component is taken (the reader's rows are
+    already in that frame because ``reader_tilts`` applies ``R_cb``)."""
+    from src.perception.frames import camera_to_body_pitched
+    R_cb = camera_to_body_pitched(np.deg2rad(mount_deg))
+    up = np.asarray(up, float) @ R_cb.T
     return np.degrees(np.arccos(np.clip(up[..., 2], -1.0, 1.0)))
 
 
@@ -77,16 +84,31 @@ def reader_tilts(rows: dict, mount_deg: float = 0.0) -> dict:
     return out
 
 
+def pf_up_from_head(roll_deg, pitch_deg):
+    """World-up in camera coordinates from Perspective Fields' parameter head.
+
+    Their extrinsics are ``rotz(roll) rotx(elevation)`` in a y-up camera frame; the flip to
+    the project's y-down camera frame is (x, -y, z).  Validated on the level probe: the
+    recovered roll equals ``-pf_roll`` exactly and the level up vector is (0, -1, 0).
+    """
+    r, p = np.deg2rad(roll_deg), np.deg2rad(pitch_deg)
+    R = np.array([[np.cos(r), -np.sin(r), 0], [np.sin(r), np.cos(r), 0], [0, 0, 1]]) @ \
+        np.array([[1, 0, 0], [0, np.cos(p), -np.sin(p)], [0, np.sin(p), np.cos(p)]])
+    up = R @ np.array([0.0, 1.0, 0.0])
+    return up * np.array([1.0, -1.0, 1.0])
+
+
 def pf_tilts(rows: dict) -> dict:
     out = {}
     for clip, frames in rows.items():
         names = sorted(frames)
-        ups = [frames[n].get("up_cam") for n in names]
-        keep = [i for i, u in enumerate(ups) if u is not None]
-        if not keep:
+        heads = [(n, frames[n].get("pf_roll_deg"), frames[n].get("pf_pitch_deg"))
+                 for n in names]
+        heads = [h for h in heads if h[1] is not None and h[2] is not None]
+        if not heads:
             continue
-        up = np.array([ups[i] for i in keep], float)
-        out[clip] = {"frames": [names[i] for i in keep], "tilt": tilt_of(up),
+        up = np.array([pf_up_from_head(r, p) for _, r, p in heads], float)
+        out[clip] = {"frames": [h[0] for h in heads], "tilt": tilt_of(up),
                      "roll": roll_of(up)}
     return out
 
@@ -149,18 +171,18 @@ def main() -> int:
     r_sw_grid = reader_tilts(load_reader(H2 / "results/h02_solarwm_grid_depicted/depicted.jsonl"))
     r_anwm = reader_tilts(load_reader(H1 / "results/h01_seed_depicted/depicted.jsonl"))
 
-    p_ling = pf_tilts(pf[("lingbot_nf4", "probes", None)] if False else
-                      {c: v for (g, b, c), v in pf.items() if g == "lingbot_nf4"})
+    p_ling_nf4 = pf_tilts({c: v for (g, b, c), v in pf.items() if g == "lingbot_nf4"})
+    p_ling_bf16 = pf_tilts({c: v for (g, b, c), v in pf.items() if g == "lingbot_bf16"})
     p_sw_probes = pf_tilts({c: v for (g, b, c), v in pf.items()
                             if g == "solarwm" and b == "probes"})
     p_sw_grid = pf_tilts({c: v for (g, b, c), v in pf.items()
-                          if g == "solarwm" and b == "grid"})
+                          if g == "solarwm" and b == "grid_flatness"})
     p_sw_seeds = pf_tilts({c: v for (g, b, c), v in pf.items()
                            if g == "solarwm" and b == "seeds"})
     p_anwm = pf_tilts({c: v for (g, b, c), v in pf.items() if g == "anwm_seeds"})
 
-    out["lingbot"] = (compare(r_ling_nf4, p_ling, "lingbot_nf4")
-                      + compare(r_ling_bf16, p_ling, "lingbot_bf16"))
+    out["lingbot"] = (compare(r_ling_nf4, p_ling_nf4, "lingbot_nf4")
+                      + compare(r_ling_bf16, p_ling_bf16, "lingbot_bf16"))
     out["solarwm_probes"] = compare(r_sw_probes, p_sw_probes, "solarwm_probes")
     out["solarwm_grid"] = compare(r_sw_grid, p_sw_grid, "solarwm_grid")
     out["solarwm_seeds"] = compare(r_sw_grid, p_sw_seeds, "solarwm_seeds")

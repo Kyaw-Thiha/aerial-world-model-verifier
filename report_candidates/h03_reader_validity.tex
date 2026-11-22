@@ -58,6 +58,31 @@ $+8$ to $+10^\circ$ that is also $+14.8^\circ$ on the \emph{level} clip; the ove
 level skyline crossed by an oblique sun-glare edge on the water.  The frames do not roll, and
 the generator result does not rest on a reader artefact.
 
+\paragraph{Recomputing the headline numbers with the independent estimator.}
+The rule failed, so the numbers behind the H01/H02/E5 claims were recomputed with Perspective
+Fields on the full clips (its up direction from the parameter head, validated to reproduce
+$-\text{pf\_roll}$ exactly and $(0,-1,0)$ on a level frame):
+
+\begin{table}[t]
+\footnotesize
+\begin{tabular}{lrrrr}
+\toprule
+population & clips & reader tilt (deg) & PF tilt (deg) & $\Delta$ (PF $-$ reader) \\
+\midrule
+LingBot bf16 probes & 5 & 4.29 & 2.28 & $-2.01$ \\
+SolarWM probes & 5 & 9.94 & 13.57 & $+1.94$ \\
+SolarWM grid, flatness arm & 25 & 4.68 & 8.48 & $+2.68$ \\
+ANWM seed clips & 44 & 0.64 & 2.33 & $+1.66$ \\
+\bottomrule
+\end{tabular}
+\caption{The affected depicted-tilt medians recomputed with the independent estimator.  The
+magnitudes move by 1.5--2.8$^\circ$ and no classification changes: LingBot's probes stay flat
+across the $+20$, $-20$, triangular and $60^\circ$ ramps; SolarWM's turn-10 and turn-20 clips
+stay far below the 9--21$^\circ$ their paths require; ANWM stays near zero against 8--20$^\circ$
+of requirement.}
+\label{tab:h03-recompute}
+\end{table}
+
 \paragraph{What this does not settle.}
 The rule's verdict is ``not valid on generated frames'', and that verdict stands as
 pre-registered; the attribution above is an interpretation, not a re-registration.  The
