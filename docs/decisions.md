@@ -653,3 +653,26 @@ Every row below was read from the project's own repo/HF card on 2026-11-10. "ver
 - [N] No second extractor was run: the pre-registered trigger (primary ratio within 0.20 of the
   0.50 boundary) did not fire at 0.21/0.05, so the ViPE arm stays unexecuted rather than being
   added after seeing the result.
+- [N] **Translation-direction addendum (Part 1).** Pre-registered in
+  `configs/n02_initial_gravity_prereg.yaml` (`8fbd8d6`) with amendments A (what the turn test
+  measures), B (SIFT 4000 / contrast 0.01: the default threshold returned 23-77 keypoints on the
+  renders, below the 30-keypoint floor; applied uniformly to every stratum) and C (the reference
+  direction convention). Amendment C fixes a real bug: `cv2.recoverPose` returns
+  `t = -R_cw(j)^T (pos_j - pos_i)`, not `R_cw(i)^T d`; the pre-amendment formula produced a
+  systematic ~180 deg offset on 98 % of `outdoor_forward_1` pairs while the sign-ambiguous error
+  was 6.5 deg, and a synthetic pair with a 15 deg rotation matches the corrected formula to
+  0.002 deg. The pre-amendment per-pair table stays in the pairs CSVs as `delta_old_deg`, labelled.
+- [N] **Turn-observability operationalisation.** The frozen amendment A defines the test as
+  whether two non-parallel velocity directions span the two lean axes. Implementation: start at
+  window 1 with the *first-frame reader* (not the oracle, else the first constraint is vacuous),
+  propagate to window 2 with DPVO, and fit one constant body-frame lean correction (roll, pitch)
+  to (i) the window-2 direction constraint alone and (ii) both constraints. Residual lean error
+  at window 2 is compared with the video-only error by the angle between the velocity directions.
+  Rotation about the velocity axis is not observable from directions and is stated as a limit,
+  not measured. The script is `experiments/n02_turn_test.py`.
+- [N] **Part 1 start arms are descriptive** (the pre-registration says so). The Huber arm fits a
+  constant up vector to the reader readings carried into the start frame with the estimated
+  rotations; the constant in the two lean axes *is* the initial gravity plus the reader's
+  constant offset, so the pre-registration's "offset" is not a separate free parameter. Two
+  windows are reported: the first 3 s (causal-ish) and all frames up to the 10 s horizon
+  (non-causal, the handoff's "all frames" reading).
