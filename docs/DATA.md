@@ -112,6 +112,19 @@ the round-2 summaries.
   `awmv-archive/untracked/` (Track C's `data/` tree and its one untracked result file,
   `results/pathrec_calib/intrinsics.json`, copied as `awmv-archive/untracked/track-c/intrinsics.json`).
 
+## 5a. Track J (branch `track-j-reader`)
+
+| path | size | what |
+| --- | --- | --- |
+| `results/j_inputs/g03_folds/` | 1.4 MB | **staged copy** of G03's out-of-fold per-frame reader predictions (11 JSONs) from `track-g-segments2` `cfea5c8`, plus `_summary.json`; `results/j_inputs/provenance.json` records each sha256 |
+| `results/j01_anatomy/` | < 1 MB | decomposition, ACF/PSD, bias structure, tail, blur proxy, rotation, rules |
+| `results/j02_noise_budget/` | < 1 MB | synthetic noise-budget table |
+
+Track J stages the G03 folds so the branch reads nothing from another branch at run time and
+its provenance is in git. Everything else it reads (`data/processed/p3a`, `data/processed/track_d`,
+`data/g03_frames`, `data/raw/dpvo`, `data/pathrec/poses`, `data/uzh`) is the shared gitignored
+`data/` tree, which is identical across worktrees. It wrote nothing to R2 and created no volume.
+
 ## 6. Restore recipes
 
 Full history restore from the consolidation bundles (any branch):

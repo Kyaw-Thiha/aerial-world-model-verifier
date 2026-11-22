@@ -1,3 +1,7 @@
+# COPIED UNCHANGED from Track G: src/verdict/segments.py at branch `track-g2-segments`
+# commit 4c6eacf, which itself imported it unchanged from `track-g-segments2` 463bfcc.
+# Track J imports it for the noise budget (J02) so the window machinery is the published one.
+# Do not edit here: a change belongs on the G branch and is re-copied with a new commit id.
 """Segment-level detection: sliding windows, a scan statistic, and its calibration.
 
 The frozen verdict is one clip-level number, so a violation that covers part of a clip is

@@ -1,0 +1,204 @@
+{
+ "folds": [
+  {
+   "held_out": "flight-01a-ellipse",
+   "n": 270,
+   "n_bad_held_out": 30,
+   "lambda": 0.001,
+   "auroc": 0.7848611111111111,
+   "auroc_s3": 0.43444444444444447,
+   "auroc_geo": 0.7672222222222222
+  },
+  {
+   "held_out": "flight-01p-ellipse",
+   "n": 1267,
+   "n_bad_held_out": 10,
+   "lambda": 0.001,
+   "auroc": 0.9295942720763724,
+   "auroc_s3": 0.9178202068416865,
+   "auroc_geo": 0.7463007159904534
+  },
+  {
+   "held_out": "flight-04a-ellipse",
+   "n": 350,
+   "n_bad_held_out": 20,
+   "lambda": 0.001,
+   "auroc": 0.9518181818181818,
+   "auroc_s3": 0.3828787878787879,
+   "auroc_geo": 0.7743939393939394
+  },
+  {
+   "held_out": "flight-07a-lemniscate",
+   "n": 370,
+   "n_bad_held_out": 65,
+   "lambda": 0.001,
+   "auroc": 0.9697099621689785,
+   "auroc_s3": 0.550264817150063,
+   "auroc_geo": 0.9760907944514502
+  },
+  {
+   "held_out": "flight-07p-lemniscate",
+   "n": 1284,
+   "n_bad_held_out": 7,
+   "lambda": 0.001,
+   "auroc": 0.8924935675131447,
+   "auroc_s3": 0.74079874706343,
+   "auroc_geo": 0.6830741693701756
+  },
+  {
+   "held_out": "flight-13a-trackRATM",
+   "n": 557,
+   "n_bad_held_out": 187,
+   "lambda": 0.001,
+   "auroc": 0.962870356988004,
+   "auroc_s3": 0.9247001011706895,
+   "auroc_geo": 0.9680156091920797
+  },
+  {
+   "held_out": "flight-13p-trackRATM",
+   "n": 536,
+   "n_bad_held_out": 190,
+   "lambda": 0.001,
+   "auroc": 0.8466686948585336,
+   "auroc_s3": 0.8581685427441436,
+   "auroc_geo": 0.7653483419531487
+  },
+  {
+   "held_out": "flight-16p-trackRATM",
+   "n": 373,
+   "n_bad_held_out": 129,
+   "lambda": 0.001,
+   "auroc": 0.799561570720549,
+   "auroc_s3": 0.7693798449612403,
+   "auroc_geo": 0.6950057186427755
+  }
+ ],
+ "pooled": {
+  "auroc_learned": 0.9458259280439058,
+  "auroc_ci": [
+   0.8817334647389334,
+   0.9726611701025175
+  ],
+  "n_boot": 5000,
+  "frac_usable": 1.0,
+  "auroc_s3_framewise": 0.850630439165652,
+  "auroc_physics_only": 0.8664906139077614,
+  "brier_learned": 0.08200521536254285,
+  "brier_s3_learned": 0.2211336483152732,
+  "calibration_slope": 0.5533808219521144,
+  "calibration_intercept": -1.8679003993680392,
+  "prevalence": 0.1274216097463551,
+  "n_frames": 5007,
+  "reliability": [
+   {
+    "p_mean": 0.055551396996427686,
+    "obs": 0.00998003992015968,
+    "n": 501
+   },
+   {
+    "p_mean": 0.08522521817979596,
+    "obs": 0.0,
+    "n": 501
+   },
+   {
+    "p_mean": 0.10316636568554176,
+    "obs": 0.0,
+    "n": 500
+   },
+   {
+    "p_mean": 0.1198909480500096,
+    "obs": 0.001996007984031936,
+    "n": 501
+   },
+   {
+    "p_mean": 0.13750900507515593,
+    "obs": 0.002,
+    "n": 500
+   },
+   {
+    "p_mean": 0.16409023043694126,
+    "obs": 0.00998003992015968,
+    "n": 501
+   },
+   {
+    "p_mean": 0.21658438448483283,
+    "obs": 0.033932135728542916,
+    "n": 501
+   },
+   {
+    "p_mean": 0.32005149863410115,
+    "obs": 0.104,
+    "n": 500
+   },
+   {
+    "p_mean": 0.5763233975023858,
+    "obs": 0.405189620758483,
+    "n": 501
+   },
+   {
+    "p_mean": 0.959154402073906,
+    "obs": 0.7065868263473054,
+    "n": 501
+   }
+  ],
+  "clip_level": {
+   "n": 114,
+   "n_positive": 9,
+   "auroc": 0.9608465608465608
+  }
+ },
+ "features": [
+  "gravity_uncertainty_raw",
+  "roll_uncertainty_raw",
+  "pitch_uncertainty_raw",
+  "up_confidence_mean",
+  "up_confidence_p10",
+  "latitude_confidence_mean",
+  "latitude_confidence_p10",
+  "valid_frac",
+  "gravity_uncertainty_raw_med",
+  "gravity_uncertainty_raw_max",
+  "gravity_uncertainty_raw_min",
+  "gravity_uncertainty_raw_std",
+  "gravity_uncertainty_raw_dev",
+  "roll_uncertainty_raw_med",
+  "roll_uncertainty_raw_max",
+  "roll_uncertainty_raw_min",
+  "roll_uncertainty_raw_std",
+  "roll_uncertainty_raw_dev",
+  "pitch_uncertainty_raw_med",
+  "pitch_uncertainty_raw_max",
+  "pitch_uncertainty_raw_min",
+  "pitch_uncertainty_raw_std",
+  "pitch_uncertainty_raw_dev",
+  "up_confidence_mean_med",
+  "up_confidence_mean_max",
+  "up_confidence_mean_min",
+  "up_confidence_mean_std",
+  "up_confidence_mean_dev",
+  "up_confidence_p10_med",
+  "up_confidence_p10_max",
+  "up_confidence_p10_min",
+  "up_confidence_p10_std",
+  "up_confidence_p10_dev",
+  "latitude_confidence_mean_med",
+  "latitude_confidence_mean_max",
+  "latitude_confidence_mean_min",
+  "latitude_confidence_mean_std",
+  "latitude_confidence_mean_dev",
+  "latitude_confidence_p10_med",
+  "latitude_confidence_p10_max",
+  "latitude_confidence_p10_min",
+  "latitude_confidence_p10_std",
+  "latitude_confidence_p10_dev",
+  "valid_frac_med",
+  "valid_frac_max",
+  "valid_frac_min",
+  "valid_frac_std",
+  "valid_frac_dev",
+  "tilt_deg",
+  "speed_mps",
+  "cos_yaw",
+  "sin_yaw"
+ ]
+}

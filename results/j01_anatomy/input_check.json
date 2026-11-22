@@ -1,0 +1,40 @@
+{
+ "join": "asserted identical in load_flight (raises otherwise)",
+ "worst_p999_lean_vs_theta_gap_deg": 2.052047420875274e-14,
+ "per_unit": {
+  "flight-01a-ellipse": [
+   1.4210854715202004e-14,
+   1.4210854715202004e-14
+  ],
+  "flight-01p-ellipse": [
+   1.7763568394002505e-15,
+   1.7763568394002505e-15
+  ],
+  "flight-04a-ellipse": [
+   1.4210854715202004e-14,
+   9.561240688071987e-15
+  ],
+  "flight-07a-lemniscate": [
+   1.4210854715202004e-14,
+   1.4210854715202004e-14
+  ],
+  "flight-07p-lemniscate": [
+   1.7763568394002505e-15,
+   1.7763568394002505e-15
+  ],
+  "flight-13a-trackRATM": [
+   1.4210854715202004e-14,
+   2.052047420875274e-14
+  ],
+  "flight-13p-trackRATM": [
+   1.4210854715202004e-14,
+   1.4210854715202004e-14
+  ],
+  "flight-16p-trackRATM": [
+   1.4210854715202004e-14,
+   1.4210854715202004e-14
+  ]
+ },
+ "n_tii_frames": 5007,
+ "n_uzh_frames": 1097
+}

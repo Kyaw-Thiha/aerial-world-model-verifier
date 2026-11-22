@@ -1,0 +1,92 @@
+version: 1
+date: '2026-11-21'
+status: preregistered
+track: J
+owner_branch: track-j-reader
+written: >
+  After J01 measured the tail and the three rules, and before any confidence model was fitted,
+  any AUROC computed or any weighted statistic evaluated. Rule 3 selects this branch on its
+  literal reading only; the report states that the premise is weak (88 % of the tail is already
+  excluded by the frozen gate) and reports the branch as selected-but-marginal.
+note: >
+  Stage 1c of handoff 19. The pre-registration allows "Modal GPU". This implementation is
+  CPU-only because the reader's own features are already stored per frame: no pixels are read,
+  no network is trained, and the track's GPU budget stays at zero. That is a scope reduction,
+  declared here, not a silent substitution: the report says the branch ran on stored features.
+
+question: >
+  Can a learned per-frame confidence predict the reader's error magnitude better than the
+  frozen S3 gate does, and does using it as a weight in the window statistic improve the
+  segment detector at the same false-reject?
+
+inputs:
+  frames: results/gate_a2/tii/<flight>__identity.jsonl  # frozen reader, all eight flights
+  labels: the mocap-based per-frame error from J01 (`src.depicted.anatomy.axis_errors`),
+    theta = angle(up_est, up_truth); a frame is "bad" when theta > 10 deg
+  signal_baseline: latitude_confidence_mean (S3), the frozen gate's signal
+  geometry: data/processed/p3a/p3a_v1/<flight>.npz (body tilt, speed, yaw)
+  clips_and_segments: data/processed/track_d/clips (schema v2) and src/verdict/segments.py
+
+features:
+  per_frame_reader_outputs:  # all stored, nothing recomputed from pixels
+    - gravity_uncertainty_raw, roll_uncertainty_raw, pitch_uncertainty_raw
+    - up_confidence_mean, up_confidence_p10
+    - latitude_confidence_mean, latitude_confidence_p10
+    - valid_frac
+  temporal_window:
+    window_s: 0.5
+    aggregates: [median, max, min, std]  # per feature, centred on the frame
+    deviation: the frame's value minus its own 0.5 s median
+  geometry: [body tilt (deg), speed (m/s), cos(yaw), sin(yaw), norm(depicted lean)]
+  standardisation: per fold, fitted on the fit flights only
+
+models:
+  primary: L2 logistic regression on the standardised features (numpy, no sklearn in the env)
+    target: theta > 10 deg
+    lambda: chosen from {1e-3, 1e-2, 1e-1} by the fit-fold cross-validated log-loss, one grid,
+      reported
+  secondary: ridge regression on log(1 + theta) -> a per-frame predicted magnitude
+  baselines:
+    - the frozen S3 signal alone (framewise)
+    - body tilt and speed alone (the physics-only baseline)
+  folds: leave-one-flight-out over the eight TII flights; nothing from the held-out flight enters
+    feature standardisation, the lambda choice or the fit
+
+metrics:
+  primary: per-frame AUROC for theta > 10 deg, each fold's held-out AUROC reported and pooled by
+    frames; flight-clustered bootstrap (5,000, rng(1), 8 clusters) as a descriptive spread
+  calibration:
+    brier: mean squared probability error
+    reliability: decile table of predicted probability against observed frequency
+    slope: logistic recalibration slope of the held-out predictions
+  comparison: >
+    The frozen gate's published 0.946 AUROC is at CLIP level (100 clips) and is not the same
+    unit as a per-frame AUROC, so the report prints both, prints the clip-level AUROC of the
+    averaged predicted probability on the same clips, and never calls one the other.
+  downstream: >
+    The predicted probability enters the G01 window statistic as a weight (weighted median of
+    the per-frame residual, weights = 1 - p_bad, floored at 0.1) and as a mask (drop frames with
+    p_bad above the fold's 90th percentile). Both are reported against the unweighted statistic
+    at the same leave-one-flight-out false-reject, on the six dev flights only. The two held-out
+    flights stay unscored.
+
+success_criterion:
+  primary: >
+    Held-out per-frame AUROC above the frozen S3 signal's per-frame AUROC on the same frames,
+    and a recalibration slope in [0.8, 1.25]. Reported as k/n per fold plus the pooled number.
+  secondary: >
+    The weighted statistic improves partial-edit detection at the same false-reject by at least
+    5 percentage points anywhere in the 25/50 % coverage cells. A miss is reported as a miss.
+  falsification: >
+    If the learned confidence does not beat S3 on the same frames, the branch has no
+    justification and the report says the tail is already as well described as the stored
+    features allow — which is the more likely outcome given J01's finding that 88 % of the tail
+    is in clips the gate drops.
+
+held_out:
+  flights: [flight-13p-trackRATM, flight-07a-lemniscate]
+  rule: unscored; every number above is dev-block (six flights) or leave-one-flight-out
+
+cost:
+  gpu_usd: 0
+  note: CPU only, stored features; no Modal app, no volume, no R2 write

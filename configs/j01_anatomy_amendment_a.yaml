@@ -1,0 +1,40 @@
+version: 1
+date: '2026-11-21'
+status: amendment
+track: J
+owner_branch: track-j-reader
+amends: configs/j01_anatomy_prereg.yaml
+written: >
+  Before any anatomy number was computed. Two facts about the inputs were wrong in the
+  pre-registration and are corrected here; no statistic, threshold or decision rule changes.
+
+corrections:
+  - what: clip time structure
+    prereg_said: >
+      "100 clips of 47-49 frames, 4.0 s, contiguous runs inside a clip" and a run rule that
+      breaks at gaps > 1.5x the median frame spacing.
+    measured: >
+      The 5,007 reader frames are a continuous ~12 Hz subsample of each whole flight
+      (median spacing 83.3-83.6 ms; largest gap 118 ms; zero gaps above 1.5x the median in
+      any of the eight flights). The 4 s clips are consecutive chunks of that one stream,
+      not scattered windows.
+    consequence: >
+      There is exactly one contiguous run per flight. The run rule is kept in the code and
+      does not bind. The DCT split therefore spans 1/T to 0.5 Hz (T = 22-107 s), so "slow"
+      covers drift from about 0.005 Hz up to 0.5 Hz and the flight mean is the flight's DC.
+      This strengthens the decomposition (slow drift is observable over the whole flight,
+      not only inside 4 s), and it means the numbers are not limited by the clip structure.
+  - what: video frame rate and DPVO pose rate
+    prereg_said: "3.75 Hz (8-frame stride of a 30 fps video)"
+    measured: >
+      The TII camera runs at ~120 fps (p3a `fps` 119.86-125.52; the flight metadata says
+      120). The stored DPVO poses are stride 8, i.e. ~15 Hz, and carry `frame_ts_us`.
+    consequence: >
+      The finest available rotation interval is 1/15 s = 0.067 s, not 0.27 s; 0.5 s is ~7.5
+      pose intervals and 1 s is ~15. All DPVO quantities are computed at 15 Hz and labelled
+      as such. Nothing else changes.
+
+unchanged: >
+  The error definition, the trimming rule, the decomposition statistic and its shares, the
+  bias-structure tests, the tail definitions, the three priority rules and their thresholds,
+  and the held-out policy are unchanged.

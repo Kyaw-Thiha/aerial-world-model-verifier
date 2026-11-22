@@ -1,0 +1,124 @@
+version: 1
+date: '2026-11-21'
+status: preregistered
+track: J
+owner_branch: track-j-reader
+written: >
+  After J01 measured the bias and before any per-clip fit, threshold or detection rate was
+  computed. Adopted on the user's decision of 2026-11-21: run Stage 1a on the gate-kept
+  population, pre-register first, report the absorption number for every edit type, and allow
+  only nuisance parameters that cannot hide the violations of interest.
+note: >
+  The stratum is the gate-kept population because that is the population the verdict scores and
+  the only one on which rule 1 fires (J01: bias share 42.8 % of the squared error, against
+  29.6 % over all frames and 35.2 % on the E2-trimmed frames). Rule 1 does not fire on its
+  pre-registered trimmed stratum; that is recorded in J01 and amendment B, and this branch runs
+  on the stratum the user named, not silently on the old one.
+
+question: >
+  If a per-clip offset (and a bounded drag coefficient) is fitted on the clip under test before
+  scoring, how much detection does the fit absorb for each edit type, and is what survives — the
+  clip's internal deviation from its own fit — a better statistic at a matched false-reject than
+  the frozen fixed-calibration median residual?
+
+population:
+  dataset: TII Race Against the Machine, schema-v2 clips
+  source: data/processed/track_d/clips/<flight>/<clip>__<condition>/verdict_clip.npz
+  clips: 100 real, 8 flights
+  dev: [flight-01a-ellipse, flight-01p-ellipse, flight-04a-ellipse, flight-07p-lemniscate,
+        flight-13a-trackRATM, flight-16p-trackRATM]
+  held_out: [flight-13p-trackRATM, flight-07a-lemniscate]   # NOT scored here
+  stratum: gate_kept  # frozen S3 gate, configs/gate_frozen.yaml, 72 of 100 clips
+  conditioning: real edits only; the null_edit and yaw_control clips are the controls
+
+required_side:
+  base: the schema's own `lean_req`, built upstream at k_d = 0.295
+  varying_k_d: lean_req(k_d) = lean_req + (k_d - 0.295) * vel_req
+  k_d_grid: [0.0, 0.05, 0.10, 0.15, 0.20, 0.25, 0.295, 0.35, 0.40]
+  why_not_rederive: >
+    Re-deriving the required lean from the schema's `pos` at the 12 Hz clip rate does NOT
+    reproduce the stored `lean_req` (median disagreement 8.6 deg over the 100 clips, 84 above
+    1 deg), because the second derivative is computed upstream at the native 274.73 Hz rate.
+    The stored `lean_req` and `vel_req` are internally consistent (|lean_req| equals
+    sin(tilt_req_deg) to 3e-4), so the k_d variation is applied linearly in the schema's own lean
+    plane and never through a re-derivation. The mismatch is logged in docs/decisions.md.
+
+nuisance_parameters:
+  allowed:
+    offset: a free 2-vector per clip (this is the per-flight bias J01 measured)
+    drag: k_d on the grid above, i.e. bounded to [0, 0.40]
+  forbidden:
+    gain: fixed at 1 in every arm. A free slope can absorb x0.5/x1.5 and a partial removal, so
+      no arm fits one; the report states this and the x0.5/x1.5 cells are the test of it.
+    per-window parameters: nothing is fitted inside a window; the fit is clip-level,
+      which is what makes the window statistic a *relative* (change-based) test.
+  argument_stated_before_scoring: >
+    An offset removes exactly the direction a uniform tilt removal moves in, so the offset arm is
+    expected to be blind to full-clip removal and to full-clip x0.5/x1.5 (which are also level
+    shifts in the lean plane) while remaining sensitive to mirroring (a sign flip is not a
+    translation) and to partial edits (the fitted offset is one number, the edit is local). A
+    bounded k_d can absorb part of a magnitude edit, because it changes the required magnitude;
+    the measured absorption quantifies how much. No gain is fitted, so a *proportional* scale
+    edit cannot be absorbed exactly.
+
+arming:
+  F0_fixed: offset 0, k_d = 0.295, the frozen statistic
+  C1_offset: per clip, robust (Huber) 2-vector offset, k_d fixed at 0.295
+  C2_offset_drag: per clip, robust offset at the k_d on the grid minimising the Huber loss
+  R_coherence: the G-round coherence tier, 1 - min(r_x, r_y) per window. Included because it is
+    invariant to both an offset and a gain BY CONSTRUCTION, so it is the reference for what a
+    fit cannot absorb.
+  all_arms: no gain, no per-window fitting
+
+statistics:
+  clip_tier: median over usable frames of the per-frame angle between the depicted thrust axis
+    and the (fitted) required thrust axis
+  window_tier: maximum over windows of the window-median residual, 8-frame windows, hop 4,
+    complete windows only (the G-round rule)
+  threshold: leave-one-flight-out empirical 95th percentile on the real gate-kept dev clips, per
+    arm and per tier
+  false_reject_target: 0.05 nominal
+
+edits_and_coverage:
+  families: [tilt_removal, mirror_roll, scale_0.5, scale_1.5]
+  controls: [yaw_control, null_edit]
+  coverage: [0.25, 0.50, 1.00]  # partial edits composed on the depicted side, the G01 rule:
+    inside a centred contiguous interval the depicted lean comes from the same clip's full-clip
+    edit, outside it from the real clip
+  note: a control at every coverage too, so a rate never appears without them
+
+absorption:
+  definition: absorption(family, coverage) = detection_F0 - detection_C2, in clips (k/n printed)
+    and in percentage points, on the same clips and the same tier
+  also_reported: F0 - C1 (offset only), and detection_C2 - detection_R_coherence (does the
+    relative residual add anything to the fit-free coherence tier)
+  interpretation_fixed_in_advance: >
+    A positive absorption is the price of the nuisance parameters. If C2's detection on
+    full-clip removal is at the false-reject, the branch has demonstrated that per-clip
+    calibration cannot be used against uniform tilt removal; that is a result, not a failure to
+    tune.
+
+minimum_detectable_violation:
+  definition: the smallest injected local step detected in half the clips, interpolated between
+    grid points
+  injection: a uniform reduction of the required tilt by Δ degrees along its own direction over a
+    centred interval of the clip at 25 % and 50 % coverage, Δ ∈ {0, 2, 4, 6, 8, 10, 12, 15, 20,
+    30} deg, added to the depicted side (the same construction as J02)
+  reported_for: [F0_clip, C2_clip, C2_window, R_coherence_window, F0_window]
+
+success_criterion:
+  primary: >
+    The branch succeeds as a measurement if every absorption number and every false-reject comes
+    with its denominator and its controls, and if the report states plainly which violation types
+    a per-clip fit cannot see. It succeeds as a detector only if, at the matched false-reject, C2
+    beats F0 on at least one family at 25 % or 50 % coverage without losing more than its
+    absorption on the full-clip cells.
+  falsification: >
+    If C2 is at or below F0 on every partial cell, per-clip calibration buys nothing on this
+    corpus and the report says so instead of proposing a variant.
+
+held_out: unscored; every number is the dev block (six flights, gate-kept clips)
+
+cost:
+  gpu_usd: 0
+  note: CPU only, stored clips

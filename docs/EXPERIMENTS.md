@@ -30,6 +30,10 @@ results; none of them runs an experiment.
 | E12 | pixel-path round 2: spline joint fit, lean-error scoring, feed-forward extractors | F2 | `track-f2-pixel-path` | `results/f04_spline/`, `f05_lean_error/`, `f06_feedforward/` | F04, F05, F06 (round 1: E11 on `track-f-pixel-path`) |
 | E13a | generator pilot: ANWM seed variance, LingBot-World, Wan 2.2 | H | `track-h-generator-pilot` | `results/h01_seed_specs/`, `h01_seed_variance/`, `h01_lingbot/`, `h01_lingbot_b/`, `h01_wan/`, `h01_tables/`, `h01_r2/` | H01 |
 | E13b | generator coverage with path control (H2) | H2 | `track-h2-generator-coverage` | `results/h02_inventory.json`, `h02_solarwm*`, `h02_lingbot_full*` | H02 |
+| J01 | reader error anatomy | J | `track-j-reader` | `results/j01_anatomy/` | J01 |
+| J02 | synthetic noise budget | J | `track-j-reader` | `results/j02_noise_budget/` | J02 |
+| J03 | per-clip calibration (1a) | J | `track-j-reader` | `results/j03_perclip/` | J03 |
+| J04 | learned reader confidence (1c) | J | `track-j-reader` | `results/j04_confidence/` | J04 |
 
 R2 prefixes are `track-a/`, `track-a/a2/`, `track-b/`, `track-c/`, `track-d/`, `track-e/`, `track-h/`, `track-h2/`
 (counts and bytes: `report/data/r2_counts.json`, measured 2026-11-15; verified read-only again
@@ -337,3 +341,67 @@ Regenerate: `experiments/g04_path_demand.py` (CPU, ~50 s) and `experiments/g05_s
 Dependency to record: G05 needs Track I report I02 (≥8 dev + ≥4 holdout scenes with partial
 violation intervals and controls). Until it exists, no item 2-6 ablation can be pre-registered
 honestly and no confirmatory evaluation can run.
+
+## J01 — reader error anatomy
+
+* **Owning track / branch**: J, `track-j-reader`.
+* **What it is**: what the depicted-tilt error is made of, per flight and per axis: per-flight
+  bias, drift below 0.5 Hz and error above 0.5 Hz (orthogonal DCT-II split); autocorrelation and
+  integral time; whether the bias is a rigid mount rotation; the >10 deg tail's run structure and
+  covariates; and the per-step plus horizon error of DPVO/ViPE rotations.
+* **Configs**: `configs/j01_anatomy_prereg.yaml`, `j01_anatomy_amendment_a.yaml` (input facts),
+  `j01_anatomy_amendment_b.yaml` (the trimmed decomposition is not identified).
+* **Inputs**: `results/gate_a2/tii/<flight>__identity.jsonl` (frozen reader, `track-a2-gate`
+  `bc278bf`), `results/j01_anatomy/../j_inputs/g03_folds/` (G03 out-of-fold reader,
+  `track-g-segments2` `cfea5c8`, staged), `data/processed/p3a/p3a_v1` (mocap geometry),
+  `data/g03_frames` (frames, for the blur proxy), `data/raw/dpvo/*_stride8_*` and
+  `data/pathrec/poses/{dpvo,vipe}` (rotations).
+* **Results**: `results/j01_anatomy/` — `decomposition.csv`, `decomposition_pooled.json`,
+  `acf.csv`, `psd.csv`, `bias.csv`, `bias_structure.json`, `tail.json`, `blur.csv`,
+  `rotation.json`, `rules.json`, `input_check.json`.
+* **Report**: `reports/J01_reader_error_anatomy.md`.
+* **Regenerate**: `PYTHONPATH=. python experiments/j01_anatomy.py` (~25 s).
+
+## J02 — synthetic noise budget
+
+* **Owning track / branch**: J, `track-j-reader`.
+* **What it is**: keep every real clip's path, replace the depicted side by a perfect depiction
+  plus a controlled error with the measured bias, slow/fast split and correlation time, and
+  measure the minimum detectable uniform tilt reduction at a 5 % leave-one-flight-out
+  false-reject — against window length, sigma, bias, correlation time and slow share, with the
+  analytic formula as a cross-check and a replay of the measured error as a sanity anchor.
+* **Configs**: `configs/j02_noise_budget_prereg.yaml`.
+* **Results**: `results/j02_noise_budget/summary.json`.
+* **Report**: `reports/J02_noise_budget.md`.
+* **Regenerate**: `PYTHONPATH=. python experiments/j02_noise_budget.py`.
+
+## J03 — per-clip calibration and its absorption (Stage 1a)
+
+* **Owning track / branch**: J, `track-j-reader`.
+* **What it is**: a per-clip Huber offset (and k_d on a fixed grid in [0, 0.40]) fitted on the clip
+  under test, on the gate-kept population; the same two tiers refitted; the absorption of every edit
+  type against the frozen fixed-calibration statistic; the fit-free coherence tier as the reference;
+  the minimum detectable local tilt step per statistic.
+* **Configs**: `configs/j03_perclip_prereg.yaml`.
+* **Results**: `results/j03_perclip/{table.json, absorption.json, mdv.json, diagnostics.json,
+  rows.csv, mdv_rows.csv}`.
+* **Report**: `reports/J03_per_clip_calibration.md`.
+* **Regenerate**: `PYTHONPATH=. python experiments/j03_per_clip_calibration.py` (~30 s, CPU).
+* **Headline**: the clip-median tier loses 31 of 42 full-clip removal detections and 44 of 48 x1.5
+  detections to the fit; the coherence tier detects 33/45/54 at 25/50/100 % coverage at a 3/69
+  false-reject and has a 14-17 deg minimum detectable local step against > 25 deg for every fitted
+  statistic.
+
+## J04 — learned reader confidence (Stage 1c)
+
+* **Owning track / branch**: J, `track-j-reader`.
+* **What it is**: a logistic model on the reader's own stored per-frame outputs predicting
+  `theta > 10 deg`, leave-one-flight-out; its AUROC and calibration against the frozen S3 signal on
+  the same frames; and the G-round window statistic re-run with the predicted `1-p` as a weight
+  and as a mask on the dev block.
+* **Configs**: `configs/j04_learned_confidence_prereg.yaml`.
+* **Results**: `results/j04_confidence/{per_frame.json, downstream.json, rows.csv}`.
+* **Report**: `reports/J04_fusion_and_learned_confidence.md`.
+* **Regenerate**: `PYTHONPATH=. python experiments/j04_learned_confidence.py` (~25 s, CPU).
+* **Status**: selected by rule 3's literal reading; the premise is weak (88 % of the tail is in
+  clips the frozen gate drops). Stage 1b was not selected by any rule and was not run.

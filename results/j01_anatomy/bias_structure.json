@@ -1,0 +1,422 @@
+{
+ "per_domain_rotation": {
+  "frozen/tii_all": {
+   "robust_rotation_deg": 3.2038807041005866,
+   "robust_median_before_deg": 3.0234855372143743,
+   "robust_median_after_deg": 1.6794810876654596,
+   "robust_n": 2955,
+   "rotation_deg": 4.886386903548985,
+   "n": 5007,
+   "median_before_deg": 3.9677226514485104,
+   "median_after_deg": 3.415673433089763,
+   "p90_before_deg": 13.058431740131871,
+   "p90_after_deg": 12.973889769939982,
+   "rms_before_deg": 22.340524251508878,
+   "rms_after_deg": 22.055031559099483
+  },
+  "frozen/tii_piloted": {
+   "robust_rotation_deg": 3.9055555318496227,
+   "robust_median_before_deg": 2.96541197660713,
+   "robust_median_after_deg": 1.777186102496768,
+   "robust_n": 2042,
+   "rotation_deg": 5.222571594377302,
+   "n": 3460,
+   "median_before_deg": 3.824221495907044,
+   "median_after_deg": 3.6832704080175525,
+   "p90_before_deg": 9.69450249467078,
+   "p90_after_deg": 10.241592517474622,
+   "rms_before_deg": 17.095743700681187,
+   "rms_after_deg": 16.738131626383133
+  },
+  "frozen/tii_autonomous": {
+   "robust_rotation_deg": 3.7016615175431435,
+   "robust_median_before_deg": 3.5291722721310417,
+   "robust_median_after_deg": 1.2793212994872554,
+   "robust_n": 911,
+   "rotation_deg": 11.664499640326504,
+   "n": 1547,
+   "median_before_deg": 4.603201878547238,
+   "median_after_deg": 2.9106553052288,
+   "p90_before_deg": 81.09419818069603,
+   "p90_after_deg": 77.67778041753829,
+   "rms_before_deg": 31.01132897706925,
+   "rms_after_deg": 30.216874704719007
+  },
+  "frozen/tii_lofo": {
+   "per_unit": [
+    {
+     "unit": "flight-01a-ellipse",
+     "median_before_deg": 4.1982155244663595,
+     "median_after_deg": 3.3345479005668066,
+     "robust_median_after_deg": 2.5095191804831884
+    },
+    {
+     "unit": "flight-01p-ellipse",
+     "median_before_deg": 3.1290838633319358,
+     "median_after_deg": 2.379087883568346,
+     "robust_median_after_deg": 2.043116086020292
+    },
+    {
+     "unit": "flight-04a-ellipse",
+     "median_before_deg": 3.234050605846966,
+     "median_after_deg": 2.153095241877148,
+     "robust_median_after_deg": 1.2780257027337978
+    },
+    {
+     "unit": "flight-07a-lemniscate",
+     "median_before_deg": 2.5438547951166983,
+     "median_after_deg": 1.5627969071337375,
+     "robust_median_after_deg": 1.057572128330862
+    },
+    {
+     "unit": "flight-07p-lemniscate",
+     "median_before_deg": 3.601947129092294,
+     "median_after_deg": 4.136712136760316,
+     "robust_median_after_deg": 3.0170150986572204
+    },
+    {
+     "unit": "flight-13a-trackRATM",
+     "median_before_deg": 7.4290735848390215,
+     "median_after_deg": 6.833853334902208,
+     "robust_median_after_deg": 5.472037472256681
+    },
+    {
+     "unit": "flight-13p-trackRATM",
+     "median_before_deg": 7.749308561544936,
+     "median_after_deg": 8.31726209602639,
+     "robust_median_after_deg": 8.239317025198247
+    },
+    {
+     "unit": "flight-16p-trackRATM",
+     "median_before_deg": 7.316892196294117,
+     "median_after_deg": 8.489176013258026,
+     "robust_median_after_deg": 8.13008193044821
+    }
+   ],
+   "median_before_deg": 3.900081326779327,
+   "median_after_deg": 3.7356300186635614
+  },
+  "frozen/per_flight": [
+   {
+    "unit": "flight-01a-ellipse",
+    "rotation_deg": 6.856522467780902,
+    "robust_rotation_deg": 4.137893844550969,
+    "median_before_deg": 4.1982155244663595,
+    "median_after_deg": 1.390397706071574,
+    "robust_median_after_deg": 1.1557348945332353
+   },
+   {
+    "unit": "flight-01p-ellipse",
+    "rotation_deg": 3.0376219805631592,
+    "robust_rotation_deg": 4.455400162213424,
+    "median_before_deg": 3.1290838633319358,
+    "median_after_deg": 1.9357292292060921,
+    "robust_median_after_deg": 1.6671186061034724
+   },
+   {
+    "unit": "flight-04a-ellipse",
+    "rotation_deg": 4.710123248919767,
+    "robust_rotation_deg": 11.206870916717968,
+    "median_before_deg": 3.234050605846966,
+    "median_after_deg": 0.7586331376280901,
+    "robust_median_after_deg": 0.5667672700405504
+   },
+   {
+    "unit": "flight-07a-lemniscate",
+    "rotation_deg": 6.064317715931721,
+    "robust_rotation_deg": 3.3596391893065185,
+    "median_before_deg": 2.5438547951166983,
+    "median_after_deg": 2.5515355850722794,
+    "robust_median_after_deg": 0.8897172593046101
+   },
+   {
+    "unit": "flight-07p-lemniscate",
+    "rotation_deg": 2.2618641127732735,
+    "robust_rotation_deg": 2.3500068372082388,
+    "median_before_deg": 3.601947129092294,
+    "median_after_deg": 2.934408945202271,
+    "robust_median_after_deg": 2.9086537022428827
+   },
+   {
+    "unit": "flight-13a-trackRATM",
+    "rotation_deg": 41.77317478119385,
+    "robust_rotation_deg": 6.311256866520182,
+    "median_before_deg": 7.4290735848390215,
+    "median_after_deg": 4.510037123044268,
+    "robust_median_after_deg": 1.7974488224364613
+   },
+   {
+    "unit": "flight-13p-trackRATM",
+    "rotation_deg": 11.718618259561653,
+    "robust_rotation_deg": 3.347340046143952,
+    "median_before_deg": 7.749308561544936,
+    "median_after_deg": 11.437317614443089,
+    "robust_median_after_deg": 7.710006947896053
+   },
+   {
+    "unit": "flight-16p-trackRATM",
+    "rotation_deg": 10.303068074575265,
+    "robust_rotation_deg": 3.0118965263907955,
+    "median_before_deg": 7.316892196294117,
+    "median_after_deg": 9.862501441650556,
+    "robust_median_after_deg": 7.142649601614834
+   }
+  ],
+  "ft/tii_all": {
+   "robust_rotation_deg": 1.6830478887369404,
+   "robust_median_before_deg": 1.994250190667775,
+   "robust_median_after_deg": 1.3435772492366507,
+   "robust_n": 2955,
+   "rotation_deg": 3.053729268561703,
+   "n": 5007,
+   "median_before_deg": 2.8659792809083697,
+   "median_after_deg": 2.800431033156748,
+   "p90_before_deg": 10.71276825163359,
+   "p90_after_deg": 11.00791856366772,
+   "rms_before_deg": 20.006604562274497,
+   "rms_after_deg": 19.92409900226658
+  },
+  "ft/tii_piloted": {
+   "robust_rotation_deg": 1.7160373758672367,
+   "robust_median_before_deg": 1.8958140647867183,
+   "robust_median_after_deg": 1.1670231970769098,
+   "robust_n": 2042,
+   "rotation_deg": 2.158210107467871,
+   "n": 3460,
+   "median_before_deg": 2.645904605839873,
+   "median_after_deg": 2.7926901212670856,
+   "p90_before_deg": 8.410813225489605,
+   "p90_after_deg": 8.310132198652008,
+   "rms_before_deg": 13.963480520810508,
+   "rms_after_deg": 13.92983998364311
+  },
+  "ft/tii_autonomous": {
+   "robust_rotation_deg": 1.6899000217291802,
+   "robust_median_before_deg": 2.3743672740924913,
+   "robust_median_after_deg": 1.7347341004587467,
+   "robust_n": 911,
+   "rotation_deg": 9.88930966653926,
+   "n": 1547,
+   "median_before_deg": 3.2044015683454004,
+   "median_after_deg": 3.64951550569119,
+   "p90_before_deg": 76.96186993467055,
+   "p90_after_deg": 73.09285520689811,
+   "rms_before_deg": 29.315575312441354,
+   "rms_after_deg": 28.851428825865327
+  },
+  "ft/tii_lofo": {
+   "per_unit": [
+    {
+     "unit": "flight-01a-ellipse",
+     "median_before_deg": 3.4507992340314715,
+     "median_after_deg": 3.6235191371235747,
+     "robust_median_after_deg": 4.312776347987979
+    },
+    {
+     "unit": "flight-01p-ellipse",
+     "median_before_deg": 1.8676768348190087,
+     "median_after_deg": 1.9985820993782162,
+     "robust_median_after_deg": 1.3508504607568352
+    },
+    {
+     "unit": "flight-04a-ellipse",
+     "median_before_deg": 2.702983475916567,
+     "median_after_deg": 2.1170492122192544,
+     "robust_median_after_deg": 1.6559575175505283
+    },
+    {
+     "unit": "flight-07a-lemniscate",
+     "median_before_deg": 1.9040722639538015,
+     "median_after_deg": 1.1947638094726418,
+     "robust_median_after_deg": 2.416989098452353
+    },
+    {
+     "unit": "flight-07p-lemniscate",
+     "median_before_deg": 2.695655726154402,
+     "median_after_deg": 3.3768081094085236,
+     "robust_median_after_deg": 1.9547912824324278
+    },
+    {
+     "unit": "flight-13a-trackRATM",
+     "median_before_deg": 4.41810378826659,
+     "median_after_deg": 4.732711136738912,
+     "robust_median_after_deg": 3.711393775477976
+    },
+    {
+     "unit": "flight-13p-trackRATM",
+     "median_before_deg": 6.5245875327520615,
+     "median_after_deg": 6.925029337350763,
+     "robust_median_after_deg": 7.332865832381292
+    },
+    {
+     "unit": "flight-16p-trackRATM",
+     "median_before_deg": 6.958432420847875,
+     "median_after_deg": 7.626368060323288,
+     "robust_median_after_deg": 7.4252329786686175
+    }
+   ],
+   "median_before_deg": 3.0768913549740193,
+   "median_after_deg": 3.500163623266049
+  },
+  "ft/per_flight": [
+   {
+    "unit": "flight-01a-ellipse",
+    "rotation_deg": 6.719321763176157,
+    "robust_rotation_deg": 3.4989882400033783,
+    "median_before_deg": 3.4507992340314715,
+    "median_after_deg": 2.0883504796782493,
+    "robust_median_after_deg": 0.8816527526843045
+   },
+   {
+    "unit": "flight-01p-ellipse",
+    "rotation_deg": 2.100052983687792,
+    "robust_rotation_deg": 1.8511100577838062,
+    "median_before_deg": 1.8676768348190087,
+    "median_after_deg": 1.1016781460404257,
+    "robust_median_after_deg": 1.0364065037574544
+   },
+   {
+    "unit": "flight-04a-ellipse",
+    "rotation_deg": 3.7767143224934956,
+    "robust_rotation_deg": 2.7700563776959486,
+    "median_before_deg": 2.702983475916567,
+    "median_after_deg": 1.0082421715610135,
+    "robust_median_after_deg": 0.8835000591992066
+   },
+   {
+    "unit": "flight-07a-lemniscate",
+    "rotation_deg": 7.7826714212677,
+    "robust_rotation_deg": 4.136787570766378,
+    "median_before_deg": 1.9040722639538015,
+    "median_after_deg": 2.730090629881039,
+    "robust_median_after_deg": 1.0978951892841877
+   },
+   {
+    "unit": "flight-07p-lemniscate",
+    "rotation_deg": 2.494600023837133,
+    "robust_rotation_deg": 2.2994440784617924,
+    "median_before_deg": 2.695655726154402,
+    "median_after_deg": 1.8303214079582073,
+    "robust_median_after_deg": 1.7937466470512717
+   },
+   {
+    "unit": "flight-13a-trackRATM",
+    "rotation_deg": 29.239628749822,
+    "robust_rotation_deg": 3.8562854678917304,
+    "median_before_deg": 4.41810378826659,
+    "median_after_deg": 6.528761759613693,
+    "robust_median_after_deg": 2.0602543672294367
+   },
+   {
+    "unit": "flight-13p-trackRATM",
+    "rotation_deg": 6.942551019233297,
+    "robust_rotation_deg": 3.8152846113493677,
+    "median_before_deg": 6.5245875327520615,
+    "median_after_deg": 7.637283870661526,
+    "robust_median_after_deg": 5.671114002914336
+   },
+   {
+    "unit": "flight-16p-trackRATM",
+    "rotation_deg": 8.621116125571781,
+    "robust_rotation_deg": 3.6080958422401856,
+    "median_before_deg": 6.958432420847875,
+    "median_after_deg": 7.863101847032107,
+    "robust_median_after_deg": 5.901031840049754
+   }
+  ]
+ },
+ "regression": {
+  "frozen/pitch": {
+   "names": [
+    "speed_mps",
+    "tilt_rad",
+    "cos_yaw",
+    "sin_yaw"
+   ],
+   "beta": [
+    -0.1353776658923401,
+    7.382995194494761,
+    0.2553884292987037,
+    0.03725323363964397
+   ],
+   "se": [
+    0.16563372619838412,
+    3.8521117679211363,
+    0.3795552692550164,
+    0.6922539276134384
+   ],
+   "n": 4504,
+   "clusters": 8,
+   "within_r2": 0.07101790963794308
+  },
+  "frozen/roll": {
+   "names": [
+    "speed_mps",
+    "tilt_rad",
+    "cos_yaw",
+    "sin_yaw"
+   ],
+   "beta": [
+    -0.21127880882906844,
+    3.522948661047753,
+    1.3454201000512551,
+    3.988678666630882
+   ],
+   "se": [
+    0.07899657048876361,
+    2.6124065860552164,
+    0.5594649727707719,
+    2.7733821012027753
+   ],
+   "n": 4504,
+   "clusters": 8,
+   "within_r2": 0.034596403809485476
+  },
+  "ft/pitch": {
+   "names": [
+    "speed_mps",
+    "tilt_rad",
+    "cos_yaw",
+    "sin_yaw"
+   ],
+   "beta": [
+    0.07665269439641026,
+    8.296224427144672,
+    0.1201078145048715,
+    0.7711433886382423
+   ],
+   "se": [
+    0.10053255871499678,
+    4.33568260411362,
+    0.3192692104635078,
+    0.8883476207649262
+   ],
+   "n": 4504,
+   "clusters": 8,
+   "within_r2": 0.1391208118973657
+  },
+  "ft/roll": {
+   "names": [
+    "speed_mps",
+    "tilt_rad",
+    "cos_yaw",
+    "sin_yaw"
+   ],
+   "beta": [
+    -0.1281719984250872,
+    1.7951873902618112,
+    0.7775689130358416,
+    1.9122422545179827
+   ],
+   "se": [
+    0.056093653790669905,
+    2.188593045315536,
+    0.3272171904527941,
+    0.9110341351501968
+   ],
+   "n": 4504,
+   "clusters": 8,
+   "within_r2": 0.015147172814601428
+  }
+ }
+}

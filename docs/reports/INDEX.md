@@ -93,6 +93,15 @@ Files live in `reports/` at the repository root. Numbering restarts per track: T
 | --- | --- | --- |
 | `H01_generator_pilot.md` | Generator pilot: ANWM seed variance, LingBot-World roll injection, Wan 2.2 cost | current; pilot only, no scale-up until the user decides |
 
+## Track J — reader error anatomy and bias-robust verdicts (branch `track-j-reader`)
+
+| report | title | status |
+| --- | --- | --- |
+| `J01_reader_error_anatomy.md` | What the depicted-tilt error is made of | current |
+| `J02_noise_budget.md` | The synthetic noise budget: how small a violation is visible | current |
+| `J03_per_clip_calibration.md` | Per-clip calibration on the gate-kept population, and what it absorbs (Stage 1a) | current; negative result for per-clip calibration as a primary tier |
+| `J04_fusion_and_learned_confidence.md` | Learned reader confidence (Stage 1c); 1b not run | current; Stage 1c is selected by rule 3's *literal* reading only — J01 states the premise is weak |
+
 ## Notes
 
 * Report 04 quotes the pre-registration sha256 `b8fd7013…` for `configs/verdict_preregistration.yaml`
