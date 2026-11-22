@@ -111,3 +111,18 @@ Or, inside the repository, `git checkout archive/track-d-pre-consolidation`.
 
 Results needed by the report scripts are already in git under `results/`; nothing else is required
 to rebuild `report/` (see `docs/REPRODUCE.md`).
+
+## 7. Track G3 additions (2026-11-22)
+
+| path | where | what |
+| --- | --- | --- |
+| `results/g06/scores/<clip_id>_score.json` | git | stride-1 GeoCalib reader output for all 170 simulated development clips (per-frame `lean_est`, `lean_req`, `tilt_est`, `tilt_gt`, `up_error`). ~20 MB. Published so a later track can reuse them without a GPU run. |
+| `results/g06/consistency/` | git | stride-1 versus stride-2 comparison and the run-to-run envelope |
+| `results/g06/ablation/` | git | A1-A5 tables, MDV curves, `tables.md` |
+| `results/g06/yaw_slice/` | git | the auxiliary yaw slice's analysis |
+| `yaw_slice/<clip_id>/` | Modal volume `awmv-g3-data` | the 12 re-rendered yaw-control clips (`<clip_id>.mp4`, `render.npz`, `yaw_meta.json`); not in git |
+| `track-g3/yaw_slice/` | R2 | publication target for the same 12 clips (pending) |
+
+The yaw slice is Track G3's own auxiliary set: 12 feasible development clips re-rendered with the
+camera yawed about world up. It is **not** part of Track I's frozen 300 and is never pooled with
+it (`configs/g06_yaw_slice.json`).

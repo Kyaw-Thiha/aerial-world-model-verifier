@@ -5,27 +5,27 @@
   "p90": 0.006754566399977396,
   "p99": 0.022373923422114216,
   "max": 0.05554559054593132,
-  "new_vs_old_median_of_component_abs": 0.0009702496300650316
+  "new_vs_old_median_of_component_abs": 0.0009567178017609195
  },
  "component_abs_d_lean": {
-  "n": 42848,
-  "median": 0.0009707250243378013,
-  "p90": 0.006662965593400941,
-  "p99": 0.02446905038430935,
+  "n": 45216,
+  "median": 0.0009347878464926462,
+  "p90": 0.006400647766694398,
+  "p99": 0.023846202448238374,
   "max": 1.010626286002573,
-  "frac_above_0_05": 0.0028005974607916355
+  "frac_above_0_05": 0.002653927813163482
  },
- "clips_compared": 84,
- "frames_compared": 21424,
+ "clips_compared": 86,
+ "frames_compared": 22608,
  "max_abs_d_lean": 1.010626286002573,
- "median_of_clip_max_abs_d_lean": 0.018943315230858147,
- "clips_outside_1e9": 84,
+ "median_of_clip_max_abs_d_lean": 0.018457907339329085,
+ "clips_outside_1e9": 86,
  "by_old_stride": {
   "1": {
-   "clips": 6,
-   "frames_compared": 3058,
+   "clips": 8,
+   "frames_compared": 4242,
    "max_abs_d_lean": 0.23090509823214686,
-   "clips_outside_1e9": 6
+   "clips_outside_1e9": 8
   },
   "2": {
    "clips": 78,
@@ -34,7 +34,7 @@
    "clips_outside_1e9": 78
   }
  },
- "median_of_per_clip_medians": 0.0009702496300650316,
+ "median_of_per_clip_medians": 0.0009567178017609195,
  "rows": [
   {
    "clip_id": "i02_dev_000",
@@ -1042,6 +1042,30 @@
    "median_abs_d_lean": 0.002891666220744288,
    "max_abs_d_tilt_deg": 2.6397999305269515,
    "max_abs_d_up_error_deg": 1.8871225009231782,
+   "all_exact_1e9": false
+  },
+  {
+   "clip_id": "i02_dev_180",
+   "old_stride": 1,
+   "n_new": 583,
+   "n_old": 583,
+   "n_common": 583,
+   "max_abs_d_lean": 0.004498276399593451,
+   "median_abs_d_lean": 0.0005855327093917603,
+   "max_abs_d_tilt_deg": 0.28956157022187057,
+   "max_abs_d_up_error_deg": 0.18130701049208375,
+   "all_exact_1e9": false
+  },
+  {
+   "clip_id": "i02_dev_181",
+   "old_stride": 1,
+   "n_new": 601,
+   "n_old": 601,
+   "n_common": 601,
+   "max_abs_d_lean": 0.008229027355163218,
+   "median_abs_d_lean": 0.0007367062805426275,
+   "max_abs_d_tilt_deg": 0.47414469279729676,
+   "max_abs_d_up_error_deg": 0.3873475579251521,
    "all_exact_1e9": false
   }
  ]

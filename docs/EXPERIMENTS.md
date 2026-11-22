@@ -180,3 +180,26 @@ during consolidation — see `docs/DATA.md` for the current status of listing ac
 * **Regenerate**: `report/scripts/e10_window_rule.py`.
 * **Open discrepancy (recorded, not resolved)**: D's 0.07-0.12 s window "at the truth rate" is
   superseded by E05 (0.34-1.42 s at 500 Hz; 0.07-0.11 s only at the 15 Hz clip rate).
+
+---
+
+## Track G3 — segment detection on the simulated set (not part of E1-E10)
+
+* **Branch** `track-g3-segments` (worktree `~/Documents/Projects/awmv-g3`), off `main` at `41d1dad`.
+* **What it is**: the window-statistic ablations on Track I's simulated labelled set — 12-frame
+  coherence scan (primary), 8-frame residual scan (comparison), whole-clip median (baseline),
+  per-clip BH, boundary refinement, per-clip time alignment, multi-scale, the synthetic
+  minimum-detectable-step curve, and the 12-clip auxiliary yaw slice.
+* **Pre-registration**: `configs/g06_segments_prereg.yaml` (`2744dbb`), amendment 1
+  `configs/g06_segments_prereg_amend1.yaml` (`ac21197`), evaluation recipe
+  `configs/g06_eval_frozen.yaml`.
+* **Code**: `experiments/g3_*.py`, `remote/g3_score.py` (reader, L40S), `remote/g3_yaw_render.py`.
+  `src/verdict/segments.py` ported verbatim from `track-g2-segments` (`4c6eacf`); `src/sim/` from
+  `track-i-simset` (`2d815cc`).
+* **Results**: `results/g06/scores/` (the stride-1 reader output for all 170 dev clips, published
+  for reuse), `results/g06/consistency/`, `results/g06/ablation/`, `results/g06/yaw_slice/`.
+* **Reports**: `reports/G06_segments_ablation_on_sim.md` (dev), `reports/G07_segments_frozen_evaluation.md`
+  (held-out, not yet scored).
+* **Data**: the clips and truth are Track I's on R2 (`track-i/`); this track adds the 12-clip yaw
+  slice under the Modal volume `awmv-g3-data` (`yaw_slice/`) and, when published, R2
+  `track-g3/yaw_slice/`.
