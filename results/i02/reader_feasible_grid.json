@@ -1,0 +1,189 @@
+{
+  "split": "dev",
+  "defect": "feasible",
+  "n_clips": 13,
+  "n_frames": 3255,
+  "cells": [
+    {
+      "family": "forest_ridge",
+      "uptilt_deg": 0.0,
+      "clips": 1,
+      "frames": 252,
+      "up_med_deg": 6.318418786923611,
+      "up_med_range": [
+        6.318418786923611,
+        6.318418786923611
+      ],
+      "gain_f_med": 0.273213416455171,
+      "clip_ids": [
+        "i02_dev_008"
+      ]
+    },
+    {
+      "family": "forest_ridge",
+      "uptilt_deg": 15.0,
+      "clips": 1,
+      "frames": 182,
+      "up_med_deg": 8.312554436706595,
+      "up_med_range": [
+        8.312554436706595,
+        8.312554436706595
+      ],
+      "gain_f_med": 0.5274354376120503,
+      "clip_ids": [
+        "i02_dev_005"
+      ]
+    },
+    {
+      "family": "forest_ridge",
+      "uptilt_deg": 30.0,
+      "clips": 1,
+      "frames": 301,
+      "up_med_deg": 9.404293288927144,
+      "up_med_range": [
+        9.404293288927144,
+        9.404293288927144
+      ],
+      "gain_f_med": 0.6084859504766039,
+      "clip_ids": [
+        "i02_dev_002"
+      ]
+    },
+    {
+      "family": "forest_ridge",
+      "uptilt_deg": 45.0,
+      "clips": 1,
+      "frames": 151,
+      "up_med_deg": 10.539478405292929,
+      "up_med_range": [
+        10.539478405292929,
+        10.539478405292929
+      ],
+      "gain_f_med": 1.2215267377915158,
+      "clip_ids": [
+        "i02_dev_011"
+      ]
+    },
+    {
+      "family": "industrial",
+      "uptilt_deg": 0.0,
+      "clips": 2,
+      "frames": 659,
+      "up_med_deg": 1.1645025017146933,
+      "up_med_range": [
+        1.1396552327951346,
+        1.189349770634252
+      ],
+      "gain_f_med": 0.7012137403882609,
+      "clip_ids": [
+        "i02_dev_000",
+        "i02_dev_012"
+      ]
+    },
+    {
+      "family": "industrial",
+      "uptilt_deg": 15.0,
+      "clips": 1,
+      "frames": 330,
+      "up_med_deg": 1.4488377575751938,
+      "up_med_range": [
+        1.4488377575751938,
+        1.4488377575751938
+      ],
+      "gain_f_med": 0.8605152754798497,
+      "clip_ids": [
+        "i02_dev_009"
+      ]
+    },
+    {
+      "family": "industrial",
+      "uptilt_deg": 30.0,
+      "clips": 1,
+      "frames": 201,
+      "up_med_deg": 1.4222067842721509,
+      "up_med_range": [
+        1.4222067842721509,
+        1.4222067842721509
+      ],
+      "gain_f_med": 0.8936068903064562,
+      "clip_ids": [
+        "i02_dev_006"
+      ]
+    },
+    {
+      "family": "industrial",
+      "uptilt_deg": 45.0,
+      "clips": 1,
+      "frames": 170,
+      "up_med_deg": 4.936360547481869,
+      "up_med_range": [
+        4.936360547481869,
+        4.936360547481869
+      ],
+      "gain_f_med": 0.8773826723198644,
+      "clip_ids": [
+        "i02_dev_003"
+      ]
+    },
+    {
+      "family": "urban_checker",
+      "uptilt_deg": 0.0,
+      "clips": 1,
+      "frames": 200,
+      "up_med_deg": 0.8001348393281436,
+      "up_med_range": [
+        0.8001348393281436,
+        0.8001348393281436
+      ],
+      "gain_f_med": 0.8808268695550087,
+      "clip_ids": [
+        "i02_dev_004"
+      ]
+    },
+    {
+      "family": "urban_checker",
+      "uptilt_deg": 15.0,
+      "clips": 1,
+      "frames": 357,
+      "up_med_deg": 0.28466169184179924,
+      "up_med_range": [
+        0.28466169184179924,
+        0.28466169184179924
+      ],
+      "gain_f_med": 1.0009406074095664,
+      "clip_ids": [
+        "i02_dev_001"
+      ]
+    },
+    {
+      "family": "urban_checker",
+      "uptilt_deg": 30.0,
+      "clips": 1,
+      "frames": 301,
+      "up_med_deg": 1.1275512507162115,
+      "up_med_range": [
+        1.1275512507162115,
+        1.1275512507162115
+      ],
+      "gain_f_med": 1.0525694203240552,
+      "clip_ids": [
+        "i02_dev_022"
+      ]
+    },
+    {
+      "family": "urban_checker",
+      "uptilt_deg": 45.0,
+      "clips": 1,
+      "frames": 151,
+      "up_med_deg": 1.9455310638507606,
+      "up_med_range": [
+        1.9455310638507606,
+        1.9455310638507606
+      ],
+      "gain_f_med": 1.1041529838931776,
+      "clip_ids": [
+        "i02_dev_007"
+      ]
+    }
+  ]
+}
