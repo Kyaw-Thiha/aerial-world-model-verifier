@@ -601,3 +601,46 @@ Every row below was read from the project's own repo/HF card on 2026-11-10. "ver
 - [consolidation-round2] **No frozen config was touched.** The seven frozen configs still hash the values in `report/tables/tab_frozen-configs_1.tex`; every new pre-registration added by the seven branches was added in exactly one commit and never edited afterwards (checked per file before merging).
 - [consolidation-round2] **No science was re-analysed and no job was run.** No GPU spend, no Modal app started or stopped, no R2 object written. The report assets rebuild to the same 103 checks (100 match, 2 mismatch, 1 not checkable).
 - [consolidation-round2] **Editorial moves in the merged documents.** In `docs/reports/INDEX.md`, `## Notes` (present on `main` between Tracks E and F) is placed after all track sections; the new G, G2 and H2 sections are added because those branches did not update the index themselves. In `docs/EXPERIMENTS.md`, the G01-G05 rows are added to the summary table for the same reason. The H access-status paragraph in `docs/DATA.md` was rewritten once (longest-variant rule) to name both new prefixes. No report text, result file or config was changed by any of these.
+
+## Track N — attitude from video rotation — all entries tagged [N]
+
+- [N] Worktree `~/Documents/Projects/awmv-n`, branch `track-n-rotation`, off `main` at `6bc7b5d`
+  (consolidation wave 1). `data/`, `third_party/` and `.env` are symlinks to the shared checkout,
+  so no large copy and no second copy of the credentials. Read-only dependencies (nothing
+  merged): `track-j-reader` (J01 rotation numbers reused as a validation target),
+  `track-e-depicted-uzh` (UZH prepared pinhole frames and reader JSONL on the Modal volume
+  `awmv-e-data`), `track-i-simset` (the frozen simulated split and the 186 clips on R2),
+  `track-l-reader-simreal` (L01 per-frame frozen-reader scores on the 80 feasible dev clips) and
+  `track-m-gates` (the simulated-clip reader convention). G3's branch was not read.
+- [N] Part 0's pre-registration is `configs/n01_pretest_prereg.yaml`, committed at `ebacc7c`
+  before any 1/5/10/20 s number was computed and before the new DPVO runs existed. The only
+  propagation numbers in hand when it was written are J01's published per-step/0.5 s/1.0 s
+  values. The decision rule, the strata, the failure definitions and the reader references are
+  fixed there; nothing was tuned after the runs.
+- [N] The horizon statistic reproduces J01 exactly before it extends the horizon. On the eight
+  TII DPVO stride-8 pose sets the 0.5 s and 1.0 s medians match `results/j01_anatomy/rotation.json`
+  to 0.01 deg on all eight flights, and on the 150-frame UZH poses the DPVO/ViPE 1 s medians match
+  to 0.005 deg (0.235/0.190/0.185 DPVO; 0.289/0.214/0.240 ViPE). The extension is only the
+  horizon, the longer UZH sequences and the simulated clips.
+- [N] **Simulated-clip convention (recorded because the field name misleads).** Track I's gt
+  `R_bw_cam` is the *body* attitude the camera is rendered on (`src/sim/labels.py::camera_attitude`
+  returns `flight.R_bw`, and for a defect the defected body attitude); the camera-to-world the
+  renderer uses is `R_wc = R_bw_cam @ R_cb` (`src/sim/dataset.py`). Reading `R_bw_cam` as
+  camera-to-world gives a lean that disagrees with the clip's own `lean_dep` by up to 1.7 on the
+  lean vector (up to 130 deg of tilt); with `R_bw_cam @ R_cb` the agreement is 3.9e-16 on all 80
+  clips. The propagation uses `R_bw_cam @ R_cb`.
+- [N] UZH poses for long horizons come from a fresh DPVO run on the **450-frame** prepared pinhole
+  sequences on `awmv-e-data` (`remote/n_rotation.py`), because Track C's stored poses stop at 150
+  frames (10.0 s) and a 10 s horizon needs index 151. DPVO settings are Track A/C's, unchanged
+  (48 patches, removal 12, optimisation 8, lifetime 5, commit `0ac95b6`). The volume is mounted
+  read-only; the new poses go to a new volume `awmv-n-data`. No R2 object is written.
+- [N] Simulated clips: Track L's verified copy of the 80 feasible dev videos (all 80 sha256 match
+  Track I's R2 manifest) was uploaded byte-identically to `awmv-n-data/sim/videos`; the per-file
+  sha256 is in `results/n01_pretest/sim_population.csv`. Nothing was read from the held-out
+  split (only 3 of 100 held-out clips exist on R2).
+- [N] The reader reference for the same units is the frozen GeoCalib-224 reader on the simulated
+  clips (L01 per-frame `up_error_deg`) and UZH variant a (pinhole, Kalibr focal prior) recomputed
+  from E's stored JSONL. The recomputation reproduces E01's published per-sequence medians to
+  0.07 deg (8.36/7.83/9.59 against 8.36/7.90/9.59 outdoors), which is the pipeline check.
+- [N] Compute: one Modal app `awmv-n-rotation` (A10) and one volume `awmv-n-data`; estimated
+  1.50 USD in `docs/COST_LEDGER.md` before the run. Every app is stopped at the end.

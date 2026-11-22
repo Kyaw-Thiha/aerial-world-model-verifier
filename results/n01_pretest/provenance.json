@@ -1,0 +1,84 @@
+{
+ "written_utc": "2026-11-22T21:46:57.753500Z",
+ "sim_manifest": {
+  "path": "/home/kevin/Documents/Projects/awmv-track-i/results/i02/manifest.csv",
+  "sha256": "9ab03442e5db5009644f5530b36b233de1a0827cfeff552e25ee4159bc98d749",
+  "branch": "track-i-simset",
+  "commit": "955c0b3",
+  "note": "read-only; 80 rows with split=dev and label=feasible"
+ },
+ "sim_reader_gt": {
+  "dir": "/home/kevin/Documents/Projects/awmv-l/data/l01",
+  "branch": "track-l-reader-simreal",
+  "commit": "2fd64d8",
+  "note": "videos/gt/scores copied byte-identically to awmv-n-data; per-file sha256 in sim_population.csv"
+ },
+ "verified": {
+  "videos": 80,
+  "gt": 80,
+  "scores": 80,
+  "video_sha_matches_manifest": true
+ },
+ "uzh_reader_jsonl": {
+  "volume": "awmv-e-data",
+  "prefix": "geocalib/",
+  "branch": "track-e-depicted-uzh",
+  "commit": "dd209bf",
+  "n_files": 42,
+  "sha256": {
+   "indoor_45_13__a.jsonl": "868b78ba1387d4595e261bf320a00f940ee3e25f06c9af9102ec781242a776b4",
+   "indoor_45_13__b.jsonl": "367ee572ad50e58a76452174773cdf313d6fe805757e5d46bb48f38e08413494",
+   "indoor_45_13__c.jsonl": "f4eef3706bea4a8c29dd26353b7319ff87f91a6a8d16dc3fc992f780267d4bb7",
+   "indoor_45_2__a.jsonl": "246b5d5a1e03f3b46be41675be651a0b7a602b2e7ab6e338d7513b0fc91a4964",
+   "indoor_45_2__b.jsonl": "d58e74f0592c210d26fd94f2e21235daf79e86c820b22e3070801c3026ba823f",
+   "indoor_45_2__c.jsonl": "c5f9ca08402bb55376a5aa0f9901bd633fe057c75bb17cc0a02a4c743b7c23f0",
+   "indoor_45_4__a.jsonl": "f47249fc73b105e027d65f3e8c785d250f4846dc1381dea5730c9ca6e28922f2",
+   "indoor_45_4__b.jsonl": "87e0c9ab89cde11d114978f7564ce71fdee5597c4033257314f5ab0b1659bd04",
+   "indoor_45_4__c.jsonl": "ae1cc951e2bc1c4b16733a4ee129f28d8e3382db10d174da42eb228dca9edea1",
+   "indoor_45_9__a.jsonl": "b9b4ec3d1401063b06e57606ffd3b1f25727e699e210c39e28eaef7f3072d730",
+   "indoor_45_9__b.jsonl": "5331214ca8802222ea99f6b7e1f0f654a21836530df128e0691f4c42a1c030d0",
+   "indoor_45_9__c.jsonl": "3c245b8f002707c0c585f167bf1c8b8fc044ff51a99bf367ae96796a245fe87a",
+   "indoor_forward_10__a.jsonl": "44c4fabf497500cb63a823e0e105d237539b1808d9e66c8aed67a2cf1c40b02c",
+   "indoor_forward_10__b.jsonl": "b571e66ede8fa2242181f6e7e35cc740e96eb6e1357d2baa05e349cc4674f47b",
+   "indoor_forward_10__c.jsonl": "534f2c36fed44b82c2dbbe2a5c8af6d546695104a787ff3c7b0673dc1db3b27b",
+   "indoor_forward_3__a.jsonl": "cfa8c143d466dae56a3ecf9aefa90f8ff65282d8f35700f365bc55df28dbd517",
+   "indoor_forward_3__b.jsonl": "e6f8adba643535e91dc1477d82405deefa8a6fac3d2f6ff05bae905bf49a1aff",
+   "indoor_forward_3__c.jsonl": "5938b6654bc629e850bc0e764cc8957ba261fe793913cad016e82b40bbbe5e25",
+   "indoor_forward_5__a.jsonl": "fd1080535be16b362cb0b6ffc8f1c27827b0da5d249c2b36eb005a136b5906a4",
+   "indoor_forward_5__b.jsonl": "7bd333d97df1c0122f97f523e8158faf153c22c35fac29737ca39d99a3629068",
+   "indoor_forward_5__c.jsonl": "7210957710a5d2817ddf88fafc890b57b63564d9f237685b8f1426154c3414a5",
+   "indoor_forward_6__a.jsonl": "39320468d96ed3d31145b0831a0988accd52ea47e917d83948bf2634242ce11c",
+   "indoor_forward_6__b.jsonl": "94ea54558916f16590db4112b914b3bc34e1a29e7169e2288761854d89300e46",
+   "indoor_forward_6__c.jsonl": "57906a94f096f830f75f65147128d5aa955a95ed2980a25276f76a42a5678bab",
+   "indoor_forward_7__a.jsonl": "d4437e949d9870dcb94684fe292de70cff6e4adc95d8675d4f5c966876f9f163",
+   "indoor_forward_7__b.jsonl": "4b0ecc1d4b628ad701b7bcd5b6d7254d3bd43e2ab78e4289b8d50e0b5bc267a7",
+   "indoor_forward_7__c.jsonl": "249409fb9ef0a9f20471a63abd15e5cc31da9bac046b7a1f21bc43359d260062",
+   "indoor_forward_9__a.jsonl": "d4445e3bec7ecc7390e94fefb71616197138549eecef5bc23652483ecc9e396f",
+   "indoor_forward_9__b.jsonl": "51c5e7b68ecd49531b1a834e1ef6bbe05b860449aafd276647e806d5895d9950",
+   "indoor_forward_9__c.jsonl": "b493459e2df9f3fde375d2ba46c02109a5950609518877fc211f8f1cff886c46",
+   "outdoor_45_1__a.jsonl": "e8faf4a8ffd86ad262c9b58e5490087ee1987b39978b1ca1d6aa49c227b391c5",
+   "outdoor_45_1__b.jsonl": "8356902cf56a6ea827f5d2c026164e2d6a58ae418d0bd3ab3353b5fbdf0a03de",
+   "outdoor_45_1__c.jsonl": "c57cd015d4a0d3c0a843ecbcc13901adcc58d4f7afe3f0b979f606c0259c7d1c",
+   "outdoor_forward_1__a.jsonl": "a9f2ade9d525e72e1844d53ec946b58507df97bb9f90938139e98d6ef4eb7c1b",
+   "outdoor_forward_1__b.jsonl": "305ca580150f4f4951c6088e4ad4232c6e2da374cc28f6361020e789c99a4911",
+   "outdoor_forward_1__c.jsonl": "5f26e6ed4c1fc7ae7471b41117f92abc06aeb3b96eee6589c6ca341ce4ee5eec",
+   "outdoor_forward_3__a.jsonl": "a9395353cd6071e2f0ac8de8a219af1726a18551414b53af6d8db66b8268832f",
+   "outdoor_forward_3__b.jsonl": "cef33797efc27dc34d6ac40d225e354f0236c129ded0acc937bb3cd3ec0efcf3",
+   "outdoor_forward_3__c.jsonl": "c19e8578ffa5622dcea26ac9a5e6911538254468f4e77eeb69d47c174e2673f0",
+   "outdoor_forward_5__a.jsonl": "d83a7a16225bdf82ab05ac329b8a646b927b6532f163a25b303ccf402c2c005a",
+   "outdoor_forward_5__b.jsonl": "dd00c2b72594df69d6a3f54da786bf3fda2999c59de9072fa322708df96af0ec",
+   "outdoor_forward_5__c.jsonl": "8f06ce04176085b839d54c8be224d2541fb291c30e55fb369845588a4e82d9ca"
+  },
+  "note": "pulled 2026-11-22; variants a=pinhole+Kalibr focal prior, b=raw fisheye simple_divisional, c=pinhole focal estimated (E01 definitions)"
+ },
+ "uzh_frames_truth": {
+  "volume": "awmv-e-data",
+  "path": "uzh/<seq>/frames_pinhole + truth.npz + meta.json",
+  "frames_per_sequence": {
+   "outdoor_forward_1": 450,
+   "outdoor_forward_3": 450,
+   "outdoor_forward_5": 223
+  },
+  "note": "450-frame 640x480 pinhole sequences (30 s at 15.07 Hz); DPVO reads them from the volume, never copied locally"
+ }
+}
