@@ -1,5 +1,7 @@
 # L02 — Training the reader on simulated scenes: what transfers and what does not
 
+**Status.** Simulated held-out scenes (`field_settlement`, `coastal_cliff`): **not run** — 0 of 40 held-out clips are on R2; the deferred pass stays open with I02.
+
 **Decision.** Training the reader on simulated scenes does not transfer to the real held-out
 flights: real-only is the best arm (7.51 deg pooled trimmed RMSE against G03's 8.29, a 9.4 % gain
 that misses the pre-registered 15 % bar), while simulated-only and mixed+DR are 2.6-2.7x worse

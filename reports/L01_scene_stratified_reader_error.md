@@ -1,5 +1,7 @@
 # L01 — The reader's error is set by the scene, and the frozen confidence gate does not remove it
 
+**Status.** Held-out simulated clips: **not read, not scored** (3 of 100 on R2); no held-out-scene number is quoted.
+
 **Decision.** On the 80 verified feasible development clips the frozen reader's error is 0.5-2.8 deg
 in the open families and 7.0-10.7 deg in the dense forest at every mount, and the frozen S3 gate
 abstains on half the forest clips but the half it keeps is **not** better (median 9.96 deg kept
