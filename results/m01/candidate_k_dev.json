@@ -1,0 +1,235 @@
+{
+ "k=1.5": {
+  "lam": 2.87,
+  "n_clips_total": 69,
+  "n_accepted": 35,
+  "coverage": 0.5072463768115942,
+  "reasons": {
+   "weak_signal": 30,
+   "near_vertical": 4,
+   "both": 0,
+   "none": 35
+  },
+  "rates": {
+   "real": {
+    "hit": 4,
+    "n": 35,
+    "abstain": 0
+   },
+   "tilt_removal": {
+    "hit": 34,
+    "n": 35,
+    "abstain": 0
+   },
+   "mirror_roll": {
+    "hit": 35,
+    "n": 35,
+    "abstain": 0
+   },
+   "scale_0.5": {
+    "hit": 14,
+    "n": 35,
+    "abstain": 0
+   },
+   "scale_1.5": {
+    "hit": 7,
+    "n": 35,
+    "abstain": 0
+   },
+   "yaw_control": {
+    "hit": 19,
+    "n": 35,
+    "abstain": 0
+   },
+   "null_edit": {
+    "hit": 4,
+    "n": 35,
+    "abstain": 0
+   },
+   "delay_ms_100": {
+    "hit": 10,
+    "n": 35,
+    "abstain": 0
+   },
+   "delay_ms_200": {
+    "hit": 21,
+    "n": 35,
+    "abstain": 0
+   },
+   "delay_ms_300": {
+    "hit": 33,
+    "n": 35,
+    "abstain": 0
+   }
+  },
+  "real_rate_interval": {
+   "per_flight": {
+    "flight-01p-ellipse": 0.0,
+    "flight-07p-lemniscate": 0.2105
+   },
+   "point": 0.10526315789473684,
+   "lo": 0.0,
+   "hi": 0.21052631578947367,
+   "n_clusters": 2,
+   "draws": 5000,
+   "seed": 1,
+   "note": "descriptive only: fewer than 10 clusters"
+  },
+  "k": 1.5
+ },
+ "k=2.0": {
+  "lam": 3.82,
+  "n_clips_total": 69,
+  "n_accepted": 22,
+  "coverage": 0.3188405797101449,
+  "reasons": {
+   "weak_signal": 43,
+   "near_vertical": 4,
+   "both": 0,
+   "none": 22
+  },
+  "rates": {
+   "real": {
+    "hit": 1,
+    "n": 22,
+    "abstain": 0
+   },
+   "tilt_removal": {
+    "hit": 21,
+    "n": 22,
+    "abstain": 0
+   },
+   "mirror_roll": {
+    "hit": 22,
+    "n": 22,
+    "abstain": 0
+   },
+   "scale_0.5": {
+    "hit": 15,
+    "n": 22,
+    "abstain": 0
+   },
+   "scale_1.5": {
+    "hit": 4,
+    "n": 22,
+    "abstain": 0
+   },
+   "yaw_control": {
+    "hit": 16,
+    "n": 22,
+    "abstain": 0
+   },
+   "null_edit": {
+    "hit": 1,
+    "n": 22,
+    "abstain": 0
+   },
+   "delay_ms_100": {
+    "hit": 7,
+    "n": 22,
+    "abstain": 0
+   },
+   "delay_ms_200": {
+    "hit": 16,
+    "n": 22,
+    "abstain": 0
+   },
+   "delay_ms_300": {
+    "hit": 21,
+    "n": 22,
+    "abstain": 0
+   }
+  },
+  "real_rate_interval": {
+   "per_flight": {
+    "flight-01p-ellipse": 0.0,
+    "flight-07p-lemniscate": 0.0667
+   },
+   "point": 0.03333333333333333,
+   "lo": 0.0,
+   "hi": 0.06666666666666667,
+   "n_clusters": 2,
+   "draws": 5000,
+   "seed": 1,
+   "note": "descriptive only: fewer than 10 clusters"
+  },
+  "k": 2.0
+ },
+ "k=3.0": {
+  "lam": 5.73,
+  "n_clips_total": 69,
+  "n_accepted": 4,
+  "coverage": 0.057971014492753624,
+  "reasons": {
+   "weak_signal": 61,
+   "near_vertical": 4,
+   "both": 0,
+   "none": 4
+  },
+  "rates": {
+   "real": {
+    "hit": 0,
+    "n": 4,
+    "abstain": 0
+   },
+   "tilt_removal": {
+    "hit": 0,
+    "n": 4,
+    "abstain": 0
+   },
+   "mirror_roll": {
+    "hit": 0,
+    "n": 4,
+    "abstain": 0
+   },
+   "scale_0.5": {
+    "hit": 0,
+    "n": 4,
+    "abstain": 0
+   },
+   "scale_1.5": {
+    "hit": 0,
+    "n": 4,
+    "abstain": 0
+   },
+   "yaw_control": {
+    "hit": 0,
+    "n": 4,
+    "abstain": 0
+   },
+   "null_edit": {
+    "hit": 0,
+    "n": 4,
+    "abstain": 0
+   },
+   "delay_ms_100": {
+    "hit": 0,
+    "n": 4,
+    "abstain": 0
+   },
+   "delay_ms_200": {
+    "hit": 0,
+    "n": 4,
+    "abstain": 0
+   },
+   "delay_ms_300": {
+    "hit": 0,
+    "n": 4,
+    "abstain": 0
+   }
+  },
+  "real_rate_interval": {
+   "per_flight": {
+    "flight-07p-lemniscate": 0.0
+   },
+   "point": 0.0,
+   "lo": 0.0,
+   "hi": 0.0,
+   "n_clusters": 1,
+   "draws": 5000,
+   "seed": 1,
+   "note": "descriptive only: fewer than 10 clusters"
+  },
+  "k": 3.0
+ }
+}
