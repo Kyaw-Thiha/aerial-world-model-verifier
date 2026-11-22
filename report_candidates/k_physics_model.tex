@@ -1,0 +1,75 @@
+% Candidate report section — Track K (2026-11-22).
+% Source: reports/K02_physics_model_refinement.md and results/k02_*.
+% Numbers that must be regenerated before this file is moved into report/:
+%   @M4RMS@ @M4DELTA@ @M4MEAN@ @SELECTED@ @V3THR@ @V3FR@ @THRESHDELTA@ @DETECTION
+% The Track K reports are the source of truth; this section is a candidate, not merged.
+
+\section{Offline airframe-model refinement and the calibration mode}
+\label{sec:k-physics}
+
+The published clip floor (14.73 deg) is the \emph{drag-free} mode of the required lean;
+re-running A2's own construction reproduces it to the printed precision, together with the
+other three modes (8.96, 12.95, 6.46 deg) and their detection floors.  Schema v2's
+\texttt{lean\_req} is the drag-free lean to a median 0.016 deg, and the consumer form
+\texttt{lean\_req}$+k_d$\texttt{vel\_req} is a linearisation that differs from the exact
+flatness axis by a median 2.2 deg and a p95 20.4 deg on testable frames.  This resolves the
+published label conflict: the drag-free floor is correctly labelled, and the ``drag-free''
+anchor that appeared to give 31.1 deg is the $k_d=-0.295$ arm of a shifted reparameterisation.
+
+We then asked whether an offline model of how the airframe realises a commanded
+acceleration lowers the floor.  Five candidates were pre-registered in order of complexity:
+per-axis linear drag (M1), M1 plus a first-order attitude lag (M2), M1 plus quadratic drag
+(M3), body-frame rotor drag (M4, after Faessler et al.\ \cite{faessler2018flatness}), and a
+strongly regularised ridge residual on $(a,v,$jerk$)$ fitted offline and fixed at test time.
+Every model was fitted on path kinematics and truth attitude only, leave-one-flight-out,
+and every parameter was fixed before any clipped edit was scored.
+
+\begin{table}[t]
+\centering
+\caption{Leave-one-flight-out angular RMS between the actual thrust axis and the model
+required axis, eight TII flights.  The frozen per-flight lag nuisance is given to every
+model.  Frame-weighted pooled RMS; per-flight values are in the Track K report.}
+\label{tab:k-models}
+\begin{tabular}{lccc}
+\toprule
+model & pooled RMS (deg) & change vs M0 & fitted parameters \\
+\midrule
+M0 current            & 3.648 & ---      & $k_d=0.295$ \\
+M1 per-axis linear    & 3.612 & $-1.0\%$ & $k_f=0.27$, $k_l=0.23$ \\
+M2 M1 + attitude lag  & 3.573 & $-2.1\%$ & $\tau=+12.5$ ms \\
+M3 M1 + quadratic     & 3.665 & $+0.5\%$ & $k_q\approx 4$--$9\times10^{-4}$ \\
+M4 rotor drag         & @M4RMS@ & @M4DELTA@ & @M4PARAMS@ \\
+M5 ridge residual     & 7.40  & $+103\%$ & $\alpha=0.1$ (inner LOFO) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+No candidate approaches the pre-registered 25\,\% RMS reduction, and the best
+(@SELECTED@) leaves the gate-kept-dev F0 threshold at @V3THR@ deg against 8.87 deg for the
+exact $k_d=0.295$ required side: a change of @THRESHDELTA@ deg, short of the 1.5 deg
+criterion.  The learned residual does not generalise: its selected regularisation more than
+doubles the held-out RMS, and at $\alpha=100$ it collapses to M1, because the held-out
+racing flights lie outside its feature range.
+
+The reason is measured rather than argued.  The M0 residual has 40--74\,\% of its variance
+in 0.5--2 Hz and 17--52\,\% in 2--10 Hz, less than 1\,\% above 10 Hz on TII, and its
+magnitude correlates with jerk (0.48--0.77) and speed on the racing flights.  That is a
+dynamic attitude response, but none of per-axis, quadratic or body-frame drag reproduces it,
+and a first-order lag or lead does not either.  The practical conclusion is that the
+existing drag term \emph{is} the physics refinement that the drag-free floor was missing:
+the exact $k_d=0.295$ F0 threshold on the gate-kept dev clips is 8.87 deg, below the
+handoff's ``all of the mismatch removed'' bracket of 9--9.3 deg, so the remaining floor is
+not a drag-model mismatch.
+
+Schema v3 stores the exact model required lean \emph{and} the required thrust axis at the
+clip's frame times, with explicit semantics (no $(k_d-0.295)$ rescaling), in new files; the
+axis is necessary because an inverted required axis cannot be represented by a lean.
+@DETECTION
+
+\begin{thebibliography}{9}
+\bibitem{faessler2018flatness}
+M.~Faessler, A.~Franchi, and D.~Scaramuzza,
+``Differential flatness of quadrotor dynamics subject to rotor drag for accurate tracking
+of high-speed trajectories,'' \emph{IEEE Robotics and Automation Letters}, 2018.
+arXiv:1712.02402.
+\end{thebibliography}

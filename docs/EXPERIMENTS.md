@@ -180,3 +180,20 @@ during consolidation — see `docs/DATA.md` for the current status of listing ac
 * **Regenerate**: `report/scripts/e10_window_rule.py`.
 * **Open discrepancy (recorded, not resolved)**: D's 0.07-0.12 s window "at the truth rate" is
   superseded by E05 (0.34-1.42 s at 500 Hz; 0.07-0.11 s only at the 15 Hz clip rate).
+
+---
+
+## Track K — calibration modes and offline physics refinement (branch `track-k-calibration`)
+
+Not part of the E1-E10 numbering. Two CPU-only experiments, both reproducible from stored
+data; no GPU, no R2.
+
+| | what | code | results | report |
+| --- | --- | --- | --- | --- |
+| K01 | Re-run A2's four modes, read the schema-v2 lean semantics from the files, recompute J's F0 under three readings, and map every published floor to its construction / mode / nuisance / population | `experiments/k01_calibration_modes.py` | `results/k01/<run>/`, `results/a2_modes/20261122T071523Z/`, `results/phase0_floor/20261122T072349Z_41d1dad5/` | `reports/K01_calibration_mode_reconciliation.md` |
+| K02 | Fit M0-M5 airframe models on TII/UZH truth, LOFO and cross-domain, rebuild `lean_req` as schema v3, recompute the F0 and anchor thresholds, and score the edits at matched false-reject | `experiments/k02_fit.py`, `experiments/k02_downstream.py`, `scripts/export_schema_v3.py` | `results/k02_fit/<run>/`, `results/k02_downstream/<run>/`, `data/processed/track_k/clips_v3/` | `reports/K02_physics_model_refinement.md` |
+
+K01's reproduction of E1 is `results/phase0_floor/20261122T072349Z_41d1dad5`
+(1.24 / 5.46 / 1.22 deg, identical to the published run). K01's reproduction of A2's modes
+is `results/a2_modes/20261122T071523Z` (14.73 / 12.95 / 8.96 / 6.46). Neither modifies the
+stored 2026-11-08/11-10 runs.

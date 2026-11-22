@@ -111,3 +111,18 @@ Or, inside the repository, `git checkout archive/track-d-pre-consolidation`.
 
 Results needed by the report scripts are already in git under `results/`; nothing else is required
 to rebuild `report/` (see `docs/REPRODUCE.md`).
+
+## 5. Track K (2026-11-22)
+
+Track K used only data already on disk: TII mocap (`data/raw/tii/`) and UZH-FPV Leica truth
+(`data/uzh/*/truth.npz`), plus the schema-v2 TII clip tree (`data/processed/track_d/clips/`)
+and the frozen gate rows. No R2 object was written and no Modal app or volume was used.
+
+New generated tree (gitignored, reproducible from the committed generator):
+
+| path | what |
+| --- | --- |
+| `data/processed/track_k/clips_v3/<flight>/<clip>__<condition>/` | schema v3: the same clip arrays as v2 plus `lean_req_v3` (the selected airframe model's required lean at the frame times) and `tilt_req_v3_deg`; the v2 arrays are kept under `*_v2_*` names for provenance. Built by `scripts/export_schema_v3.py` from `results/k02_fit/<run>/fit.json`. The v2 tree is read only. |
+
+Small summaries under `results/k01/` and `results/k02_*` are in git; the v3 tree is not
+(it is ~20 MB of `.npz`, regenerable in under a minute from the committed fit file).

@@ -173,8 +173,13 @@ def m5_residual(k, p: dict) -> np.ndarray:
 
 def axis_M5(k, p: dict) -> np.ndarray:
     base = _linear_axis(k, p["k_forward"], p["k_lateral"])
+    # the learned residual lives in the lean plane, which cannot represent an inverted
+    # thrust axis; fall back to M1 there instead of round-tripping through a clipped lean
+    ok = base[:, 2] > np.cos(np.deg2rad(85.0))
     lean = lean_of_axis(base, k.yaw) + m5_residual(k, p)
-    return axis_of_lean(lean, k.yaw)
+    out = axis_of_lean(lean, k.yaw)
+    out[~ok] = base[~ok]
+    return unit(out)
 
 
 # --------------------------------------------------------------------------- dispatch

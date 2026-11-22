@@ -54,7 +54,10 @@ def residual(k: Kinematics, model: str, params: dict) -> tuple[np.ndarray, np.nd
     ang = angle_between_deg(u, k.z)
     lean = lean_of_axis(u, k.yaw_truth) - k.lean
     mask = k.valid & np.isfinite(ang) & np.isfinite(lean).all(axis=1)
-    return np.where(mask, ang, np.nan), np.where(mask[:, None], lean, np.nan)
+    # a lean difference is only defined where both axes are upright; the angle is valid
+    # everywhere, so it keeps its own mask
+    upright = mask & (u[:, 2] > np.cos(np.deg2rad(85.0))) & (k.z[:, 2] > 0.05)
+    return np.where(mask, ang, np.nan), np.where(upright[:, None], lean, np.nan)
 
 
 def fit_lag(k: Kinematics, model: str, params: dict) -> tuple[float, float]:
@@ -76,12 +79,19 @@ def _objective(units: list[Kinematics], model: str, params: dict, sub: list[np.n
     tot = 0.0
     n = 0
     for k, idx in zip(units, sub):
-        _, lean = residual(k, model, params)
+        try:
+            _, lean = residual(k, model, params)
+        except (ValueError, FloatingPointError):
+            return 1e12
         r = lean[idx]
         r = r[np.isfinite(r).all(axis=1)]
+        if len(r) < 12:
+            return 1e12
         tot += float(np.sum(r ** 2))
         n += len(r)
-    return tot / max(n, 1)
+    if not np.isfinite(tot) or n == 0:
+        return 1e12
+    return tot / n
 
 
 def _bounds(model: str) -> list[tuple[float, float]]:
@@ -108,12 +118,18 @@ def _unpack(model: str, x: np.ndarray) -> dict:
 
 
 def fit_parameters(units: list[Kinematics], model: str, lags: list[float],
-                   init: dict | None = None, maxiter: int = 400) -> dict:
+                   init: dict | None = None, maxiter: int = 200) -> dict:
     """Fit one model's parameters on ``units`` with the given per-unit lags fixed."""
     if model == "M0":
         return {}
     shifted = [shift_kinematics(k, lag) for k, lag in zip(units, lags)]
-    sub = [np.arange(0, len(k), STRIDE_FIT) for k in shifted]
+    # M4 solves an implicit equation inside every objective call; a coarser fitting
+    # subsample and a lower Powell budget keep the job inside minutes without changing
+    # the parameterisation or the evaluation (which uses every sample).
+    stride = 8 if model == "M4" else STRIDE_FIT
+    if model == "M4":
+        maxiter = min(maxiter, 120)
+    sub = [np.arange(0, len(k), stride) for k in shifted]
     init = init or {}
     defaults = {"k_forward": 0.295, "k_lateral": 0.295, "tau": 0.0,
                 "k_quadratic": 0.005, "d_x": 0.295, "d_y": 0.295}
@@ -151,16 +167,22 @@ def fit_m5(units: list[Kinematics], lags: list[float], base_params: dict,
     """Ridge residual on the M1 model; alpha by inner leave-one-unit-out."""
     shifted = [shift_kinematics(k, lag) for k, lag in zip(units, lags)]
     X = [m5_features(k) for k in shifted]
-    mu = np.vstack(X).mean(axis=0)
-    sd = np.vstack(X).std(axis=0)
+    Xall = np.vstack(X)
+    finite = np.isfinite(Xall).all(axis=1)
+    mu = Xall[finite].mean(axis=0)
+    sd = Xall[finite].std(axis=0)
     sd[sd < 1e-9] = 1.0
-    Xs = [(x - mu) / sd for x in X]
+    # strongly regularised: standardised features are clipped, so one violent sample
+    # cannot dominate the ridge system
+    Xs = [np.clip((x - mu) / sd, -10.0, 10.0) for x in X]
     Y = []
     for orig, k, x in zip(units, shifted, Xs):
         # target: truth lean minus M1's required lean, both in the TRUTH frame at t
         from .models import axis_M1
         u = axis_M1(k, base_params)
-        Y.append(orig.lean - lean_of_axis(u, orig.yaw_truth))
+        target = orig.lean - lean_of_axis(u, orig.yaw_truth)
+        upright = (u[:, 2] > np.cos(np.deg2rad(85.0))) & (orig.z[:, 2] > 0.05)
+        Y.append(np.where(upright[:, None], target, np.nan))
     scores = {}
     for alpha in alphas:
         errs = []
@@ -168,7 +190,7 @@ def fit_m5(units: list[Kinematics], lags: list[float], base_params: dict,
             tr = [j for j in range(len(units)) if j != i]
             Xt = np.vstack([Xs[j] for j in tr])
             Yt = np.vstack([Y[j] for j in tr])
-            ok = np.isfinite(Yt).all(axis=1)
+            ok = np.isfinite(Xt).all(axis=1) & np.isfinite(Yt).all(axis=1)
             W = _ridge(Xt[ok], Yt[ok], alpha)
             r = Y[i] - Xs[i] @ W
             r = r[np.isfinite(r).all(axis=1)]
@@ -177,7 +199,7 @@ def fit_m5(units: list[Kinematics], lags: list[float], base_params: dict,
     alpha = min(scores, key=scores.get)
     Xt = np.vstack(Xs)
     Yt = np.vstack(Y)
-    ok = np.isfinite(Yt).all(axis=1)
+    ok = np.isfinite(Xt).all(axis=1) & np.isfinite(Yt).all(axis=1)
     W = _ridge(Xt[ok], Yt[ok], alpha)
     params = {**base_params, "W": W, "feat_mean": mu, "feat_sd": sd, "alpha": alpha,
               "alpha_scores": scores}

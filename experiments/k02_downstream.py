@@ -1,13 +1,18 @@
 """Track K, Part 2 downstream: schema v3, thresholds, and edit detection.
 
 Reads the LOFO model fits from ``results/k02_fit/<run>/fit.json`` (the pre-registered
-selection rule picks the model), builds the model-required lean for every TII clip
-without using that clip's own flight, and reports:
+selection rule picks the model), builds the model-required side for every TII clip without
+using that clip's own flight, and reports:
 
-* J03's F0 threshold on the gate-kept real clips;
+* J03's F0 threshold on the gate-kept real clips (median tier, axis residual);
 * J02's mocap-attitude anchor with its schema semantics corrected;
-* detection of the edits at the matched false-reject, for the median and coherence
-  tiers, with the yaw control and null edit beside every rate.
+* detection of the edits at the matched false-reject, for the median and coherence tiers,
+  with the yaw control and null edit beside every rate.
+
+The median tier is computed from **thrust axes**, not from lean round trips: an inverted
+required axis (z < 0) is physically meaningful and a lean cannot carry it.  The coherence
+tier needs a lean and masks frames whose required or depicted tilt exceeds 85 deg.  Both
+choices are stated beside the denominators.
 
 CPU only. Writes ``results/k02_downstream/<run>/``.
 
@@ -26,8 +31,8 @@ from scipy.fft import dct, idct
 from scipy.spatial.transform import Rotation
 
 from src.airframe.kinematics import TII_FLIGHTS, load_tii_kinematics
-from src.airframe.models import axis_for, unit
-from src.airframe.schema_v3 import write_v3_clip
+from src.airframe.models import axis_for, axis_of_lean, unit
+from src.airframe.schema_v3 import export_tree, sample_axis
 from src.depicted.clips import up_body_from_lean
 from src.depicted.stat_a2 import depicted_axis_from_up_body
 from src.physics.flatness import G0, angle_between_deg
@@ -44,6 +49,7 @@ FAMILIES = ("tilt_removal", "mirror_roll", "scale_0.5", "scale_1.5")
 CONTROLS = ("yaw_control", "null_edit")
 COVERAGES = (("partial_25", 0.25), ("partial_50", 0.50), ("full", 1.0))
 SIGMA_DEG, BIAS_DEG, TAU_S, FAST_SHARE, ANCHOR_DRAWS = 4.8, 2.0, 0.5, 0.5, 120
+UPRIGHT_COS = float(np.cos(np.deg2rad(85.0)))
 
 
 # --------------------------------------------------------------------------- inputs
@@ -76,42 +82,19 @@ def load_clips() -> dict[tuple[str, str], dict]:
                 "dep": np.asarray(z["depicted_lean"], float),
                 "lean_req_v2": np.asarray(z["lean_req"], float),
                 "vel_req_v2": np.asarray(z["vel_req"], float),
-                "lean_act": lean_act,
+                "lean_act": lean_act, "z_act": z_all[i],
             }
     return out
 
 
-def sample_axis(k, axis: np.ndarray, t_frame: np.ndarray,
-                yaw_frame: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
-    """Interpolate a native axis at frame times, then express it in the frame's yaw."""
-    t = k.t
-    tt = np.clip(np.asarray(t_frame, float), t[0], t[-1])
-    good = (k.valid & np.isfinite(axis).all(axis=1)
-            & np.isfinite(k.yaw))
-    out = np.column_stack([np.interp(tt, t, axis[:, j]) for j in range(3)])
-    idx = np.clip(np.searchsorted(t, tt), 1, len(t) - 1)
-    bad = ~good[idx - 1] | ~good[idx]
-    lo, hi = np.argmax(good), len(good) - 1 - np.argmax(good[::-1])
-    bad |= (tt < t[lo]) | (tt > t[hi])
-    n = np.linalg.norm(out, axis=1, keepdims=True)
-    out = out / np.where(np.isfinite(n) & (n > 1e-9), n, np.nan)
-    out[bad] = np.nan
-    lean = world_to_yaw_frame(out[:, :2], yaw_frame)
-    lean[bad] = np.nan
-    tilt = np.degrees(np.arccos(np.clip(out[:, 2], -1.0, 1.0)))
-    tilt[bad] = np.nan
-    return lean, tilt
-
-
-def exact_v2_lean(k, t_frame: np.ndarray, yaw_frame: np.ndarray,
-                  k_d: float = K0) -> np.ndarray:
-    u = unit(k.a + np.array([0.0, 0.0, G0]) + k_d * k.v)
+def exact_v2_axis(k, t_frame: np.ndarray, yaw_frame: np.ndarray) -> np.ndarray:
+    u = unit(k.a + np.array([0.0, 0.0, G0]) + K0 * k.v)
     return sample_axis(k, u, t_frame, yaw_frame)[0]
 
 
-def v3_lean(k, model: str, params: dict, t_frame: np.ndarray,
+def v3_side(k, model: str, params: dict, t_frame: np.ndarray,
             yaw_frame: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
-    return sample_axis(k, axis_for(model, params, k), t_frame, yaw_frame)
+    return sample_axis(k, axis_for(model, params, k), t_frame, yaw_frame)[:2]
 
 
 def load_params(p: dict) -> dict:
@@ -122,21 +105,14 @@ def load_params(p: dict) -> dict:
     return out
 
 
+def dep_axis(b: dict, dep_lean: np.ndarray) -> np.ndarray:
+    return depicted_axis_from_up_body(up_body_from_lean(dep_lean), b["yaw"])
+
+
 # --------------------------------------------------------------------------- statistics
-def frame_residual_deg(dep: np.ndarray, req: np.ndarray, yaw: np.ndarray) -> np.ndarray:
-    ax_d = depicted_axis_from_up_body(up_body_from_lean(dep), yaw)
-    ax_r = depicted_axis_from_up_body(up_body_from_lean(req), yaw)
-    return angle_between_deg(ax_d, ax_r)
-
-
-def _windows(n: int) -> list[tuple[int, int]]:
-    if n <= WIN:
-        return [(0, n)]
-    return [(s, s + WIN) for s in range(0, n - WIN + 1, HOP)]
-
-
-def tier_values(b: dict, dep: np.ndarray, req: np.ndarray) -> tuple[float, float]:
-    resid = frame_residual_deg(dep, req, b["yaw"])
+def tier_values(b: dict, dep: np.ndarray, ax_req: np.ndarray) -> tuple[float, float]:
+    """Clip median and window-max of the axis angle between depicted and required."""
+    resid = angle_between_deg(dep_axis(b, dep), ax_req)
     ok = np.isfinite(resid)
     med = float(np.nanmedian(resid[ok])) if ok.any() else np.nan
     vals = []
@@ -147,11 +123,20 @@ def tier_values(b: dict, dep: np.ndarray, req: np.ndarray) -> tuple[float, float
     return med, (float(max(vals)) if vals else np.nan)
 
 
+def _windows(n: int) -> list[tuple[int, int]]:
+    if n <= WIN:
+        return [(0, n)]
+    return [(s, s + WIN) for s in range(0, n - WIN + 1, HOP)]
+
+
 def coherence_stat(b: dict, dep: np.ndarray, req: np.ndarray) -> float:
+    """Max over windows of 1 - min per-axis correlation, on upright frames only."""
     vals = []
     for lo, hi in _windows(len(dep)):
         d, q = dep[lo:hi], req[lo:hi]
-        ok = np.isfinite(d).all(1) & np.isfinite(q).all(1)
+        ok = (np.isfinite(d).all(1) & np.isfinite(q).all(1)
+              & (np.linalg.norm(d, axis=1) < 0.996)
+              & (np.linalg.norm(q, axis=1) < 0.996))
         d, q = d[ok], q[ok]
         if len(d) < 6:
             continue
@@ -208,13 +193,12 @@ def make_error(n: int, dt: float, sigma: float, tau_s: float, fast_share: float,
     return np.deg2rad(slow + fast)
 
 
-def anchor(real: list[dict], req_key: str) -> dict:
-    """J02 arm (c): mocap attitude lean + synthetic error, required = req_key."""
+def anchor(real: list[dict], key: str) -> dict:
+    """J02 arm (c): mocap attitude lean + synthetic error against ``b[key]`` (an axis)."""
     rng = np.random.default_rng(1)
     fl = np.array([b["flight"] for b in real])
     hs, ts = [], []
     for _ in range(ANCHOR_DRAWS):
-        # one bias vector per flight per draw
         bias = {}
         for f in sorted(set(fl)):
             ang = rng.uniform(0, 2 * np.pi)
@@ -224,12 +208,12 @@ def anchor(real: list[dict], req_key: str) -> dict:
             dt = float(np.median(np.diff(b["t"])))
             err = make_error(len(b["t"]), dt, SIGMA_DEG, TAU_S, FAST_SHARE, rng)
             dep = b["lean_act"] + err + np.deg2rad(bias[b["flight"]])[None, :]
-            vals.append(float(np.nanmedian(frame_residual_deg(dep, b[req_key], b["yaw"]))))
+            ax = depicted_axis_from_up_body(up_body_from_lean(dep), b["yaw"])
+            vals.append(float(np.nanmedian(angle_between_deg(ax, b[key]))))
         vals = np.asarray(vals, float)
         hs.append(float(np.nanmedian(vals)))
-        thr = [float(np.quantile(vals[fl != fl[i]], 0.95))
-               for i in range(len(vals)) if np.isfinite(vals[i])]
-        ts.append(float(np.median(thr)))
+        ts.append(float(np.median([float(np.quantile(vals[fl != fl[i]], 0.95))
+                                   for i in range(len(vals)) if np.isfinite(vals[i])])))
     return {"h0_median_deg": float(np.median(hs)),
             "threshold_lofo_median_deg": float(np.median(ts)),
             "h0_p10_p90_deg": [float(np.percentile(hs, 10)), float(np.percentile(hs, 90))],
@@ -245,9 +229,8 @@ def lofo_threshold_for(values: np.ndarray, flights: np.ndarray, i: int) -> float
     return float(np.quantile(fit, 0.95)) if len(fit) >= 5 else float("nan")
 
 
-def tier_rows(rows: list[dict], tier: str) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-    use = [r for r in rows if r["flight"] in DEV]
-    real = [r for r in use if r["cond"] == "real"]
+def tier_rows(rows: list[dict], tier: str):
+    real = [r for r in rows if r["cond"] == "real" and r["flight"] in DEV]
     fl = np.array([r["flight"] for r in real])
     vals = np.array([r[tier] for r in real], float)
     thr = np.array([lofo_threshold_for(vals, fl, i) for i in range(len(vals))])
@@ -256,7 +239,9 @@ def tier_rows(rows: list[dict], tier: str) -> tuple[np.ndarray, np.ndarray, np.n
 
 def rates(rows: list[dict], tier: str) -> dict:
     vals, thr, fl = tier_rows(rows, tier)
-    out = {"false_reject": f"{int(np.sum(vals > thr))}/{len(vals)}"}
+    finite = np.isfinite(vals)
+    out = {"false_reject": (f"{int(np.sum(vals[finite] > thr[finite]))}/{int(finite.sum())}"
+                            if finite.any() else "0/0")}
     for fam in FAMILIES + CONTROLS:
         for cov, _ in COVERAGES:
             sub = [r for r in rows if r["flight"] in DEV and r["cond"] == fam
@@ -276,11 +261,10 @@ def matched_rates(rows: list[dict], tier: str, budget: int) -> dict:
     real = np.array([r[tier] for r in rows if r["flight"] in DEV and r["cond"] == "real"],
                     float)
     real = real[np.isfinite(real)]
-    if budget <= 0:
-        thr = float(real.max() + 1e-9)
-    else:
-        thr = float(np.sort(real)[-budget])
-        thr = float(np.nextafter(thr, -np.inf))
+    if real.size == 0:
+        return {"false_reject": "0/0", "threshold": float("nan")}
+    thr = (float(np.nextafter(real.max(), np.inf)) if budget <= 0
+           else float(np.nextafter(np.sort(real)[-budget], -np.inf)))
     out = {"false_reject": f"{int(np.sum(real > thr))}/{len(real)}", "threshold": thr}
     for fam in FAMILIES + CONTROLS:
         for cov, _ in COVERAGES:
@@ -313,67 +297,60 @@ def main() -> int:
 
     for (cid, cond), b in data.items():
         k = kd[b["flight"]]
-        b["req_v2"] = exact_v2_lean(k, b["t"], b["yaw"])
-        b["req_v3"] = v3_lean(k, model, lofo_params[b["flight"]], b["t"], b["yaw"])[0]
-        b["req_lin"] = b["lean_req_v2"] + K0 * b["vel_req_v2"]
+        b["ax_v2"] = exact_v2_axis(k, b["t"], b["yaw"])
+        b["ax_v3"], b["lean_v3"] = v3_side(k, model, lofo_params[b["flight"]],
+                                         b["t"], b["yaw"])
+        b["lean_lin"] = b["lean_req_v2"] + K0 * b["vel_req_v2"]
+        b["ax_lin"] = axis_of_lean(b["lean_lin"], b["yaw"])
 
-    # ---- schema v3 delivery files (full-fit parameters; new tree, v2 untouched)
-    full = load_params(fit["full_fit"][model]["params"])
     v3_root = ROOT / "data/processed/track_k/clips_v3"
-    manifest = ["flight,clip_id,condition,sha256,model"]
-    for (cid, cond), b in sorted(data.items()):
-        req = v3_lean(kd[b["flight"]], model, full, b["t"], b["yaw"])
-        src = ROOT / f"data/processed/track_d/clips/{b['flight']}/{cid}__{cond}"
-        dst = v3_root / b["flight"] / f"{cid}__{cond}"
-        _, h = write_v3_clip(src, dst, req[0], req[1], model, full,
-                             "all-8-flights (delivery copy)",
-                             f"schema v3: {model} required lean at frame times, fitted on "
-                             f"all eight TII flights (delivery copy; downstream uses LOFO)")
-        manifest.append(f"{b['flight']},{cid},{cond},{h},{model}")
-    (out / "schema_v3_manifest.csv").write_text("\n".join(manifest) + "\n")
+    rows_v3 = export_tree(fit, model, v3_root)
+    (out / "schema_v3_manifest.csv").write_text(
+        "flight,clip_id,condition,sha256,model\n"
+        + "\n".join(f"{a},{b},{c},{d},{model}" for a, b, c, d in rows_v3) + "\n")
 
-    # ---- per-condition rows for the three required sides and both tiers
-    rows = {"v2_exact": [], "v2_linear": [], "v3": []}
-    for key, req_key in (("v2_exact", "req_v2"), ("v2_linear", "req_lin"), ("v3", "req_v3")):
+    # ---- rows for three required sides and both tiers
+    keys = {"v2_exact": ("ax_v2", None), "v2_linear": ("ax_lin", "lean_lin"),
+            "v3": ("ax_v3", "lean_v3")}
+    rows = {k: [] for k in keys}
+    for key, (ax_key, lean_key) in keys.items():
         for (cid, cond), b in sorted(data.items()):
-            if cond.startswith(("tilt_removal", "mirror_roll", "scale_")) or \
-                    cond in CONTROLS:
+            if cond in FAMILIES or cond in CONTROLS:
                 for cov, frac in COVERAGES:
                     real = data[(cid, "real")]
-                    dep = (real["dep"] if frac >= 1.0
+                    dep = (b["dep"] if frac >= 1.0
                            else compose_partial(real["dep"], b["dep"], frac))
-                    med, win = tier_values(b, dep, b[req_key])
+                    med, win = tier_values(b, dep, b[ax_key])
+                    coh = (coherence_stat(b, dep, b[lean_key])
+                           if lean_key else np.nan)
                     rows[key].append({"flight": b["flight"], "clip_id": cid, "cond": cond,
                                       "coverage": cov, "median": med, "window": win,
-                                      "coh": coherence_stat(b, dep, b[req_key])})
+                                      "coh": coh})
             else:
-                med, win = tier_values(b, b["dep"], b[req_key])
+                med, win = tier_values(b, b["dep"], b[ax_key])
+                coh = (coherence_stat(b, b["dep"], b[lean_key])
+                       if lean_key else np.nan)
                 rows[key].append({"flight": b["flight"], "clip_id": cid, "cond": cond,
                                   "coverage": "full", "median": med, "window": win,
-                                  "coh": coherence_stat(b, b["dep"], b[req_key])})
+                                  "coh": coh})
+        # gate-kept population; edits inherit the real clip's gate decision
+        rows[key] = [r for r in rows[key] if keep.get(r["clip_id"], False)]
 
-    # ---- F0 thresholds
     f0 = {}
     for key in rows:
-        rr = [r for r in rows[key] if r["cond"] == "real" and keep.get(r["clip_id"], False)
-              and r["flight"] in DEV]
+        rr = [r for r in rows[key] if r["cond"] == "real" and r["flight"] in DEV]
         fl = np.array([r["flight"] for r in rr])
         vals = np.array([r["median"] for r in rr], float)
         thr = np.array([lofo_threshold_for(vals, fl, i) for i in range(len(vals))])
         f0[key] = {"n": len(rr), "median_residual": float(np.nanmedian(vals)),
                    "threshold_lofo_median": float(np.nanmedian(thr))}
 
-    # ---- anchor
     anchor_out = {}
-    for key, req_key in (("v2_exact", "req_v2"), ("v3", "req_v3")):
-        rr = []
-        for cid in real_ids:
-            b = data[(cid, "real")]
-            if b["flight"] in DEV:
-                rr.append(dict(b, **{req_key: b[req_key]}))
-        anchor_out[key] = anchor(rr, req_key)
+    for key, ax_key in (("v2_exact", "ax_v2"), ("v3", "ax_v3")):
+        rr = [data[(cid, "real")] for cid in real_ids
+              if data[(cid, "real")]["flight"] in DEV]
+        anchor_out[key] = anchor(rr, ax_key)
 
-    # ---- detection, natural and matched
     det = {}
     for key in rows:
         det[key] = {}
@@ -388,8 +365,7 @@ def main() -> int:
            "lofo_rms": {m: fit["lofo"][m]["pooled_rms_frame_weighted"] for m in fit["lofo"]},
            "f0": f0, "anchor": anchor_out, "detection": det,
            "population": {"gate_kept_dev_real": sum(
-               1 for r in rows["v3"] if r["cond"] == "real"
-               and keep.get(r["clip_id"], False) and r["flight"] in DEV),
+               1 for r in rows["v3"] if r["cond"] == "real" and r["flight"] in DEV),
                "dev_flights": sorted(DEV), "heldout_unscored": sorted(HELDOUT)}}
     (out / "downstream.json").write_text(json.dumps(_jsonable(doc), indent=1))
     print("F0", json.dumps(f0, indent=1))

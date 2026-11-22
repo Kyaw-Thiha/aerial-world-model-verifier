@@ -71,6 +71,13 @@ Files live in `reports/` at the repository root. Numbering restarts per track: T
 | `E04_v3_r2_coherence.md` | v3: fixed-crop edits, official schema v2, Track D's R2 + coherence on UZH | current |
 | `E05_window_rule.md` | Independent test of Track D's label-free window rule (`0.5 / f95`) | current; **supersedes** D04's UZH window numbers (0.07-0.12 s → 0.34-1.42 s at 500 Hz) |
 
+## Track K — calibration modes and offline physics refinement (branch `track-k-calibration`)
+
+| report | title | status |
+| --- | --- | --- |
+| `K01_calibration_mode_reconciliation.md` | Every published floor mapped to its construction, mode, nuisance and population; the schema-v2 semantics and the J02/J03 label errors | current; Part 1 of the track |
+| `K02_physics_model_refinement.md` | M0-M5 airframe models, LOFO and cross-domain, schema v3, thresholds and edit detection | current; Part 2 of the track |
+
 ## Notes
 
 * Report 04 quotes the pre-registration sha256 `b8fd7013…` for `configs/verdict_preregistration.yaml`
