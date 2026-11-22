@@ -7,15 +7,13 @@ committed before the numbers they govern were computed. Code `src/depicted/anato
 
 ## Decision
 
-**The error is not one thing, and the stratum decides the answer.** On the clips the verdict
-actually scores (gate-kept) a per-flight constant is 43 % of the squared error and slow drift
-another 40 %; on all frames at once, three track flights with 17-32 deg RMS dominate the
-pooled share and the bias is 30 %. **The bias itself is real and almost purely pitch:
-+2.15 to +2.69 deg, standard error 0.03-0.18, on the five non-racing flights** — a mount-shaped
-offset the verdict's ±7 deg uptilt nuisance already absorbs. The pre-registered rule that would
-have opened the per-clip-calibration branch (bias share ≥ 40 % of the *trimmed* variance) does
-not fire as written (35.2 %), and the trimmed split is not even identifiable (see below); on the
-gate-kept stratum it does (42.8 %). That conflict is reported, not resolved.
+**The reader's bias is a real, almost purely pitch offset of +2.15 to +2.69 deg (SE 0.03-0.18)
+on the five non-racing flights, and how much of the squared error it explains depends on the
+population: 30 % over all frames, 43 % on the clips the frozen gate actually keeps.** The
+pre-registered rule that would have opened the per-clip-calibration branch (bias share ≥ 40 % of
+the *trimmed* variance) does not fire as written — 35.2 %, and the trimmed split is not even
+identified — but it does fire on the gate-kept stratum (42.8 %); that conflict is reported, not
+resolved.
 
 ## Plain-language summary
 
@@ -300,10 +298,12 @@ Applied as written, frozen reader, in `results/j01_anatomy/rules.json`:
 | R2 fast | fast-of-centred 32.0 % trimmed / 39.8 % all-frame; DPVO 2.80 deg/step and 7.76 deg/1 s | ≥ 40 % and ≤ 0.3 and ≤ 1.5 | **does not fire** (both clauses fail on TII) |
 | R3 tail | 21.6 % of tail frames in runs ≤ 3 frames; 12 long runs, 9 identifiable | > 50 % (1b) / any (1c) | **1c fires** on the literal reading; 1b does not |
 
-So: Stage 1b (fusion) is not selected — the TII rotation source is not there, and the error is
-not predominantly fast. Stage 1a would be selected on the gate-kept stratum only, and Stage 1c
-on the literal tail rule. Both are reported to the user rather than acted on silently; see
-`docs/decisions.md` [J].
+So, in the end: **1b was not run** (no rule selects it, and the rotation source it needs does not
+exist on TII); **1a was not run** (its rule is silent on the pre-registered stratum, and a branch
+is not started on a stratum the pre-registration did not name); **1c was run**, CPU-only and at
+zero cost, because its rule fires on the literal reading — report J04 — and is reported as
+selected-but-marginal, since 88 % of the tail is already excluded by the gate. Nothing was run
+silently; the 1a conflict is in `docs/decisions.md` [J].
 
 ## What limits the verifier
 
