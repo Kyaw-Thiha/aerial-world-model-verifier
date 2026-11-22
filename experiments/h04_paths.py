@@ -34,6 +34,10 @@ from scipy.signal import savgol_filter
 
 from src.generation.attitude import roll_pitch_from_thrust
 from src.physics.flatness import G0, implied_thrust_axis
+from src.verdict.lean import world_to_yaw_frame
+
+C_WINDOW = 0.5                     # the label-free window rule, 0.5 / f95
+SPECTRUM_WINDOW_S = 0.10
 
 ROOT = Path(__file__).resolve().parents[1]
 RATE_HZ = 1000.0
@@ -42,6 +46,7 @@ CLIP_S = 81.0 / 16.0
 T0, T1 = 1.0, 4.0
 RAMP_S = 0.5
 V0 = 2.8
+S_AMP = 0.35          # forward-speed modulation, so both lean axes carry signal
 K_D = 0.295
 
 # peak per-frame commanded attitude change allowed by the design check (deg/frame at 16 fps)
@@ -114,11 +119,12 @@ def positions(family: str, peak_deg: float, t: np.ndarray,
         pos[:, 0] = np.cumsum(v) * DT
         return pos
     phi = roll_profile(family, peak_deg, t)
-    omega = -(G0 / V0) * np.tan(phi)
+    speed = V0 * (1.0 + S_AMP * np.sin(2 * np.pi * x / span) * e)
+    omega = -(G0 / np.maximum(speed, 0.5)) * np.tan(phi)
     psi = np.cumsum(omega) * DT
     pos = np.zeros((len(t), 3))
-    pos[:, 0] = np.cumsum(V0 * np.cos(psi)) * DT
-    pos[:, 1] = np.cumsum(V0 * np.sin(psi)) * DT
+    pos[:, 0] = np.cumsum(speed * np.cos(psi)) * DT
+    pos[:, 1] = np.cumsum(speed * np.sin(psi)) * DT
     if family == "climb_turn":
         z = _climb_amp(peak_deg) if aux is None else aux
         pos[:, 2] = z * np.sin(np.pi * x / span) ** 2 * e
@@ -224,6 +230,50 @@ def check(name: str, family: str, target: float, t: np.ndarray) -> dict:
             "first_frame": FRAMES[PATHS.index(next(p for p in PATHS if p[0] == name)) % 6]}
 
 
+def f95_and_window(pos: np.ndarray, dt: float) -> dict:
+    """The label-free window rule (configs/window_bandwidth_prereg.yaml): 0.5 / f95."""
+    n = len(pos)
+    w = int(round(SPECTRUM_WINDOW_S / dt))
+    if w % 2 == 0:
+        w += 1
+    w = max(5, min(w, n if n % 2 else n - 1))
+    acc = savgol_filter(pos, w, 3, deriv=2, delta=dt, axis=0, mode="interp")
+    acc = acc - acc.mean(axis=0, keepdims=True)
+    spec = np.fft.rfft(acc, axis=0)
+    energy = (np.abs(spec) ** 2).sum(axis=1)
+    freqs = np.fft.rfftfreq(n, d=dt)
+    keep = freqs > 0.0
+    e, f = energy[keep], freqs[keep]
+    if e.sum() <= 0:
+        return {"f95_hz": float("nan"), "window_s": float("nan")}
+    cum = np.cumsum(e) / e.sum()
+    f95 = float(f[min(int(np.searchsorted(cum, 0.95)), len(f) - 1)])
+    span = n * dt
+    ws = C_WINDOW / f95 if f95 > 0 else float("nan")
+    return {"f95_hz": f95, "window_s": ws,
+            "clamped_s": float(min(ws, span / 2.0)) if np.isfinite(ws) else float("nan")}
+
+
+def required_side(pos: np.ndarray, window_s: float, dt: float) -> dict:
+    """Dense required lean/velocity/tilt at the native rate, from the commanded path."""
+    w = int(round(window_s / dt))
+    w += (w + 1) % 2
+    w = max(5, min(w, (len(pos) - 1) if (len(pos) - 1) % 2 else len(pos) - 2))
+    vel = savgol_filter(pos, w, 3, deriv=1, delta=dt, axis=0, mode="interp")
+    acc = savgol_filter(pos, w, 3, deriv=2, delta=dt, axis=0, mode="interp")
+    q = acc + G0 * np.array([0.0, 0.0, 1.0])
+    n = np.linalg.norm(q, axis=1)
+    u0 = q / np.maximum(n, 1e-9)[:, None]
+    yaw = np.unwrap(np.arctan2(vel[:, 1], vel[:, 0]))
+    l_req = world_to_yaw_frame(u0[:, :2], yaw)
+    v_req = world_to_yaw_frame(vel[:, :2] / G0, yaw)
+    tilt = np.degrees(np.arccos(np.clip(u0[:, 2], -1.0, 1.0)))
+    half = w // 2
+    l_req[:half] = np.nan
+    l_req[len(l_req) - half:] = np.nan
+    return {"lean_req": l_req, "vel_req": v_req, "tilt_req_deg": tilt, "window": w}
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default=str(ROOT / "results/h04/paths"))
@@ -247,6 +297,17 @@ def main() -> int:
             arrays[f"{name}__{k}"] = att[k][idx81]
         arrays[f"{name}__t_1khz"] = t[::10]
         arrays[f"{name}__pos_1khz"] = pos[::10]
+        win = f95_and_window(pos, DT)
+        info["f95_hz"] = win["f95_hz"]
+        info["window_rule_s"] = win["clamped_s"]
+        for tag, ws in (("rule", win["clamped_s"]), ("w037", 0.37)):
+            rs = required_side(pos, ws, DT)
+            arrays[f"{name}__lean_req_{tag}"] = rs["lean_req"][idx81]
+            arrays[f"{name}__vel_req_{tag}"] = rs["vel_req"][idx81]
+            arrays[f"{name}__tilt_req_{tag}"] = rs["tilt_req_deg"][idx81]
+            if tag == "rule":
+                info["median_tilt_req_deg"] = float(np.nanmedian(
+                    rs["tilt_req_deg"][idx81]))
         print(f"{name:16s} bank {info['achieved_peak_bank_deg']:5.2f}/{target:4.0f} "
               f"tilt {info['peak_tilt_deg']:5.2f} thrust {info['peak_thrust_ratio']:4.2f} "
               f"rel {info['max_rel_translation_m']:5.1f} "

@@ -1,0 +1,67 @@
+# H04 — Amendment 2: forward-speed modulation on the heading-family paths
+
+Committed on 2026-11-22 **before any H04 clip was generated to completion or scored**.  The
+first campaign batch (234 clips from amendment 1's paths) was stopped before its first output
+was written: `awmv-h3-solarwm` generated no clip directory (`/solarwm/main` did not exist when
+the app was stopped), so no frame, reader row or score existed for it.
+
+## What was wrong
+
+The pre-generation check on the amendment-1 paths (constant speed `V0 = 2.8 m/s`, body yaw
+equal to the track heading) showed that the frozen statistic cannot be applied to them:
+
+* **The design matrix is exactly rank-deficient.** With the yaw frame following the velocity,
+  `vel_req = (v/g, 0)` is constant up to the speed and therefore collinear with the free
+  intercept.  Measured condition numbers on the 20 turning paths: 2,563 to 480,732 against the
+  frozen ceiling of 1,000.  Every clip would abstain for conditioning, whatever the generator
+  did.
+* **The pitch axis carries no signal.** With constant speed the forward lean is the constant
+  drag term, its variance is zero, the pitch-axis correlation is undefined and the frozen
+  `r_min = min(r_x, r_y)` collapses to the noise on that axis.  On a synthetic *perfect*
+  generator (depicted lean = required lean + 1 deg of noise) the coherence `r_min` was
+  0.13-0.62 on eight paths, i.e. a perfect generator would be flagged as violating.
+
+Both are properties of the path, not of the generator, and neither is a finding: they mean the
+campaign as designed could not answer its own question.
+
+## The change
+
+Every heading-family path (`arc`, `s`, `slalom`, `fig8`, `climb_turn`) gains a forward speed
+profile
+
+    v(t) = V0 (1 + 0.35 sin(2 pi x / 3 s) e(t)),
+
+one cycle across the same 3 s active window, with the same C2 envelope.  The bank profiles,
+their peaks, the arms, the draws, the first frames, the scene assignment and every threshold
+are unchanged.  The peak extra pitch from the speed change is about 12 deg at the peak, in
+quadrature with the bank, so both lean axes carry signal as they do on the real TII flights the
+statistic was calibrated on.  The drag term is now identifiable (`vel_req_x` varies) instead of
+being absorbed by the intercept.
+
+The `accel_brake` paths are unchanged (pitch-only by design); under the frozen two-axis rule
+they are expected to abstain, and they are reported as abstentions rather than removed.
+
+## Effect on the design checks
+
+Re-run on all 22 paths before any clip existed:
+
+| check | amendment 1 | amendment 2 |
+| --- | --- | --- |
+| frozen condition number (ceiling 1,000) | 2,563-480,732 | **20** |
+| excitation (floor 2 deg) | 1.8-10.8 | **6.8-11.6** |
+| perfect generator: G1 / gx / gy | 0.97-1.07 / -4.5-5.1 / 0.97-1.08 | **0.98-1.04 / 0.98-1.04 / 0.97-1.03** |
+| perfect generator: coherence r_min (flag below 0.38) | 0.13-0.62 on 8 paths | **0.88-0.99 on 20 paths** |
+| peak thrust-to-weight | max 1.06 | max 1.05 |
+| max relative translation | max 14.7 m | max 14.0 m |
+| max attitude rate at 16 fps | 4.31 deg/frame | 4.44 deg/frame |
+
+The peak-bank request is still met within 0.2 deg on every path, and the achieved peak tilt
+rises by about 8-12 deg because the speed modulation adds pitch (recorded per path in
+`results/h04/paths/paths_summary.json`).
+
+## Why this is not an outcome-dependent change
+
+No clip existed when it was made.  The change is forced by an arithmetic property of the path
+(rank deficiency) and by the statistic's own two-axis definition, both measured on the commanded
+side only, before any generated frame was read.  It does not move a threshold, a population, an
+arm, a first frame, a draw count or a success criterion.
