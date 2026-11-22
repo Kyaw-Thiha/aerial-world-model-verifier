@@ -351,6 +351,17 @@ honest reading is that the control neither supports nor refutes a yaw effect at 
   forest clips (30.8 %) against 0 of 54 in the open families, because the forest reader bias is
   comparable to its threshold. Any pooled rate on this set averages two different readers.
 
+## Pre-registered success criteria
+
+| criterion | result |
+| --- | --- |
+| S1: 12-frame coherence detects ≥ 50 % of 25 %-coverage partial defects with median IoU > 0.3 at 5 % false-reject | **not evaluated** — the batch contains two partial clips, both 10 % |
+| S2: it beats the 8-frame residual scan by ≥ 10 points at the matched false-reject on those cells | **not evaluated** for the same reason |
+| S3: realised FDP ≤ 0.20 at q = 0.10 and false segments within 0.5/min of the family-wise rule | FDP is ~0.001 but uninformative (88 of 90 defect clips are whole-clip); per-clip BH's false-segment rate is 0.63/min at q = 0.05 against 0.72/min for the family-wise residual rule, so not contradicted — but untestable as specified |
+| S4: boundary refinement improves median IoU by ≥ 0.05 | **met**: +0.088 (0.686 → 0.824) on 8 clips |
+| S5: alignment cuts false segments by ≥ 20 % or raises IoU by 0.05 | **not met**: IoU -0.002, false segments unchanged |
+| S6: joint multi-scale beats the best single length by ≥ 5 points | **not met**: joint mean IoU 0.000 vs 0.053 for 16 frames alone |
+
 ## What this does not show
 
 - **Nothing about partial-interval detection.** The 170-clip batch contains two partial clips
