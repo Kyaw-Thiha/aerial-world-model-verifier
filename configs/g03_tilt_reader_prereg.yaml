@@ -1,0 +1,101 @@
+version: 1
+date: '2026-11-16'
+status: preregistered
+track: G
+owner_branch: track-g-segments2
+written: before any fine-tuned estimate was produced; the frozen baseline was reproduced first
+question: >
+  Does fine-tuning the depicted-tilt reader (GeoCalib) on mocap-labelled attitude frames, with
+  leave-one-flight/sequence-out folds, reduce its per-frame error enough to move the
+  verifier's detection floor, false-reject or abstention rate?
+
+baseline:
+  reader: frozen GeoCalib, pinned commit 1dedb29f94fc11b896c5f572005978aeebccd67f
+  routes: >
+    TII: weights "distorted", camera model simple_divisional on the raw fisheye (the adopted
+    verdict route, decisions log). UZH: weights "pinhole", camera model pinhole on the
+    undistorted forward-rig export.
+  per_frame_predictions: results/gate_a2/tii/<flight>__identity.jsonl  (frozen, Track A2)
+  reproduced_before_preregistration: >
+    pooled TII median 3.97 deg, 90 %-trimmed RMSE 4.81 deg, 12.7 % of frames above 10 deg,
+    7.6 % above 20 deg - matches the published 3.96 / 4.80 / 7.5 % (report 02), so the
+    label construction is validated against the frozen numbers before any fine-tune exists.
+
+labels:
+  construction: >
+    TII: up_cam = R_cb^T R_bw^T e3, with R_bw from the mocap quaternion and R_cb the analytic
+    mount the verdict uses (camera_to_body_pitched, recorded per-flight uptilt).
+    UZH: up_cam = R_cb^T R_bw^T e3 with R_cb from Kalibr T_cam_imu and R_bw from the Leica
+    truth attitude. No pixel estimate enters a label.
+  units:
+    tii: 8 flights, 5007 frames (the exact frame set the verdict scores; extracted from the
+      release zips, names identical to data/processed/p3a/p3a_v1)
+    uzh: 3 forward sequences (indoor_forward_3/5/9), 1097 frames. The 45-degree-down rigs are
+      excluded, because the published mount did not transfer (report E03) and they are
+      not the
+      transfer target.
+
+folds:
+  tii: leave-one-flight-out, 8 folds
+  uzh: leave-one-sequence-out, 3 folds
+  rule: >
+    No frame from the held-out unit enters training, augmentation, the learning-rate schedule
+    or any confidence weighting. The two datasets are never mixed in one fold: the camera
+    models differ, so a mixed fold would not be a fold of anything.
+
+training:
+  model: GeoCalib network (backbone MSCAN + up/latitude heads) with its LM refinement in
+    the loop, LM steps reduced to keep the cost bounded (recorded per run)
+  loss: 1 - cos(predicted up, labelled up), mean over the batch
+  optimiser: AdamW, lr 2e-5, weight decay 1e-4, cosine schedule
+  epochs: 2
+  batch: 8
+  augmentation: none. A geometric augmentation would have to be undone on the
+    label vector, and getting that wrong silently corrupts the labels, so none is used and the
+  seed: 1 + fold index
+
+evaluation:
+  per_frame: median error, 90 %-trimmed RMSE, fraction above 10 deg and above 20 deg,
+    baseline vs fine-tuned, per fold and pooled
+  gate_coverage: the frozen S3 confidence gate's keep rate and the kept/dropped error, using
+    the confidence the reader reports
+  downstream:
+    definition: >
+      The verdict statistics recomputed with the fine-tuned reader on the held-out unit's
+      clips: clip-level median residual, abstention rate under the frozen rules, and the
+      detection of a full tilt removal (the depicted lean set to zero, which is what the pixel
+      edit does to the depicted estimate). Conformal thresholds are fitted leave-one-flight-out
+      on the fit flights only.
+    readout: false-reject, abstention, detection at removal - each beside the same numbers
+      from the frozen reader. Denominators (k/n) everywhere.
+  transfer: >
+    TII and UZH are reported separately. A fine-tune that helps TII and not UZH (or the
+    reverse) is a result, not a bug.
+  intervals: flight/sequence-clustered bootstrap, 5,000 replicates, numpy.random.default_rng(1);
+    8 and 3 clusters, so descriptive, not 95 % confidence intervals.
+
+ablations:
+  in_scope:
+    - confidence-weighted loss (weight each frame by the frozen reader's confidence)
+    - no-finetune control. The same folds with the model only evaluated, so any change
+      caused by the harness itself is visible.
+  out_of_scope_and_separate: >
+    Fixing the mount angle and the drag coefficient per domain (instead of the +/- 7 deg
+    nuisance bound) is a different ablation on the path/nuisance side. It is not run here and
+    is not bundled with the reader result.
+
+success_criterion: >
+  The fine-tuned reader lowers the pooled held-out median per-frame error by at least 25 %
+  (3.97 -> <= 2.98 deg) or lowers the fraction above 10 deg by at least a third (12.7 % ->
+  <= 8.5 %), with the same fold structure and no fit on the held-out unit. Anything less is
+  reported as no material improvement, with the number. The downstream effect is reported
+  whether or not the per-frame criterion is met; it is not used to select the reader.
+
+cost:
+  gpu: A10G
+  estimate_usd_before_running: 5.0
+  estimate_basis: >
+    11 folds x 5 min of A10G (train + evaluate) plus image build and smoke runs, at the Modal
+    list price of 1.10 USD/h. Below the 20 USD pre-post line; recorded in docs/COST_LEDGER.md
+    anyway.
+  ceiling_usd: 50

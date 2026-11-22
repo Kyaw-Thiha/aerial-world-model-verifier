@@ -482,3 +482,33 @@ Every row below was read from the project's own repo/HF card on 2026-11-10. "ver
 - [consolidation] **The pre-consolidation state is preserved outside the repository** in `~/Documents/Projects/awmv-archive/`: one verified `git bundle` per branch (sha256 in `backups/SHA256SUMS.txt`), the only untracked file found (`awmv-track-c/results/pathrec_calib/intrinsics.json`), Track C's 103 MB `data/`, and a 42,535-path manifest of the 3.3 GB `data/` tree.
 - [consolidation] **`main` is the single branch; the seven merged branches and their worktrees were kept until the user approved their removal** (checkpoint 2). Each remains restorable from its `archive/*` tag or its bundle.
 - [consolidation] **`awmv-report-assets-2026-11-15.zip` was deleted, on the user's explicit instruction, only after every one of its 203 members was proved to be on `main`** (127 byte-identical, 3 pre-consolidation report scripts still reachable at `59ca0b6`, 73 unique files committed to `docs/archive/report-assets-2026-11-15/`). Its sha256 (`10134d9e…cd6d19`) is recorded in `docs/archive/report-assets-2026-11-15/README.md` and in the consolidation report. `report_tex.zip` never existed on disk, so nothing was deleted in its name and the LaTeX sources remain the one open item. Branches, worktrees, bundles, R2 objects and Modal volumes were left untouched.
+
+## Track L — reader fine-tune on simulated scenes (2026-11-22) — entries tagged [L]
+
+- [L] **Started on a partial I02 set, on the user's explicit instruction, and the gap is recorded rather than
+  papered over.** At the start of the track R2 holds 173 of Track I's 300 clips: 170 of 200 development clips
+  and 3 of 100 held-out clips. The 30 missing development clips are all infeasible-defect clips; all 80
+  feasible development clips are present. The 80 feasible development clips were re-downloaded and hashed
+  against `results/i02/manifest.csv`: **160 objects, 160 sha256 matches, 0 mismatches**. The `awmv-i-data`
+  volume holds 174 clips and no Track I app was running, so the missing clips are unrendered, not merely
+  unpublished. Consequence: Part 1 (feasible-clip reader error) and all training arms run on the feasible
+  development clips; the pre-registered simulated held-out evaluation and any infeasible-clip score are
+  **deferred** until I02 is complete. No held-out clip was read.
+- [L] **No branch was merged into `track-l-reader-simreal`, on the user's instruction; the needed files were
+  copied byte-identically so the later consolidation is a no-op for them.** Base is `main` at `41d1dad`.
+  Sources: `track-i-simset` at `955c0b3` (108 files: `src/sim/*`, the sim tests, `configs/sim_prereg.yaml`,
+  `configs/sim_splits_frozen.json`, the `i02_*` tools, `remote/i_score.py`, the manifest/composition/reader-grid
+  results and the 86 stored score JSONs), `track-g-segments2` at `c189727` (17 files: the G03 pre-registration,
+  the three `g03_*` scripts, `remote/g_tilt_reader.py`, the G03 fold results) and `track-j-reader` at `f7ba108`
+  (16 files: `src/depicted/anatomy.py`, `src/verdict/segments.py`, `experiments/j01_anatomy.py`, and the
+  out-of-fold G03 per-frame inputs under `results/j_inputs/g03_folds/`). Every one of the 141 files has its
+  source branch, source commit, source path and sha256 in `results/l00/provenance.json`; the hash was recomputed
+  on the copied file and compared with the source blob stream, and all 141 match. The copied sim tests pass
+  (24 passed). This entry is the per-file record; the JSON is its machine-readable form.
+- [L] **The sim route and the real route are different camera models, and no arm mixes them in one batch
+  silently.** The simulated clips are rendered pinhole (640x360, 90 deg hfov) and Track I scores them with
+  GeoCalib `weights="pinhole"`, `camera_model="pinhole"`, scalar focal prior. The adopted real route is the
+  raw TII fisheye (`weights="distorted"`, `simple_divisional`). G03 forbids mixing them in one fold. Track L's
+  arms therefore state their route and initialisation explicitly in `configs/l02_reader_prereg.yaml`; the
+  domain-randomised arm warps simulated frames to a synthetic `simple_divisional` fisheye so that the real
+  and simulated batches share a camera model, and the warp parameters are drawn from a pre-registered grid.
