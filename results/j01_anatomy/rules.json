@@ -1,0 +1,62 @@
+{
+ "inputs": {},
+ "r1_bias": {
+  "rule": "bias share of trimmed variance >= 0.40",
+  "statistic_trimmed": 0.35164988569080463,
+  "statistic_all_frames": 0.29602519162430735,
+  "statistic_gate_kept": 0.42757274535399825,
+  "statistic_trimmed_equal_flight": 0.2988183145796075,
+  "statistic_all_equal_flight": 0.2093430342683387,
+  "statistic_gate_kept_equal_flight": 0.44359310946335323,
+  "fine_tuned_trimmed": 0.34959709232805647,
+  "fine_tuned_all": 0.25003725057042203,
+  "fine_tuned_gate_kept": 0.40115588110735695,
+  "ci_trimmed": [
+   0.16487058454396988,
+   0.49745439584739115
+  ],
+  "ci_all": [
+   0.12402867406362077,
+   0.4166252307655699
+  ],
+  "trimmed_closure_fraction_of_total": 0.0,
+  "fired": false,
+  "fired_if_all_frames": false,
+  "fired_if_gate_kept": true,
+  "note": "The trimmed split is not orthogonal (see decomposition.csv closure column); the rule outcome depends on the stratum and is reported, not resolved."
+ },
+ "r2_fast": {
+  "rule": "fast share of centred >= 0.40 AND per-step VO <= 0.3 deg AND 1 s drift <= 1.5 deg",
+  "fast_share_all": 0.3976050556389308,
+  "fast_share_trimmed": 0.319965085979695,
+  "fast_share_gate_kept": 0.32145856913982673,
+  "vo_tii": {
+   "per_step_median_deg": 2.8037557627452054,
+   "drift_1s_median_of_flight_medians_deg": 7.757607331389517,
+   "uzh_forward_dpvo_per_step": {
+    "indoor_forward_3": 0.1358062241095925,
+    "indoor_forward_5": 0.06470741479889575,
+    "indoor_forward_9": 0.1004233924294982
+   },
+   "uzh_forward_dpvo_drift_1s": {
+    "indoor_forward_3": 0.2349728857083755,
+    "indoor_forward_5": 0.1907213782413254,
+    "indoor_forward_9": 0.1849871952123373
+   }
+  },
+  "fired": false
+ },
+ "r3_tail": {
+  "rule": "> half of >10 deg frames in runs <= 3 frames -> 1b; else identifiable >= 1 s runs -> 1c",
+  "frac_tail_in_runs_le3": 0.21630094043887146,
+  "frac_tail_in_runs_ge_1s": 0.3947797599976872,
+  "n_tail_runs": 134,
+  "n_long_runs": 12,
+  "n_identifiable_long_runs": 9,
+  "fires_gated_fusion": false,
+  "fires_learned_confidence": true
+ },
+ "fired_branches": [
+  "1c"
+ ]
+}

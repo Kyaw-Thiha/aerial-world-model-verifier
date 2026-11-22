@@ -1,0 +1,39 @@
+version: 1
+date: '2026-11-21'
+status: amendment
+track: J
+owner_branch: track-j-reader
+amends: configs/j01_anatomy_prereg.yaml
+written: >
+  After the decomposition was first computed, before the rules were applied and before any
+  Stage-1 branch was run or scored. This amendment changes no threshold and no definition of
+  the error; it records a defect in the pre-registered *population* of one statistic and how it
+  is reported.
+
+finding:
+  what: >
+    The pre-registered rule 1 is "bias share of trimmed variance >= 40 %", with trimming defined
+    as E2's rule (per flight, drop the worst 10 % of frames by the scalar angle theta).
+  defect: >
+    Trimming on |error| is a selection on the SUM of the three components. Conditioning on that
+    sum induces a large negative covariance between the slow and fast parts, so the trimmed
+    shares no longer sum to one. Measured, frozen reader, both axes pooled: bias 35.2 %,
+    slow 91.4 %, fast 62.9 %, i.e. a closure of -89 % of the total. The fine-tuned reader is
+    worse (-102 %). The trimmed decomposition is therefore not an identified quantity.
+  consequence: >
+    The statistic is reported for completeness and marked non-identifiable. The all-frame and
+    gate-kept shares (both named as reporting strata in the pre-registration) are printed beside
+    it, and rule 1's outcome is reported for each of the three strata rather than resolved:
+
+      trimmed   35.2 %  -> does not fire
+      all       29.6 %  -> does not fire
+      gate-kept 42.8 %  -> fires
+
+    Because two of three strata agree, the branch is NOT run silently. The conflict is logged in
+    docs/decisions.md and put to the user.
+
+unchanged:
+  error_definition: the exact tangent-plane decomposition (hypot(pitch, roll) == theta)
+  split: orthogonal DCT-II at 0.5 Hz per contiguous run; all-frame rows have closure 0.000
+  rule_1_threshold: 0.40
+  rules_2_and_3: unchanged in every respect

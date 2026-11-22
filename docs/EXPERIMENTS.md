@@ -26,6 +26,8 @@ results; none of them runs an experiment.
 | E8 | gain and coherence tests | D | `track-d-verdict-stat` (`2a91765`) | `results/d_eval/`, `d_decomposition/`, `d_coherence/`, `d_deming/`, `d_window/`, `d_shrinkage/`, `d_flights/`, `d_calibrate/` | D01, D02, D03 |
 | E9 | UZH transfer | E (+ A estimator) | `track-e-depicted-uzh` (`dd209bf`) | `results/e_audit/`, `e_mount/`, `e_perframe/`, `e_verdict_v3/`, `e_calib/` | E01-E04 |
 | E10 | window rule and prototype | D (+ E independent test) | `track-d-verdict-stat`, `track-e-depicted-uzh` | `results/d_window_rates/`, `d_bandwidth/`, `d_uzh_v2/`, `e_verdict_v3/rule/` | D03, D04, E05 |
+| J01 | reader error anatomy | J | `track-j-reader` | `results/j01_anatomy/` | J01 |
+| J02 | synthetic noise budget | J | `track-j-reader` | `results/j02_noise_budget/` | J02 |
 
 R2 prefixes are `track-a/`, `track-a/a2/`, `track-b/`, `track-c/`, `track-d/`, `track-e/`
 (counts and bytes: `report/data/r2_counts.json`, measured 2026-11-15; verified read-only again
@@ -180,3 +182,38 @@ during consolidation — see `docs/DATA.md` for the current status of listing ac
 * **Regenerate**: `report/scripts/e10_window_rule.py`.
 * **Open discrepancy (recorded, not resolved)**: D's 0.07-0.12 s window "at the truth rate" is
   superseded by E05 (0.34-1.42 s at 500 Hz; 0.07-0.11 s only at the 15 Hz clip rate).
+
+---
+
+## J01 — reader error anatomy
+
+* **Owning track / branch**: J, `track-j-reader`.
+* **What it is**: what the depicted-tilt error is made of, per flight and per axis: per-flight
+  bias, drift below 0.5 Hz and error above 0.5 Hz (orthogonal DCT-II split); autocorrelation and
+  integral time; whether the bias is a rigid mount rotation; the >10 deg tail's run structure and
+  covariates; and the per-step plus horizon error of DPVO/ViPE rotations.
+* **Configs**: `configs/j01_anatomy_prereg.yaml`, `j01_anatomy_amendment_a.yaml` (input facts),
+  `j01_anatomy_amendment_b.yaml` (the trimmed decomposition is not identified).
+* **Inputs**: `results/gate_a2/tii/<flight>__identity.jsonl` (frozen reader, `track-a2-gate`
+  `bc278bf`), `results/j01_anatomy/../j_inputs/g03_folds/` (G03 out-of-fold reader,
+  `track-g-segments2` `cfea5c8`, staged), `data/processed/p3a/p3a_v1` (mocap geometry),
+  `data/g03_frames` (frames, for the blur proxy), `data/raw/dpvo/*_stride8_*` and
+  `data/pathrec/poses/{dpvo,vipe}` (rotations).
+* **Results**: `results/j01_anatomy/` — `decomposition.csv`, `decomposition_pooled.json`,
+  `acf.csv`, `psd.csv`, `bias.csv`, `bias_structure.json`, `tail.json`, `blur.csv`,
+  `rotation.json`, `rules.json`, `input_check.json`.
+* **Report**: `reports/J01_reader_error_anatomy.md`.
+* **Regenerate**: `PYTHONPATH=. python experiments/j01_anatomy.py` (~25 s).
+
+## J02 — synthetic noise budget
+
+* **Owning track / branch**: J, `track-j-reader`.
+* **What it is**: keep every real clip's path, replace the depicted side by a perfect depiction
+  plus a controlled error with the measured bias, slow/fast split and correlation time, and
+  measure the minimum detectable uniform tilt reduction at a 5 % leave-one-flight-out
+  false-reject — against window length, sigma, bias, correlation time and slow share, with the
+  analytic formula as a cross-check and a replay of the measured error as a sanity anchor.
+* **Configs**: `configs/j02_noise_budget_prereg.yaml`.
+* **Results**: `results/j02_noise_budget/summary.json`.
+* **Report**: `reports/J02_noise_budget.md`.
+* **Regenerate**: `PYTHONPATH=. python experiments/j02_noise_budget.py`.
