@@ -122,6 +122,22 @@ carry the family and the mount on every row, and the evaluation protocol stratif
 family (the pre-registration's `primary_outcomes` are per defect family; the scene family is
 the stratification this evidence now requires).
 
+## The labels checked against the rendered video
+
+A label is worth what its verification is worth, so two partial-interval clips were decoded from
+the published video and read frame by frame with the same reader:
+
+| clip | violation | interval | frames in / out | reader tilt inside | reader tilt outside | truth inside / outside |
+| --- | --- | --- | --- | --- | --- | --- |
+| `i02_dev_180` | tilt removed | 11.40-13.34 s of 19.4 s (10 %) | 61 / 522 | 0.91 deg | 5.71 deg | 0.00 / 6.85 deg |
+| `i02_dev_181` | mirrored roll | 8.60-10.60 s of 20.0 s (10 %) | 63 / 538 | 4.49 deg | 7.53 deg | 4.33 / 7.25 deg |
+
+The tilt-removed clip is level exactly inside its interval and physical exactly outside it, to
+within the reader's own error -- which is what the manifest's interval columns claim. The
+mirrored-roll clip's *tilt* is unchanged inside and outside, as it must be (a roll sign flip
+does not change how far the camera leans, only which way), which is why that family is a gain
+test and not a residual test.
+
 ## What the reader's floor implies for the violations in the set
 
 The violation magnitudes were drawn before the reader was measured (they come from the frozen
