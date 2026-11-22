@@ -19,7 +19,6 @@ import pandas as pd
 
 from experiments.a2_anwm_required import frame_required
 from experiments.a2_anwm_score import frame_arrays, gate_of
-from src.physics.flatness import G0, implied_thrust_axis, tilt_deg
 
 ROOT = Path(__file__).resolve().parents[1]
 K_D = 0.295
@@ -32,15 +31,18 @@ def load_jsonl(path: Path) -> list[dict]:
 
 
 def required_profile(spec: dict, n: int = 81) -> np.ndarray:
-    p = np.asarray(spec["positions"], float)
-    v = np.diff(p, axis=0) / DT
-    a = np.zeros_like(p)
-    a[1:len(p) - 1] = (v[1:] - v[:-1]) / DT
-    vm = np.zeros_like(p)
-    vm[1:len(p) - 1] = 0.5 * (v[:-1] + v[1:])
-    z = implied_thrust_axis(a, vm, K_D, G0)
-    tilt = tilt_deg(z)
-    return np.interp(np.linspace(0, len(tilt) - 1, n), np.arange(len(tilt)), tilt)
+    """H01's frame-required tilt, interpolated to the generated frames.
+
+    ``frame_required(..., "step")`` evaluates the acceleration that produced each path
+    frame (node 1..N-1, as in H01); the endpoints have no predecessor and are NaN.  We
+    interpolate only the finite nodes and hold the first/last value at the two ends,
+    rather than inserting zero-tilt endpoint nodes, which would understate the required
+    tilt on the first and last frames.
+    """
+    tilt = frame_required(np.asarray(spec["positions"], float), DT, K_D, "step")
+    good = np.isfinite(tilt)
+    return np.interp(np.linspace(0, len(tilt) - 1, n),
+                     np.arange(len(tilt))[good], tilt[good])
 
 
 def main() -> int:

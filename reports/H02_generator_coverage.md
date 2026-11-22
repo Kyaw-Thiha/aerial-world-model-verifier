@@ -22,8 +22,8 @@ pre-registered roll criterion fails (1/5 paths by tilt, 1/5 by mirror sign). The
 calls 5 of 15 testable flatness clips feasible — all slalom-10 — and rejects every testable
 turn-10/20 clip. The generator follows the *derivative* of the camera path, not the attitude
 the path requires. Seed sampling moves the depicted tilt much more than ANWM did (median range
-2.6 deg), but best-of-3 cuts the residual by only 0.8 deg and flips no path, so it does not meet
-the pre-registered sampling criterion either.
+2.6 deg), but best-of-3 cuts the residual by only about 1 deg and flips one of ten paths, so it
+does not meet the pre-registered sampling criterion either.
 
 **Full-precision LingBot.** The reader still shows no coherent roll response in bf16
 (level 4.56 deg; +20 ramp 3.87; -20 4.91; triangular 4.29; 60 ramp 4.06), although the bf16
@@ -147,7 +147,7 @@ hold for ~60, and return; the depicted tilt during the hold is only a few degree
 
 **Frozen commanded-path verdict.** On the 25 flatness clips (5 paths x 5 frames): 15 testable,
 **5 feasible**, 10 infeasible, 0 gate abstentions. All five slalom-10 clips are feasible (median
-residual 5.0 deg); every testable turn-10 and turn-20 clip is infeasible (9.0 and 13.6 deg);
+residual 5.8 deg); every testable turn-10 and turn-20 clip is infeasible (9.1 and 14.1 deg);
 cruise and turn-5 are not testable by the 12-frame excitation rule. SolarWM therefore passes
 the verdict on the slalom, whose attitude keeps changing, and fails it on the sustained
 10/20-degree banks.
@@ -157,25 +157,26 @@ the verdict on the slalom, whose attitude keeps changing, and fails it on the su
 Ten designed paths x three seeds on the flatness arm (30 clips). The depicted tilt varies much
 more than ANWM's: the median per-path seed standard deviation is **1.41 deg** and the median
 range **2.61 deg** (worst path 9.88 deg), against 0.17/0.43 for ANWM. The oracle best-of-3
-residual reduction is **0.80 deg median** (mean 0.97) and **no path** moves from infeasible to
-feasible, against the pre-registered 2 deg / 20 % criterion. Sampling helps more than it did
-for ANWM but still not enough to rescue a designed path.
+residual reduction is **1.02 deg median** (mean 0.87) and **one of ten paths** moves from
+infeasible to feasible, against the pre-registered 2 deg / 20 % criterion. Sampling helps more
+than it did for ANWM but still not enough to rescue designed paths generally.
 
 | source path | seeds | depicted sd | depicted range | residual median | r1 | r3 | feasible any |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| C_accel_brake_10_course_0 | 3 | 1.07 | 2.06 | 2.56 | 2.32 | 1.83 | yes |
-| C_accel_brake_20_course_1 | 3 | 2.85 | 5.12 | 3.39 | 3.78 | 2.94 | yes |
-| C_climb_turn_10_fixed_0 | 3 | 1.35 | 2.65 | 9.27 | 9.44 | 8.00 | no |
-| C_climb_turn_20_fixed_0 | 3 | 4.21 | 8.06 | 9.98 | 7.21 | 7.21 | no |
-| C_cruise_ctl_course_0 | 3 | 5.13 | 9.88 | 4.35 | 4.18 | 3.15 | yes |
-| C_slalom_10_fixed_0 | 3 | 1.48 | 2.56 | 4.93 | 3.13 | 3.13 | yes |
-| C_slalom_10_fixed_1 | 3 | 0.09 | 0.17 | 5.49 | 6.34 | 4.18 | yes |
-| C_slalom_5_course_0 | 3 | 4.48 | 8.71 | 4.16 | 3.06 | 3.06 | yes |
-| C_turn_10_fixed_0 | 3 | 1.27 | 2.49 | 8.41 | 9.75 | 6.79 | no |
-| C_turn_5_fixed_0 | 3 | 0.80 | 1.60 | 5.15 | 5.18 | 4.43 | yes |
+| C_accel_brake_10_course_0 | 3 | 1.07 | 2.06 | 2.59 | 2.48 | 1.57 | yes |
+| C_accel_brake_20_course_1 | 3 | 2.85 | 5.12 | 3.29 | 3.88 | 2.57 | yes |
+| C_climb_turn_10_fixed_0 | 3 | 1.35 | 2.65 | 9.38 | 9.68 | 7.90 | no |
+| C_climb_turn_20_fixed_0 | 3 | 4.21 | 8.06 | 10.04 | 6.83 | 6.83 | no |
+| C_cruise_ctl_course_0 | 3 | 5.13 | 9.88 | 4.45 | 4.36 | 3.22 | yes |
+| C_slalom_10_fixed_0 | 3 | 1.48 | 2.56 | 6.06 | 4.20 | 4.20 | yes |
+| C_slalom_10_fixed_1 | 3 | 0.09 | 0.17 | 6.05 | **6.76** | **5.56** | yes |
+| C_slalom_5_course_0 | 3 | 4.48 | 8.71 | 4.40 | 3.49 | 3.49 | yes |
+| C_turn_10_fixed_0 | 3 | 1.27 | 2.49 | 9.16 | 10.00 | 8.15 | no |
+| C_turn_5_fixed_0 | 3 | 0.80 | 1.60 | 5.47 | 5.36 | 4.81 | yes |
 
-The seed spread is large enough to matter for individual clips but not large enough for the
-oracle rule to cross the 6.46 deg threshold on a path that missed it at seed 0.
+The seed spread is large enough to matter for individual clips. On `C_slalom_10_fixed_1` the
+best seed crosses the 6.46 deg threshold (6.76 -> 5.56), but the median reduction and the flip
+rate stay below the pre-registered 2 deg / 20 % bar; the other nine paths do not change class.
 
 ### 3. LingBot full precision (bf16) versus H01's NF4
 

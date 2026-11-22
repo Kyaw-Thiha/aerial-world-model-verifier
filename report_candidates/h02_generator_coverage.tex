@@ -46,14 +46,14 @@ On the 75-clip designed grid the response is weaker: only cruise has a flatness-
 least half the injected magnitude; turn-10 and turn-20 hold 13--21\,deg and the reader sees
 3.8--7.1\,deg. The pre-registered roll criterion fails on tilt magnitude (1/5 paths) and
 mirrored sign (1/5). The frozen verdict on the 25 flatness clips leaves 15 testable, 5 feasible
-(all slalom-10) and rejects every testable turn-10/20 clip (residuals 9.0 and 13.6\,deg).
+(all slalom-10) and rejects every testable turn-10/20 clip (residuals 9.1 and 14.1\,deg).
 SolarWM follows the derivative of the camera path, not the held attitude the path requires.
 
 \paragraph{Seed variance.}
 The depicted tilt varies far more than ANWM's (median seed
 standard deviation 1.41\,deg, median range 2.61\,deg, worst 9.88\,deg), but the oracle
-best-of-3 reduction is only 0.80\,deg median and no path flips from infeasible to feasible,
-below the pre-registered 2\,deg / 20\,\% criterion.
+best-of-3 reduction is only 1.02\,deg median and one of ten paths flips from infeasible to
+feasible, below the pre-registered 2\,deg / 20\,\% criterion.
 
 \paragraph{Full-precision LingBot.}
 The bf16 fast model (five probes, 45 frames, 4 steps, 55.2\,GB, 51.7--62.9\,s/clip) reads 4.56,
