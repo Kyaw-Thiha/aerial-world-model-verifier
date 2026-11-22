@@ -1,8 +1,8 @@
 # Experiments and where their pieces live
 
-One row per report experiment, E1 to E13 as named in `report/`, plus the G and J series. "Owning track" is where the
-work was done; several experiments read results produced by an earlier track, and those are
-listed as contributors.
+One row per report experiment, E1 to E13 as named in `report/`, plus the G and J series.
+"Owning track" is where the work was done; several experiments read results produced by an
+earlier track, and those are listed as contributors.
 
 Every number in `report/tables` and `report/figures` is traceable to `report/data/<asset>.src.json`,
 which records the exact file, its branch, its commit and its sha256 at build time. This file is
@@ -30,6 +30,11 @@ results; none of them runs an experiment.
 | E12 | pixel-path round 2: spline joint fit, lean-error scoring, feed-forward extractors | F2 | `track-f2-pixel-path` | `results/f04_spline/`, `f05_lean_error/`, `f06_feedforward/` | F04, F05, F06 (round 1: E11 on `track-f-pixel-path`) |
 | E13a | generator pilot: ANWM seed variance, LingBot-World, Wan 2.2 | H | `track-h-generator-pilot` | `results/h01_seed_specs/`, `h01_seed_variance/`, `h01_lingbot/`, `h01_lingbot_b/`, `h01_wan/`, `h01_tables/`, `h01_r2/` | H01 |
 | E13b | generator coverage with path control (H2) | H2 | `track-h2-generator-coverage` | `results/h02_inventory.json`, `h02_solarwm*`, `h02_lingbot_full*` | H02 |
+| G01 | segment-level detection: 8/12-frame windows, residual/coherence/sign tiers, max-over-windows and persistence scan, conformal LOFO calibration | G | `track-g-segments2` (`c189727`) | `results/g01_segments/` | G01 |
+| G02 | combined score: max of standardised tiers, LOFO conformal threshold, ROC, minimum-detectable-violation curve | G | `track-g-segments2` (`c189727`) | `results/g02_combined/` | G02 |
+| G03 | depicted-tilt reader fine-tune on 5,007 TII frames (8 folds) and 1,097 UZH frames (3 folds), plus the downstream verdict | G | `track-g-segments2` (`c189727`) | `results/g03_tilt_reader/` | G03 |
+| G04 | path-demand windows (item 1), preliminary against the track | G2 | `track-g2-segments` (`61401ae`) | `results/g04_path_demand/` | G04 |
+| G05 | segments on the simulated set (blocked; design frozen, one exploratory pilot) | G2 | `track-g2-segments` (`61401ae`) | `results/g05_spike_pilot/` | G05 |
 | J01 | reader error anatomy | J | `track-j-reader` | `results/j01_anatomy/` | J01 |
 | J02 | synthetic noise budget | J | `track-j-reader` | `results/j02_noise_budget/` | J02 |
 | J03 | per-clip calibration (1a) | J | `track-j-reader` | `results/j03_perclip/` | J03 |

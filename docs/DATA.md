@@ -168,3 +168,16 @@ R2 or on the other tracks' volumes; Track G created exactly one volume, `awmv-g-
 No new bulk data: G2 reads `data/processed/track_d/clips` (already documented), and the pilot
 reads Track I's worktree `../awmv-track-i/results/i01_spike` read-only. No Modal volume and no
 R2 object was created or written by this track.
+
+## 9. Round-2 consolidation backups (2026-11-22)
+
+No data was moved. The pre-round-2 tips of all nine refs (the seven merged branches, `main`, and
+the stale `track-g-segments`) are tagged `archive/<branch>-pre-round2` in the repository and
+bundled outside it:
+
+* `~/Documents/Projects/awmv-archive/backups/<branch>-pre-round2.bundle` — one per ref,
+  `git bundle verify`-clean; sha256 in `SHA256SUMS-round2.txt` beside them. Each is about 139 MB.
+* Restore one into an empty repository: `git fetch <bundle> 'refs/heads/*:refs/heads/*'`, then
+  check out the branch.
+
+No R2 object and no Modal volume was created, written or deleted in round 2.

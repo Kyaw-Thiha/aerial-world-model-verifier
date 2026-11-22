@@ -5,7 +5,8 @@ Report text is **not** edited by the consolidation; where a report is superseded
 stale sections, that is recorded here and in `report/CHECKS.md` / `report/MISSING.md`.
 
 Files live in `reports/` at the repository root. Numbering restarts per track: Track A/A2 uses
-`NN_`, Track B `bNN_`, Track C `CNN_`, Track D `DNN_`, Track E `ENN_`.
+`NN_`, Track B `bNN_`, Track C `CNN_`, Track D `DNN_`, Track E `ENN_`, Track F/F2 `FNN_`,
+Track G/G2 `GNN_`, Track H/H2 `HNN_`, Track J `JNN_`.
 
 `reports/README.md` is Track B's own short index of its `bNN` files and is kept as written.
 
@@ -87,11 +88,32 @@ Files live in `reports/` at the repository root. Numbering restarts per track: T
 | `F05_lean_error_scoring.md` | What path error the verifier needs | current; windowed thrust-axis error ranks paths differently from the bake-off metric (correlation 0.65) and does not predict per-clip verdict quality |
 | `F06_feedforward_and_sim.md` | MapAnything, Pi3X, and the simulated set | current; MapAnything 0/10 with metric scale, Pi3X 6/10 with Kalibr K; no extractor moves the gate; part 4 waiting on Track I (8/300 clips, no I02 report) |
 
+## Track G — verifier statistics (branch `track-g-segments2`, HEAD `c189727`)
+
+| report | title | status |
+| --- | --- | --- |
+| `G01_segment_detection.md` | Segment-level detection: windows, a scan statistic, and what it can localise | current; the pre-registered ungated design fails on four clips of one flight (threshold 89-94 deg); amendment G01-A calibrates on the gate-kept block instead |
+| `G02_combined_score.md` | One decision from three tiers: max of standardised statistics, calibrated conformally | current; 100 % detection of removal and mirror but no gain over the best single tier, and the yaw control rises to 16.4 % |
+| `G03_tilt_reader.md` | Fine-tuning the depicted-tilt reader on mocap-labelled frames | current; pooled median 3.97 -> 2.87 deg (-28 %), tail above 10 deg 12.7 -> 10.8 %; one of the two pre-registered clauses met |
+
+## Track G2 — segment detection, round 2 (branch `track-g2-segments`, HEAD `61401ae`)
+
+| report | title | status |
+| --- | --- | --- |
+| `G04_path_demand_segments.md` | Path-demand windows on real clips (item 1, preliminary) | current, preliminary; the every-window rule reproduces round 1 exactly, demand-window selection does not improve it, and the quiet test's real-clip false-reject is 25 % (4/16) |
+| `G05_segments_on_simulated_set.md` | Segments on the simulated set: blocked, with the design frozen | current; **not executed** (no I02 labelled set); the round-2 design is frozen unexecuted and one 3-clip pilot is exploratory |
+
 ## Track H — generator pilot (branch `track-h-generator-pilot`)
 
 | report | title | status |
 | --- | --- | --- |
 | `H01_generator_pilot.md` | Generator pilot: ANWM seed variance, LingBot-World roll injection, Wan 2.2 cost | current; pilot only, no scale-up until the user decides |
+
+## Track H2 — generator coverage with path control (branch `track-h2-generator-coverage`, HEAD `97fda68`)
+
+| report | title | status |
+| --- | --- | --- |
+| `H02_generator_coverage.md` | Generator coverage with path control: SolarWM, LingBot full precision, inventory | current; SolarWM follows changing attitude (ramp probes pass) but not a held bank (1/5 paths by tilt); best-of-3 is below the pre-registered bar; full-precision LingBot still shows no coherent roll |
 
 ## Track J — reader error anatomy and bias-robust verdicts (branch `track-j-reader`)
 

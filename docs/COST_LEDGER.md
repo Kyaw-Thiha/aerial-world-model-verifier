@@ -7,8 +7,8 @@ track's branch ledger, which is the source of truth; no spend was added, removed
 during the round-2 consolidation.
 
 The tables have different column sets because each track kept its own; "estimate" rows were
-posted before the job set, "actual" rows are measured. Totals per track are the sum of that
-track's USD column as recorded in its own report.
+posted before the job set, "actual" rows are measured. No total is recomputed here: each
+table's USD column is the record, and its rows say whether they are estimates or actuals.
 
 ## Track F — pixel-path verdict, stage 0 (2026-11-16)
 

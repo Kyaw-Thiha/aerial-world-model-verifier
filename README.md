@@ -25,6 +25,11 @@ Machine** (real fisheye video with mocap truth) and, for transfer, **UZH-FPV**.
   **gain/coherence statistics** are validated on piloted TII and indoor UZH forward rigs, and
   **not** validated elsewhere (`docs/prototype_v0.1.md`, `docs/verdict_prototype.md`).
 
+Tracks F-J (2026-11-16 to 11-21) are summarised in their own reports and in
+`docs/reports/INDEX.md`; the current state of play is the one in the handoff briefs, not this
+paragraph. In short: the scale-free coherence tier is the primary verdict, per-clip offset/drag
+fitting was rejected, and pixel-path recovery is parked after two rounds.
+
 Every number in the report comes from a stored result file; `report/CHECKS.md` records 103
 cross-checks against the source reports (100 match, 2 mismatch, 1 not checkable) and never
 resolves a disagreement silently.
@@ -38,14 +43,16 @@ src/            flat package: datasets, physics, perception, fusion, depicted, s
 experiments/    one script per experiment/phase (phase0_floor.py ... e_window_rule.py)
 remote/         Modal apps (GPU batch jobs); nothing here runs locally
 scripts/        fetch_*.py, sync_r2*.py, export/pull helpers
-tests/          unit tests (221 passing on main; 17 need third_party/anwm)
+tests/          unit tests (258 passing on main; 17 need third_party/anwm)
 docs/           decisions log, project structure, track reports index, experiments index,
                 data map, reproduction guide, handoffs, archive pointers
 reports/        the numbered track reports (A 01-05, A2 06-08, B b01-b06, C C01-C09,
-                D D01-D04, E E01-E05) — see docs/reports/INDEX.md
+                D D01-D04, E E01-E05, F F01-F06, G G01-G05, H H01-H02, J J01-J04)
+                — see docs/reports/INDEX.md
 results/        stored run outputs the report scripts read (small JSON/CSV/PNG only)
 report/         the built report assets: tables/, figures/, data/, scripts/, ASSETS.md,
                 CHECKS.md, MISSING.md, cutoff.json, assets_test.tex
+report_candidates/  draft LaTeX sections from the later tracks; not built, not spliced in
 data/           raw and processed data (gitignored, 3.3 GB) — see docs/DATA.md
 third_party/    the ANWM clone (gitignored)
 ```
@@ -76,7 +83,7 @@ Secrets live in `.env` (gitignored; names only in `.env.example`). Never commit 
 | every report, one line each, with status | `docs/reports/INDEX.md` |
 | how to rebuild the assets and check them | `docs/REPRODUCE.md` |
 | data: git vs R2 vs Modal vs local | `docs/DATA.md` |
-| why a structural choice was made | `docs/decisions.md` (per-entry track tags `[A]`…`[E]`) |
+| why a structural choice was made | `docs/decisions.md` (per-entry track tags `[A]`…`[J]`) |
 | the planned repository growth | `docs/project_structure.md` |
 | the literature and research plan | `docs/project_context.md`, `docs/paper_tracker.csv` |
 | what superseded what | `docs/archive/README.md` |
@@ -86,13 +93,22 @@ Secrets live in `.env` (gitignored; names only in `.env.example`). Never commit 
 Local CPU for tests, the report build and analysis; **Modal** for GPU batches (weights cached on
 `awmv-*` volumes); **Cloudflare R2** (bucket `aerial-world-modal-verifier`) for large artefacts
 under the prefixes `track-a/`, `track-a/a2/`, `track-b/`, `track-c/` (empty), `track-d/`,
-`track-e/`. Nothing large is committed: `.gitignore` drops `data/`, `third_party/`, `.pixi/` and
-the large binary suffixes under `results/`.
+`track-e/`, `track-f/`, `track-f2/`, `track-g/`, `track-h/`, `track-h2/` (see `docs/DATA.md`;
+not every track wrote objects). Nothing large is committed: `.gitignore` drops `data/`,
+`third_party/`, `.pixi/` and the large binary suffixes under `results/`.
 
 ## Repository state
 
-This repository is the **consolidation of seven track branches** (A, A2, B, C, D, E and the
-report-assets branch) into `main`, done on 2026-11-15 with merge commits and no history rewriting.
-The pre-consolidation tips are tagged `archive/<track>-pre-consolidation`, and the result is
-tagged `consolidated-2026-11-15`. What was merged, every conflict and how it was resolved, and
-how to roll back: `docs/CONSOLIDATION_REPORT.md`.
+`main` is the **consolidation of the first-round tracks and the second-round wave 1**, done with
+merge commits and no history rewriting.
+
+* **Round 1 (2026-11-15):** A, A2, B, C, D, E and the report-assets branch. Tagged
+  `consolidated-2026-11-15`; record in `docs/CONSOLIDATION_REPORT.md`.
+* **Round 2, wave 1 (2026-11-22):** F, F2, G, G2, H, H2 and J. Tagged `consolidated-round2-wave1`;
+  record in `docs/CONSOLIDATION_REPORT_ROUND2.md`.
+
+Pre-change tips are tagged `archive/<branch>-pre-{consolidation,round2}` and bundled, with
+sha256, in `awmv-archive/backups/`. Not merged: Track I (`track-i-simset`, wave 2), the empty
+`track-h3-reader-validity` and `track-k-calibration` branches, and the stale `track-g-segments`
+(listed in the round-2 report). The LaTeX report sources are still not in the repository;
+`report/assets_test.tex` is the only buildable document (see `docs/REPRODUCE.md`).

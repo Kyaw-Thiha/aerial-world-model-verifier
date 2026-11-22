@@ -35,11 +35,18 @@ consolidation (the same 17 failed in the pre-consolidation worktrees that lacked
 
 ## 2. Test suite
 
-On the consolidated `main` (2026-11-15):
+On the consolidated `main` after round 1 (2026-11-15):
 
 ```
 $ pixi run pytest -q
 221 passed, 3 skipped
+```
+
+After round 2 (2026-11-22, Tracks F, F2, G, G2, H, H2 and J merged):
+
+```
+$ pixi run pytest -q
+258 passed, 3 skipped
 ```
 
 Reference points from before consolidation: Track D `142 passed`; `report-assets`
@@ -55,7 +62,9 @@ python3 scripts/check_numbers.py # cross-check, rewrites CHECKS.md
 
 `make_all.py` reads only stored results (`results/`, `reports/`, `docs/`, `configs/`), never an
 experiment. Expected result: **16/16 asset groups built**, 48 table fragments, 11 figures and 44
-`data/` files regenerated.
+`data/` files regenerated. Round 2 reproduces the same result and the same `CHECKS.md` baseline;
+the new tracks' LaTeX candidates in `report_candidates/` are **not** part of `make_all.py` and do
+not change any asset.
 
 Determinism, measured during consolidation:
 
@@ -144,11 +153,13 @@ The full report sources (`main.tex`, `sections/`) are expected to live in `repor
 `\input{tables/...}` / `\includegraphics{figures/...}` relative to `report/`, so that
 `latexmk -pdf main.tex` from `report/` works with the same asset paths as `assets_test.tex`.
 
-> **Status:** the LaTeX report sources were **not present** when this consolidation ran
-> (`report_tex.zip` was not provided). Only `assets_test.tex` is in the repository. If the
-> sources are added later, put `main.tex` and `sections/` under `report/` and build from there;
-> if their macros point at `../report/tables`, change the include root to `report/` rather than
-> moving the assets.
+> **Status:** the LaTeX report sources were **not present** in either consolidation
+> (`report_tex` / `report_tex.zip` was never provided, and round 2 searched every branch,
+> worktree and the archive). Only `assets_test.tex` is in the repository; it builds to a 9-page
+> PDF with 0 undefined references. If the sources are added later, put `main.tex` and
+> `sections/` under `report/` and build from there; if their macros point at `../report/tables`,
+> change the include root to `report/` rather than moving the assets. `report_candidates/*.tex`
+> are section drafts and are not included in either build.
 
 ## 7. Verifying provenance after the fact
 
