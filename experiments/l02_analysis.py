@@ -167,6 +167,7 @@ def main() -> int:
 
     # ---------------- S1: held-out real error ----------------
     base = {}
+    base_all = []
     for fl in HELD:
         src = Path("results/j_inputs/g03_folds") / f"tii__{fl}.json"
         if not src.exists():
@@ -175,6 +176,8 @@ def main() -> int:
         e = [angle(np.asarray([r["up_cam"]]), np.asarray([r["up_cam_ft"]]))[0]
              for r in rec["held_out"] if r.get("up_cam_ft")]
         base[fl] = stats(e)
+        base_all.extend(e)
+    base_pooled = stats(base_all) if base_all else None
     out["criteria"]["s1_g03_baseline"] = base
     out["criteria"]["s1_arms"] = {}
     for arm in ("real", "sim", "mixed"):
@@ -190,13 +193,11 @@ def main() -> int:
             per[fl] = stats(e)
             e_all.extend(e)
         s = stats(e_all)
-        ref = base
-        pooled_base = (np.mean([v["trimmed_rmse"] for v in ref.values()])
-                       if ref else float("nan"))
+        pooled_base = base_pooled["trimmed_rmse"] if base_pooled else float("nan")
         out["criteria"]["s1_arms"][arm] = {
             "pooled": s, "per_flight": per,
             "reduction_vs_pooled_g03": (1.0 - s["trimmed_rmse"] / pooled_base)
-            if ref else None,
+            if base_pooled else None,
         }
 
     # ---------------- S2: scene-family bias spread ----------------
