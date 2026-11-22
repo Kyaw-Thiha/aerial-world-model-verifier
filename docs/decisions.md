@@ -644,3 +644,12 @@ Every row below was read from the project's own repo/HF card on 2026-11-10. "ver
   0.07 deg (8.36/7.83/9.59 against 8.36/7.90/9.59 outdoors), which is the pipeline check.
 - [N] Compute: one Modal app `awmv-n-rotation` (A10) and one volume `awmv-n-data`; estimated
   1.50 USD in `docs/COST_LEDGER.md` before the run. Every app is stopped at the end.
+- [N] **Part 0 passes its pre-registered rule.** Forest (22 evaluable clips): 10 s propagated
+  lean error 1.80° against a reader of 8.51°, ratio 0.21, 0/26 failures. Real outdoor UZH
+  (3 sequences): 0.43° against 8.36°, ratio 0.05, 0/3 failures. The pass is mount-dependent in
+  forest (0°/15°: 0.89°/0.88°; 30°/45°: 8.62°/14.83°), which is reported as a caveat and not
+  re-specified into a new rule. TII racing fails as expected (42.31° at 10 s, two frozen
+  estimates), and so do the 45°-down UZH rigs (12.67° against a 12.18° reader).
+- [N] No second extractor was run: the pre-registered trigger (primary ratio within 0.20 of the
+  0.50 boundary) did not fire at 0.21/0.05, so the ViPE arm stays unexecuted rather than being
+  added after seeing the result.

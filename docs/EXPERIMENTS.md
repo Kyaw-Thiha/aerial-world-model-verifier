@@ -39,6 +39,7 @@ results; none of them runs an experiment.
 | J02 | synthetic noise budget | J | `track-j-reader` | `results/j02_noise_budget/` | J02 |
 | J03 | per-clip calibration (1a) | J | `track-j-reader` | `results/j03_perclip/` | J03 |
 | J04 | learned reader confidence (1c) | J | `track-j-reader` | `results/j04_confidence/` | J04 |
+| N01 | rotation-propagated gravity, Part 0 (oracle start, 1/5/10/20 s) | N | `track-n-rotation` | `results/n01_pretest/` | N01 |
 
 R2 prefixes are `track-a/`, `track-a/a2/`, `track-b/`, `track-c/`, `track-d/`, `track-e/`, `track-h/`, `track-h2/`
 (counts and bytes: `report/data/r2_counts.json`, measured 2026-11-15; verified read-only again
@@ -410,3 +411,16 @@ honestly and no confirmatory evaluation can run.
 * **Regenerate**: `PYTHONPATH=. python experiments/j04_learned_confidence.py` (~25 s, CPU).
 * **Status**: selected by rule 3's literal reading; the premise is weak (88 % of the tail is in
   clips the frozen gate drops). Stage 1b was not selected by any rule and was not run.
+
+---
+
+## Track N — attitude from video rotation (branch `track-n-rotation`, off `main` `6bc7b5d`)
+
+Round 3. New volume `awmv-n-data` (DPVO poses). Nothing written to R2.
+
+| ID | experiment | stored results | report | configs |
+| --- | --- | --- | --- | --- |
+| N01 | rotation-propagated gravity, the decisive pre-test: DPVO on the 450-frame UZH pinhole sequences and the 80 feasible simulated clips, propagated lean at 1/5/10/20 s with an oracle start | `results/n01_pretest/` | `reports/N01_rotation_pretest.md` | `n01_pretest_prereg.yaml` |
+
+Regenerate: `modal run remote/n_rotation.py --which uzh|sim` (A10), pull `poses/` from
+`awmv-n-data`, then `PYTHONPATH=. python experiments/n01_rotation_pretest.py` (CPU, ~4 s).

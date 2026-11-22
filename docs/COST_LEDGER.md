@@ -137,8 +137,10 @@ set is expected to be about **1.5 USD** (rental), so no 20 USD pre-approval is n
 | date | track | job | GPU | hours | USD | notes |
 | --- | --- | --- | --- | --- | --- | --- |
 | 2026-11-22 | N | `awmv-n-rotation` Part 0 (estimate, before the run) | A10 | 0.75 | 1.50 est. | ~53k frames (11 UZH sequences x 450; 80 sim clips x 300-900) at a conservative 20 frames/s, plus container start and a cached image build; A10 at 1.10 USD/h |
+| 2026-11-22 | N | `awmv-n-rotation` Part 0 (actual) | A10/A10G | 0.231 | **0.25** | 94 runs, 42,782 frames, 830.4 s of measured DPVO wall time at 1.10 USD/h; one failed test run before the grayscale fix adds ~0.05; image builds are CPU |
 
-Actuals are added below when the run finishes. Cached Modal image builds are not billed as GPU.
+Actual Part 0 spend: **about 0.30 USD**, one fifth of the estimate. The Part 1 translation
+addendum ran locally on CPU at zero spend.
 
 The Part 1 translation-direction addendum is pre-registered in
 `configs/n02_initial_gravity_prereg.yaml` with an estimate of **0.00 USD**: SIFT +

@@ -181,3 +181,14 @@ bundled outside it:
   check out the branch.
 
 No R2 object and no Modal volume was created, written or deleted in round 2.
+
+## 10. Track N artefacts (2026-11-22)
+
+| path | size | what | rebuild |
+| --- | --- | --- | --- |
+| `results/n01_pretest/` | < 150 KB | every number in N01: population table, UZH reader medians, per-unit and per-horizon errors, summary and verdict | `experiments/n01_rotation_pretest.py` |
+| `data/n01/poses/{uzh,sim}/` | 3.6 MB | DPVO poses for the 14 UZH sequences (450 frames each) and the 80 simulated clips; gitignored | `modal run remote/n_rotation.py`, then `scripts/pull_volume.py awmv-n-data poses data/n01/poses` |
+| `data/n01/uzh_frames/` | 149 MB | the 450/450/223 pinhole frames of the three outdoor UZH sequences, pulled read-only from `awmv-e-data`; gitignored | `scripts/pull_volume.py awmv-e-data uzh/<seq>/frames_pinhole data/n01/uzh_frames/<seq>` |
+| Modal volume `awmv-n-data` | small | `poses/` and `runs/` for the 94 DPVO runs | re-run the app |
+
+No R2 object was created or written. The volume is the only new Modal object; the app was stopped.
