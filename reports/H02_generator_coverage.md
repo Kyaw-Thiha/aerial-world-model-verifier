@@ -254,6 +254,10 @@ blindness. Cost: 51.7-62.9 s/clip, 55.2 GB peak VRAM, about US$0.04/clip on an A
   frames leaves 0/10 feasible (only the ten turn clips testable).
 * **The grid reader uses every second frame** (41 of 81); the probes use all 81. This is stated
   in the methods; it changes precision, not the statistic.
+* **The verdict is a point-estimate application, not H01's lower-bound scorer.** H02
+  pre-registers the clip median of |required - depicted| at the designed path's point required
+  tilt. H01's scored table used a lower-bound construction over path rate/drag; the 6.46 deg
+  threshold is unchanged, but these numbers are not a byte-for-byte re-run of that scorer.
 * **No scale-up was run.** Every cost for 200 clips is an extrapolation from a pilot.
 
 ## Caveats
