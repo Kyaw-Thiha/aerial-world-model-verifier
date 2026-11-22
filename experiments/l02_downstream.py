@@ -113,7 +113,8 @@ def main() -> int:
                 # amendment B: the new readers' real condition is the identity-warped frame,
                 # so real and edits share resampling; the raw frame is a sensitivity.
                 real_key = "null_edit" if model != "frozen" else "real"
-                real_lean = _rebuild(store, rec["conditions"][real_key], idx)
+                real_rows = rec["real"] if real_key == "real" else rec["conditions"][real_key]
+                real_lean = _rebuild(store, real_rows, idx)
                 raw_lean = _rebuild(store, rec["real"], idx)
                 # lag from the real condition, used for every condition (frozen convention)
                 ft = type(store)(t=store.t, pos=store.pos, yaw=store.yaw,
@@ -127,6 +128,8 @@ def main() -> int:
                 entry["conditions"]["real"] = _stats(store, raw_lean, lag)
                 entry["conditions"]["real_null"] = _stats(store, real_lean, lag)
                 for cond in CONDS:
+                    if cond == "real":
+                        continue
                     lean = _rebuild(store, rec["conditions"][cond], idx)
                     entry["conditions"][cond] = _stats(store, lean, lag)
                 rows_out.append(entry)
@@ -147,13 +150,13 @@ def main() -> int:
                 return None
             hit = 0
             for r in sub:
-                t = r[tau_key]
+                t = TAU_ABS if tau_key == "tau_abs" else r[tau_key]
                 v = r["conditions"][cond][tier]
                 if np.isfinite(t) and np.isfinite(v) and v > t:
                     hit += 1
             return {"k": hit, "n": len(sub), "rate": hit / len(sub)}
         res = {"per_clip": rows_out, "rates": {}}
-        for cond in ("real_null",) + CONDS + ("real",):
+        for cond in ("real_null",) + tuple(c for c in CONDS if c != "real") + ("real",):
             res["rates"][cond] = {"lofo": rate(rows_out, cond, "tau_lofo"),
                                   "abs_1.75": rate(rows_out, cond, "tau_abs")}
         # cluster bootstrap on the LOFO real false-reject and removal detection
