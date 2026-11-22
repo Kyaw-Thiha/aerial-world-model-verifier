@@ -61,18 +61,23 @@ def main() -> int:
               f"{s['trimmed_rmse']:.2f} |")
 
     print("\n### Development folds (per-flight trimmed RMSE, leave-one-flight-out)\n")
-    print("| flight | G03 | frozen | arm a real |")
-    print("| --- | --- | --- | --- |")
+    print("| flight | G03 | frozen | arm a real | arm c mixed |")
+    print("| --- | --- | --- | --- | --- |")
     for fl in base:
-        p = FOLDS / f"real__{fl}.json"
-        a = ""
-        if p.exists():
-            rec = json.loads(p.read_text())
-            rows = rec["held_out_real"]
-            e = angle(np.array([r["up_cam"] for r in rows]), np.array([r["up_cam_ft"] for r in rows]))
-            a = f"{stats(e)['trimmed_rmse']:.2f}"
+        vals = []
+        for arm in ("real", "mixed"):
+            p = FOLDS / f"{arm}__{fl}.json"
+            v = ""
+            if p.exists():
+                rec = json.loads(p.read_text())
+                rows = rec.get("held_out_real") or []
+                if rows:
+                    e = angle(np.array([r["up_cam"] for r in rows]),
+                              np.array([r["up_cam_ft"] for r in rows]))
+                    v = f"{stats(e)['trimmed_rmse']:.2f}"
+            vals.append(v)
         print(f"| {fl} | {base[fl]['g03_ft']['trimmed_rmse']:.2f} | "
-              f"{base[fl]['frozen']['trimmed_rmse']:.2f} | {a} |")
+              f"{base[fl]['frozen']['trimmed_rmse']:.2f} | {vals[0]} | {vals[1]} |")
 
     print("\n### Simulated scene-family bias spread (out-of-family predictions, degrees)\n")
     s2 = json.loads((OUT / "summary.json").read_text())["criteria"] if (OUT / "summary.json").exists() else {}
