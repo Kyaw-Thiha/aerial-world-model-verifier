@@ -77,6 +77,22 @@ def _modal_exe() -> Path | str:
     return pixi if pixi.is_file() else "modal"
 
 
+def _upload_with_retry(path: Path, key: str, env, tries: int = 5) -> dict:
+    """Upload with backoff: R2 returned a transient InternalError during the first batch."""
+    import time
+
+    from src.utils import r2 as r2mod
+
+    last = None
+    for attempt in range(tries):
+        try:
+            return r2mod.upload(path, key, env)
+        except Exception as exc:                        # noqa: BLE001 - retried, then reported
+            last = exc
+            time.sleep(2.0 * (attempt + 1))
+    raise RuntimeError(f"upload of {key} failed after {tries} attempts: {last!r}")
+
+
 def publish(limit: int = 0) -> dict:
     from src.utils import r2 as r2mod
 
@@ -96,15 +112,22 @@ def publish(limit: int = 0) -> dict:
     env = r2mod.load_env()
     tmp = Path("/tmp/i02_publish")
     tmp.mkdir(parents=True, exist_ok=True)
-    done = 0
+    done = failed = 0
     for cid in todo:
         row = rows[cid]
         local_dir = tmp / cid
         shutil.rmtree(local_dir, ignore_errors=True)     # `volume get` refuses an existing path
         local_dir.mkdir(parents=True, exist_ok=True)
-        _modal("volume", "get", "awmv-i-data", f"i02/clips/{cid}/manifest_row.json", str(local_dir))
-        with (local_dir / "manifest_row.json").open() as fh:
-            meta = json.load(fh)
+        try:
+            _modal("volume", "get", "awmv-i-data", f"i02/clips/{cid}/manifest_row.json",
+                   str(local_dir))
+            with (local_dir / "manifest_row.json").open() as fh:
+                meta = json.load(fh)
+        except Exception as exc:                    # noqa: BLE001 - skip and carry on
+            failed += 1
+            print(f"{cid}: no manifest row on the volume ({exc.__class__.__name__})")
+            shutil.rmtree(local_dir, ignore_errors=True)
+            continue
         keep = {k: rows.get(cid, {}).get(k, "") for k in ("r2_video", "r2_gt")}
         rows[cid] = {**meta, **keep}
         row = rows[cid]              # the loop's binding must see the refreshed row
@@ -117,8 +140,14 @@ def publish(limit: int = 0) -> dict:
             continue
         key_video = f"track-i/videos/{row['split']}/{row['family']}/{cid}.mp4"
         key_gt = f"track-i/gt/{cid}.npz"
-        up_v = r2mod.upload(mp4, key_video, env)
-        up_g = r2mod.upload(gt, key_gt, env)
+        try:
+            up_v = _upload_with_retry(mp4, key_video, env)
+            up_g = _upload_with_retry(gt, key_gt, env)
+        except Exception as exc:                        # noqa: BLE001 - report and carry on
+            failed += 1
+            print(f"{cid}: {exc}")
+            shutil.rmtree(local_dir, ignore_errors=True)
+            continue
         if not (up_v["match"] and up_g["match"]):
             print(f"{cid}: sha256 mismatch on upload, left unpublished")
             continue
@@ -131,8 +160,8 @@ def publish(limit: int = 0) -> dict:
         done += 1
         print(f"{cid}: {up_v['bytes'] / 1e6:.1f} MB video, {up_g['bytes'] / 1e3:.0f} kB truth")
     save_rows(rows)
-    print(f"published {done} clips")
-    return {"published": done}
+    print(f"published {done} clips, {failed} failed")
+    return {"published": done, "failed": failed}
 
 
 def main() -> int:

@@ -50,17 +50,27 @@ image = (
 )
 
 
-def _row_ids(table: dict, split: str | None, limit: int, start: int) -> list[str]:
+def _row_ids(table: dict, split: str | None, limit: int, start: int,
+             missing: int = 0, order: str = "dev_first") -> list[str]:
     clips = table["clips"]
     if split:
         clips = [c for c in clips if c["split"] == split]
-    ids = [c["clip_id"] for c in clips[start:start + limit]]
-    return ids
+    if missing:
+        # first `missing` clips, in frozen order, whose video is not on the volume yet: this
+        # is what makes repeated calls productive instead of re-walking the same indices
+        import pathlib as _pl
+        done = {p.name for p in _pl.Path("/vol/i02/clips").glob("*") if p.is_dir()}
+        clips = [c for c in clips if c["clip_id"] not in done]
+        if order == "dev_first":
+            clips.sort(key=lambda c: (c["split"] != "dev", c["clip_id"]))
+        return [c["clip_id"] for c in clips[:missing]]
+    return [c["clip_id"] for c in clips[start:start + limit]]
 
 
 @app.function(image=image, gpu="L40S", timeout=6 * 3600, volumes={"/vol": volume},
               secrets=[r2_secret])
 def render_clips(clip_ids: str = "", split: str = "", limit: int = 0, start: int = 0,
+                 missing: int = 0,
                  samples: int = 16, exposure: float = -3.0, upload: str = "no",
                  keep_frames: bool = False, commit: str = "", force: bool = False) -> dict:
     import hashlib
@@ -77,7 +87,8 @@ def render_clips(clip_ids: str = "", split: str = "", limit: int = 0, start: int
     from src.utils import r2 as r2mod
 
     table = json.loads(Path("/root/sim_splits_frozen.json").read_text())
-    ids = [c for c in clip_ids.split(",") if c] or _row_ids(table, split or None, limit or 8, start)
+    ids = [c for c in clip_ids.split(",") if c] or _row_ids(
+        table, split or None, limit or 8, start, missing=missing)
     by_id = {c["clip_id"]: c for c in table["clips"]}
     do_upload = str(upload).lower() in ("1", "true", "yes", "r2")   # off by default: see above
     env = r2mod.load_env() if do_upload else None

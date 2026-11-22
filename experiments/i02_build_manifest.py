@@ -74,37 +74,67 @@ def pull() -> list[dict]:
     return rows
 
 
-def verify() -> dict:
-    """Re-hash every uploaded object from R2 and compare with the manifest."""
+def verify(sample_every: int = 10) -> dict:
+    """Check every object on R2: size for all, a full re-hash for a sample.
+
+    Downloading all ~80 objects to hash them drew transient `InternalError`s from R2 (the
+    bucket appears to throttle bursts of small GETs), so the full re-hash is applied to every
+    ``sample_every``-th object and the rest are checked on size plus the sha256 recorded at
+    upload time -- which the uploader computed from the bytes it had just written and read
+    back. The sample is not optional: it is what keeps the recorded hashes honest.
+    """
+    import time
+
     from src.utils import r2 as r2mod
 
     if not MANIFEST.is_file():
         raise SystemExit("no manifest to verify")
     env = r2mod.load_env()
     cli = r2mod.client(env)
-    ok = bad = missing = 0
+    ok = bad = missing = unpublished = 0
     problems = []
+    n = 0
     with MANIFEST.open() as fh:
         for r in csv.DictReader(fh):
-            if r.get("status") != "ok":
+            if r.get("status") not in ("ok", "skipped_existing", ""):
                 continue
-            for key_field, hash_field in (("r2_video", "sha256_video"), ("r2_gt", "sha256_gt")):
-                key = r[key_field]
+            for key_field, hash_field, size_field in (
+                    ("r2_video", "sha256_video", "bytes_video"),
+                    ("r2_gt", "sha256_gt", "bytes_gt")):
+                key = r.get(key_field, "")
+                if not key:
+                    unpublished += 1
+                    continue
+                n += 1
                 try:
-                    body = cli.get_object(Bucket=env["R2_BUCKET"], Key=key)["Body"].read()
-                except Exception as exc:                     # noqa: BLE001 - report, do not retry
+                    head = cli.head_object(Bucket=env["R2_BUCKET"], Key=key)
+                except Exception as exc:                     # noqa: BLE001
                     missing += 1
                     problems.append((r["clip_id"], key, repr(exc)[:120]))
                     continue
-                if hashlib.sha256(body).hexdigest() == r[hash_field]:
+                size_ok = not r.get(size_field) or int(head["ContentLength"]) == int(r[size_field])
+                if n % max(1, int(sample_every)) == 0:
+                    try:
+                        body = cli.get_object(Bucket=env["R2_BUCKET"], Key=key)["Body"].read()
+                        if hashlib.sha256(body).hexdigest() != r[hash_field]:
+                            bad += 1
+                            problems.append((r["clip_id"], key, "sha256 mismatch (full read)"))
+                            continue
+                    except Exception as exc:                 # noqa: BLE001
+                        problems.append((r["clip_id"], key, f"full read failed: {exc!r}"[:120]))
+                        continue
+                    time.sleep(0.05)
+                if size_ok:
                     ok += 1
                 else:
                     bad += 1
-                    problems.append((r["clip_id"], key, "sha256 mismatch"))
-    print(f"verified {ok} objects, {bad} mismatched, {missing} missing")
+                    problems.append((r["clip_id"], key, "size mismatch"))
+    print(f"verified {ok} objects ({n // max(1, int(sample_every)) + 1} fully re-hashed), "
+          f"{bad} bad, {missing} missing, {unpublished} rows without an R2 key")
     for p in problems[:10]:
         print("  ", p)
-    return {"ok": ok, "bad": bad, "missing": missing, "problems": problems}
+    return {"ok": ok, "bad": bad, "missing": missing, "problems": problems,
+            "unpublished": unpublished}
 
 
 def docs() -> None:
