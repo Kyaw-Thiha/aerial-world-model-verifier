@@ -166,7 +166,8 @@ def run_fdr_rates(man, dev, stats, seeds, feasible, out):
 def _acc(man, dev, c, mask, det, _):
     if not dev[c].truth.any():
         return
-    key = (man[c]["family"], man[c]["defect_family"], f"{x_frac(man[c]):g}")
+    key = (man[c]["family"], man[c]["defect_family"],
+           "1.0" if x_frac(man[c]) == 1.0 else f"{x_frac(man[c]):g}")
     det[key][1] += 1
     det[key][0] += int(bool(mask.any()))
 
@@ -181,15 +182,25 @@ def _logpdf_state1(x, mu, sigma):
 
 
 def refine_region(a, b, r_abs, sigma, max_mu=None):
+    """Grid onset/offset at 1 frame, O(1) per pair via prefix sums of x and x^2."""
     n = len(r_abs)
     a, b = max(0, a), min(n, b)
+    x = np.asarray(r_abs, dtype=float)
+    s1 = np.concatenate([[0.0], np.cumsum(x)])
+    s2 = np.concatenate([[0.0], np.cumsum(x * x)])
     best = (-np.inf, a, b)
+    inv = 1.0 / (sigma * sigma)
     for on in range(a, b + 1):
         for off in range(on + 1, b + 1):
-            inside = r_abs[on:off]
-            mu = float(np.mean(inside)) if len(inside) else 0.0
-            ll = (np.sum(_logpdf_state1(inside, mu, sigma))
-                  + np.sum(_logpdf_state0(np.concatenate([r_abs[a:on], r_abs[off:b]]), sigma)))
+            m = off - on
+            sx = s1[off] - s1[on]
+            sxx = s2[off] - s2[on]
+            mu = sx / m
+            # state 1: -0.5 * (sum (x-mu)^2) / sigma^2 ; state 0: -0.5 * sum x^2 / sigma^2
+            ll1 = -0.5 * (sxx - 2.0 * mu * sx + m * mu * mu) * inv
+            out_sq = (s2[on] - s2[a]) + (s2[b] - s2[off])
+            ll0 = -0.5 * out_sq * inv
+            ll = ll1 + ll0
             if ll > best[0]:
                 best = (ll, on, off)
     return best[1], best[2]
@@ -281,7 +292,8 @@ def run_alignment(man, dev, seeds, feasible, out):
             mask = arm_mask(stmap[c], PRIMARY, tau) if np.isfinite(tau) else np.zeros(len(x), bool)
             if x.truth.any():
                 s = interval_scores(mask, x.truth)
-                key = (man[c]["family"], man[c]["defect_family"], f"{x_frac(man[c]):g}")
+                key = (man[c]["family"], man[c]["defect_family"],
+           "1.0" if x_frac(man[c]) == 1.0 else f"{x_frac(man[c]):g}")
                 det[key][0] += int(bool(mask.any()))
                 det[key][1] += 1
                 ious.append(s["iou"] if mask.any() else 0.0)
@@ -356,7 +368,8 @@ def run_multiscale(man, dev, stats, seeds, feasible, out):
                     if np.isfinite(ttau) else np.zeros(len(x), bool)
             if x.truth.any():
                 s = interval_scores(mask, x.truth)
-                key = (man[c]["family"], man[c]["defect_family"], f"{x_frac(man[c]):g}")
+                key = (man[c]["family"], man[c]["defect_family"],
+           "1.0" if x_frac(man[c]) == 1.0 else f"{x_frac(man[c]):g}")
                 det[key][0] += int(bool(mask.any()))
                 det[key][1] += 1
                 ious.append(s["iou"] if mask.any() else 0.0)
