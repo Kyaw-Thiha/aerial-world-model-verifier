@@ -270,7 +270,7 @@ blindness. Cost: 51.7-62.9 s/clip, 55.2 GB peak VRAM, about US$0.04/clip on an A
 * **The reader is the pre-registered instrument and it is imperfect on this imagery.** It
   reads a 3-5 deg baseline on level generator frames and did not track the visible oblique
   horizon in the bf16 LingBot +20/-20 clips; a horizontal-edge check on those frames is not a
-  stable substitute (the images are painterly and vertical edges are missing). The
+  stable substitute (the images are painterly and the horizon is not a clean line). The
   discrepancy is recorded rather than resolved.
 * **SolarWM output is 81 frames at 480x864**, 4 sampling steps; the released causal model
   supports longer rollouts, not tested here.
