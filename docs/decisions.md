@@ -564,3 +564,20 @@ Every row below was read from the project's own repo/HF card on 2026-11-10. "ver
   Half the 600-frame epoch comes from each domain. A guard now raises with the camera-model set
   and parameter-grad count if a loss ever arrives without a graph. Tested on a 4-step mixed fold
   before relaunching; the real-only and simulated-only arms are untouched.
+
+- [L] **The three final models were trained with seed 1, not the pre-registered 101.** The
+  `final` Modal function takes `seed=101`, but the local entrypoint passes its own `seed` argument
+  (default 1) explicitly, so the value the function received was 1. No held-out outcome had been
+  inspected when this was noticed (the mixed final had just been written, and its record showed
+  `seed: 1`). The seed is not a fitted quantity and no result was used to choose it, but the
+  deviation is recorded here and in the report rather than patched silently; the folds keep the
+  pre-registered `1 + index` seeds. Rerunning three finals for a seed would cost about one
+  GPU-hour with no scientific gain, so they are reported as seed 1.
+- [L] **S1 fails for all three arms and the mixed arm is the worst on the hard real flight.** The
+  pooled held-out trimmed RMSE is 7.51 deg for real-only (-9.4 % against G03's 8.29), 19.87 for
+  simulated-only and **20.44 for mixed+DR** (13p alone 27.05; 07a 5.64). The 15 % bar (7.04) is
+  met by no arm. The mixed arm's training loss rose from 0.045 to 0.054 over its second epoch --
+  the domain-randomised objective was not converging -- and its 13p result is the worst of the
+  three. This is the plain answer to the track's question: on this data, simulated training does
+  not improve the reader on real held-out flights, and mixing it with real under this DR recipe is
+  worse than training on real alone.
