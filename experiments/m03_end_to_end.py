@@ -413,6 +413,20 @@ def main() -> None:
         & (sim.dis_med <= fr["tau_b"]),
     }
     sim_masks["G0_S3_only"] = pd.Series(True, index=sim.index)
+    rc = []
+    for _, r in sim.iterrows():
+        reasons = []
+        if not (np.isfinite(r.sigma_min) and r.sigma_min >= fr["lam_a"]):
+            reasons.append("weak_signal")
+        if not (np.isfinite(r.tilt_max) and r.tilt_max <= fr["near_vertical"]):
+            reasons.append("near_vertical")
+        if not (np.isfinite(r.dis_med) and r.dis_med <= fr["tau_b"]):
+            reasons.append("readers_disagree")
+        rc.append({**{k: r[k] for k in ("clip_id", "family", "defect", "mount",
+                                        "sigma_min", "tilt_max", "dis_med", "R",
+                                        "F0", "C2", "err_reader")},
+                   "reason_codes": ";".join(reasons) if reasons else "none"})
+    pd.DataFrame(rc).to_csv(OUT / "reason_codes_sim.csv", index=False)
     simres = {}
     for tier in TIERS:
         ent = {}
