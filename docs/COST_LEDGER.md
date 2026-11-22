@@ -32,17 +32,28 @@ Track ceiling: **USD 40** (handoff 15); ask before exceeding.
 | `awmv-i-score` grid pass, 11 clips at stride 2 | A10 | 0.2 | 0.22 | 2,700 frames in 468 s |
 | **subtotal** | | | **2.55** | |
 
+## Track I — I02, the full-set render (2026-11-21, in progress)
+
+| job | GPU | hours | USD | notes |
+| --- | --- | --- | --- | --- |
+| `awmv-i-dataset` render batch 1 (150 clips, detached) | L40S | 4.2 | 8.19 | 0.15-0.36 s/frame, ~2 min per clip with encode and truth |
+| `awmv-i-dataset` render batch 2 (145 clips, detached, in progress) | L40S | ~4.0 | ~7.8 | |
+| `awmv-i-score` dev feasible grid, 80 clips at stride 2 | A10 | 1.1 | 1.21 | 19,081 frames |
+| **subtotal so far** | | | **~7.2** booked, ~7.8 committed | |
+
 ## Booked and committed
 
 | item | GPU | hours | USD |
 | --- | --- | --- | --- |
-| booked so far | | | **5.17** |
-| full-set render, 149,450 frames in slices | L40S | ~10 | ~20.0 |
-| full-set reader scoring at stride 2 | A10 | ~5 | ~5.5 |
-| **planned total** | | | **~30.7** |
+| booked so far | | | **12.4** |
+| render batch 2 (in progress) | L40S | ~4 | ~7.8 |
+| remaining clips after batch 2 (about 0) | L40S | ~0 | ~0 |
+| dev-pass scoring of the defect clips, stride 2 | A10 | ~4.5 | ~5.0 |
+| **planned total** | | | **~25.2** |
 
-Remaining headroom against the ceiling: about USD 9, which is the allowance for reruns.
+Remaining headroom against the ceiling: about USD 15, which is the allowance for reruns.
 
 The per-frame cost is what sets the plan and it is scene-dependent: open scenes render at
 0.14-0.21 s/frame and the dense forest at 0.35 s/frame on the same L40S. The 149,450-frame
-total at a 0.23 s/frame average is the 10 h above.
+total at a 0.23 s/frame average is the ~10 h above. Actual per-clip wall time averages 2 min
+(encode, truth write and volume commit included), which is what the estimates use.
