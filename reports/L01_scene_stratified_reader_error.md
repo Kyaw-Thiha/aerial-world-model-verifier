@@ -28,8 +28,9 @@ development clips are infeasible-defect clips and are not on R2; the 100 held-ou
 
 **Instrument.** GeoCalib at the pinned commit, `weights="pinhole"`, `camera_model="pinhole"`,
 scalar focal prior from the render's 90 deg horizontal field, one frame at a time — the same
-route Track I scored, at stride 1 instead of its mixed stride 1/2 (`remote/l_score_sim.py`,
-commit `674e7b8`; job `awmv-l-reader`, A10, four shards, 3.0 A10G-hours, USD 3.0). Nothing was
+route Track I scored, at stride 1 instead of its mixed stride 1/2 (`remote/l_score_sim.py` at
+`674e7b8`, made resumable at `d048a97`; job `awmv-l-reader`, A10, four shards, 3.7 A10G-hours,
+USD 4.1). Nothing was
 tuned. The re-score reproduces I02 on the frames I02 scored: the worst per-clip median
 per-frame difference is 0.255 deg (p90 1.148), the pooled clip-median difference is -0.0005 deg
 (`configs/l01_amendment_c.yaml`). The per-frame residual is GeoCalib's own run-to-run variation
@@ -184,10 +185,9 @@ numbers; all 80 clips pass it.
 
 ## Provenance
 
-* **Run**: Modal `awmv-l-reader`, A10, four shards, 37,401 frames, 3.0 A10G-hours, USD 3.0
-  (`docs/COST_LEDGER.md`). Code `remote/l_score_sim.py` at commit `674e7b8` (pandas fix) and
-  `2bf2cb2` (resume + batched commits); analysis `experiments/l01_analysis.py` at the commit that
-  wrote `results/l01/`.
+* **Run**: Modal `awmv-l-reader`, A10, four shards, 37,401 frames, 3.7 A10G-hours, USD 4.1
+  (`docs/COST_LEDGER.md`). Code `remote/l_score_sim.py` at `674e7b8`, made resumable with
+  batched commits at `d048a97`; analysis `experiments/l01_analysis.py` at `1177c6b`.
 * **Inputs**: `track-i/videos/dev/...` and `track-i/gt/...` on R2, sha256-verified against
   `results/i02/manifest.csv` (160/160).
 * **Results**: `results/l01/{per_clip.csv,cells.csv,families.csv,scenes.csv,anatomy.json,

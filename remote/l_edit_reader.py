@@ -70,7 +70,7 @@ def edits(flights: str, model: str = "frozen", lm_steps: int = 10,
         calib = GeoCalib(weights="distorted").to(device)
         state = torch.load(Path(VOL) / "l02" / "models" / f"{model}.pt",
                            map_location=device, weights_only=True)
-        calib.model.load_state_dict(state, strict=False)
+        calib.model.load_state_dict(state, strict=True)
     net = calib.model
     if model != "frozen":
         net.optimizer.num_steps = lm_steps
