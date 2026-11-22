@@ -32,10 +32,11 @@ and `report/cutoff.json`:
 | `track-d/` | 67 | 36,959,802 | Track D schema-v2 clips and statistic artefacts (includes the D branch bundle) |
 | `track-e/` | 595 | 31,612,527 | UZH-FPV clip exports, per-frame arrays, backups |
 | `track-h/` | 1,381 | 124,595,362 | Track H pilot clips: 80 ANWM seed clips (1,361 objects, 121.4 MB), five LingBot-World probe clips, five Wan 2.2 clips, each with a sha256 manifest in `results/h01_r2/` |
+| `track-h2/` | 230 | 152,932,119 | Track H2 pilot clips: SolarWM probes/grid/seeds and full-precision LingBot probes (mp4 + meta), each with a sha256 manifest in `results/h02_r2/` |
 
 Access status during consolidation: an `rclone size` against `r2remote:aerial-world-modal-verifier/track-d/`
 returned **403 AccessDenied**, so the counts above are the 2026-11-15T10:03Z measurement and were
-**not** re-verified. Nothing was written or deleted (the `track-h/` prefix is new and was populated by Track H).
+**not** re-verified. Nothing was written or deleted (the `track-h/` prefix is new and was populated by Tracks H and H2).
 Re-check with:
 
 ```

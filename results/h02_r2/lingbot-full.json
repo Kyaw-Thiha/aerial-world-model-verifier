@@ -1,0 +1,91 @@
+{
+ "prefix": "track-h2/clips/lingbot-full",
+ "src": "data/h02_lingbot_full_out",
+ "tag": "lingbot-full",
+ "dry_run": false,
+ "n_files": 10,
+ "bytes": 2420876,
+ "files": [
+  {
+   "path": "probe_level/clip.mp4",
+   "key": "track-h2/clips/lingbot-full/probe_level/clip.mp4",
+   "bytes": 478990,
+   "sha256": "c501232d62adeac34908e6bfee86dc2ae4bef353883d5557fbfaf3201219d54f",
+   "remote_sha256": "c501232d62adeac34908e6bfee86dc2ae4bef353883d5557fbfaf3201219d54f",
+   "match": true
+  },
+  {
+   "path": "probe_level/manifest.json",
+   "key": "track-h2/clips/lingbot-full/probe_level/manifest.json",
+   "bytes": 540,
+   "sha256": "78d849d22af91607b93df288691934e8d835bef547cd051cddb131f96a98a189",
+   "remote_sha256": "78d849d22af91607b93df288691934e8d835bef547cd051cddb131f96a98a189",
+   "match": true
+  },
+  {
+   "path": "probe_rollramp_60/clip.mp4",
+   "key": "track-h2/clips/lingbot-full/probe_rollramp_60/clip.mp4",
+   "bytes": 507692,
+   "sha256": "ea476d26b22cacdf3304bafd668f740afdfc9dd406010a015fd6d18b0938ac39",
+   "remote_sha256": "ea476d26b22cacdf3304bafd668f740afdfc9dd406010a015fd6d18b0938ac39",
+   "match": true
+  },
+  {
+   "path": "probe_rollramp_60/manifest.json",
+   "key": "track-h2/clips/lingbot-full/probe_rollramp_60/manifest.json",
+   "bytes": 521,
+   "sha256": "3a28411a3bc0643186c4ba732cfe777ac6a894c27b468923bc77b7679f25f224",
+   "remote_sha256": "3a28411a3bc0643186c4ba732cfe777ac6a894c27b468923bc77b7679f25f224",
+   "match": true
+  },
+  {
+   "path": "probe_rollramp_fast20/clip.mp4",
+   "key": "track-h2/clips/lingbot-full/probe_rollramp_fast20/clip.mp4",
+   "bytes": 498180,
+   "sha256": "b12dba48a774a927813a0bf4716a77b43392cb71f3ec3d2ab1bceb1588943fdb",
+   "remote_sha256": "b12dba48a774a927813a0bf4716a77b43392cb71f3ec3d2ab1bceb1588943fdb",
+   "match": true
+  },
+  {
+   "path": "probe_rollramp_fast20/manifest.json",
+   "key": "track-h2/clips/lingbot-full/probe_rollramp_fast20/manifest.json",
+   "bytes": 533,
+   "sha256": "c43f2b81a37ddf3ec12936b5825b96f068c8779e86d582e738edb8eb9558dd03",
+   "remote_sha256": "c43f2b81a37ddf3ec12936b5825b96f068c8779e86d582e738edb8eb9558dd03",
+   "match": true
+  },
+  {
+   "path": "probe_rollramp_m20/clip.mp4",
+   "key": "track-h2/clips/lingbot-full/probe_rollramp_m20/clip.mp4",
+   "bytes": 433777,
+   "sha256": "3f3da9d8d9c59fea109c27eedaf8faf766bedd2c774e49dab283967ad614d4d9",
+   "remote_sha256": "3f3da9d8d9c59fea109c27eedaf8faf766bedd2c774e49dab283967ad614d4d9",
+   "match": true
+  },
+  {
+   "path": "probe_rollramp_m20/manifest.json",
+   "key": "track-h2/clips/lingbot-full/probe_rollramp_m20/manifest.json",
+   "bytes": 523,
+   "sha256": "06b81f9542ff2730d18f313d6d22b57c66c35d711937f3eb8c38ebf3167b846e",
+   "remote_sha256": "06b81f9542ff2730d18f313d6d22b57c66c35d711937f3eb8c38ebf3167b846e",
+   "match": true
+  },
+  {
+   "path": "probe_rollramp_p20/clip.mp4",
+   "key": "track-h2/clips/lingbot-full/probe_rollramp_p20/clip.mp4",
+   "bytes": 499598,
+   "sha256": "99ab326f06ae66cfca17a7c422928cf9a7dd78355afa4b877a0f0269f028e4ef",
+   "remote_sha256": "99ab326f06ae66cfca17a7c422928cf9a7dd78355afa4b877a0f0269f028e4ef",
+   "match": true
+  },
+  {
+   "path": "probe_rollramp_p20/manifest.json",
+   "key": "track-h2/clips/lingbot-full/probe_rollramp_p20/manifest.json",
+   "bytes": 522,
+   "sha256": "6fd41da497fc5fda17d7715f2978d2de47cfeef811cf019912d5a7d764459673",
+   "remote_sha256": "6fd41da497fc5fda17d7715f2978d2de47cfeef811cf019912d5a7d764459673",
+   "match": true
+  }
+ ],
+ "skipped": []
+}

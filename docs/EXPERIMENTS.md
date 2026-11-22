@@ -29,8 +29,9 @@ results; none of them runs an experiment.
 | E11 | pixel-path verdict, stage 0 (Track F) | F | `track-f-pixel-path` | `results/f01_stage0/` | F01 |
 | E12 | pixel-path round 2: spline joint fit, lean-error scoring, feed-forward extractors | F2 | `track-f2-pixel-path` | `results/f04_spline/`, `f05_lean_error/`, `f06_feedforward/` | F04, F05, F06 (round 1: E11 on `track-f-pixel-path`) |
 | E13a | generator pilot: ANWM seed variance, LingBot-World, Wan 2.2 | H | `track-h-generator-pilot` | `results/h01_seed_specs/`, `h01_seed_variance/`, `h01_lingbot/`, `h01_lingbot_b/`, `h01_wan/`, `h01_tables/`, `h01_r2/` | H01 |
+| E13b | generator coverage with path control (H2) | H2 | `track-h2-generator-coverage` | `results/h02_inventory.json`, `h02_solarwm*`, `h02_lingbot_full*` | H02 |
 
-R2 prefixes are `track-a/`, `track-a/a2/`, `track-b/`, `track-c/`, `track-d/`, `track-e/`, `track-h/`
+R2 prefixes are `track-a/`, `track-a/a2/`, `track-b/`, `track-c/`, `track-d/`, `track-e/`, `track-h/`, `track-h2/`
 (counts and bytes: `report/data/r2_counts.json`, measured 2026-11-15; verified read-only again
 during consolidation — see `docs/DATA.md` for the current status of listing access).
 
@@ -269,6 +270,33 @@ during consolidation — see `docs/DATA.md` for the current status of listing ac
 * **Report**: `reports/H01_generator_pilot.md`.
 * **Cost**: `docs/COST_LEDGER.md`.
 * **Stop rule**: the pilot ends with the report; no scale-up until the user decides.
+
+## E13b — generator coverage with path control (Track H2)
+
+* **Owning track / branch**: H2, `track-h2-generator-coverage`, based on `main` (`41d1dad`);
+  read-only dependency on `track-h-generator-pilot` (H01) for the reader, first frames and
+  designed paths.
+* **What it is**: inventory of path/pose-controlled world models; SolarWM-5B roll-injection,
+  seed variance and commanded-path verdict; full-precision LingBot roll probes beside H01's
+  NF4 result.
+* **Configs**: `configs/h02_pilot_prereg.yaml` (`5c6e5c6`) and amendment 1 (bank-in, 16 m
+  translation scale).
+* **Results**: `results/h02_inventory.json`, `results/h02_solarwm/`,
+  `results/h02_lingbot_full/`, `results/h02_*_depicted/`, `results/h02_r2/*.json`.
+* **R2**: `track-h2/clips/...` with sha256 manifests.
+* **Report**: `reports/H02_generator_coverage.md`; candidate section
+  `report_candidates/h02_generator_coverage.tex`.
+* **Outcome**: SolarWM-5B follows a continuously ramping roll (level 1.4 deg; +20 ramp ends
+  22.4, -20 18.2, +60 45.8) but not a held path attitude: on the 75-clip grid the roll criterion
+  fails (1/5 paths by tilt, 1/5 by mirrored sign) and the verdict leaves 15/25 testable and 5
+  feasible (all slalom-10) under H02's absolute 12-frame rule, rejecting every testable
+  turn-10/20 clip; under H01's 12/16 fraction only the ten turn clips are testable, all
+  infeasible (0/10 feasible). Seed sampling moves the
+  depicted tilt more than ANWM's (median range 2.6 deg), but best-of-3 cuts the residual by
+  1.0 deg median and flips 1/10 paths, below the pre-registered 2 deg / 20 % bar.
+  Full-precision LingBot still shows no coherent roll in the reader; quantisation is not
+  established as the cause.
+* **Stop rule**: pilot only; no scale-up until the user decides.
 
 ## Track G — verifier statistics (branch `track-g-segments2`, off `main` `41d1dad`)
 

@@ -1,0 +1,24 @@
+{
+ "grid": {
+  "n": 75,
+  "seconds": 2083.709811925888,
+  "s_per_clip": 27.782797492345175,
+  "gpu": "A100-80GB",
+  "peak_vram_gb_observed": 36,
+  "vram_source": "nvidia-smi on the grid container; not instrumented per clip"
+ },
+ "seeds": {
+  "n": 30,
+  "seconds": 781.8566796779633,
+  "s_per_clip": 26.061889322598777
+ },
+ "probes": {
+  "n": 5,
+  "seconds": 263.85864329338074,
+  "s_per_clip": 52.771728658676146
+ },
+ "usd_per_clip_200_est": {
+  "solarwm": 0.019293609369684148,
+  "solarwm_200": 3.85872187393683
+ }
+}

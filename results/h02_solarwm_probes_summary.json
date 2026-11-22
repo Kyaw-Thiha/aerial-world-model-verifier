@@ -1,0 +1,29 @@
+{
+ "tag": "probes",
+ "n_samples": 5,
+ "seconds": 263.85864329338074,
+ "returncode": 0,
+ "clips": {
+  "probe_level": {
+   "frames": 81,
+   "mp4": "probe_level/clip.mp4"
+  },
+  "probe_p60": {
+   "frames": 81,
+   "mp4": "probe_p60/clip.mp4"
+  },
+  "probe_m20": {
+   "frames": 81,
+   "mp4": "probe_m20/clip.mp4"
+  },
+  "probe_p20": {
+   "frames": 81,
+   "mp4": "probe_p20/clip.mp4"
+  },
+  "probe_fast20": {
+   "frames": 81,
+   "mp4": "probe_fast20/clip.mp4"
+  }
+ },
+ "output_root": "/r/solarwm/probes"
+}

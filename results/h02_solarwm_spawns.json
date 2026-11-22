@@ -1,0 +1,20 @@
+{
+ "probes": {
+  "batch": "probes",
+  "n": 5,
+  "call_id": "fc-01M809M6JWFM1ZXJPAQEPRTRT3",
+  "steps": 4
+ },
+ "grid": {
+  "batch": "grid",
+  "n": 75,
+  "call_id": "fc-01M80A4VYZPQCV58V9JEN0GDH9",
+  "steps": 4
+ },
+ "seeds": {
+  "batch": "seeds",
+  "n": 30,
+  "call_id": "fc-01M80J07A0JBYG0YYDZNHYBTYB",
+  "steps": 4
+ }
+}

@@ -1,0 +1,29 @@
+{
+ "n_paths": 10,
+ "n_clips": 30,
+ "best_of_n": [
+  {
+   "N": 1,
+   "reduction_median_deg": 0.0,
+   "reduction_mean_deg": 0.0,
+   "n_flipped": 0
+  },
+  {
+   "N": 2,
+   "reduction_median_deg": 0.3417755127242845,
+   "reduction_mean_deg": 0.5595350290411142,
+   "n_flipped": 1
+  },
+  {
+   "N": 3,
+   "reduction_median_deg": 1.0227185095394924,
+   "reduction_mean_deg": 0.8737360893290006,
+   "n_flipped": 1
+  }
+ ],
+ "depicted_sd_median_deg": 1.4148925326014719,
+ "depicted_range_median_deg": 2.6055325237540052,
+ "oracle_reduction_median_deg": 1.0227185095394924,
+ "oracle_reduction_mean_deg": 0.8737360893290006,
+ "n_flipped": 1
+}

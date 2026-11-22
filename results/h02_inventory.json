@@ -1,0 +1,129 @@
+{
+ "generated": "2026-11-21",
+ "scope": "models that take a path or camera pose as control",
+ "models": [
+  {
+   "name": "SolarWM-Wan2.2-5B",
+   "control": "frame-aligned absolute OpenCV c2w [T,4,4] + per-frame intrinsics; model rebases to the first frame and injects first-frame-relative pose through fused-PRoPE",
+   "carries_roll": true,
+   "weights": "junchaoh-cs/SolarWM-Wan2.2-5B (SolarWM-5B-base + SolarWM-5B-sgf-stage2-81f)",
+   "size_gb": 61,
+   "licence": "code Apache-2.0; weights per-directory notices; repository gated (auto)",
+   "gating": "contact-information acceptance; account authorized 2026-11-21",
+   "vram_gb_expected": 80,
+   "gpu": "A100-80GB",
+   "cost_per_clip_usd_expected": "0.02-0.05 (4 steps, 81 frames, 480x864)",
+   "source": ["https://huggingface.co/junchaoh-cs/SolarWM-Wan2.2-5B", "https://github.com/Junchao-cs/SolarWM", "https://arxiv.org/abs/2609.02886"]
+  },
+  {
+   "name": "SolarWM-Wan2.2-14B",
+   "control": "same shared camera contract (absolute c2w + intrinsics, first-frame-relative PRoPE)",
+   "carries_roll": true,
+   "weights": "junchaoh-cs/SolarWM-Wan2.2-14B (SolarWM-14B-base-high + SolarWM-14B-bid-stage0p5-81f)",
+   "size_gb": "not measured here; 14B dense high-noise expert plus assets",
+   "licence": "code Apache-2.0; weights per-directory notices; gated",
+   "gating": "accepted by the user 2026-11-21",
+   "vram_gb_expected": "80+ (not run)",
+   "gpu": "not run",
+   "cost_per_clip_usd_expected": "estimate only if 5B follows roll",
+   "source": ["https://huggingface.co/junchaoh-cs/SolarWM-Wan2.2-14B", "https://arxiv.org/abs/2609.02886"]
+  },
+  {
+   "name": "SolarWM-LTX-2.5-22B",
+   "control": "same camera contract; video-only route in SolarWM",
+   "carries_roll": true,
+   "weights": "junchaoh-cs/SolarWM-LTX-22B (gated)",
+   "size_gb": "not measured",
+   "licence": "code Apache-2.0; weights per-directory notices; gated",
+   "gating": "auto",
+   "vram_gb_expected": "not checked",
+   "gpu": "not run",
+   "cost_per_clip_usd_expected": "not estimated",
+   "source": ["https://huggingface.co/junchaoh-cs/SolarWM-LTX-22B", "https://arxiv.org/abs/2609.02886"]
+  },
+  {
+   "name": "SolarWM-H3-33B",
+   "control": "same camera contract; H3 packed interface, camera-relative PRoPE on a head split",
+   "carries_roll": true,
+   "weights": "junchaoh-cs/SolarWM-H3-33B (gated)",
+   "size_gb": "not measured",
+   "licence": "code Apache-2.0; weights per-directory notices; gated",
+   "gating": "auto",
+   "vram_gb_expected": "8 Blackwell GPUs for the realtime demo; not run",
+   "gpu": "not run",
+   "cost_per_clip_usd_expected": "not estimated",
+   "source": ["https://huggingface.co/junchaoh-cs/SolarWM-H3-33B", "https://arxiv.org/abs/2609.02886"]
+  },
+  {
+   "name": "Aero-World",
+   "control": "30 Hz IMU actions (linear acceleration + angular velocity), not a camera pose/path",
+   "carries_roll": true,
+   "weights": "none found",
+   "size_gb": null,
+   "licence": "paper CC BY 4.0",
+   "gating": "no public code or weights found (GitHub search and HF search, 2026-11-21)",
+   "vram_gb_expected": "n/a (CogVideoX-1.5-5B backbone)",
+   "gpu": "not run",
+   "cost_per_clip_usd_expected": "not measurable",
+   "source": ["https://arxiv.org/abs/2605.19728", "https://metalicana.github.io/AeroWorld"]
+  },
+  {
+   "name": "CameraCtrl",
+   "control": "camera extrinsics (c2w) + intrinsics converted to Plücker rays; AnimateDiff-V3 / SVD backbones",
+   "carries_roll": true,
+   "weights": "hehao13/CameraCtrl",
+   "size_gb": 3,
+   "licence": "weights card MIT; code Apache-2.0",
+   "gating": "ungated",
+   "vram_gb_expected": 24,
+   "gpu": "A10",
+   "cost_per_clip_usd_expected": "~0.01 (16-frame AnimateDiff; estimate)",
+   "source": ["https://huggingface.co/hehao13/CameraCtrl", "https://github.com/hehao13/CameraCtrl", "https://arxiv.org/abs/2404.02101"]
+  },
+  {
+   "name": "MotionCtrl",
+   "control": "camera RT trajectory (relative) and/or object trajectory; SVD / VideoCrafter",
+   "carries_roll": true,
+   "weights": "TencentARC/MotionCtrl",
+   "size_gb": 22,
+   "licence": "Apache-2.0 (weights and code)",
+   "gating": "ungated",
+   "vram_gb_expected": 24,
+   "gpu": "A10",
+   "cost_per_clip_usd_expected": "~0.02 (14-25 frames; estimate)",
+   "source": ["https://huggingface.co/TencentARC/MotionCtrl", "https://github.com/TencentARC/MotionCtrl", "https://arxiv.org/abs/2312.03641"]
+  },
+  {
+   "name": "ReCamMaster",
+   "control": "source video + target camera trajectory (novel-view re-rendering), not image-only generation",
+   "carries_roll": true,
+   "weights": "KlingTeam/ReCamMaster-Wan2.1 (step20000.ckpt)",
+   "size_gb": 2,
+   "licence": "weights Apache-2.0; code MIT",
+   "gating": "ungated",
+   "vram_gb_expected": "24-40",
+   "gpu": "A10/A100",
+   "cost_per_clip_usd_expected": "~0.02 (Wan2.1-1.3B, 81 frames; estimate)",
+   "source": ["https://huggingface.co/KlingTeam/ReCamMaster-Wan2.1", "https://github.com/KlingAIResearch/ReCamMaster", "https://arxiv.org/abs/2503.11647"]
+  },
+  {
+   "name": "CT-1",
+   "control": "takes an image + text camera intent and predicts a camera trajectory for another video model; it is not a video generator",
+   "carries_roll": "trajectory prediction; no video output",
+   "weights": "checkpoint referenced by the repo, no public HF repository found",
+   "size_gb": null,
+   "licence": "MIT (code, weights and data per README)",
+   "gating": "no public weights located",
+   "vram_gb_expected": "~30 GB fp32 for the VLA (README)",
+   "gpu": "not run",
+   "cost_per_clip_usd_expected": "not a generator",
+   "source": ["https://github.com/gulucaptain/Camera-Transformer-1", "https://arxiv.org/abs/2604.09201"]
+  }
+ ],
+ "excluded_by_scope": [
+  {"name": "AirScape", "reason": "text-intention control, not a path/pose", "source": "https://huggingface.co/EmbodiedCity/Airscape"},
+  {"name": "Cosmos-Predict2.5", "reason": "no camera-control checkpoint found; robot action variants only"},
+  {"name": "Wan2.2", "reason": "no path/pose control"},
+  {"name": "HunyuanVideo", "reason": "no path/pose control"}
+ ]
+}

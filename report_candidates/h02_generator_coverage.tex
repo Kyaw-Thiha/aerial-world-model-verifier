@@ -1,0 +1,74 @@
+% Track H2 candidate section. Compile with the main report preamble; no new packages.
+\section{Generator coverage with path control}
+\label{sec:h02-generator-coverage}
+
+\paragraph{Scope.}
+Only world models that accept a path or camera pose as control are in scope, because the
+verifier asks whether the depicted attitude follows the attitude the commanded path requires.
+Text-intention models and models without camera control are listed as excluded.
+
+\paragraph{Inventory.}
+Table~\ref{tab:h02-inventory} records the control parameterization, whether roll is carried,
+the released weights, licence, gating and expected cost. SolarWM-Wan2.2-5B is the only
+released model that both takes a camera trajectory and is practical for this pilot;
+Aero-World has no public code or weights, CT-1 predicts a trajectory rather than video, and
+CameraCtrl/MotionCtrl/ReCamMaster are older smaller-backbone controllers not run here.
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{@{}lllll@{}}
+\toprule
+Model & Control & Roll & Weights & Licence / access \\
+\midrule
+SolarWM-5B & absolute c2w + K, first-frame relative & yes & 5B Stage2 81f & Apache-2.0, gated \\
+Aero-World & 30\,Hz IMU action & yes & none public & paper CC BY 4.0 \\
+CameraCtrl & c2w + K to Pl\"ucker & yes & 3\,GB & MIT weights, ungated \\
+MotionCtrl & relative RT trajectory & yes & 22\,GB & Apache-2.0, ungated \\
+ReCamMaster & source video + target path & yes & 2\,GB & Apache-2.0 weights, ungated \\
+CT-1 & predicts trajectory only & n/a & none located & MIT code \\
+\bottomrule
+\end{tabular}
+\caption{Path/pose-controlled generator inventory (verified 2026-11-21).}
+\label{tab:h02-inventory}
+\end{table}
+
+\paragraph{SolarWM roll injection.}
+SolarWM-Wan2.2-5B (Stage2, four steps, 81 frames at 480x864) accepts an absolute OpenCV
+camera-to-world trajectory and rebases it to the first frame. On five probes the depicted
+tilt follows the injected ramp: level 1.4\,deg, $+20^\circ$ ramp median 9.9\,deg and last-ten
+22.4\,deg, $-20^\circ$ ramp 5.9\,/\,18.2\,deg with the opposite lean, triangular 18.8\,deg, and
+$+60^\circ$ ramp 30.8\,/\,45.8\,deg, with lean-direction cosines 0.82--0.99. This is the first
+path-controlled generator in the project whose depicted attitude follows a commanded attitude
+change.
+
+On the 75-clip designed grid the response is weaker: only cruise has a flatness-arm tilt at
+least half the injected magnitude; turn-10 and turn-20 hold 13--21\,deg and the reader sees
+3.8--7.1\,deg. The pre-registered roll criterion fails on tilt magnitude (1/5 paths) and
+mirrored sign (1/5). The frozen verdict on the 25 flatness clips leaves 15 testable, 5 feasible
+(all slalom-10) and rejects every testable turn-10/20 clip (residuals 9.1 and 14.1\,deg).
+That 5/15 uses H02's absolute 12-frame rule; with H01's 12/16 fraction scaled to 81 frames,
+only the ten turn-10/20 clips are testable and all are infeasible, so the slalom pass is not
+robust (the held-bank failure is).
+SolarWM follows the derivative of the camera path, not the held attitude the path requires.
+
+\paragraph{Seed variance.}
+The depicted tilt varies far more than ANWM's (median seed
+standard deviation 1.41\,deg, median range 2.61\,deg, worst 9.88\,deg), but the oracle
+best-of-3 reduction is only 1.02\,deg median and one of ten paths flips from infeasible to
+feasible, below the pre-registered 2\,deg / 20\,\% criterion.
+
+\paragraph{Full-precision LingBot.}
+The bf16 fast model (five probes, 45 frames, 4 steps, 55.2\,GB, 51.7--62.9\,s/clip) reads 4.56,
+3.87, 4.91, 4.29 and 4.06\,deg for level, $+20$, $-20$, triangular and $+60$ ramps, against
+NF4's 3.21, 3.30, 3.77, 3.93 and 4.05. The pre-registered reader still sees no coherent roll
+response; the bf16 frames look more oblique than NF4, but vertical-edge checks are not usable
+on this imagery. Quantisation is therefore not established as the cause of H01's failure.
+The reader/eye discrepancy is recorded, not resolved.
+
+\paragraph{Cost and go/no-go.}
+SolarWM costs 27.8\,s/clip at 480$\times$864 and four steps (about US$3.9 for 200 clips), the
+cheapest path-controlled option measured; LingBot-fast bf16 costs 62.9\,s/clip (US$8.8 for
+200). SolarWM is a conditional no-go for sustained commanded paths: it follows ramps but not a
+held bank, and the verifier rejects the sustained turn-10/20 clips. A useful next step is a
+campaign of continuously time-varying commanded attitudes, the regime where the model works.
