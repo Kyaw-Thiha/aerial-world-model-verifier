@@ -89,15 +89,26 @@ def main() -> int:
         s3 = -float(np.nanmedian(z["latitude_confidence_mean"]))
         dt = float(z["t"][1] - z["t"][0]) if len(z["t"]) > 1 else np.nan
 
-        # reproduction on the I02 frame subset: all frames for the two stride-1 clips,
-        # even-index frames for the 78 stride-2 clips
+        # reproduction on the exact frames I02 scored: its stored score JSON carries the
+        # per-frame rows, so the frame-enumeration ambiguity of the summary alone is removed
         g = grid[cid]
-        stride = 1 if int(g["n"]) == int(row["n_frames"]) else 2
-        sub = err if stride == 1 else err[::2]
-        repro.append({"clip_id": cid, "stride_i02": stride,
+        stored = ROOT / "results/i02/scores" / f"{cid}_score.json"
+        if stored.exists():
+            frames_i02 = [int(r["frame"]) for r in json.loads(stored.read_text())["rows"]]
+            pos = {int(f): k for k, f in enumerate(np.asarray(z["frame"]))}
+            pairs = [(float(r["up_error_deg"]), float(err[pos[int(r["frame"])]]))
+                     for r in json.loads(stored.read_text())["rows"] if int(r["frame"]) in pos]
+            sub = np.array([b for a, b in pairs])
+            st = np.array([a for a, b in pairs])
+            diff = np.abs(sub - st)
+        else:
+            sub, diff = err, np.array([np.nan])
+        repro.append({"clip_id": cid, "n_i02": int(sub.size),
                       "i02_median": float(g["up_med"]),
                       "rescore_median_subset": float(np.median(sub)),
-                      "delta": float(np.median(sub) - float(g["up_med"]))})
+                      "delta": float(np.median(sub) - float(g["up_med"])),
+                      "frame_median_abs_diff": float(np.nanmedian(diff)),
+                      "frame_p90_abs_diff": float(np.nanpercentile(diff, 90))})
 
         an = {}
         tt = np.asarray(z["t"], dtype=float)
@@ -204,10 +215,21 @@ def main() -> int:
         an_rows.append({"family": fam, "pooled": _pool_anatomy(g), "per_clip": _clip_anatomy(g)})
 
     # ---------------- write --------------------------------------------------
+    scenes = []
+    for fam in FAMILIES:
+        seeds = sorted({r["scene_seed"] for r in per_clip if r["family"] == fam})
+        for sd in seeds:
+            g = [r for r in per_clip if r["family"] == fam and r["scene_seed"] == sd]
+            row = {"family": fam, "scene_seed": sd}
+            row.update(agg(g))
+            row["gate_keep"] = int(sum(r["kept"] for r in g))
+            scenes.append(row)
+
     (out / "per_clip.csv").write_text(_csv(
         [{k: v for k, v in r.items() if not isinstance(v, (dict, list))} for r in per_clip]))
     (out / "cells.csv").write_text(_csv(cells))
     (out / "families.csv").write_text(_csv(families + [pooled]))
+    (out / "scenes.csv").write_text(_csv(scenes))
     (out / "anatomy.json").write_text(json.dumps(an_rows, indent=1))
     (out / "reader_rescore.json").write_text(json.dumps({
         "clips": len(per_clip), "frames": int(sum(r["n_frames"] for r in per_clip)),
@@ -218,6 +240,10 @@ def main() -> int:
             "pooled_median_delta": float(np.median([r["delta"] for r in repro])) if repro else None,
             "n_over_0.05_original": int(sum(abs(r["delta"]) > 0.05 for r in repro)),
             "n_over_0.25_amended": int(sum(abs(r["delta"]) > 0.25 for r in repro)),
+            "frame_median_abs_diff_max": float(np.max([r["frame_median_abs_diff"] for r in repro])) if repro else None,
+            "frame_p90_abs_diff_max": float(np.max([r["frame_p90_abs_diff"] for r in repro])) if repro else None,
+            "n_frame_median_over_0.10": int(sum(r["frame_median_abs_diff"] > 0.10 for r in repro)),
+            "n_frame_p90_over_0.50": int(sum(r["frame_p90_abs_diff"] > 0.50 for r in repro)),
             "rows": repro,
         },
         "gate": gate_rows, "gate_forest_vs_open": {

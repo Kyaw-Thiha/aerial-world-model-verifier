@@ -12,7 +12,7 @@ Earlier tracks keep their ledgers on their own branches; this file starts at Tra
 
 | date | job | GPU | hours | USD | notes |
 | --- | --- | --- | --- | --- | --- |
-| 2026-11-22 | `awmv-l-reader` feasible-dev re-score with gate and confidence fields (80 clips, stride 1) | A10 | 2.7 (actual, 4 shards x 0.67 h) | 3.0 | 37,401 frames; 4 shards, about 2 min per clip including decode and the per-clip volume commit |
+| 2026-11-22 | `awmv-l-reader` feasible-dev re-score with gate and confidence fields (80 clips, stride 1) | A10 | 3.7 (actual, 4 shards x ~55 min) | 4.1 | 37,401 frames; two attempts, the first stopped when per-clip volume commits serialised; the resumed pass skips stored clips |
 
 Estimated before running: **USD 3.0** (2.7 GPU-h); the actual wall clock is longer because each
 clip decodes and commits separately, and the ledger is updated with the billed hours when the
@@ -34,7 +34,7 @@ that the anatomy split wants the full 30 Hz; recorded rather than overwritten.
 
 | item | USD |
 | --- | --- |
-| booked | 0.01 |
-| committed (L01 scoring, all 80 clips) | 3.00 |
+| booked | 4.11 |
+| committed (L01 scoring, all 80 clips, actual) | 4.10 |
 | committed (L02, estimate above) | 18.00 |
 | remaining against the 50.00 ceiling | 28.99 |

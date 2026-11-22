@@ -84,3 +84,10 @@ Files live in `reports/` at the repository root. Numbering restarts per track: T
   ("Known open discrepancies"). Nothing was re-analysed during consolidation.
 * Superseded material is listed in `docs/archive/README.md`; it stays where the reports and
   scripts expect it.
+
+## Track L — reader on simulated scenes (branch `track-l-reader-simreal`)
+
+| report | title | status |
+| --- | --- | --- |
+| `L01_scene_stratified_reader_error.md` | Scene-stratified reader error on the simulated development set | current for the 80 feasible dev clips; held-out scenes deferred with I02 |
+| `L02_reader_finetune_sim_real.md` | Fine-tuning the reader on simulated scenes, with the real held-out flights | current when written; see its own status line |

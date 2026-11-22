@@ -180,3 +180,18 @@ during consolidation — see `docs/DATA.md` for the current status of listing ac
 * **Regenerate**: `report/scripts/e10_window_rule.py`.
 * **Open discrepancy (recorded, not resolved)**: D's 0.07-0.12 s window "at the truth rate" is
   superseded by E05 (0.34-1.42 s at 500 Hz; 0.07-0.11 s only at the 15 Hz clip rate).
+
+---
+
+## Track L — reader on simulated scenes (2026-11-22)
+
+| ID | what | branch / commit | config | stored results | report |
+| --- | --- | --- | --- | --- | --- |
+| L01 | frozen reader's error on the 80 feasible simulated development clips, by scene family and mount, with the frozen S3 gate and J01's anatomy split | `track-l-reader-simreal` (`674e7b8`, `2bf2cb2`) | `configs/l01_scene_stratified_prereg.yaml` (+ amendments A, C) | `results/l01/`; per-frame arrays on R2 `track-l/l01/per_frame/` | `reports/L01_scene_stratified_reader_error.md` |
+| L02 | fine-tune arms (real-only, sim-only, mixed+DR) with matched budget and held-out discipline; downstream coherence tier on regenerated pixel edits | `track-l-reader-simreal` | `configs/l02_reader_prereg.yaml` (+ amendment B) | `results/l02/`; fold records `awmv-l-data /l02/folds`, checkpoints `/l02/models` | `reports/L02_reader_finetune_sim_real.md` |
+
+L01's reader job is `remote/l_score_sim.py` (Modal `awmv-l-reader`); L02's training is
+`remote/l_tilt_reader.py` (`awmv-l-tilt-reader`) and the edit reader is
+`remote/l_edit_reader.py` (`awmv-l-edit-reader`). Inputs are copied byte-identically from
+`track-i-simset`, `track-g-segments2` and `track-j-reader` (provenance in
+`results/l00/provenance.json`, `docs/decisions.md` [L]).
