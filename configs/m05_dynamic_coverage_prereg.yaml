@@ -1,0 +1,67 @@
+# Track M follow-up -- coverage restricted to DYNAMIC clips.
+#
+# NEW pre-registration, written and committed BEFORE the numbers are computed.  It changes no
+# frozen config and no threshold: Gate A (lambda = 3.82 deg plus the 80 deg near-vertical rule)
+# and Gate B (tau = 4.5 deg) are used exactly as frozen, and the S3 gate as published.
+prereg_version: 1
+date: '2026-11-22'
+track: M
+followup: dynamic_coverage
+tag: '[M]'
+
+question: >
+  A verifier that abstains is only useful where there is something to test.  Among clips whose
+  path actually demands a large tilt -- the ones a tilt-removal or mirrored-roll fake would give
+  itself away on -- what fraction can each gate configuration still judge, and why are the rest
+  abstained on?
+
+definitions:
+  peak_required_tilt_deg: >
+    the maximum over the clip's frames of the required tilt angle,
+    degrees(arccos(u_z)) with u = unit(a + g e3 + 0.295 v) at frame times (schema v3 exact).
+    For the real clips it is the stored tilt_max of M01's signal table; for the simulated clips
+    it is the same quantity computed from the render's own acceleration and velocity.
+  dynamic_clip:
+    rule: peak_required_tilt_deg >= 15.0
+    threshold_deg: 15.0
+    stated_before_scoring: true
+    why: >
+      Fifteen degrees is above the reader's per-frame spread (median 3.96 deg, Track J) by a
+      factor of nearly four, and above the fixed-calibration detection floor of about 9 deg
+      (Track K).  A clip whose required tilt never reaches 15 deg cannot carry a removal or
+      mirror test at the sizes this project reports, so it is not where a verifier's coverage
+      matters.  The threshold is fixed here, before any count is taken, and is not tuned.
+  coverage: the fraction of dynamic clips a configuration accepts, with k/n.
+
+configurations:
+  G0_S3_only: the frozen S3 confidence gate alone
+  GA: S3 + Gate A
+  GB: S3 + Gate B
+  GAB: S3 + Gate A + Gate B
+  note: >
+    Every gate decides once per clip on the clip's real video; the per-condition S3 variant is
+    reported beside it as in M03.
+
+populations:
+  real:
+    clips: the 100 TII clips, with the S3-kept 72 reported as a nested row
+    stratification: by flight and by track (ellipse / lemniscate / trackRATM)
+    reason_codes: [low_confidence_S3, weak_signal, near_vertical, readers_disagree]
+  simulated:
+    clips: the 170 development clips on R2 (80 feasible, 90 with a defect)
+    stratification: by scene family (urban_checker / forest_ridge / industrial) and by mount
+      (0 / 15 / 30 / 45 deg)
+    reason_codes: [weak_signal, near_vertical, readers_disagree]   (no S3 signal is stored for
+      the simulated clips in a form this track fitted, so S3 is not a reason there)
+
+reading:
+  primary: the coverage of each configuration among dynamic clips, real and simulated, with the
+    joint abstention rate (both gates) and the reason-code composition.
+  secondary: >
+    the same restricted to clips that are dynamic AND would fail the ungated verdict if edited
+    -- not computed, because that requires a per-clip verdict label this follow-up does not
+    need; the dynamic restriction alone is the question asked.
+  no_refitting: true
+  no_success_criterion: >
+    Descriptive: this follow-up reports coverage, not a threshold selection.  It states plainly
+    where a gate abstains on most dynamic clips, and which reason dominates.
