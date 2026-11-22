@@ -371,7 +371,16 @@ def run_multiscale(man, dev, stats, seeds, feasible, out):
 def run_mdv(man, dev, stats, seeds, feasible, out,
             deltas=(2, 4, 6, 8, 10, 12, 14, 16, 20, 24), durations=(0.4, 0.8, 1.6, 3.2)):
     rows = []
-    vals = {c: arm_value(stats[(c, PRIMARY["length"])], PRIMARY) for c in dev}
+    for arm in (PRIMARY, COMPARE):
+        rows += _mdv_arm(man, dev, stats, seeds, feasible, arm,
+                         deltas=deltas, durations=durations)
+    dump(rows, out / "mdv.csv")
+    return rows
+
+
+def _mdv_arm(man, dev, stats, seeds, feasible, arm, deltas, durations):
+    rows = []
+    vals = {c: arm_value(stats[(c, arm["length"])], arm) for c in dev}
     # noise floor: the reader's run-to-run envelope converted to degrees on a 12-frame window
     for D in durations:
         for delta in deltas:
@@ -391,21 +400,20 @@ def run_mdv(man, dev, stats, seeds, feasible, out,
                 injected = type(x)(clip_id=x.clip_id, t=x.t, lean_dep=lean,
                                    lean_req=x.lean_req, tilt_req_deg=x.tilt_req_deg,
                                    truth=np.zeros(len(x), bool), meta=x.meta)
-                st = window_statistics(injected, length=PRIMARY["length"], hop=4)
+                st = window_statistics(injected, length=arm["length"], hop=4)
                 tau = fold_tau(vals, man, feasible, seeds, int(man[c]["scene_seed"]))
-                mask = arm_mask(st, PRIMARY, tau) if np.isfinite(tau) else np.zeros(len(x), bool)
+                mask = arm_mask(st, arm, tau) if np.isfinite(tau) else np.zeros(len(x), bool)
                 truth = np.zeros(len(x), bool)
                 truth[start:start + m] = True
                 s = interval_scores(mask, truth)
                 k += int(bool(mask.any()))
                 n += 1
                 ious.append(s["iou"] if mask.any() else 0.0)
-            rows.append({"duration_s": D, "delta_deg": delta, "k": k, "n": n,
+            rows.append({"arm": arm["name"], "duration_s": D, "delta_deg": delta, "k": k, "n": n,
                          "rate": k / n if n else None,
                          "iou_med": float(np.median(ious)) if ious else None,
                          "detected_and_iou_gt_0_3": int(sum(1 for x in ious if x > 0.3)),
                          "rate_iou_gt_0_3": (sum(1 for x in ious if x > 0.3) / n) if n else None})
-    dump(rows, out / "mdv.csv")
     return rows
 
 

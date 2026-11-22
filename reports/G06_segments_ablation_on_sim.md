@@ -136,3 +136,42 @@ part of the noise floor quoted in section 6.
 ## Confirmatory and exploratory
 
 <!-- FILL: table marking every cell -->
+
+## What this supports
+
+<!-- FILL after the numbers: the mechanisms below are already measured on the first 83 clips -->
+
+- The window machinery runs end to end on the simulated set with exact labels: every clip has
+  per-frame reader output at 30 fps, an exact required lean, and an exact violation interval.
+- The reader is stochastic run to run; the envelope is measured and quoted, and the stride-1
+  versus stride-2 row mapping is correct (best offset 0, differences inside the envelope).
+- The scale-free coherence tier has a **structural scope limit** that the real-corpus work could
+  not see: it needs both axes of both leans to vary inside a window. On the simulated set that
+  is true for the manoeuvres whose lean direction rotates (slalom, lemniscate) and false for
+  steady turns, ellipses at constant speed, straight accelerations and climbs. It also, and more
+  sharply, **abstains on tilt removal**: a level camera has no lean variance for a correlation to
+  work with, so the tier cannot detect the violation at all when the reader is accurate. J03's
+  detection of tilt removal on real clips came from the reader's own 4 deg noise supplying that
+  variance.
+- The family-wise max-over-windows conformal rule is **not calibratable on 100-window clips**:
+  the 95th percentile of the maximum saturates (coherence 1.94 of a maximum 2.0; residual 60-80
+  deg, carried by three feasible clips with catastrophic reader windows). This is a property of
+  the number of windows per clip, not of the violation.
+
+## What this does not show
+
+<!-- FILL -->
+
+## Caveats
+
+- Simulated scenes are procedural; the reader's error on them is the sim-to-real quantity to
+  quote, not the visual plausibility of a frame.
+- The 170 clips scored here contain only **2 partial-interval clips** (both at 10 % coverage).
+  The 18 remaining 25 % / 50 % partial clips are among the ~30 dev clips Track I has not yet
+  published, so the partial-interval detection and IoU columns rest on two clips until batch 2;
+  the minimum-detectable-violation curve is the pre-registered way to study localisation in the
+  meantime, and it is labelled synthetic.
+- Six scene seeds and six mounts make every interval a descriptive spread, not a 95 % confidence
+  interval; the dagger applies to every cell.
+- `thrust_limit` is path-side and the segment machinery has no power on it; it is reported as
+  its own family and never pooled.

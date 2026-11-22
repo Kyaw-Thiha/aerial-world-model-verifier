@@ -120,48 +120,30 @@ def _run(clip_ids: str = "", out: str = "scores/stride1",
             lean_req = npz["lean_req"]
             tilt_gt = npz["tilt_gt_deg"]
             mp4 = cdir / f"{cid}.mp4"
-            frames_dir = Path("/tmp/frames") / cid
-            frames_dir.mkdir(parents=True, exist_ok=True)
-            for f in frames_dir.glob("*.png"):
-                f.unlink()
-            subprocess.run(
-                ["ffmpeg", "-y", "-loglevel", "error", "-i", str(mp4),
-                 "-vf", f"select=not(mod(n\\,{int(stride)}))", "-vsync", "0",
-                 str(frames_dir / "%04d.png")], check=True)
-            names = sorted(frames_dir.glob("*.png"))
+            t_start = time.time()
             rows = []
-            t0 = time.time()
-            t_dec = 0.0
-            t_inf = 0.0
+            t_inf = [0.0]
+            t_dec = [0.0]
             f_px = 0.5 * 640 / np.tan(np.radians(90.0) / 2.0)
             b = max(1, int(batch))
-            for k0 in range(0, len(names), b):
-                if k0 * int(stride) >= len(poses):
-                    break
+            nbytes = 640 * 360 * 3
+
+            def process(feeds, idxs):
                 ta = time.time()
-                feeds, idxs = [], []
-                for k in range(k0, min(k0 + b, len(names))):
-                    idx = k * int(stride)
-                    if idx >= len(poses):
-                        break
-                    feed = cv2.cvtColor(cv2.imread(str(names[k])), cv2.COLOR_BGR2RGB)
-                    feeds.append(torch.from_numpy(feed).permute(2, 0, 1).float())
-                    idxs.append(idx)
-                t_dec += time.time() - ta
-                tb = time.time()
                 tt = torch.stack(feeds).to(device) / 255.0
                 with torch.no_grad():
                     res = model.calibrate(tt, camera_model="pinhole",
                                           priors={"focal": torch.full((len(feeds),), float(f_px),
                                                                       device=device)})
                 gs = np.asarray(res["gravity"].vec3d.detach().cpu())
-                t_inf += time.time() - tb
+                t_inf[0] += time.time() - ta
+                out = []
                 for j, idx in enumerate(idxs):
                     g = gs[j] / np.linalg.norm(gs[j])
                     up_gt = poses[idx, :3, :3].T @ e3
                     lean_est = depicted_lean_from_gravity(g[None], R_cb)[0]
                     up_body = R_cb @ g
-                    rows.append({
+                    out.append({
                         "frame": int(idx),
                         "up_error_deg": float(np.degrees(np.arccos(np.clip(g @ up_gt, -1, 1)))),
                         "tilt_est_deg": float(np.degrees(np.arccos(np.clip(up_body @ e3, -1, 1)))),
@@ -169,13 +151,40 @@ def _run(clip_ids: str = "", out: str = "scores/stride1",
                         "lean_est_x": float(lean_est[0]), "lean_est_y": float(lean_est[1]),
                         "lean_req_x": float(lean_req[idx, 0]),
                         "lean_req_y": float(lean_req[idx, 1])})
-            dt = time.time() - t0
+                return out
+
+            # decode to raw RGB on a pipe: no per-frame files, no PNG round trip
+            proc = subprocess.Popen(
+                ["ffmpeg", "-loglevel", "error", "-i", str(mp4),
+                 "-vf", f"select=not(mod(n\\,{int(stride)}))", "-vsync", "0",
+                 "-f", "rawvideo", "-pix_fmt", "rgb24", "-"],
+                stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, bufsize=nbytes * 4)
+            feeds, idxs = [], []
+            k = 0
+            while True:
+                buf = proc.stdout.read(nbytes)
+                if len(buf) < nbytes:
+                    break
+                ta = time.time()
+                img = np.frombuffer(buf, dtype=np.uint8).reshape(360, 640, 3)
+                feeds.append(torch.from_numpy(img.copy()).permute(2, 0, 1).float())
+                idxs.append(k * int(stride))
+                k += 1
+                t_dec[0] += time.time() - ta
+                if len(feeds) == b:
+                    rows += process(feeds, idxs)
+                    feeds, idxs = [], []
+            if feeds:
+                rows += process(feeds, idxs)
+            proc.stdout.close()
+            proc.wait()
+            dt = time.time() - t_start
             le = np.array([[r["lean_est_x"], r["lean_est_y"]] for r in rows])
             lr = np.array([[r["lean_req_x"], r["lean_req_y"]] for r in rows])
             payload = {
                 "clip_id": cid, "stride": int(stride),
                 "n_frames": len(rows), "seconds": round(dt, 1), "batch": int(batch),
-                "decode_s": round(t_dec, 1), "infer_s": round(t_inf, 1),
+                "decode_s": round(t_dec[0], 1), "infer_s": round(t_inf[0], 1),
                 "fps": round(len(rows) / dt, 2) if dt else None,
                 "gpu": torch.cuda.get_device_name(0) if device == "cuda" else "cpu",
                 "up_error_deg": _summ([r["up_error_deg"] for r in rows]),
