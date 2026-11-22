@@ -63,8 +63,10 @@ degrees and the exact interval `[interval_start_s, interval_end_s]`. `docs/DATA.
 the split and the batch composition; `experiments/i02_build_manifest.py --verify` re-hashes
 every object on R2 (**46 objects, 0 mismatches**).
 
-The remaining 277 clips are rendering in 50-clip slices; the render is resumable (a clip whose
-video is on the volume is skipped) and publishing is idempotent.
+The rest of the set renders in detached 100-150-clip batches (one container at a time; two
+concurrent writers to the same Modal volume are not safe here). The render is resumable -- a
+clip whose video is on the volume is skipped -- and publishing is idempotent, so a batch that
+dies part-way costs only the clip in flight.
 
 ## The reader on the new families
 
