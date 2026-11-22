@@ -1,0 +1,249 @@
+version: 1
+date: '2026-11-21'
+status: preregistered
+track: J
+owner_branch: track-j-reader
+written: >
+  Before any anatomy number (decomposition, autocorrelation, bias regression, tail counts,
+  video-rotation error) was computed. The only per-frame error numbers in hand when this file
+  was written are the ones already published in reports 02 and G03.
+note: >
+  Part 0 of handoff 19. This file fixes the estimator-error anatomy and the three priority
+  rules that select a Stage 1 branch. The numbers in `priority_rules` are transcribed from the
+  handoff; nothing here was chosen after seeing an outcome. A branch whose rule does not fire
+  is not run without telling the user.
+inputs_are_frozen:
+  reader_frozen:
+    what: GeoCalib body attitude from the raw fisheye, frozen 2026-11-09
+    per_frame_file: results/gate_a2/tii/<flight>__identity.jsonl
+    branch: track-a2-gate
+    commit: bc278bf
+    fields_used: [frame, gravity_up_cam, latitude_confidence_mean (S3), up_confidence_mean]
+  reader_finetuned:
+    what: G03 leave-one-flight-out fine-tuned reader, out-of-fold predictions
+    per_frame_file: results/j_inputs/g03_folds/tii__<flight>.json (`held_out` rows)
+    branch: track-g-segments2
+    commit: cfea5c8
+    fields_used: [frame, up_cam_base (frozen), up_cam_ft (fine-tuned), up_cam (label), conf_base]
+    note: >
+      A staged copy under results/j_inputs/ so this branch is self-contained; sha256 recorded in
+      results/j_inputs/provenance.json. `up_cam` is the mocap label and is the reference for
+      both readers.
+  geometry:
+    per_frame_spec: data/processed/p3a/p3a_v1/<flight>.npz
+    branch: track-a-perception
+    fields_used: [t, names, pos, quat, speed, speed_mocap, body_tilt_deg, uptilt_deg]
+    join_key: frame name (the two sources are asserted identical and in identical order)
+  clips_v2:
+    path: data/processed/track_d/clips/<flight>/<clip>__<condition>/verdict_clip.npz
+    schema: verdict_clip v2 (t, pos, yaw, depicted_lean, depicted_conf, lean_req, vel_req, tilt_req_deg)
+  video_rotation:
+    tii_dpvo: data/raw/dpvo/<flight>_stride8_fov100_s0.5/poses.npz  (poses, tstamps, frame_ts_us)
+    uzh_dpvo: data/pathrec/poses/dpvo/<sequence>.npz  (c2w)
+    uzh_vipe: data/pathrec/poses/vipe/<sequence>.npz  (c2w)
+    uzh_truth: data/uzh/<sequence>/truth.npz + meta.json
+
+question: >
+  What is the reader's error made of, per flight and per axis: a constant per-flight bias, slow
+  drift, or fast noise? How long does it correlate? Is the bias a rigid mount offset? Where is
+  the >10 deg tail, and does the frozen gate already remove it? How good are the stored
+  visual-odometry rotations, and what floor does the measured error imply for a clip- and
+  segment-level verdict?
+
+population:
+  tii:
+    flights: 8
+    frames: 5007  # the clip frames the verdict scores; identical to G03's frame set
+    rate_hz: 11.9-12.0
+    clip_structure: 100 clips of 47-49 frames, 4.0 s, contiguous runs inside a clip
+    rig: TII raw fisheye, recorded uptilt per flight (p3a `uptilt_deg`)
+    control_split:
+      piloted: [flight-01p-ellipse, flight-07p-lemniscate, flight-13p-trackRATM, flight-16p-trackRATM]
+      autonomous: [flight-01a-ellipse, flight-04a-ellipse, flight-07a-lemniscate, flight-13a-trackRATM]
+  uzh:
+    sequences: [indoor_forward_3, indoor_forward_5, indoor_forward_9]
+    frames: 1097
+    rate_hz: 15.07
+    note: reported separately; the 45-degree-down rigs are excluded as in E03
+  held_out:
+    flights: [flight-13p-trackRATM, flight-07a-lemniscate]
+    rule: >
+      Part 0 is descriptive and uses all eight flights (it is a measurement, not a detector).
+      Any Stage 1 test that reports a detection or false-reject rate keeps these two flights
+      out of every fit and scores them once, exactly as G01/G03 did.
+
+error_definition:
+  lean_axes: >
+    Both the estimate and the truth are turned into a lean vector with the frozen construction
+    src.verdict.lean.depicted_lean_from_gravity(up_cam, R_cb), R_cb from the flight's recorded
+    uptilt. Lean x is pitch (forward), lean y is roll (right); both are reported as angles in
+    degrees via lean_to_roll_pitch, so an axis error is `pitch_est - pitch_true` and
+    `roll_est - roll_true`.
+  scalar: >
+    theta = angle(up_cam_est, up_cam_true) in degrees, i.e. exactly the E2/G03 per-frame error.
+  consistency_check: >
+    |lean error| in degrees and theta must agree to within 0.1 deg on every frame; the code
+    asserts their 99.9th percentile difference is below 0.1 deg before anything is reported.
+    A failure is recorded, not silently repaired.
+  two_readers: frozen (primary for the rules) and G03 fine-tuned (secondary). Where they
+    disagree on a rule the report states both and follows the frozen reader.
+
+trimming:
+  rule: >
+    E2's rule: per flight, drop the worst 10 % of frames by the scalar theta. One mask per
+    flight, applied to both axes, so that bias, slow and fast are computed on the same frames.
+  report: trimmed and full (all frames) side by side; the priority rules use trimmed.
+  note: >
+    E2's published trimmed RMSE drops the worst 10 % (experiments/phase1_depicted.py), not 5 %.
+    Both are computed by src.depicted.metrics; the report says which is which.
+
+decomposition:
+  bias: per-flight arithmetic mean of the axis error on the kept frames.
+  slow_and_fast:
+    method: >
+      After removing the per-flight bias, each contiguous run (a clip) is split with an
+      orthogonal DCT-II basis: coefficients at frequency k*fs/(2n) < 0.5 Hz form the slow
+      component, the rest the fast component. The split is orthogonal, so on each run
+      var = var_slow + var_fast exactly, with no cross term and no filter edge effect. The
+      run's own DC is part of slow (within-flight drift), not of bias.
+    cutoff_hz: 0.5
+  run_rule: >
+    Frames of one flight are ordered by `t`; a new run starts when the gap exceeds 1.5x the
+    flight's median frame spacing. Filtering or differencing is never done across a gap.
+  shares:
+    total_second_moment: mean over frames of (e_pitch^2 + e_roll^2), per axe summable
+    additive: bias^2 + var_slow + var_fast = total second moment (exact by construction)
+    reported: [bias_share, slow_share, fast_share, slow_share_of_centred, fast_share_of_centred]
+  strata: [all_frames, gate_kept_clips, trimmed]
+  intervals: >
+    Flight-clustered bootstrap, 5,000 replicates, numpy.random.default_rng(1), 8 flights
+    (3 for UZH): descriptive spreads, not 95 % confidence intervals.
+
+time_structure:
+  acf: >
+    Per flight and axis, the autocorrelation of the residual after removing the flight mean,
+    computed only on pairs inside the same run (lag in seconds). Pooled over flights as a
+    frame-count-weighted mean.
+  tau_int: >
+    Per flight, tau_int = dt * (1 + 2 * sum_{k>=1} rho_k), truncated at the first k with
+    rho_k <= 0. Reported per flight and pooled, with the truncation lag shown. Computed per
+    axis and for the scalar theta.
+  psd: >
+    Periodogram of the same residual per run, Welch-averaged over runs within a flight
+    (segment = whole run, no overlap), reported up to the Nyquist of the clip rate (6 Hz).
+    0.5 Hz is marked on every spectrum.
+
+bias_structure:
+  per_flight: mean error vector per flight with its frame-clustered standard error, both axes;
+    the angle of the mean vector and its magnitude in degrees.
+  sign_consistency: >
+    The sign of each axis's mean per flight, tabulated. A constant mount offset predicts a
+    consistent direction; a per-flight random offset does not. No test is run on 8 signs; the
+    table is reported.
+  mount_hypothesis: >
+    Fit one rigid rotation of the estimated up-vector to the true up-vector per domain
+    (orthogonal Procrustes / Wahba on the unit vectors), for domains TII-piloted,
+    TII-autonomous and UZH. Report the fitted rotation angle, the residual before and after,
+    and the leave-one-flight-out version (fit on 7 flights of a domain-like pool, applied to
+    the 8th). A purely constant bias would be removed; a per-flight offset or a
+    tilt-magnitude-dependent error would not.
+  regressors: >
+    Frame-level OLS of each axis error on speed, body tilt magnitude (deg), and sin/cos of
+    yaw, with flight fixed effects (within-flight demeaning), on the kept frames. Report
+    coefficients with flight-clustered standard errors and the within-R^2. 8 flights means
+    this is descriptive; no causal claim.
+
+tail:
+  definition: frames with theta > 10 deg (E2/G03's tail definition).
+  items:
+    run_lengths: >
+      Lengths of maximal consecutive runs of tail frames inside a contiguous clip run, in
+      frames and seconds; distribution and the fraction of tail frames in runs of <=3 frames
+      and in runs >=1 s.
+    relation: >
+      Median and IQR of speed, body tilt magnitude, S3 confidence (latitude_confidence_mean)
+      and the blur proxy for tail vs non-tail frames, per flight.
+    blur_proxy: >
+      Variance of the Laplacian of a 320-px-long-side greyscale copy of the stored frame
+      (data/g03_frames/<flight>/<name>), per frame; lower = blurrier. Declared a proxy: it
+      confounds motion blur with texture, and the report says so.
+    gate: >
+      The frozen S3 gate is applied unchanged at clip level; report (a) the fraction of tail
+      frames that live in clips the gate drops, (b) the tail fraction inside gate-kept clips,
+      (c) the same for the fine-tuned reader.
+
+video_rotation:
+  purpose: >
+    The number a complementary filter needs: how well does visual odometry carry the gravity
+    direction forward, at the rate the verdict runs?
+  tii:
+    source: DPVO stride 8 on the full fisheye video (Track A/F, stored poses)
+    rate: 3.75 Hz (8-frame stride of a 30 fps video); stated, because it is coarser than the
+      12 Hz clip rate
+    truth: mocap quaternion interpolated (slerp) at each pose's `frame_ts_us`
+    mount: recorded uptilt per flight
+  uzh:
+    sources: [DPVO, ViPE] on the 150-frame pinhole export
+    rate: 15.07 Hz
+    truth: Leica at 500 Hz, slerp-interpolated
+    mount: Kalibr T_cam_imu as used by the frozen UZH route
+  quantities:
+    per_step: >
+      angle of the relative rotation error between consecutive poses, plus its roll and pitch
+      components in the body frame; median and IQR.
+    propagation: >
+      Starting from the TRUE gravity at t0, apply the ESTIMATED relative rotations to reach
+      t0 + 0.5 s and t0 + 1.0 s; error = angle between the propagated and the true gravity at
+      the horizon, split into roll and pitch. This is the quantity a complementary filter
+      actually consumes. Median and IQR per sequence/flight.
+    drift: >
+      The 0.5 s and 1 s propagation errors are the "drift" numbers; no separate integration
+      of scale or translation is done (rotation only, as the handoff asks).
+
+priority_rules:
+  evaluated_on: >
+    the frozen reader, TII, trimmed frames, both axes pooled, unless the rule says otherwise.
+    The fine-tuned reader's value is printed beside every one.
+  r1_bias:
+    statistic: bias_share = sum_f n_f |b_f|^2 / sum_f sum_i |e_i|^2, pooled over the 8 flights
+    fires_if: bias_share >= 0.40
+    then: run Stage 1a first (per-clip calibration and relative tests)
+  r2_fast:
+    statistic_fast: fast_share_of_centred, same population
+    statistic_vo: >
+      median per-step DPVO relative-rotation error (deg) on TII, and median 1 s propagation
+      error (deg) on TII
+    fires_if: fast_share_of_centred >= 0.40 AND per_step <= 0.3 deg AND drift_1s <= 1.5 deg
+    then: run Stage 1b (innovation-gated fusion)
+  r3_tail:
+    statistic_a: fraction of >10 deg frames that lie in maximal tail runs of <= 3 frames
+    statistic_b: >
+      whether tail frames form runs of >= 1 s that are "identifiable": a run is identifiable
+      when at least 70 % of its frames lie in the top quartile of body tilt magnitude or of
+      speed, or the bottom quartile of S3 confidence or of the blur proxy (quartiles computed
+      within the flight). The factor that identifies the most runs is named.
+    if_a_gt_half: run Stage 1b (gated fusion), reporting that rule 3 selected it
+    elif_b: run Stage 1c (learned reader confidence), with the identified conditions named
+    else: no tail branch; reported as such
+  disagreement: if the frozen and fine-tuned readers disagree on a rule, both are reported and
+    the frozen one decides; the disagreement is logged in docs/decisions.md.
+  no_silent_runs: a branch whose rule did not fire is not run.
+
+statistics:
+  bootstrap: flight-clustered, 5,000 replicates, numpy.random.default_rng(1), 8 clusters (3 for UZH)
+  denominators: k/n beside every rate; a dagger marks n < 10 clusters
+  language: descriptive spreads, not 95 % confidence intervals, wherever clusters < 10
+
+success_criterion:
+  what_counts: >
+    The deliverable is a measured parameter sheet, not a hypothesis test. It is a success if
+    every number the Stage 1 design needs (bias share, slow/fast split, tau_int, per-frame
+    rotation error, tail anatomy) is measured with its denominator and flight spread, and if
+    the rules are applied exactly as written above.
+  falsification: >
+    If no rule fires, the honest outcome is "the measured error does not justify any of the
+    three fixes", and the report says so instead of building one.
+
+cost:
+  gpu_usd: 0
+  note: CPU only; reads stored reader outputs, mocap and stored poses

@@ -1,0 +1,55 @@
+{
+ "sources": [
+  {
+   "what": "G03 out-of-fold reader predictions (TII folds, UZH folds)",
+   "branch": "track-g-segments2",
+   "commit": "cfea5c8",
+   "origin": "results/g03_tilt_reader/folds/*.json",
+   "staged_at": "results/j_inputs/g03_folds/",
+   "sha256": {
+    "results/j_inputs/g03_folds/_summary.json": "9386eb85fc6df37f0fefe175460b696c3e9f9c4ebc69ec65354db6bc2dd982ae",
+    "results/j_inputs/g03_folds/tii__flight-01a-ellipse.json": "27396a8517d865a71b207563a41bb13c6a0c67406dbc1721327abbf64e7f8e19",
+    "results/j_inputs/g03_folds/tii__flight-01p-ellipse.json": "5dd96b4204458505b179c91db3465cc9bb41081fcf25a3797c58b31f53bf9eac",
+    "results/j_inputs/g03_folds/tii__flight-04a-ellipse.json": "e373204b71214cdc8eb4b95b4d4d0ef09faad0f1ba85ef132d6c59cee636ac7f",
+    "results/j_inputs/g03_folds/tii__flight-07a-lemniscate.json": "a3e5e3a980e70bb3fd3d784527e908de678b750649e494b8a48d0f4763883b40",
+    "results/j_inputs/g03_folds/tii__flight-07p-lemniscate.json": "1effe8b47dac3d4b54857e24ba304bd978c2060690cea7b5f4a351fb9f0dc973",
+    "results/j_inputs/g03_folds/tii__flight-13a-trackRATM.json": "fe3a080358a1db3b35ff53c55b18c351c4c6fc0d7f111f70c554825828b38c36",
+    "results/j_inputs/g03_folds/tii__flight-13p-trackRATM.json": "0f1bdf71b24328c8d70c543257097a7f7adfdfd39aad1443ca396c09e2d84a91",
+    "results/j_inputs/g03_folds/tii__flight-16p-trackRATM.json": "c0ed1c975291f7feacc3ad592467362634990dae4afeff0a2c34913e1dbb6c19",
+    "results/j_inputs/g03_folds/uzh__indoor_forward_3.json": "123aeb81da754f0a81eaae5a1617b1e3b7a5a6c8ee26b8bb0a75ea10eebd649a",
+    "results/j_inputs/g03_folds/uzh__indoor_forward_5.json": "d4d065ad41867f373dc1edf274f7dfb411a80cc006b68faeb5148e8a7010379b",
+    "results/j_inputs/g03_folds/uzh__indoor_forward_9.json": "953297c9e30dab2a08ba3b6380336f029db6e87b466eebd5644c7abd8014f8e1"
+   }
+  },
+  {
+   "what": "Track A2 gate per-frame reader output (frozen reader, S3 = latitude_confidence_mean)",
+   "branch": "track-a2-gate",
+   "commit": "bc278bf",
+   "origin": "results/gate_a2/tii/<flight>__identity.jsonl",
+   "read_in_place": false
+  },
+  {
+   "what": "Track A per-frame clip spec (mocap geometry, speed, uptilt)",
+   "branch": "track-a-perception",
+   "commit": "164c5e0",
+   "origin": "data/processed/p3a/p3a_v1/<flight>.npz",
+   "read_in_place": true
+  },
+  {
+   "what": "Track D schema-v2 clips",
+   "branch": "track-d-verdict-stat",
+   "commit": "2a91765",
+   "origin": "data/processed/track_d/clips",
+   "read_in_place": true
+  },
+  {
+   "what": "DPVO poses on TII (stride 8)",
+   "origin": "data/raw/dpvo/<flight>_stride8_fov100_s0.5/poses.npz"
+  },
+  {
+   "what": "DPVO/ViPE poses on UZH and Leica truth",
+   "origin": "data/pathrec/poses/{dpvo,vipe}, data/uzh/<seq>/truth.npz"
+  }
+ ],
+ "note": "Staged copies exist so this branch reads nothing from another branch at run time. Everything else is read from the shared data/ tree, which is gitignored and identical across worktrees."
+}
