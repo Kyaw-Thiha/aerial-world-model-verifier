@@ -275,6 +275,39 @@ def matched_rates(rows: list[dict], tier: str, budget: int) -> dict:
     return out
 
 
+def cluster_ci(rows: list[dict], tier: str, thr: float,
+               n_boot: int = 5000) -> dict:
+    """Flight-clustered percentile interval for full-coverage detection at a fixed cut.
+
+    Resamples the six dev flights with replacement and recomputes the pooled rate from
+    their clips. With six clusters this is descriptive, not a calibrated 95 % interval.
+    """
+    rng = np.random.default_rng(1)
+    flights = sorted(DEV)
+    out = {}
+    groups = {}
+    for fam in FAMILIES + CONTROLS:
+        sub = [r for r in rows if r["flight"] in DEV and r["cond"] == fam
+               and r["coverage"] == "full"]
+        per = {}
+        for f in flights:
+            v = np.array([r[tier] for r in sub if r["flight"] == f], float)
+            v = v[np.isfinite(v)]
+            per[f] = (int(np.sum(v > thr)), int(len(v)))
+        groups[fam] = per
+        boots = []
+        for _ in range(n_boot):
+            pick = rng.choice(len(flights), size=len(flights), replace=True)
+            h = n = 0
+            for j in pick:
+                a, b = per[flights[j]]
+                h += a
+                n += b
+            boots.append(h / n if n else np.nan)
+        out[fam] = [float(np.nanpercentile(boots, 2.5)), float(np.nanpercentile(boots, 97.5))]
+    return out
+
+
 # --------------------------------------------------------------------------- main
 def main() -> int:
     ap = argparse.ArgumentParser()
@@ -360,6 +393,8 @@ def main() -> int:
             det[key][name] = nat
             det[key][name]["matched"] = matched_rates(
                 rows[key], tier, int(nat["false_reject"].split("/")[0]))
+            det[key][name]["matched_ci"] = cluster_ci(
+                rows[key], tier, det[key][name]["matched"].get("threshold", np.nan))
 
     doc = {"run": run, "fit_file": str(fit_path), "model": model,
            "selection": fit["selection"],
@@ -369,6 +404,13 @@ def main() -> int:
                1 for r in rows["v3"] if r["cond"] == "real" and r["flight"] in DEV),
                "dev_flights": sorted(DEV), "heldout_unscored": sorted(HELDOUT)}}
     (out / "downstream.json").write_text(json.dumps(_jsonable(doc), indent=1))
+    with open(out / "rows.csv", "w", newline="") as fh:
+        w = csv.writer(fh)
+        w.writerow(["key", "flight", "clip_id", "cond", "coverage", "median", "window", "coh"])
+        for key, rr in rows.items():
+            for r in rr:
+                w.writerow([key, r["flight"], r["clip_id"], r["cond"], r["coverage"],
+                            r["median"], r["window"], r["coh"]])
     print("F0", json.dumps(f0, indent=1))
     print("ANCHOR", json.dumps(anchor_out, indent=1))
     for key, d in det.items():
@@ -376,7 +418,9 @@ def main() -> int:
               d["coherence"]["false_reject"])
         for fam in FAMILIES + CONTROLS:
             print("   ", fam, "matched med", d["median"]["matched"].get(fam + "/full"),
-                  "coh", d["coherence"]["matched"].get(fam + "/full"))
+                  d["median"]["matched_ci"].get(fam),
+                  "coh", d["coherence"]["matched"].get(fam + "/full"),
+                  d["coherence"]["matched_ci"].get(fam))
     print("wrote", out)
     return 0
 

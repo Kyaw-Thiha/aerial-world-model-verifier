@@ -191,7 +191,7 @@ data; no GPU, no R2.
 | | what | code | results | report |
 | --- | --- | --- | --- | --- |
 | K01 | Re-run A2's four modes, read the schema-v2 lean semantics from the files, recompute J's F0 under three readings, and map every published floor to its construction / mode / nuisance / population | `experiments/k01_calibration_modes.py` | `results/k01/20261122T090804Z/`, `results/a2_modes/20261122T071523Z/`, `results/phase0_floor/20261122T072349Z_41d1dad5/` | `reports/K01_calibration_mode_reconciliation.md` |
-| K02 | Fit M0-M5 airframe models on TII/UZH truth, LOFO and cross-domain, rebuild `lean_req` as schema v3, recompute the F0 and anchor thresholds, and score the edits at matched false-reject | `experiments/k02_fit.py`, `experiments/k02_downstream.py`, `scripts/export_schema_v3.py` | `results/k02_fit/20261122T084458Z/`, `results/k02_downstream/20261122T090700Z/`, `results/k02_diagnostics/`, `data/processed/track_k/clips_v3/` | `reports/K02_physics_model_refinement.md` |
+| K02 | Fit M0-M5 airframe models on TII/UZH truth, LOFO and cross-domain, rebuild `lean_req` as schema v3, recompute the F0 and anchor thresholds, and score the edits at matched false-reject | `experiments/k02_fit.py`, `experiments/k02_downstream.py`, `scripts/export_schema_v3.py` | `results/k02_fit/20261122T084458Z/`, `results/k02_downstream/20261122T091115Z/`, `results/k02_diagnostics/`, `data/processed/track_k/clips_v3/` | `reports/K02_physics_model_refinement.md` |
 
 K01's reproduction of E1 is `results/phase0_floor/20261122T072349Z_41d1dad5`
 (1.24 / 5.46 / 1.22 deg, identical to the published run). K01's reproduction of A2's modes

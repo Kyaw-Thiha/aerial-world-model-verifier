@@ -3,7 +3,7 @@
 Track K, Part 2. Written 2026-11-22. Pre-registration `configs/k02_model_prereg.yaml`
 (commit `022ebfe`), code `src/airframe/`, `experiments/k02_fit.py`,
 `experiments/k02_downstream.py`, `experiments/k02_diagnostics.py`, `scripts/export_schema_v3.py`.
-Results `results/k02_fit/20261122T084458Z/`, `results/k02_downstream/20261122T090700Z/`,
+Results `results/k02_fit/20261122T084458Z/`, `results/k02_downstream/20261122T091115Z/`,
 `results/k02_diagnostics/`.
 CPU only, zero GPU, zero spend. No frozen config or published report was edited.
 
@@ -166,6 +166,11 @@ The anchor (J02 arm c with the schema read correctly, 120 draws): v2 exact 6.56 
 
 False reject: median tier 5/69, coherence tier 3/55. The coherence denominators vary by
 one or two clips between coverages because a window with no upright frame is not scored.
+Flight-clustered percentile intervals for the full-coverage column (5,000 replicates,
+`rng(1)`, six dev flights, descriptive rather than calibrated): median tier removal
+0.30-0.94, mirror 0.23-0.94, x0.5 0.27-0.85, x1.5 0.24-0.92, yaw control 0.06-0.38,
+null edit 0.02-0.32; coherence tier removal 0.96-1.00, mirror 1.00-1.00, x0.5 0.09-0.44,
+x1.5 0.03-0.57, yaw control 0.16-0.67, null edit 0.01-0.43.
 
 Every rate carries its denominator; the yaw control and null edit are in the same table.
 The coherence tier is evaluated on the upright frames only (55-56 clips); the median tier
