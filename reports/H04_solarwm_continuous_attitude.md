@@ -146,7 +146,22 @@ primary.  Possible lag comes from the frozen gain fit's search (+-150 ms, 25 ms 
 
 ## Caveats
 
-@@CAVEATS@@
+* **The first path design could not be scored, and the first two serving attempts failed.**
+  The amendment-1 paths were exactly rank-deficient for the frozen statistic (amendment 2);
+  the first generation batch was stopped before it wrote anything; and two serving attempts
+  with 40-clip and 59-clip sub-batches died inside the release's inference step after about
+  fifteen minutes without writing a clip.  The campaign as reported runs in sub-batches of 12
+  (the size at which the release's infer step was verified end to end), each committed to the
+  volume as it completes, so a stopped container loses at most one sub-batch.  These are
+  engineering facts about the serving route, not about the model, and they are in the cost
+  ledger.
+* **Wall-clock and spend.** @@WALLCLOCK@@
+* **The R2 band is a calibration transfer**, as stated above: its centre came from real TII
+  clips with a mocap required side.  It is reported with the raw axis-gain point estimates and
+  never used alone to accept or reject a generated clip.
+* **The coherence tier is scale-free by construction.** A generator that depicts the right
+  *shape* at a third of the required magnitude passes it.  The depicted/required ratio and the
+  median-residual tier are reported beside every acceptance rate for exactly that reason.
 
 ## Reproduction
 

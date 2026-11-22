@@ -267,6 +267,9 @@ pixi run modal run remote/h03_readers.py::main --mode probe      # sign conventi
 pixi run modal run remote/h03_readers.py::main --mode read       # reader + PF
 PYTHONPATH=. pixi run -e gpu python experiments/h03_analyze.py
 PYTHONPATH=. pixi run -e gpu python experiments/h03_overlay.py --source lingbot_bf16 --frames last
+pixi run modal run remote/h03_recompute.py::main --batch 8          # full clips, PF
+pixi run python scripts/pull_volume.py awmv-h3-data h03_recompute results/h03_recompute
+PYTHONPATH=. pixi run -e gpu python experiments/h03_recompute_compare.py
 ```
 
 Unit tests: `tests/test_h03_classical.py` (5 tests: sign, synthetic horizon with and without
@@ -282,6 +285,7 @@ mount, line family, abstention).
 | reader + PF rows | Modal volume `awmv-h3-data:/h03_readers/depicted_main.jsonl` (150 rows) |
 | rotation sign probe | `results/h03/readers/rotation_probe.json` |
 | classical rows | `results/h03/classical.jsonl` |
+| full-clip recompute | `results/h03_recompute/pf_rows.jsonl` (3,494 rows), `results/h03_recompute/compare.json` |
 | analysis | `results/h03/analysis.json`, `results/h03/frames_scored.csv` |
 | overlays | `results/h03/overlays/` |
 | H01/H02 reader rows | read read-only from `~/Documents/Projects/awmv-track-h` and `~/Documents/Projects/awmv-h2` |

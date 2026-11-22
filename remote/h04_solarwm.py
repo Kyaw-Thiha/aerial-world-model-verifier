@@ -233,7 +233,7 @@ def infer(sample_ids: str, tag: str, steps: int = 4, frame_num: int = 81,
 
 @app.local_entrypoint()
 def main(mode: str = "download", tag: str = "test", ids: str = "", steps: int = 4,
-         chunks: int = 4):
+         chunks: int = 4, sub: int = 40):
     if mode == "download":
         print(json.dumps(download.remote(), indent=1))
         return
@@ -255,5 +255,5 @@ def main(mode: str = "download", tag: str = "test", ids: str = "", steps: int = 
     else:
         chosen = ids.split(",")
     print(f"{len(chosen)} samples, tag {tag}")
-    res = infer.remote(json.dumps(chosen), tag=tag, steps=steps)
+    res = infer.remote(json.dumps(chosen), tag=tag, steps=steps, sub=sub)
     print(json.dumps(res, indent=1)[:3000])

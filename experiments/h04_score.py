@@ -139,7 +139,13 @@ def rate_block(items: list[dict]) -> dict:
     test = [i for i in items if i["testable"]]
     acc = [i for i in items if i["accepted"]]
     reasons = Counter(r.split(" ")[0] for i in items for r in i["reasons"])
+    ratios = [i["depicted_tilt_median_deg"] / i["required_tilt_median_deg"]
+              for i in test if i["required_tilt_median_deg"] > 0.5]
     return {"n": n, "testable_k": len(test), "testable_n": n,
+            "depicted_over_required_median": (float(np.median(ratios)) if ratios
+                                              else float("nan")),
+            "magnitude_consistent_k": int(sum(0.5 <= r <= 1.5 for r in ratios)),
+            "magnitude_consistent_n": len(ratios),
             "accepted_k": len(acc), "accepted_n": n,
             "flag_coh_k": sum(i["flagged_coh"] for i in test),
             "flag_r2_k": sum(i["flagged_r2"] for i in test),
