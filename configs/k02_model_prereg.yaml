@@ -1,0 +1,187 @@
+# Track K, Part 2 — offline physics-model refinement (pre-registration)
+#
+# Written and committed BEFORE any leave-one-flight-out model result, any schema-v3
+# threshold, or any edit-detection rate was computed. The only model-related numbers
+# seen before this file are the Part 1 reconciliation and a pipeline-feasibility probe
+# described under `disclosure` below.
+version: 2
+date: 2026-11-22
+track: K
+branch: track-k-calibration
+owner_files:
+  - src/airframe/
+  - experiments/k01_calibration_modes.py
+  - experiments/k02_fit.py
+  - experiments/k02_downstream.py
+  - scripts/export_schema_v3.py
+  - configs/k01_*.yaml
+  - configs/k02_*.yaml
+  - reports/K01_calibration_mode_reconciliation.md
+  - reports/K02_physics_model_refinement.md
+  - report_candidates/k_physics_model.tex
+
+disclosure: >
+  Before this file existed, two exploratory probes were run on the same mocap data:
+  (i) a pipeline check that reproduced E1's per-flight medians and E1's pooled
+  1.24 / 5.46 deg floor from `experiments/phase0_floor.py`; (ii) pooled (not LOFO)
+  fits of M1, M2, M3, M4 and a ridge residual at a few fixed parameter values, used
+  only to check that the parameter scales are sensible and that the pipeline runs.
+  Those probes showed the models are unlikely to meet the 25 % criterion. No LOFO
+  number, cross-domain number, schema-v3 threshold or edit-detection rate was seen
+  before this file. Every LOFO and downstream number reported in K02 comes from the
+  fixed definitions below. The probe is disclosed rather than hidden.
+
+question: >
+  Does an offline, per-vehicle-class model of how the airframe realises a commanded
+  acceleration reduce the actual-vs-required mismatch and the real-clip verdict
+  threshold, without absorbing a violation at test time?
+
+data:
+  tii:
+    flights: [flight-01a-ellipse, flight-04a-ellipse, flight-07a-lemniscate,
+              flight-13a-trackRATM, flight-01p-ellipse, flight-07p-lemniscate,
+              flight-13p-trackRATM, flight-16p-trackRATM]
+    source: data/raw/tii/<control>/mocap_<flight>.csv
+    rate_hz: 274.73
+    attitude: drone_rot, body->world, body z is the thrust axis (FLU, verified in E1)
+    derivative_window_s: 0.37
+    polyorder: 3
+    vehicle_class: tii_racing
+  uzh:
+    primary_rig: forward (indoor_forward_3/5/6/7/9/10, outdoor_forward_1/3/5)
+    sensitivity_rig: 45-degree-down (indoor_45_2/4/9/13, outdoor_45_1), reported separately
+    source: data/uzh/<seq>/truth.npz (`gt` table, 500 Hz Leica, body->world quaternion)
+    derivative_window_s: 0.10
+    polyorder: 3
+    vehicle_class: uzh_snapdragon
+  masking: >
+    The first and last half Savitzky-Golay window of each native stream are masked, never
+    extrapolated. UZH streams are truncated to the image-frame time span of the sequence,
+    so the model is fitted on the footage the verdict actually uses.
+
+models:
+  definition: >
+    All models predict the unit thrust axis u from the path. Residuals are computed in the
+    yaw-aligned lean frame l = Rz(-yaw) * (u_x, u_y). Fits minimise the mean squared 2-vector
+    lean residual over training flights; angle residuals are reported for interpretation.
+    The world-frame vertical term is always held at M0's k_d * v_z so that M1-M4 isolate the
+    horizontal drag model.
+  M0:
+    name: current
+    parameters: none
+    required_axis: normalise(a + g e3 + 0.295 v)
+  M1:
+    name: per-axis linear drag
+    parameters: {k_forward: [0.0, 1.0], k_lateral: [0.0, 1.0]}
+    required_axis: >
+      normalise(a + g e3 + Rz(yaw) [k_forward v_f, k_lateral v_l, 0]^T + 0.295 v_z e3)
+  M2:
+    name: M1 plus first-order attitude lag
+    parameters: >
+      M1 parameters plus one time constant per vehicle class, tau in [-0.10, 0.20] s
+      (negative allowed so the data can reject the lag direction instead of being forced
+      into it). The required axis is a first-order low-pass of M1's axis, renormalised at
+      every step, with the native dt.
+  M3:
+    name: M1 plus quadratic drag
+    parameters: M1 parameters plus k_quadratic in [0.0, 0.10] s/m
+    required_axis: as M1 with k_forward -> k_forward + k_quadratic |v_h| and the same for lateral
+  M4:
+    name: body-frame rotor drag (Faessler, Franchi & Scaramuzza, RA-L 2018)
+    parameters: {d_x: [0.0, 1.0], d_y: [0.0, 1.0]} (1/s)
+    required_axis: >
+      normalise(a + g e3 + R D R^T v) with D = diag(d_x, d_y, 0), R built from the path yaw
+      and the current thrust axis (minimal rotation), solved by 12 fixed-point iterations
+      from M0. The rotor-drag direction depends on the attitude being solved for; this is a
+      numerical solution of the implicit flatness equation, not an approximation that uses
+      the true attitude. Reference checked against the published model (S4).
+  M5:
+    name: regularised learned residual on (a, v, jerk)
+    parameters: ridge weights, alpha in {0.01, 0.1, 1, 10, 100}
+    required_axis: >
+      M1's fitted axis plus a 2-vector lean residual predicted from 11 heading-frame features:
+      intercept, v_f, v_l, a_f, a_l, j_f, j_l (j scaled by 0.1 s), |v|^2, v_f|v|, v_l|v|,
+      a_f v_f + a_l v_l, all in units of g. Features are standardised on the training flights.
+      alpha is chosen by an inner leave-one-flight-out over the training flights only.
+      Reported separately and last; the report states it is the least interpretable model.
+
+lag_nuisance:
+  rule: >
+    A pure time shift of the required axis, searched on the pre-registered grid
+    [-150, +150] ms in 25 ms steps, fitted per flight (TII) or per sequence (UZH) by
+    minimising that unit's median angle residual. It is the existing frozen nuisance and is
+    given to every model equally. For fitting, lags are fixed from M0 and refitted once
+    after the parameters are fitted; for evaluation they are always refitted on the held-out
+    unit. A lag is a nuisance, not a model parameter, and is reported per unit.
+
+fitting:
+  objective: mean squared lean-vector residual in degrees^2, pooled over training flights
+  optimiser: scipy.optimize.minimize(method="Powell", bounds=...)
+  subsample: every 4th native sample for fitting; every sample for evaluation
+  leave_one_flight_out: >
+    For each TII flight f: fit parameters on the other seven, fit f's lag on f, evaluate f.
+    Pooled LOFO RMS is over all held-out frames; the per-flight mean is also reported.
+  cross_domain:
+    tii_to_uzh: fit TII parameters on all eight flights, fit each UZH sequence's lag, evaluate
+    uzh_to_tii: fit UZH forward parameters on the forward sequences, fit each TII flight's
+                lag, evaluate
+  inner_selection: M5 alpha only, by inner LOFO on the training flights.
+  model_selection: >
+    Pre-registered parsimony rule: the downstream schema uses the lowest-complexity model
+    (M0 < M1 < M2 < M3 < M4) whose pooled LOFO angle RMS is within 0.25 deg of the best
+    M0-M4 value. M5 is never selected for the primary downstream result.
+
+metrics:
+  primary: pooled LOFO angle RMS in degrees (sqrt of the frame-weighted mean squared angle)
+  secondary: per-flight angle RMS and median; lean-domain RMS
+  success:
+    rms_reduction: at least 25 % against M0
+    threshold_reduction: at least 1.5 deg against the M0/k_d=0.295 schema threshold,
+      with false-reject unchanged
+    scope_statement: state plainly if a model only helps within the vehicle class it was fitted on
+
+downstream:
+  schema_v3:
+    files: new files only, under data/processed/track_k/clips_v3 (never edits schema v2)
+    fields: >
+      lean_req_v3 (N,2) at the clip's frame times in the yaw-aligned frame, plus
+      lean_req_model, model_name, model_parameters, fit_fold, dt, window, and the same
+      metadata as v2 with schema_version: 3. The semantics are explicit: lean_req_v3 is the
+      model-required lean, NOT a drag-free lean; no (k_d - 0.295) rescaling is applied to it.
+  threshold_F0:
+    construction: >
+      J's F0: per-clip median angle residual on gate-kept real clips, no offset nuisance,
+      leave-one-flight-out 95th percentile. Reported with and without the per-clip lag
+      nuisance; the lag-free version is comparable to J03's 14.05, the lag version to A2's
+      8.96. Population: all 8 flights and the gate-kept six dev flights, each stated.
+    baseline: the same construction with the schema-v2 required side at the true k_d=0.295
+  threshold_anchor:
+    construction: >
+      J02's arm (c) with its schema semantics corrected: depicted lean = mocap attitude lean
+      + the synthetic error (sigma 4.8 deg, bias 2 deg, tau 0.5 s, fast share 0.5, seed 1,
+      120 draws), required = the schema required side. LOFO threshold and H0 median.
+    baseline: the same anchor with v2 at k_d=0.295
+  detection:
+    edits: tilt_removal, mirror_roll, scale_0.5, scale_1.5 at full and 25 % / 50 % coverage
+    tiers: median residual and coherence (1 - min per-axis correlation, window max)
+    matched_false_reject: >
+      Each tier is compared at the same false-reject count on the gate-kept dev real clips
+      (the v2 count), by lowering the v3 threshold to the v2 operating point and reporting
+      the detection difference. Unmatched rates are also reported.
+    controls: yaw_control and null_edit beside every detection rate
+    population: gate-kept six dev flights (69 clips); the two held-out flights are unscored
+  absorption_free: >
+    All model parameters are fitted on path kinematics only, never on depicted leans, edits,
+    thresholds or detection outcomes; the downstream models are fitted leave-one-flight-out,
+    so no clip's own flight contributes to its required side. Every fitted parameter is fixed
+    before any edit is scored. No nuisance is fitted inside a window.
+
+inference:
+  intervals: >
+    Flight- or sequence-clustered percentile intervals, 5,000 replicates, rng(1). With 8 TII
+    flights and 9 UZH forward sequences these are descriptive, not calibrated 95 % intervals.
+  denominators: reported beside every rate; single-flight cells marked with a dagger.
+
+compute:
+  gpu_usd: 0
+  note: CPU only; Modal is not used.
