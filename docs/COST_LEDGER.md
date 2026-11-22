@@ -4,22 +4,28 @@ One line per job set. Modal list prices at the time of writing: A10 1.10, L40S 1
 A100-80GB 2.50, H100 3.95 USD/h. Update this file in the same commit as the job that spends.
 
 Track I's ledger entries live in its own branch (`track-i-simset`, `docs/COST_LEDGER.md`)
-until it merges; this file records Track G3 only.
+until it merges; this file records Track G3 only. Figures marked **billing** come from
+`modal billing report --for today`; figures marked *projected* are arithmetic at list prices.
 
-## Track G3 — segment detection on the simulated set (ceiling USD 8.00)
+## Track G3 — segment detection on the simulated set (ceiling 8.00, raised to 14.00 on 2026-11-22)
 
-| date | job | GPU | hours | USD | running total | notes |
-| --- | --- | --- | --- | --- | --- | --- |
-| 2026-11-22 | setup, code port, pre-registration | — | 0 | 0.00 | 0.00 | CPU only |
-| 2026-11-22 | reader engineering probes, dev reader (83 clips, incl. the 4-container window), yaw render (10 clips), diagnostics | L40S/A10/A100 | — | **2.71** | **2.71** | **billing export** (`modal billing report --for today`): score apps 2.013, yaw 0.698, diag 0.003. Not an estimate. |
-| 2026-11-22 | remaining dev (87 clips, 45,683 frames) + 2 yaw renders + yaw reader, one container at a time | L40S | ~0.95 | ~1.5-1.9 | ~4.5 | projected; queueing delays wall time, not spend |
-| 2026-11-22 | held-out pass (100 clips, 49,859 frames), later, once | L40S | ~0.9 | ~2.3 | ~6.8 | reserved |
+| date | job | GPU | USD | running total | source |
+| --- | --- | --- | --- | --- | --- |
+| 2026-11-22 | engineering probes, dev reader (170 clips, 84,658 frames, stride 1), yaw render (12 clips), yaw reader (12 clips), diagnostics | L40S / A10 / A100 | **5.27** | **5.27** | **billing**: score 4.484, yaw 0.778, diag 0.004 |
+| 2026-11-22 | held-out pass (100 sim clips + 18 real clips), later, once | L40S | ~2.3 (projected) | ~7.6 | projected |
 
-**Correction (2026-11-22, after the billing export was found).** An earlier version of this file
-estimated the first batch at 9.4 USD "from app runtimes" and called it an overrun of the 8.00
-ceiling. That estimate was wrong: the containers were mostly **waiting for L40S capacity**, which
-is not billed, and the measured per-clip compute stayed at 15-17 fps throughout. The actual spend
-for everything up to and including the 4-container window is **2.71 USD**, so the ceiling was
-never breached. The user raised it to 14.00 on the strength of the wrong estimate; that is
-harmless and is recorded here rather than silently reverted. All figures above are from the
-billing export for 2026-11-22.
+**No overrun occurred.** An earlier version of this file estimated the first batch at 9.4 USD from
+app wall time and called it a breach of the 8.00 ceiling. That was wrong: the containers were
+mostly **waiting for L40S capacity**, which is not billed, and per-clip compute stayed at 15-17 fps
+throughout. The billing export puts everything through the end of the development pass at
+**5.27 USD**. The user raised the ceiling to 14.00 on the strength of the wrong estimate; that is
+harmless, is recorded rather than silently reverted, and leaves ample room for the held-out pass.
+The practical rule from the episode is kept anyway: **one GPU container at a time**, because
+concurrency only buys wall time when capacity exists.
+
+### Notes
+
+* The reader is the only GPU cost; all statistics, ablations and tables are CPU.
+* The yaw render (12 clips, 4,646 frames, EEVEE 16 spp, L40S) is the second GPU job.
+* The 78 stride-2 reader files Track I published had to be re-scored at stride 1 for a uniform
+  window duration; that re-scoring is inside the 5.27.

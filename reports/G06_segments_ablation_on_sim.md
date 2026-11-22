@@ -7,8 +7,9 @@ before any defect clip was scored. Code `experiments/g3_*.py`, `remote/g3_*.py`.
 `results/g06/`. CPU for the analysis; GPU for the reader (L40S) and the auxiliary yaw render.
 Spend: see `docs/COST_LEDGER.md`.
 
-**Status: confirmatory on the development block. The held-out block is untouched**
-(`reports/G07` will score it once).
+**Status: development pass closed on all 170 clips available at freeze (80 feasible, 90 defect).
+The held-out block is untouched** (`reports/G07` will score it once). Spend 5.27 USD from the
+billing export; see `docs/COST_LEDGER.md`.
 
 ## Decision
 
@@ -282,6 +283,10 @@ even then at 11-16 %. The exploratory BH-scored curve (same injection, BH instea
 is **also flat at zero** at every cell: with a 0.4-3.2 s step, at most a few windows straddle the
 boundaries, and a within-clip multiplicity correction over ~100 windows removes them.
 
+The batch's two 10 % partial clips are detected by no arm, including the whole-clip median
+baseline (0 of the 1-2 testable clips per arm), which is consistent with a 10 % interval being
+shorter than any window the design can calibrate.
+
 **No violation below whole-clip coverage is localised by this design.** The pre-registered
 criteria S1 and S2 (partial-interval detection and IoU) cannot be evaluated on this batch for the
 separate reason that the batch contains two partial clips; that is stated as a population
@@ -290,7 +295,31 @@ limitation, not as a failure.
 
 ### 7. Auxiliary yaw slice
 
-<!-- FILL: yaw numbers -->
+A world yaw leaves the schema lean bit-identical, so the control can only be tested by rendering
+(`configs/g06_yaw_slice.json`, 12 feasible clips, 3 families x 4 mounts, camera yawed by the
+clip's own required tilt, alpha median per clip 10-50 deg). The slice is separate from Track I's
+300 and is never pooled with it.
+
+| quantity | value |
+| --- | --- |
+| clips rendered / scored | 12 / 12 |
+| testable under the primary arm (null, yaw) | 2, 2 |
+| flagged (null, yaw) | 0, 0 |
+| reader lean shift, median of clip medians | 1.4 deg |
+| per-clip median shift, range | 0.3-10.3 deg |
+| per-clip p90 shift, range | 0.6-39.5 deg |
+| max shift | 56.5 deg |
+| real-clip reference (G01) | 4.75 deg median |
+
+The control is **negative**: on the two clips where the coherence window is defined, neither the
+null nor the yawed render is flagged, so the yaw edit does not create a false detection. The
+reader, however, is not indifferent to the viewpoint: its median lean shift is 1.4 deg across
+clips, but reaches 10 deg on a forest clip and its per-clip 90th percentile reaches 39 deg at 45
+deg mounts, far above the 4.75 deg measured on real footage. Those tails sit on frames where
+GeoCalib picks a different local optimum — the same multimodality as section 0 — and they are the
+reason the yaw control cannot be quoted as "yaw is harmless": with only 2 of 12 clips testable
+under the primary arm, the slice has little power to detect a yaw-induced false flag, and the
+honest reading is that the control neither supports nor refutes a yaw effect at this sample size.
 
 ## What this supports
 
