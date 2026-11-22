@@ -108,9 +108,16 @@ def main() -> int:
         f"The per-path spread is in `results/h04/scored_main.json`.\n")
 
     scenes = d["per_scene"]
+    names = {"F1": "ANWM city view 1", "F2": "ANWM city view 2", "F3": "ANWM city view 3",
+             "F4": "urban_checker", "F5": "industrial", "F6": "forest_ridge"}
     results_scene = "\n".join(
-        f"* {k}: {v['n']} clips, {v['testable_k']} testable, {v['accepted_k']} accepted."
-        for k, v in scenes.items()) + "\n"
+        f"* **{names.get(k, k)}** ({k}): {v['n']} clips, {v['testable_k']} testable, "
+        f"{v['accepted_k']} accepted, depicted/required ratio "
+        f"{v['depicted_over_required_median']:.2f}."
+        for k, v in scenes.items()) + "\n\n" + "\n".join(
+        f"* {k}: {v['n']} clips, {v['testable_k']} testable, {v['accepted_k']} accepted "
+        f"(coherence flag {rate(v, 'flag_coh_k')})."
+        for k, v in d["per_arm_family"].items() if k.startswith("A_")) + "\n"
 
     results_controls = (
         f"**Yaw control** (arm A draw 0, +20 deg world-yaw warp): {yaw.get('n', 0)} clips,\n"

@@ -124,7 +124,9 @@ def depicted(tag: str = "main", size: int = 224, fov_deg: float = 90.0,
                                      "orig_size": orig, "tag": tag})
                 fh.write(json.dumps(row) + "\n")
                 n += 1
-            print(clip.name, len(frames), flush=True)
+            fh.flush()
+            vol_r.commit()
+            print(clip.name, len(frames), n, flush=True)
     info = {"tag": tag, "shard": shard, "shards": shards, "root": str(root),
             "n_clips": len(clips), "n_rows": n,
             "size": size, "f_px": float(f), "stride": stride,
