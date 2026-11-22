@@ -4,7 +4,8 @@ Track M, Stage 2. Written 2026-11-22. Branch `track-m-gates`. Pre-registration
 `configs/m02_gate_b_prereg.yaml`, amendment 1 `configs/m02_gate_b_amend1.yaml` (the real-TII
 feed), both committed before any Gate B statistic was computed; frozen threshold
 `configs/m02_gate_b_frozen.yaml`. Code `src/verdict/gate_b.py`, `experiments/m02_gate_b.py`,
-`remote/m_readers.py`. Results `results/m02/`. GPU: Modal A10, ~USD (see the ledger).
+`remote/m_readers.py`. Results `results/m02/`. GPU: Modal A10, about 2.7 GPU-hours, about USD 2.95
+(`docs/COST_LEDGER.md`); every app is stopped.
 
 ## Decision
 
