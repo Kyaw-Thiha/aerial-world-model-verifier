@@ -4,8 +4,9 @@
 at `41d1dad`. Written 2026-11-22. Pre-registration `configs/g06_segments_prereg.yaml`
 (`2744dbb`), amendment 1 `configs/g06_segments_prereg_amend1.yaml` (`ac21197`), both committed
 before any defect clip was scored. Code `experiments/g3_*.py`, `remote/g3_*.py`. Results
-`results/g06/`. CPU for the analysis; GPU for the reader (L40S) and the auxiliary yaw render.
-Spend: see `docs/COST_LEDGER.md`.
+`results/g06/` (reader scores and tables at `8dc8709`, analysis code at `f6372f7`). CPU for the
+analysis; GPU for the reader (L40S) and the auxiliary yaw render. Spend 5.27 USD from the Modal
+billing export; see `docs/COST_LEDGER.md`.
 
 **Status: development pass closed on all 170 clips available at freeze (80 feasible, 90 defect).
 The held-out block is untouched** (`reports/G07` will score it once). Spend 5.27 USD from the
