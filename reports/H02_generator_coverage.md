@@ -90,14 +90,15 @@ poses as H01 (level, linear +/-20, triangular 0->20->0, linear 0->60), same firs
 transformer and VAE back to the GPU before each clip.
 
 **Population and statistics.** The reader, required-tilt expression, 6.46 deg threshold and
-testability rule are exactly H01's. The SolarWM grid is 5 frames x 5 paths x 3 arms = 75
+testability rule are exactly H01's. The five probes are read on all 81 frames; the grid and
+seed clips are read every second frame (41) to bound the reader cost. The SolarWM grid is 5 frames x 5 paths x 3 arms = 75
 clips; the seed set is 10 designed paths x 3 seeds (flatness arm). Intervals are
 path-clustered (5,000 draws, `numpy.random.default_rng(1)`); with fewer than 10 clusters they
 are descriptive. No threshold or success criterion changed after any outcome.
 
 ## Results
 
-### 2. SolarWM-5B
+### 1. SolarWM-5B
 
 **The release runs and the roll gate passes.** Five probes, 81 frames, 480x864, four sampling
 steps:
@@ -148,10 +149,10 @@ hold for ~60, and return; the depicted tilt during the hold is only a few degree
 **5 feasible**, 10 infeasible, 0 gate abstentions. All five slalom-10 clips are feasible (median
 residual 5.0 deg); every testable turn-10 and turn-20 clip is infeasible (9.0 and 13.6 deg);
 cruise and turn-5 are not testable by the 12-frame excitation rule. SolarWM therefore passes
-the verdict on the manoeuvre whose attitude changes fastest and fails it on the sustained
-20-degree bank.
+the verdict on the slalom, whose attitude keeps changing, and fails it on the sustained
+10/20-degree banks.
 
-### 4. SolarWM seed variance
+### 2. SolarWM seed variance
 
 Ten designed paths x three seeds on the flatness arm (30 clips). The depicted tilt varies much
 more than ANWM's: the median per-path seed standard deviation is **1.41 deg** and the median
