@@ -23,10 +23,11 @@ vol_r = modal.Volume.from_name("awmv-h2-results", create_if_missing=True)
 SOURCES = {"lingbot_full": ("/r", "lingbot_full"), "solarwm": ("/r", "solarwm")}
 
 
-@app.function(image=image, gpu="A10G", volumes={VOLUME_MOUNT: vol_a, "/r": vol_r},
+@app.function(image=image, gpu="A100-80GB", volumes={VOLUME_MOUNT: vol_a, "/r": vol_r},
               timeout=3 * 3600)
 def depicted(source: str = "lingbot_full", clip_root: str = "", out_tag: str = "h02",
-             size: int = 224, fov_deg: float = 90.0, limit: int = 0) -> dict:
+             size: int = 224, fov_deg: float = 90.0, limit: int = 0,
+             stride: int = 1) -> dict:
     import time
 
     import cv2
@@ -49,7 +50,7 @@ def depicted(source: str = "lingbot_full", clip_root: str = "", out_tag: str = "
     n_rows = 0
     with (out_dir / "depicted.jsonl").open("w") as fh:
         for clip in clips:
-            frames = sorted((clip / "frames").glob("*.png"))
+            frames = sorted((clip / "frames").glob("*.png"))[::max(1, int(stride))]
             for p in frames:
                 img = cv2.imread(str(p))
                 if img is None:
@@ -72,7 +73,8 @@ def depicted(source: str = "lingbot_full", clip_root: str = "", out_tag: str = "
                     "f_prior": float(f), "orig_size": orig})) + "\n")
                 n_rows += 1
             print(clip.name, len(frames), flush=True)
-    info = {"tag": out_tag, "source": source, "clip_root": str(root), "n_clips": len(clips),
+    info = {"tag": out_tag, "source": source, "clip_root": str(root), "stride": stride,
+            "n_clips": len(clips),
             "n_rows": n_rows, "size": size, "f_px": float(f),
             "seconds": time.time() - t0, "geocalib_commit": GEOCALIB_COMMIT,
             "out": str(out_dir.relative_to("/r"))}
@@ -82,5 +84,7 @@ def depicted(source: str = "lingbot_full", clip_root: str = "", out_tag: str = "
 
 
 @app.local_entrypoint()
-def main(source: str = "lingbot_full", clip_root: str = "", out_tag: str = "h02", limit: int = 0):
-    print(json.dumps(depicted.remote(source, clip_root, out_tag, limit=limit), indent=2))
+def main(source: str = "lingbot_full", clip_root: str = "", out_tag: str = "h02",
+         limit: int = 0, stride: int = 1):
+    print(json.dumps(depicted.remote(source, clip_root, out_tag, limit=limit, stride=stride),
+                     indent=2))

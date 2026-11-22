@@ -169,6 +169,7 @@ def infer(sample_ids: str, tag: str, steps: int = 4, frame_num: int = 81) -> dic
     import os
     import subprocess
     import time
+    import uuid
 
     import imageio.v2 as imageio
     import numpy as np
@@ -183,7 +184,7 @@ def infer(sample_ids: str, tag: str, steps: int = 4, frame_num: int = 81) -> dic
     # The Modal Volume rejects the atomic rename that the release's publication
     # transaction uses, so generate on local disk and copy the finished mp4s to
     # the volume afterwards.
-    out = Path("/tmp/solar_out") / tag / "run"
+    out = Path("/tmp/solar_out") / f"{tag}-{uuid.uuid4().hex[:8]}" / "run"
     out.parent.mkdir(parents=True, exist_ok=True)
     cfg = _write_config(release, out, len(ids), steps, frame_num)
     t0 = time.time()
@@ -208,6 +209,7 @@ def infer(sample_ids: str, tag: str, steps: int = 4, frame_num: int = 81) -> dic
         d.mkdir(parents=True, exist_ok=True)
         import shutil
         shutil.copyfile(mp4, out_root / sid / "clip.mp4")
+        shutil.copyfile(mf, out_root / sid / "manifest.json")
         reader = imageio.get_reader(mp4)
         n = 0
         try:

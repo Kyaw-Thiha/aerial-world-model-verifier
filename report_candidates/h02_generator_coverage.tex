@@ -34,13 +34,39 @@ CT-1 & predicts trajectory only & n/a & none located & MIT code \\
 \end{table}
 
 \paragraph{SolarWM roll injection.}
-TBD after the pilot.
+SolarWM-Wan2.2-5B (Stage2, four steps, 81 frames at 480x864) accepts an absolute OpenCV
+camera-to-world trajectory and rebases it to the first frame. On five probes the depicted
+tilt follows the injected ramp: level 1.4\,deg, $+20^\circ$ ramp median 9.9\,deg and last-ten
+22.4\,deg, $-20^\circ$ ramp 5.9\,/\,18.2\,deg with the opposite lean, triangular 18.8\,deg, and
+$+60^\circ$ ramp 30.8\,/\,45.8\,deg, with lean-direction cosines 0.82--0.99. This is the first
+path-controlled generator in the project whose depicted attitude follows a commanded attitude
+change.
+
+On the 75-clip designed grid the response is weaker: only cruise has a flatness-arm tilt at
+least half the injected magnitude; turn-10 and turn-20 hold 13--21\,deg and the reader sees
+3.8--7.1\,deg. The pre-registered roll criterion fails on tilt magnitude (1/5 paths) and
+mirrored sign (1/5). The frozen verdict on the 25 flatness clips leaves 15 testable, 5 feasible
+(all slalom-10) and rejects every testable turn-10/20 clip (residuals 9.0 and 13.6\,deg).
+SolarWM follows the derivative of the camera path, not the held attitude the path requires.
 
 \paragraph{Seed variance and verdict.}
-TBD.
+The frozen verdict on the 25 flatness clips leaves 15 testable, 5 feasible (all slalom-10)
+and rejects every testable turn-10/20 clip. Seed variance: the depicted tilt varies far more than ANWM's (median seed
+standard deviation 1.41\,deg, median range 2.61\,deg, worst 9.88\,deg), but the oracle
+best-of-3 reduction is only 0.80\,deg median and no path flips from infeasible to feasible,
+below the pre-registered 2\,deg / 20\,\% criterion.
 
 \paragraph{Full-precision LingBot.}
-TBD.
+The bf16 fast model (five probes, 45 frames, 4 steps, 55.2\,GB, 51.7--62.9\,s/clip) reads 4.56,
+3.87, 4.91, 4.29 and 4.06\,deg for level, $+20$, $-20$, triangular and $+60$ ramps, against
+NF4's 3.21, 3.30, 3.77, 3.93 and 4.05. The pre-registered reader still sees no coherent roll
+response; the bf16 frames look more oblique than NF4, but vertical-edge checks are not usable
+on this imagery. Quantisation is therefore not established as the cause of H01's failure.
+The reader/eye discrepancy is recorded, not resolved.
 
 \paragraph{Cost and go/no-go.}
-TBD.
+SolarWM costs 27.8\,s/clip at 480$\times$864 and four steps (about US$3.9 for 200 clips), the
+cheapest path-controlled option measured; LingBot-fast bf16 costs 62.9\,s/clip (US$8.8 for
+200). SolarWM is a conditional no-go for sustained commanded paths: it follows ramps but not a
+held bank, and the verifier rejects the sustained turn-10/20 clips. A useful next step is a
+campaign of continuously time-varying commanded attitudes, the regime where the model works.

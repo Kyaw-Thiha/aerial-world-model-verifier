@@ -1,0 +1,61 @@
+{
+ "paths": [
+  {
+   "path": "cruise",
+   "flat_minus_level": 5.577444884145694,
+   "injected": 8.55076692929597,
+   "ratio": 0.6522742264248472,
+   "tilt_pass": true,
+   "cos": 0.992517309536502,
+   "cos_positive": true,
+   "mirror_x_flip": false
+  },
+  {
+   "path": "slalom10",
+   "flat_minus_level": 2.2541517762834866,
+   "injected": 9.026738979872551,
+   "ratio": 0.24971939271864413,
+   "tilt_pass": false,
+   "cos": 0.07308427501542349,
+   "cos_positive": true,
+   "mirror_x_flip": false
+  },
+  {
+   "path": "turn10",
+   "flat_minus_level": 1.799463111090927,
+   "injected": 12.951695971846737,
+   "ratio": 0.13893648484356352,
+   "tilt_pass": false,
+   "cos": 0.13618324133093165,
+   "cos_positive": true,
+   "mirror_x_flip": false
+  },
+  {
+   "path": "turn20",
+   "flat_minus_level": 3.983535878350158,
+   "injected": 21.194756159566456,
+   "ratio": 0.1879491251684984,
+   "tilt_pass": false,
+   "cos": 0.327982317560336,
+   "cos_positive": true,
+   "mirror_x_flip": true
+  },
+  {
+   "path": "turn5",
+   "flat_minus_level": 3.423574915974386,
+   "injected": 9.831513832237095,
+   "ratio": 0.34822459433954484,
+   "tilt_pass": false,
+   "cos": 0.8524511559755207,
+   "cos_positive": true,
+   "mirror_x_flip": false
+  }
+ ],
+ "tilt_paths_pass": 1,
+ "cos_paths_pass": 5,
+ "mirror_paths_pass": 1,
+ "tilt_criterion": false,
+ "cos_criterion": true,
+ "mirror_criterion": false,
+ "overall": false
+}

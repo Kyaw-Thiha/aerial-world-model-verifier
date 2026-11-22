@@ -1,0 +1,91 @@
+{
+ "prefix": "track-h2/clips/solarwm-probes",
+ "src": "data/h02_solarwm_probes_out",
+ "tag": "solarwm-probes",
+ "dry_run": false,
+ "n_files": 10,
+ "bytes": 2176473,
+ "files": [
+  {
+   "path": "probe_fast20/clip.mp4",
+   "key": "track-h2/clips/solarwm-probes/probe_fast20/clip.mp4",
+   "bytes": 375652,
+   "sha256": "487ce7c74d54923582358553e397ba1a4fd2be663e48de8375be04dca3b1f64b",
+   "remote_sha256": "487ce7c74d54923582358553e397ba1a4fd2be663e48de8375be04dca3b1f64b",
+   "match": true
+  },
+  {
+   "path": "probe_fast20/meta.json",
+   "key": "track-h2/clips/solarwm-probes/probe_fast20/meta.json",
+   "bytes": 211,
+   "sha256": "fcccc0aebd567372e69eba51630f37c08a1da5f9dd8e8a245f84a94d2221d5ff",
+   "remote_sha256": "fcccc0aebd567372e69eba51630f37c08a1da5f9dd8e8a245f84a94d2221d5ff",
+   "match": true
+  },
+  {
+   "path": "probe_level/clip.mp4",
+   "key": "track-h2/clips/solarwm-probes/probe_level/clip.mp4",
+   "bytes": 417391,
+   "sha256": "80ffb923b7521ff1bb2a0cc160cd4bfda4774e671e7fb879d8ab2722f839d120",
+   "remote_sha256": "80ffb923b7521ff1bb2a0cc160cd4bfda4774e671e7fb879d8ab2722f839d120",
+   "match": true
+  },
+  {
+   "path": "probe_level/meta.json",
+   "key": "track-h2/clips/solarwm-probes/probe_level/meta.json",
+   "bytes": 208,
+   "sha256": "54d7889a3938924f2fdcf1c45763d4577afe9d693fe1372afdc04512b99bbe43",
+   "remote_sha256": "54d7889a3938924f2fdcf1c45763d4577afe9d693fe1372afdc04512b99bbe43",
+   "match": true
+  },
+  {
+   "path": "probe_m20/clip.mp4",
+   "key": "track-h2/clips/solarwm-probes/probe_m20/clip.mp4",
+   "bytes": 591162,
+   "sha256": "248dcda585d24278ae0992c7fd28b2d9d24eaac38a09b07c547dee8f65dd65f2",
+   "remote_sha256": "248dcda585d24278ae0992c7fd28b2d9d24eaac38a09b07c547dee8f65dd65f2",
+   "match": true
+  },
+  {
+   "path": "probe_m20/meta.json",
+   "key": "track-h2/clips/solarwm-probes/probe_m20/meta.json",
+   "bytes": 206,
+   "sha256": "19549870681cc2942796dd407d61b2b930e8fd338718e2b643d2c9bd2877c9b7",
+   "remote_sha256": "19549870681cc2942796dd407d61b2b930e8fd338718e2b643d2c9bd2877c9b7",
+   "match": true
+  },
+  {
+   "path": "probe_p20/clip.mp4",
+   "key": "track-h2/clips/solarwm-probes/probe_p20/clip.mp4",
+   "bytes": 348662,
+   "sha256": "6bc59bc6d71a9b8e5b21e89cfa414c2a5d66f8d7718376d8e8467c4f04f8a6f4",
+   "remote_sha256": "6bc59bc6d71a9b8e5b21e89cfa414c2a5d66f8d7718376d8e8467c4f04f8a6f4",
+   "match": true
+  },
+  {
+   "path": "probe_p20/meta.json",
+   "key": "track-h2/clips/solarwm-probes/probe_p20/meta.json",
+   "bytes": 205,
+   "sha256": "8f894174631856e8a63d876434ed136aed11f5e41f06e62e377334a66678afb2",
+   "remote_sha256": "8f894174631856e8a63d876434ed136aed11f5e41f06e62e377334a66678afb2",
+   "match": true
+  },
+  {
+   "path": "probe_p60/clip.mp4",
+   "key": "track-h2/clips/solarwm-probes/probe_p60/clip.mp4",
+   "bytes": 442571,
+   "sha256": "4d54b9a56b9542101c4dc657dc3bf615f6e99a64ae61a40977d39768b547f36b",
+   "remote_sha256": "4d54b9a56b9542101c4dc657dc3bf615f6e99a64ae61a40977d39768b547f36b",
+   "match": true
+  },
+  {
+   "path": "probe_p60/meta.json",
+   "key": "track-h2/clips/solarwm-probes/probe_p60/meta.json",
+   "bytes": 205,
+   "sha256": "8c085bf4c0ab4ac7e792f0357df10d243e74086d6ce83da9f6f99cda4f00ee83",
+   "remote_sha256": "8c085bf4c0ab4ac7e792f0357df10d243e74086d6ce83da9f6f99cda4f00ee83",
+   "match": true
+  }
+ ],
+ "skipped": []
+}

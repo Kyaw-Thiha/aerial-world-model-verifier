@@ -200,4 +200,9 @@ during consolidation — see `docs/DATA.md` for the current status of listing ac
 * **R2**: `track-h2/clips/...` with sha256 manifests.
 * **Report**: `reports/H02_generator_coverage.md`; candidate section
   `report_candidates/h02_generator_coverage.tex`.
+* **Outcome**: SolarWM-5B follows a continuously ramping roll (level 1.4 deg; +20 ramp ends
+  22.4, -20 18.2, +60 45.8) but not a held path attitude: on the 75-clip grid the roll criterion
+  fails (1/5 paths by tilt, 1/5 by mirrored sign) and the verdict leaves 15/25 testable and 5
+  feasible (all slalom-10), rejecting every testable turn-10/20 clip. Full-precision LingBot
+  still shows no coherent roll in the reader; quantisation is not established as the cause.
 * **Stop rule**: pilot only; no scale-up until the user decides.

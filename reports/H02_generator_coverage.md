@@ -14,11 +14,18 @@ SolarWM-Wan2.2-5B. Aero-World (IMU control, trained on UZH/TII) has no public co
 CT-1 predicts a camera trajectory rather than video; CameraCtrl, MotionCtrl and ReCamMaster
 are older, smaller-backbone camera controllers and were not run.
 
-**SolarWM.** The 5B Stage2 model runs on one A100-80GB and visibly follows the roll ramp on
-the first test sample (level first frame, strongly oblique last frame; 81 frames, four steps).
-Full probe/grid numbers TBD.
+**SolarWM follows changing attitude, not a held one.** The five probes pass decisively: level
+1.4 deg, +20 ramp ending 22.4 deg, -20 ending 18.2 deg with opposite lean, +60 ending 45.8 deg.
+The designed grid is weaker: only cruise shows a flatness tilt at least half the injected
+magnitude; turn-10 and turn-20 hold a 13-21 deg attitude and the reader sees 3.8-7.1 deg. The
+pre-registered roll criterion fails (1/5 paths by tilt, 1/5 by mirror sign). The frozen verdict
+calls 5 of 15 testable flatness clips feasible — all slalom-10 — and rejects every testable
+turn-10/20 clip. The generator follows the *derivative* of the camera path, not the attitude
+the path requires. Seed sampling moves the depicted tilt much more than ANWM did (median range
+2.6 deg), but best-of-3 cuts the residual by only 0.8 deg and flips no path, so it does not meet
+the pre-registered sampling criterion either.
 
-**Full-precision LingBot.** TBD — the reader still shows no coherent roll response in bf16
+**Full-precision LingBot.** The reader still shows no coherent roll response in bf16
 (level 4.56 deg; +20 ramp 3.87; -20 4.91; triangular 4.29; 60 ramp 4.06), although the bf16
 frames look visibly more tilted than H01's NF4 frames. The disagreement between the eye and
 the pre-registered gravity reader is recorded, not resolved; quantisation is not established
@@ -92,12 +99,82 @@ are descriptive. No threshold or success criterion changed after any outcome.
 
 ### 2. SolarWM-5B
 
-**The released model runs and its camera control is visible.** The first test sample (`probe_p20`,
-linear roll ramp 0 -> 20 deg over 81 frames) produced a level first frame and a strongly
-oblique last frame; the release's output is 81 frames at 480x864, four sampling steps. Full
-probe and grid statistics follow.
+**The release runs and the roll gate passes.** Five probes, 81 frames, 480x864, four sampling
+steps:
 
-TBD SolarWM statistics.
+| probe | injected roll | depicted median | first-10 | last-10 | lean cosine |
+| --- | --- | --- | --- | --- | --- |
+| level | 0 | 1.44 | 2.28 | 0.48 | 0.00 |
+| +20 ramp | 0 -> +20 | 9.94 | 3.58 | 22.37 | 0.878 |
+| -20 ramp | 0 -> -20 | 5.95 | 0.90 | 18.19 | 0.815 |
+| triangular 0->20->0 | 0 -> 20 -> 0 | 18.84 | 4.10 | 18.23 | 0.988 |
+| 0->60 ramp | 0 -> +60 | 30.75 | 4.43 | 45.76 | 0.980 |
+
+The level baseline is 1.44 deg. The +20 ramp ends at 22.4 deg, the -20 ramp at 18.2 deg
+(opposite lean), and the 60 ramp at 45.8 deg; the depicted lean direction correlates with the
+injected direction (cosine 0.82-0.99) on every ramp. **The convention gate passes**: unlike
+LingBot, SolarWM's depicted attitude follows a continuously changing attitude.
+
+**The 75-clip designed grid is weaker than the ramps.** Each row is the median over five first
+frames; the injected value is the path-required attitude.
+
+| path | arm | depicted median | injected median | first-10 | last-10 | lean cosine |
+| --- | --- | --- | --- | --- | --- | --- |
+| cruise | level | 1.82 | 0.00 | 1.96 | 1.19 | — |
+| cruise | flatness | 7.40 | 8.55 | 3.22 | 9.82 | 0.99 |
+| cruise | mirrored | 6.85 | 8.55 | 3.64 | 7.06 | 0.99 |
+| turn5 | level | 1.25 | 0.00 | 1.41 | 1.23 | — |
+| turn5 | flatness | 4.68 | 9.83 | 6.26 | 2.20 | 0.85 |
+| turn5 | mirrored | 6.51 | 9.83 | 3.95 | 5.34 | 0.96 |
+| turn10 | level | 2.02 | 0.00 | 1.81 | 2.01 | — |
+| turn10 | flatness | 3.82 | 12.95 | 5.22 | 4.78 | 0.14 |
+| turn10 | mirrored | 8.15 | 12.95 | 5.26 | 8.92 | 0.90 |
+| turn20 | level | 3.08 | 0.00 | 1.80 | 2.99 | — |
+| turn20 | flatness | 7.06 | 21.19 | 4.41 | 9.14 | 0.33 |
+| turn20 | mirrored | 10.14 | 21.19 | 5.07 | 15.01 | 0.20 |
+| slalom10 | level | 1.11 | 0.00 | 1.76 | 1.95 | — |
+| slalom10 | flatness | 3.36 | 9.03 | 2.05 | 4.49 | 0.07 |
+| slalom10 | mirrored | 9.08 | 9.03 | 1.84 | 10.50 | 0.31 |
+
+Against the pre-registered criterion the grid **fails**: only the cruise path shows a flatness
+tilt at least 50 % of the injected magnitude (1 of 5 paths, required 3); the flatness lean
+cosine is positive on 5 of 5 but only 0.07-0.33 on the three turning-20/10/slalom paths; and
+the mirrored arm flips the horizontal lean x-sign on 1 of 5 paths (required 4). The pattern is
+consistent with the model following **changes** in the pose trajectory (the probes ramp
+continuously) but not **holding** a path-required attitude: the arms bank in over 12 frames,
+hold for ~60, and return; the depicted tilt during the hold is only a few degrees.
+
+**Frozen commanded-path verdict.** On the 25 flatness clips (5 paths x 5 frames): 15 testable,
+**5 feasible**, 10 infeasible, 0 gate abstentions. All five slalom-10 clips are feasible (median
+residual 5.0 deg); every testable turn-10 and turn-20 clip is infeasible (9.0 and 13.6 deg);
+cruise and turn-5 are not testable by the 12-frame excitation rule. SolarWM therefore passes
+the verdict on the manoeuvre whose attitude changes fastest and fails it on the sustained
+20-degree bank.
+
+### 4. SolarWM seed variance
+
+Ten designed paths x three seeds on the flatness arm (30 clips). The depicted tilt varies much
+more than ANWM's: the median per-path seed standard deviation is **1.41 deg** and the median
+range **2.61 deg** (worst path 9.88 deg), against 0.17/0.43 for ANWM. The oracle best-of-3
+residual reduction is **0.80 deg median** (mean 0.97) and **no path** moves from infeasible to
+feasible, against the pre-registered 2 deg / 20 % criterion. Sampling helps more than it did
+for ANWM but still not enough to rescue a designed path.
+
+| source path | seeds | depicted sd | depicted range | residual median | r1 | r3 | feasible any |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| C_accel_brake_10_course_0 | 3 | 1.07 | 2.06 | 2.56 | 2.32 | 1.83 | yes |
+| C_accel_brake_20_course_1 | 3 | 2.85 | 5.12 | 3.39 | 3.78 | 2.94 | yes |
+| C_climb_turn_10_fixed_0 | 3 | 1.35 | 2.65 | 9.27 | 9.44 | 8.00 | no |
+| C_climb_turn_20_fixed_0 | 3 | 4.21 | 8.06 | 9.98 | 7.21 | 7.21 | no |
+| C_cruise_ctl_course_0 | 3 | 5.13 | 9.88 | 4.35 | 4.18 | 3.15 | yes |
+| C_slalom_10_fixed_0 | 3 | 1.48 | 2.56 | 4.93 | 3.13 | 3.13 | yes |
+| C_slalom_10_fixed_1 | 3 | 0.09 | 0.17 | 5.49 | 6.34 | 4.18 | yes |
+| C_slalom_5_course_0 | 3 | 4.48 | 8.71 | 4.16 | 3.06 | 3.06 | yes |
+| C_turn_10_fixed_0 | 3 | 1.27 | 2.49 | 8.41 | 9.75 | 6.79 | no |
+| C_turn_5_fixed_0 | 3 | 0.80 | 1.60 | 5.15 | 5.18 | 4.43 | yes |
+
+The seed spread is large enough to matter for individual clips but not large enough for the
+oracle rule to cross the 6.46 deg threshold on a path that missed it at seed 0.
 
 ### 3. LingBot full precision (bf16) versus H01's NF4
 
@@ -128,6 +205,9 @@ blindness. Cost: 51.7-62.9 s/clip, 55.2 GB peak VRAM, about US$0.04/clip on an A
 * **Full precision did not reproduce H01's roll failure in the reader.** The bf16 LingBot
   probes stay at 4-5 deg for every ramp, like NF4, so quantisation is not established as the
   cause; the visible oblique horizons in the bf16 clips remain an unresolved discrepancy.
+* **Path conditioning can work.** SolarWM-5B follows a roll ramp: 1.4 deg level baseline,
+  22.4 deg at the end of a +20 ramp, 18.2 deg for -20 with opposite lean, 45.8 deg for +60.
+  The generator layer is not the obstacle in principle; the action interface is.
 * **Path-conditioned sampling is measurable end to end with the existing verifier**: the same
   reader, required-tilt expression and verdict threshold carry over to SolarWM's 480x864
   output and a different pose convention.
@@ -140,6 +220,11 @@ blindness. Cost: 51.7-62.9 s/clip, 55.2 GB peak VRAM, about US$0.04/clip on an A
   rule out a strong quantisation effect on this frame; it cannot rule out one on other scenes.
 * **The inventory is not a benchmark.** Licences, VRAM and cost are read from cards and
   measured only for the models actually run; the rest are labelled estimates.
+* **SolarWM follows changing attitude, not held attitude.** The probes ramp continuously and
+  pass; the designed arms bank in and hold, and the reader sees only a fraction of the held
+  10-20 deg. The 75-clip grid and 5/15 verdict are about this regime, not about ramps.
+* **The grid reader uses every second frame** (41 of 81); the probes use all 81. This is stated
+  in the methods; it changes precision, not the statistic.
 * **No scale-up was run.** Every cost for 200 clips is an extrapolation from a pilot.
 
 ## Caveats
@@ -159,14 +244,78 @@ blindness. Cost: 51.7-62.9 s/clip, 55.2 GB peak VRAM, about US$0.04/clip on an A
 * **The Wan/SolarWM/Aero-World inventory is time-stamped 2026-11-21.** Gating and licences can
   change; the report records the status at that date.
 
-## Go/no-go and cost of 200 clips
+## Cost of 200 clips
 
-TBD.
+| model | GPU | s/clip (median) | peak VRAM | USD/clip | 200 clips |
+| --- | --- | --- | --- | --- | --- |
+| SolarWM-5B Stage2 (81 frames, 4 steps) | A100-80GB | 27.8 (75-clip grid including load/decode) | ~36 GB | 0.019 | 1.5 GPU-hours, US$3.9 |
+| LingBot-World fast bf16 (45 frames, 4 steps) | A100-80GB | 62.9 (5 probes) | 55.2 GB | 0.044 | 3.5 GPU-hours, US$8.8 |
+
+The SolarWM figure includes the model load and mp4 decode amortised over 75 clips and excludes
+the reader; the LingBot figure is the median of five probe clips and excludes one 30-40 min
+load. At 200 clips SolarWM is the cheapest path-controlled option measured in this project.
+
+## Go/no-go
+
+**SolarWM-5B: conditional no-go for sustained commanded paths.** It is cheap, released and
+does follow continuously changing camera attitude, but on the designed paths it does not hold
+the required 10-20 deg bank: the roll criterion fails (1/5 paths by tilt, 1/5 by mirrored
+sign), and the frozen verdict rejects every testable turn-10 and turn-20 clip while passing
+slalom-10. Generating 200 more clips of the same designed manoeuvres would buy more evidence
+of the same failure. A useful follow-up would use **time-varying** commanded attitudes (a
+continuously rolling probe or a path whose bank changes throughout), which is exactly the
+regime where the model works.
+
+**Full-precision LingBot: not a route on the reader's evidence.** It does not follow the ramps
+in the pre-registered reader either; the eye/reader discrepancy is unresolved. A 200-clip run
+is cheap (US$9) but would test a model that the verifier currently cannot see responding.
+
+**Inventory:** no other released model both takes a path and is practical (Aero-World has no
+weights, CT-1 is not a generator, CameraCtrl/MotionCtrl/ReCamMaster are older controllers not
+run).
 
 ## Reproduction
 
-TBD.
+```
+set -a; . ./.env; set +a
+pixi run python experiments/h02_solarwm_inputs.py
+pixi run modal deploy remote/h02_solarwm.py
+pixi run modal deploy remote/h02_gate.py
+pixi run python scripts/h02_run_solarwm.py --batch probes   # then grid, seeds
+pixi run python scripts/h02_collect_solarwm.py --batch probes
+pixi run modal run remote/h02_gate.py::main --source solarwm --clip-root solarwm/probes \
+    --out-tag solarwm-probes
+pixi run python experiments/h02_analyze_generated.py --depicted results/h02_solarwm_probes_depicted/depicted.jsonl \
+    --poses data/h02_solarwm_inputs --out results/h02_solarwm_probes
+pixi run python experiments/h02_verdict.py --depicted results/h02_solarwm_grid_depicted/depicted.jsonl \
+    --out results/h02_solarwm
+pixi run python experiments/h02_solarwm_seed.py --depicted results/h02_solarwm_seeds_depicted/depicted.jsonl \
+    --out results/h02_solarwm
+
+# full-precision LingBot
+pixi run modal run remote/h02_lingbot_full.py::main --mode download
+pixi run modal run remote/h02_lingbot_full.py::main --mode probe
+pixi run modal run remote/h02_gate.py::main --source lingbot_full --out-tag lingbot-full
+pixi run python experiments/h02_analyze_generated.py --depicted results/h02_lingbot_full_depicted/depicted.jsonl \
+    --poses data/h02_lingbot_probe_poses --out results/h02_lingbot_full
+```
 
 ## Provenance
 
-TBD.
+| item | where |
+| --- | --- |
+| pre-registration | `configs/h02_pilot_prereg.yaml`, commit `5c6e5c6` |
+| amendment 1 | `configs/h02_pilot_prereg_amendment1.yaml` (bank-in, 16 m scale) |
+| inventory | `results/h02_inventory.json` (primary-source URLs per model) |
+| SolarWM inputs | `data/h02_solarwm_inputs/` (110 samples: image, 81 poses, prompt, meta) |
+| SolarWM clips | Modal volume `awmv-h2-results:/solarwm/{probes,grid,seeds}`, R2 `track-h2/clips/solarwm-*` |
+| SolarWM results | `results/h02_solarwm/` (clips, frames, by-arm, roll criteria, verdict), `results/h02_solarwm_*_depicted/` |
+| full LingBot clips | volume `awmv-h2-results:/lingbot_full`, R2 `track-h2/clips/lingbot-full` |
+| full LingBot results | `results/h02_lingbot_full/` (clips, frames, compare_h01.csv) |
+| reader | `remote/h02_gate.py` (GeoCalib commit `1dedb29…`) |
+| R2 manifests | `results/h02_r2/*.json` |
+| cost | `docs/COST_LEDGER.md` |
+
+Each SolarWM manifest records the model/pass/step count and the source sample id; the R2
+manifests record sha256 for every uploaded object. The H2 worktree is based on `main`
+(`41d1dad`); the H01 branch is a read-only dependency.
