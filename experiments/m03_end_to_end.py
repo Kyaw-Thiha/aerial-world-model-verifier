@@ -315,6 +315,28 @@ def evaluate(real: pd.DataFrame, masks: dict, tier: str, dev: bool = True) -> di
     return out
 
 
+def reason_codes(real: pd.DataFrame, fr: dict) -> pd.DataFrame:
+    """Per-clip gate decisions and reason codes, one row per clip and condition."""
+    out = []
+    for _, r in real.iterrows():
+        reasons = []
+        if not bool(r.kept_S3_clip):
+            reasons.append("low_confidence_S3")
+        if not (np.isfinite(r.sigma_min) and r.sigma_min >= fr["lam_a"]):
+            reasons.append("weak_signal")
+        if not (np.isfinite(r.tilt_max) and r.tilt_max <= fr["near_vertical"]):
+            reasons.append("near_vertical")
+        if not (np.isfinite(r.dis_med) and r.dis_med <= fr["tau_b"]):
+            reasons.append("readers_disagree")
+        out.append({"clip_id": r.clip_id, "flight": r.flight, "cond": r.cond,
+                    "in_dev": bool(r.in_dev),
+                    "sigma_min": r.sigma_min, "tilt_max": r.tilt_max,
+                    "dis_med": r.dis_med, "R": r.R, "F0": r.F0, "C2": r.C2,
+                    "k_d_C2": r.k_d_C2,
+                    "reason_codes": ";".join(reasons) if reasons else "none"})
+    return pd.DataFrame(out)
+
+
 def clustered_rates(real: pd.DataFrame, masks: dict, tier: str) -> dict:
     """Per-condition hit rates with flight-clustered (descriptive) intervals."""
     base = real[real.in_dev]
@@ -363,6 +385,11 @@ def main() -> None:
     for cfg, m in masks.items():
         real[cfg] = m
     real.to_csv(OUT / "real_tiers.csv", index=False)
+
+    rc = reason_codes(real, fr)
+    rc.to_csv(OUT / "reason_codes_real.csv", index=False)
+    print("reason-code composition (clip level, real condition):",
+          rc[(rc.cond == "real")].reason_codes.value_counts().to_dict())
 
     res = {}
     for tier in TIERS:

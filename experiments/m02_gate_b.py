@@ -194,29 +194,36 @@ def probe_check() -> dict:
 
 
 # --------------------------------------------------------------------------- per-clip
+def _tii_leans(g, meta, cid, cond, truth):
+    """Per-row leans for one TII clip and condition, aligned on the reader's frame indices."""
+    idx_ = np.asarray(g.frame_index.values, int)
+    m = meta[cid]
+    R_cb = camera_to_body_pitched(np.deg2rad(m["uptilt_deg"]))
+    l_pf = lean_from_gravity(np.vstack(g.pf_gravity.values), R_cb)
+    l_gc = lean_from_gravity(np.vstack(g.gc_gravity.values), R_cb)
+    z = np.load(CLIPS / m["flight"] / f"{cid}__{cond}" / "verdict_clip.npz")
+    dep_all = np.asarray(z["depicted_lean"], float)
+    dep = dep_all[idx_]
+    return l_pf, l_gc, dep, truth[cid][idx_]
+
+
 def build_real_table(scores: pd.DataFrame) -> pd.DataFrame:
     keep, s3 = gate_tables()
     meta = tii_clip_meta()
     truth = tii_truth()
-    rows = []
+    rows, frames = [], []
     tii = scores[scores.source == "tii"]
     for (cid, cond), g in tii.groupby(["clip_id", "cond"]):
         g = g.sort_values("frame_index")
-        m = meta[cid]
-        R_cb = camera_to_body_pitched(np.deg2rad(m["uptilt_deg"]))
-        l_pf = lean_from_gravity(np.vstack(g.pf_gravity.values), R_cb)
-        l_gc = lean_from_gravity(np.vstack(g.gc_gravity.values), R_cb)
-        c = np.load(CLIPS / m["flight"] / f"{cid}__{cond}" / "verdict_clip.npz")
-        dep = np.asarray(c["depicted_lean"], float)
-        req = np.asarray(c["lean_req"], float)      # v2 side, for the archive only
-        n = min(len(l_pf), len(dep))
-        l_pf, l_gc, dep = l_pf[:n], l_gc[:n], dep[:n]
+        l_pf, l_gc, dep, tru = _tii_leans(g, meta, cid, cond, truth)
         d_stats = disagreement(lean_difference_deg(l_pf, l_gc))
         ens = ensemble_lean(dep, l_pf)
-        tru = truth[cid][:n]
-        rows.append({"source": "tii", "clip_id": cid, "flight": m["flight"], "cond": cond,
-                     "in_dev": m["flight"] in DEV, "kept_S3": bool(keep.get(cid, False)),
-                     "s3": s3.get(cid, np.nan), "n": n,
+        z = np.load(CLIPS / meta[cid]["flight"] / f"{cid}__{cond}" / "verdict_clip.npz")
+        req = np.asarray(z["lean_req"], float)[np.asarray(g.frame_index.values, int)]
+        rows.append({"source": "tii", "clip_id": cid, "flight": meta[cid]["flight"],
+                     "cond": cond, "in_dev": meta[cid]["flight"] in DEV,
+                     "kept_S3": bool(keep.get(cid, False)), "s3": s3.get(cid, np.nan),
+                     "n": int(len(l_pf)),
                      "dis_med": d_stats.median, "dis_p90": d_stats.p90,
                      "dis_wmax": d_stats.window_max,
                      "err_frozen": float(np.nanmedian(lean_difference_deg(dep, tru))),
@@ -227,26 +234,14 @@ def build_real_table(scores: pd.DataFrame) -> pd.DataFrame:
                      "coh_frozen": coherence_series(dep, req),
                      "coh_pf": coherence_series(l_pf, req),
                      "coh_ens": coherence_series(ens, req)})
-    df = pd.DataFrame(rows)
-    # frame-level table for AUROC
-    frames = []
-    for (cid, cond), g in tii.groupby(["clip_id", "cond"]):
-        if cond != "real":
-            continue
-        g = g.sort_values("frame_index")
-        m = meta[cid]
-        R_cb = camera_to_body_pitched(np.deg2rad(m["uptilt_deg"]))
-        l_pf = lean_from_gravity(np.vstack(g.pf_gravity.values), R_cb)
-        l_gc = lean_from_gravity(np.vstack(g.gc_gravity.values), R_cb)
-        c = np.load(CLIPS / m["flight"] / f"{cid}__real" / "verdict_clip.npz")
-        dep = np.asarray(c["depicted_lean"], float)
-        n = min(len(l_pf), len(dep))
-        e = lean_difference_deg(dep[:n], truth[cid][:n])
-        d = lean_difference_deg(l_pf[:n], l_gc[:n])
-        for i in range(n):
-            frames.append({"clip_id": cid, "flight": m["flight"], "frame": i,
-                           "dis": float(d[i]), "err_frozen": float(e[i])})
-    return df, pd.DataFrame(frames)
+        if cond == "real":
+            d = lean_difference_deg(l_pf, l_gc)
+            e = lean_difference_deg(dep, tru)
+            for i in range(len(d)):
+                frames.append({"clip_id": cid, "flight": meta[cid]["flight"],
+                               "frame": int(g.frame_index.values[i]),
+                               "dis": float(d[i]), "err_frozen": float(e[i])})
+    return pd.DataFrame(rows), pd.DataFrame(frames)
 
 
 def build_sim_table(scores: pd.DataFrame) -> pd.DataFrame:
