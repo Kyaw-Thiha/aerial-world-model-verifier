@@ -1,0 +1,53 @@
+# Track M, Stage 2 -- amendment 1 to configs/m02_gate_b_prereg.yaml
+#
+# Written and committed BEFORE any Gate B statistic was computed and before any threshold
+# was chosen.  It changes the FEED for the real TII clips only, and records the measurement
+# that forced the change.  No statistic, no label, no success criterion and no split changes.
+amendment: 1
+date: '2026-11-22'
+track: M
+stage: 2
+status: committed before any Gate B outcome
+concerns: m02_gate_b_prereg.yaml#readers/feed
+
+what_changed:
+  from: 'square centre crop -> 224 px with a focal prior of 112 px, for every source'
+  to:
+    real_tii: >
+      the project's own 100 deg virtual pinhole view (src.perception.undistort, K from the
+      released OpenCV calibration, 640 x 480, f = 268.5 px, valid pixel fraction 0.46-0.47),
+      applied AFTER the condition's pixel edit, with the same optical axis and therefore the
+      same mount.  Both readers then see a genuine pinhole image with the correct focal.
+    simulated: unchanged -- the renders are genuine pinhole images at 640 x 360 with a 90 deg
+      field, so the 224 crop with f = 199.1 px is geometrically correct
+    generators: unchanged -- 224 x 224 renders at 90 deg, f = 112 px (H03's feed)
+  statistic: unchanged in kind -- the per-frame lean difference between the two readers, and
+    its clip median
+
+why_measured:
+  observation: >
+    On the 13,013 TII frame-reads of the first pass (tag v1: 40 clips x 6 conditions, crop feed,
+    f = 112), the two readers' leans differ by a median 21.97 deg on the real condition, and the
+    GeoCalib-224 lean is a median 23.75 deg from the mocap truth while the frozen fisheye reader
+    is 3.71 deg from it.  By uptilt the roll-only disagreement is 1.9-3.1 deg on the 40-50 deg
+    mounts and 13.5 deg on the 30 deg piloted ellipse.
+  interpretation: >
+    A 224 px centre crop of a ~150 deg fisheye is not a 90 deg pinhole image, so the f = 112
+    prior is wrong by a large factor and the *pitch* component of any pinhole reader is
+    invalid on it.  The roll component survives (it is focal-invariant), which is why H03's
+    1.30 deg roll check on 30 real fisheye controls passed -- but a lean difference needs the
+    pitch, so the crop feed cannot carry Gate B on TII.
+  evidence_kept: >
+    The v1 rows are kept (tag `v1`) and reported as the measured failure of the crop feed; no
+    gate statistic is computed from them.  The real-clip Gate B decision uses tag `v3`.
+
+what_does_not_change:
+  - the gate rule (abstain above tau on the clip-median disagreement)
+  - the conformance risk-control selection and its two risks
+  - the labels, the AUROC questions, the forest check and the ensemble arm
+  - the splits, the frame strides and the populations
+  - the reading that Gate B reads each condition's own pixels
+
+not_yet_known: >
+  No Gate B statistic on any valid feed had been computed when this file was written; the only
+  numbers seen were the feed-invalidity measurements above.

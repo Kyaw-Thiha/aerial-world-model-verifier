@@ -134,7 +134,7 @@ def _video_frames(path, stride):
 @app.function(image=image, gpu="A10", volumes={VOL: VOL_M, VA: VOL_A},
               timeout=6 * 3600, env={"HF_HOME": "/vol/hf"})
 def read(sources: str = "sim,tii,h04,h01", tag: str = "v1", shard: int = 0,
-         n_shards: int = 1, limit: int = 0) -> dict:
+         n_shards: int = 1, limit: int = 0, feed: str = "crop224") -> dict:
     import shutil
     import time
     import zipfile
@@ -145,7 +145,21 @@ def read(sources: str = "sim,tii,h04,h01", tag: str = "v1", shard: int = 0,
     from geocalib import GeoCalib
     from perspective2d import PerspectiveFields
 
+    from src.datasets.tii_video import flight_parts, load_calibration
     from src.negatives import equidistant_f, remap_arrays, warp_with_remap
+    from src.perception import undistort as U
+
+    vc_cache = {}
+
+    def _pinhole(flight, img):
+        """Undistort a TII fisheye frame to the project's 100 deg virtual pinhole view."""
+        if flight not in vc_cache:
+            control, track = flight_parts(flight)
+            cal = load_calibration(Path(VOL, "m02/inputs/tii_calib"), control, track)
+            vc_cache[flight] = U.virtual_camera(cal["K"], cal["dist"], (640, 480),
+                                                fov_deg=100.0)
+        vc = vc_cache[flight]
+        return U.undistort(img, vc), float(vc.K[0, 0])
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
     gc = GeoCalib(weights="pinhole").to(device)
@@ -200,8 +214,14 @@ def read(sources: str = "sim,tii,h04,h01", tag: str = "v1", shard: int = 0,
                             mx, my = remap_arrays(spec[f"M_{cond}"][lo + k].astype(np.float64),
                                                   size[0], size[1], fpx)
                         warped, _ = warp_with_remap(img, mx, my)
-                        row = _read_pair(gc, pf, _prep(warped), device,
-                                         float(it.get("f_px", F_PX)))
+                        if feed == "pinhole100":
+                            feed, fpx_use = _pinhole(flight, warped)
+                            row = _read_pair(gc, pf, feed, device, fpx_use)
+                            row["feed"] = "pinhole100"
+                        else:
+                            row = _read_pair(gc, pf, _prep(warped), device,
+                                             float(it.get("f_px", F_PX)))
+                            row["feed"] = "crop224"
                         row.update({"source": "tii", "clip_id": it["clip_id"],
                                     "flight": flight, "cond": cond,
                                     "frame_index": k, "frame_name": name})
@@ -318,9 +338,10 @@ def probe(n_frames: int = 6) -> dict:
 
 @app.local_entrypoint()
 def main(mode: str = "read", sources: str = "sim,tii,h04,h01", tag: str = "v1",
-         shard: int = 0, n_shards: int = 1, limit: int = 0):
+         shard: int = 0, n_shards: int = 1, limit: int = 0, feed: str = "crop224"):
     if mode == "probe":
         print(json.dumps(probe.remote(), indent=1))
     else:
         print(json.dumps(read.remote(sources=sources, tag=tag, shard=shard,
-                                     n_shards=n_shards, limit=limit), indent=1))
+                                     n_shards=n_shards, limit=limit, feed=feed),
+                         indent=1))
