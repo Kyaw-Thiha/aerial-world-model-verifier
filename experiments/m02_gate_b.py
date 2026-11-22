@@ -237,10 +237,14 @@ def build_real_table(scores: pd.DataFrame) -> pd.DataFrame:
         if cond == "real":
             d = lean_difference_deg(l_pf, l_gc)
             e = lean_difference_deg(dep, tru)
+            conf = np.asarray(z["depicted_conf"], float)[
+                np.asarray(g.frame_index.values, int)]
             for i in range(len(d)):
                 frames.append({"clip_id": cid, "flight": meta[cid]["flight"],
                                "frame": int(g.frame_index.values[i]),
-                               "dis": float(d[i]), "err_frozen": float(e[i])})
+                               "dis": float(d[i]), "err_frozen": float(e[i]),
+                               "s3_frame": float(-conf[i])
+                               if np.isfinite(conf[i]) else np.nan})
     return pd.DataFrame(rows), pd.DataFrame(frames)
 
 
@@ -383,11 +387,20 @@ def auroc_table(real: pd.DataFrame, frames: pd.DataFrame, sim: pd.DataFrame) -> 
                             r.flight, draws=2000),
     }
     f = frames[frames.flight.isin(DEV)]
+    labf = (f.err_frozen > LABEL_DEG).astype(int)
     out["real_frame"] = {
-        "n": int(len(f)),
-        "dis": cluster_auroc(f.dis, (f.err_frozen > LABEL_DEG).astype(int),
-                             f.flight, draws=2000),
+        "n": int(len(f)), "positives": int(labf.sum()),
+        "dis": cluster_auroc(f.dis, labf, f.flight, draws=2000),
+        "s3": cluster_auroc(f.s3_frame, labf, f.flight, draws=2000),
+        "combined": cluster_auroc(combined_score(f.dis.values, f.s3_frame.values), labf,
+                                  f.flight, draws=2000),
     }
+    for mount, g in sim[(sim.defect == "feasible") & sim.err_frozen.notna()].groupby("mount"):
+        lb = (g.err_frozen > LABEL_DEG).astype(int)
+        out[f"sim_mount_{int(mount)}"] = {
+            "n": int(len(g)), "positives": int(lb.sum()),
+            "auroc_dis": float(auroc(g.dis_med, lb)),
+            "auroc_s3": float(auroc(-g.s3, lb))}
     s = sim[(sim.defect == "feasible") & sim.err_frozen.notna()]
     lab = (s.err_frozen > LABEL_DEG).astype(int)
     out["sim_clip"] = {
@@ -455,6 +468,7 @@ def ensemble_table(sim: pd.DataFrame) -> dict:
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--tag", default="v1")
+    ap.add_argument("--stage", default="all", choices=("all", "selection", "evaluation"))
     args = ap.parse_args()
     OUT.mkdir(parents=True, exist_ok=True)
 
@@ -473,6 +487,14 @@ def main() -> None:
     au = auroc_table(real, frames, sim)
     (OUT / "auroc.json").write_text(json.dumps(au, indent=1))
     print(json.dumps(au, indent=1))
+    if args.stage == "selection":
+        sel = gate_b_select(real)
+        sel["curve"].to_csv(OUT / "gate_b_curve.csv", index=False)
+        (OUT / "gate_b_selection.json").write_text(
+            json.dumps({k: v for k, v in sel.items() if k != "curve"}, indent=1))
+        print("gate B selection (development only):",
+              {k: v for k, v in sel.items() if k != "curve"})
+        return
 
     sel = gate_b_select(real)
     sel["curve"].to_csv(OUT / "gate_b_curve.csv", index=False)

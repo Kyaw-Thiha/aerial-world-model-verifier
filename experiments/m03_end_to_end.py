@@ -240,9 +240,11 @@ def build_sim(rows: pd.DataFrame) -> pd.DataFrame:
 
 
 def load_score_rows(tag: str) -> pd.DataFrame:
+    """One or more comma-separated score tags."""
     frames = []
-    for p in sorted((ROOT / "data/m02_scores" / tag).glob("*.jsonl")):
-        frames += [json.loads(l) for l in p.read_text().splitlines() if l.strip()]
+    for t in [x.strip() for x in tag.split(",") if x.strip()]:
+        for p in sorted((ROOT / "data/m02_scores" / t).glob("*.jsonl")):
+            frames += [json.loads(l) for l in p.read_text().splitlines() if l.strip()]
     if not frames:
         raise SystemExit("no score rows; pull them from the volume first")
     df = pd.DataFrame(frames)
