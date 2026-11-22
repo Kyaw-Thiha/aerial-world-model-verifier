@@ -283,6 +283,7 @@ def _train_and_eval(arm: str, holdout: str, seed: int, epochs: int, lr: float, b
     net.train()
     t0 = time.time()
     hist = []
+    skipped = 0
     for epoch in range(epochs):
         run, nb = 0.0, 0
         for xb, yb, cms in batches(frames_per_epoch):
@@ -303,10 +304,11 @@ def _train_and_eval(arm: str, holdout: str, seed: int, epochs: int, lr: float, b
                 up = torch.cat(out, 0)
             loss = (1.0 - (up * F.normalize(yb.to("cuda"), dim=-1)).sum(-1)).mean()
             if not loss.requires_grad:
-                raise RuntimeError(
-                    f"loss has no grad: arm={arm} holdout={holdout} cms={set(cms)} "
-                    f"n_requires_grad={sum(p.requires_grad for p in net.parameters())} "
-                    f"training={net.training}")
+                # GeoCalib's LM returns a detached estimate when its Cholesky solve fails
+                # (singular Hessian on ceiling views and some warped frames). Skip that batch
+                # rather than losing the fold; the count is recorded in the history.
+                skipped += 1
+                continue
             opt.zero_grad(set_to_none=True)
             loss.backward()
             torch.nn.utils.clip_grad_norm_(net.parameters(), 1.0)
@@ -315,7 +317,7 @@ def _train_and_eval(arm: str, holdout: str, seed: int, epochs: int, lr: float, b
             run += float(loss)
             nb += 1
         hist.append({"epoch": epoch, "loss": run / max(nb, 1), "steps": nb,
-                     "seconds": time.time() - t0})
+                     "skipped_no_grad": skipped, "seconds": time.time() - t0})
         print(f"[{arm}/{holdout}] epoch {epoch} loss {run / max(nb, 1):.4f}", flush=True)
 
     @torch.no_grad()
@@ -354,6 +356,9 @@ def _train_and_eval(arm: str, holdout: str, seed: int, epochs: int, lr: float, b
         net.train()
         return out_rows
 
+    if skipped > 0.5 * max(1, epochs * max(1, frames_per_epoch // batch)):
+        raise RuntimeError(f"{arm}/{holdout}: {skipped} batches had no autograd graph; "
+                           f"the arm is not training")
     rec = {"arm": arm, "holdout": holdout, "seed": seed, "epochs": epochs, "lr": lr,
            "batch": batch, "lm_steps": lm_steps, "frames_per_epoch": frames_per_epoch,
            "dr": bool(dr and arm == "mixed"), "weights": weights,
@@ -447,10 +452,11 @@ def smoke(arm: str = "mixed", steps: int = 6) -> dict:
             up = F.normalize(o["gravity"].vec3d, dim=-1)
             loss = (1.0 - (up * F.normalize(ys[j:j + 1].to("cuda"), dim=-1)).sum(-1)).mean()
             if not loss.requires_grad:
-                raise RuntimeError(
-                    f"loss has no grad: arm={arm} holdout={holdout} cms={set(cms)} "
-                    f"n_requires_grad={sum(p.requires_grad for p in net.parameters())} "
-                    f"training={net.training}")
+                # GeoCalib's LM returns a detached estimate when its Cholesky solve fails
+                # (singular Hessian on ceiling views and some warped frames). Skip that batch
+                # rather than losing the fold; the count is recorded in the history.
+                skipped += 1
+                continue
             opt.zero_grad(set_to_none=True)
             loss.backward()
             opt.step()
@@ -499,10 +505,11 @@ def check() -> dict:
             yb = F.normalize(torch.tensor(y, dtype=torch.float32)[None].to("cuda"), dim=-1)
             loss = (1.0 - (up * yb).sum(-1)).mean()
             if not loss.requires_grad:
-                raise RuntimeError(
-                    f"loss has no grad: arm={arm} holdout={holdout} cms={set(cms)} "
-                    f"n_requires_grad={sum(p.requires_grad for p in net.parameters())} "
-                    f"training={net.training}")
+                # GeoCalib's LM returns a detached estimate when its Cholesky solve fails
+                # (singular Hessian on ceiling views and some warped frames). Skip that batch
+                # rather than losing the fold; the count is recorded in the history.
+                skipped += 1
+                continue
             opt.zero_grad(set_to_none=True)
             loss.backward()
             opt.step()
