@@ -81,36 +81,38 @@ showed that the sample confounds family with mount:
 | `i02_dev_134` | forest_ridge | ellipse | 30 deg | 4.72 | 10.41 | 11.90 (15.29) | -0.51 / 0.65 |
 | `i02_dev_135` | industrial | lemniscate | 45 deg | 12.90 | 8.21 | 7.58 (12.30) | 1.43 / 0.57 |
 
-All **56 scored feasible development clips**, 13,516 frames, one row per
-(family, mount) cell -- the 3 x 4 grid the downstream tracks asked for, filled with every
-feasible development clip rather than one example:
+All **80 feasible development clips**, 19,081 frames, one row per
+(family, mount) cell -- the 3 x 4 grid the downstream tracks asked for, with every feasible
+development clip in it rather than one example:
 
 | family | mount | clips | frames | up error, median (range across clips) | gain, fwd |
 | --- | --- | --- | --- | --- | --- |
-| forest_ridge | 0 | 5 | 1231 | **7.52** (6.27-8.59) | 0.26 |
-| forest_ridge | 15 | 4 | 1056 | **7.73** (6.95-8.31) | 0.55 |
-| forest_ridge | 30 | 4 | 1083 | **9.41** (8.65-14.86) | 0.61 |
-| forest_ridge | 45 | 5 | 851 | **10.54** (9.02-12.60) | 1.01 |
-| industrial | 0 | 5 | 1398 | **1.18** (1.03-1.19) | 0.70 |
-| industrial | 15 | 5 | 1400 | **1.29** (0.67-1.45) | 0.90 |
-| industrial | 30 | 5 | 1292 | **1.27** (0.70-1.42) | 0.93 |
-| industrial | 45 | 4 | 779 | **3.23** (2.02-4.94) | 0.97 |
-| urban_checker | 0 | 4 | 997 | **0.95** (0.80-1.15) | 0.86 |
-| urban_checker | 15 | 5 | 1428 | **0.49** (0.28-0.57) | 1.00 |
-| urban_checker | 30 | 5 | 1162 | **0.93** (0.92-1.13) | 1.07 |
-| urban_checker | 45 | 5 | 839 | **1.39** (1.29-1.95) | 1.06 |
+| forest_ridge | 0 | 6 | 1415 | **7.02** (6.27-8.59) | 0.27 |
+| forest_ridge | 15 | 7 | 1776 | **7.62** (6.95-9.07) | 0.78 |
+| forest_ridge | 30 | 7 | 1798 | **9.41** (8.65-14.86) | 0.66 |
+| forest_ridge | 45 | 6 | 1002 | **10.69** (9.02-12.60) | 1.10 |
+| industrial | 0 | 7 | 1846 | **1.18** (1.03-1.29) | 0.78 |
+| industrial | 15 | 6 | 1711 | **1.30** (0.67-2.14) | 0.89 |
+| industrial | 30 | 7 | 1902 | **1.27** (0.70-1.42) | 0.91 |
+| industrial | 45 | 7 | 1277 | **2.79** (1.45-4.94) | 1.04 |
+| urban_checker | 0 | 7 | 1700 | **0.85** (0.50-1.15) | 0.86 |
+| urban_checker | 15 | 7 | 2107 | **0.49** (0.28-0.57) | 1.00 |
+| urban_checker | 30 | 6 | 1372 | **0.95** (0.92-1.13) | 1.06 |
+| urban_checker | 45 | 7 | 1175 | **1.49** (1.29-1.95) | 1.05 |
 
 Three conclusions, and they are findings about the *reader*, not about the defects:
 
-* **the scene sets the floor, not the violation.** The six-clip sample's 6-12 deg errors on
-  forest clips reappear on forest *feasible* clips (6.3-10.5 deg), so they are the family's
-  bias (canopy occludes the horizon and the ground texture), not an effect of the defect;
-* **mount angle matters where the scene is open**: urban and industrial go from 0.3-1.2 deg at
-  0-30 deg of uptilt to 2-5 deg at 45 deg, with a heavy tail (p90 28 deg on one industrial
-  clip) -- the 45 deg camera looks mostly at sky;
-* **the gain is ~1 where the lean is measurable** (0.86-1.10 on urban and industrial) and
-  noisy in the forest (0.27-1.29), which is the same pattern the real TII analysis found
-  between the piloted and the two trackRATM flights.
+* **the scene sets the floor, not the violation.** Dense forest reads 7.0-10.7 deg of up-vector
+  error at every mount (six to seven clips per cell, ranges 6.3-14.9 deg), while the two open
+  families stay at 0.5-2.8 deg. The same magnitudes appeared on forest *feasible* clips before
+  any defect was scored, so this is the family's bias -- canopy occludes the horizon and the
+  ground texture -- not an effect of the violation;
+* **mount angle matters where the scene is open**: urban reads 0.85, 0.49, 0.95 and 1.49 deg at
+  0/15/30/45 deg of uptilt and industrial 1.18, 1.30, 1.27 and 2.79 -- a factor of two to three
+  between the 15 deg mount and the 45 deg one, because the 45 deg camera looks mostly at sky;
+* **the lean gain is ~1 where the lean is measurable** (0.86-1.06 on urban, 0.78-1.04 on
+  industrial) and noisy in the forest (0.27-1.10), which is the same pattern the real TII
+  analysis found between the piloted flights and the two trackRATM flights.
 
 The practical consequence for Tracks F2 and G2 is that a pooled detection rate over this set
 would be an average over two very different readers. The report and the manifest therefore
