@@ -1,0 +1,333 @@
+# Track G3 pre-registration: segment detection with the scale-free coherence tier,
+# on the simulated labelled set (G06/G07).
+#
+# Committed BEFORE any defect clip is scored with the window statistic in this track.
+# Nothing in this file was chosen after seeing a detection rate. The only dev-set facts
+# used are file metadata (which clips exist, their label, family, mount, duration and
+# exact interval), never a statistic computed on a defect clip.
+#
+# Relation to earlier pre-registrations: this is a NEW file. The frozen
+# `configs/g05_round2_design_prereg.yaml` (Track G2) is not edited. G05's items 2
+# (robust/weighted location) and its confidence weights are dropped by the handoff
+# (J04: the learned confidence moved no downstream decision); its items 3-6 are carried
+# forward with the changes listed below.
+prereg_version: 1
+date: '2026-11-22'
+track: G3
+owner_branch: track-g3-segments
+worktree: ~/Documents/Projects/awmv-g3
+reports: [reports/G06_segments_ablation_on_sim.md, reports/G07_segments_frozen_evaluation.md]
+status: committed_before_any_defect_score
+
+# ------------------------------------------------------------------ provenance
+provenance:
+  base_branch: main
+  base_commit: 41d1dad
+  ported_verbatim:
+    - path: src/verdict/segments.py
+      from_branch: track-g2-segments
+      from_commit: 4c6eacf
+      why: round-1/2 window machinery, used unchanged so the ablation compares the same code
+    - path: src/sim/
+      from_branch: track-i-simset
+      from_commit: 2d815cc
+      why: Track I's flight/scene/label/dataset builder, needed to build the auxiliary yaw slice
+  data:
+    manifest: Track I's results/i02/manifest.csv
+    manifest_sha256_at_freeze: 9dd728cb71ab79f0802a2522906d6e22380dccc5e817e14b569f8ecc91b0ec8a
+    manifest_rows_at_freeze: 173   # 170 dev (200 planned), 3 heldout (100 planned)
+    video_rate_truth: Track I's results/i02/gt_video_rate.csv (render-side lean, exact)
+
+# ------------------------------------------------------------------ populations
+populations:
+  dev_sim:
+    scenes: [urban_checker, forest_ridge, industrial]     # 6 scene seeds, 101-106
+    available_at_freeze: 170 of 200 clips
+    scoring_rule: >
+      The 170 dev clips on R2 at freeze are scored first. The remaining ~30 infeasible dev
+      clips are scored once Track I publishes them, under this same config, and enter the
+      same tables as a second batch; they are not a new design. Feasible dev clips are
+      already all present (80 of 80).
+    stratification: [scene_family, uptilt_deg]   # every rate reported per cell
+  heldout_sim:
+    scenes: [field_settlement, coastal_cliff]             # 6 scene seeds, 201-206
+    clips: 100
+    rule: scored once, after the dev pass is committed, with the thresholds fitted on dev
+  dev_real:
+    flights: six dev TII flights, gate-kept stratum (69 of 82 clips)
+    rule: G01/G04 population and partial-edit composition, unchanged
+  heldout_real:
+    flights: [flight-13p-trackRATM, flight-07a-lemniscate]
+    rule: frozen in round 1, scored once at the final evaluation
+
+# ------------------------------------------------------------------ reader
+reader:
+  instrument: GeoCalib, pinhole model, known focal prior (90 deg hfov, f = 0.5*W/tan(45))
+  weights: pinhole
+  frames: every video frame, stride 1 (30 fps) for every clip in this track
+  why_stride_1: >
+    Track I's published score files mix stride 1 (8 clips, 4,242 frames) and stride 2
+    (78 clips, 18,366 frames). A window statistic in frames must sit on one sampling rate;
+    12 frames at 30 fps is 0.40 s, at 15 fps 0.80 s. All clips are therefore re-scored at
+    stride 1 (the 8 stride-1 files are reproduced, not trusted).
+  reuse_rule: >
+    Track I's stride-2 rows are not used in any statistic. They are used once, as the object
+    of the consistency check below, then set aside.
+  consistency_check:
+    what: >
+      For each of the 78 stride-2 clips, compare the new stride-1 lean_est at every even
+      frame index with Track I's stride-2 row at the same index.
+    expectation: exact equality (GeoCalib is deterministic; same weights, same frames)
+    reported: per-clip median and max |Delta lean_est|, and the count of clips outside 1e-9
+    non_zero_interpretation: >
+      A non-zero difference is a decode-path difference (seek vs sequential H.264), not a
+      reader difference; it is reported as a finding and nothing is adjusted.
+  no_duplicate_policy: >
+    The 8 existing stride-1 clips are re-scored so that all 170 dev clips come from one run,
+    with one config and one decode path. New score files are published under results/g06/scores/.
+
+# ------------------------------------------------------------------ window statistic
+windows:
+  definitions_fixed_not_tuned:
+    primary:
+      length_frames: 12
+      hop_frames: 4
+      tier: coherence
+      persistence: 1
+    comparison:
+      - {length_frames: 8,  hop_frames: 4, tier: residual, persistence: 1}
+      - {length_frames: 8,  hop_frames: 4, tier: residual, persistence: 2}
+      - {length_frames: 12, hop_frames: 4, tier: coherence, persistence: 2}
+      - {length_frames: 12, hop_frames: 4, tier: sign, persistence: 1}
+    baseline:
+      name: whole_clip_median
+      definition: clip median of the per-frame depicted-vs-required thrust-axis angle
+      windows: none
+  tier_definitions:
+    residual: >
+      median over usable frames of the angle between the depicted and required thrust axes,
+      reconstructed with src.depicted.clips.up_body_from_lean and the frozen ZYX route
+      (src.verdict.segments.frame_residual_deg). The angle is invariant to the path yaw.
+    coherence: >
+      1 - min(r_x, r_y), per-axis Pearson correlation between depicted and required lean over
+      the window, lag 0 (src.verdict.coherence). Invariant to a per-axis offset and gain,
+      which is why it is the primary tier (J03).
+    sign: 1 - min(s_x, s_y), per-axis sign agreement over the window (secondary).
+  abstention:
+    usable_frames: round(0.75 * length_frames)      # 6 of 8, 9 of 12, 12 of 16
+    signal_frames: 2
+    signal_tilt_deg: 10.0
+    variance_floor_lean_units: 0.01                  # coherence/sign abstain per tier
+    rule: >
+      A window with too few usable or signal frames abstains for every tier. A clip with no
+      eligible window under an arm is NOT TESTABLE for that arm and is excluded from that
+      arm's denominator, never counted as a pass. The testable denominator is printed beside
+      every rate.
+  clip_statistic: maximum over eligible windows of the tier value
+  persistence_statistic: >
+    maximum over runs of n consecutive windows of their minimum (src.verdict.segments.
+    clip_max_persistent); a window that abstained breaks the run.
+  no_fitted_nuisances: >
+    Nothing is fitted per clip or per window: no offset, no drag, no gain, no smoothing.
+    J03 measured what a per-clip offset absorbs (31 of 42 full-clip removal detections), so
+    it is excluded by design, not by ablation.
+  no_demand_selection: >
+    Every window is scored. G04 showed path-demand selection flags the same real clips and
+    loses partial-edit detection; it is not carried forward.
+  no_confidence_weighting: >
+    The reader's learned confidence is not used (J04). The frozen S3 gate was fitted on real
+    TII confidence and has no validated transfer to simulated frames, so it is not applied to
+    the simulated block; it remains the admissible-population rule for the real block only.
+
+# ------------------------------------------------------------------ calibration
+calibration:
+  nominal_alpha: 0.05
+  rule: empirical (1 - alpha) quantile of the clip statistic on the fit population
+  sim:
+    fit_population: feasible dev clips only
+    folds: leave-one-scene-seed-out (6 folds, seeds 101-106)
+    heldout_threshold: fitted on all feasible dev clips, then applied unchanged to held-out scenes
+    min_fit_clips_for_threshold: 8
+  real:
+    fit_population: gate-kept dev clips
+    folds: leave-one-flight-out (6 folds)
+    heldout_threshold: fitted on the dev flights, applied once to the two held-out flights
+  matched_false_reject: >
+    Detection is reported (i) at the nominal 5 % threshold with the empirical false-reject
+    printed beside it, and (ii) at a threshold that matches each arm's empirical false-reject
+    to the baseline's, so no arm is credited for a looser calibration.
+
+# ------------------------------------------------------------------ ablations (each alone)
+ablations:
+  A1_window_statistic:
+    arms: [12f coherence P1 (primary), 8f coherence P1, 12f residual P1, 8f residual P1,
+           8f residual P2, 12f sign P1, whole-clip median (baseline)]
+    reported: detection per family/fraction, IoU, F1, onset error, false segments/min
+  A2_fdr:
+    primary: >
+      Benjamini-Hochberg within each clip on window p-values, q = 0.10. p-values from the
+      empirical CDF of the window statistic over all windows of the fit feasible clips of the
+      same tier: p = (1 + #{T_fit >= T}) / (n_fit + 1). Clip flagged if any window is rejected.
+    ablations:
+      q: [0.05, 0.10, 0.20]
+      variant: corpus-level BH instead of per-clip
+    reported: realised false-discovery proportion on injected/defect clips (flagged windows
+      outside the true interval / all flagged windows), false segments per minute, detection
+    comparison: the max-over-windows family-wise rule of A1 (single conformal threshold)
+  A3_boundaries:
+    rule: >
+      Inside each merged flagged region, fit a two-state model to per-frame |residual|: state 0
+      half-normal with sigma = 1.4826 * MAD of the fit feasible clips' per-frame |residual|,
+      state 1 half-normal with free mean mu >= 0 and the same sigma. Grid the onset and offset
+      over the region extended by two windows at 1-frame resolution; maximise the summed log
+      likelihood.
+    reported: Delta IoU, Delta F1, Delta onset error against the unrefined segments
+    constraint: refit only inside flagged regions; no global smoothing
+  A4_alignment:
+    rule: >
+      One lag per clip, maximising the correlation between |depicted lean| and |lean_req|
+      over the frozen gain tier's grid: +/-150 ms in 25 ms steps (at 30 fps, 0.833-frame
+      steps), applied to the required side by linear interpolation before any window is scored.
+    reported: lag distribution per family/mount, Delta false segments/min, Delta IoU, Delta detection
+  A5_multiscale:
+    lengths_frames: [8, 12, 16]
+    rule: >
+      Standardise each length's clip statistic on the fit clips (median, robust scale
+      (q97.5 - q2.5)/3.92) and take the maximum over lengths and windows of the standardised
+      value, with one conformal threshold. Segments come from the windows of the length that
+      produced the maximum; shorter lengths win ties.
+    ablations: each length alone versus the joint rule
+  stacking: >
+    Each item is reported alone against the A1 primary and the baseline; the stacked version
+    (all items on) is reported beside them and never as the only number.
+
+# ------------------------------------------------------------------ controls
+controls:
+  null_edit:
+    definition: the unchanged feasible clip (identity)
+    invariance_proof: >
+      A world-yaw rotation Rz(alpha) of the camera leaves the schema lean bit-identical,
+      because the lean is the world-up vector expressed in the body frame,
+      u_b = R_bw^T e3, and Rz(alpha) e3 = e3. Numerically checked on 200 random attitudes and
+      three yaw angles: max |Delta lean| = 0. This is asserted by
+      tests/test_g3_yaw_invariance.py and is why a simulated yaw control cannot be composed
+      on the depicted side: it would be exactly the null edit.
+    reporting: beside every simulated rate, labelled "null (= feasible clip, exact)"
+  yaw_slice:
+    kind: auxiliary rendered set, owned by Track G3
+    not_part_of: Track I's frozen 300; never mixed into its manifest or rates
+    selection_rule: >
+      For each (scene family, uptilt) cell, the feasible dev clip with the largest
+      peak_tilt_req_deg, ties by clip_id. Fixed by metadata only, before any statistic.
+    clips: [see configs/g06_yaw_slice.json]
+    edit: >
+      R_wc -> Rz(alpha_i) @ R_wc per frame, translation unchanged, with
+      alpha_i = min(tilt_req_deg_i, 60). The image yaws about world up; the lean does not.
+    purpose: the only sim test of the reader's view dependence under yaw
+    reported: false-flag rate of the primary arm on the slice versus the same clips' null,
+      and the reader's yaw-induced lean shift (median, p90) versus G01's real-clip 4.75 deg
+    storage: Modal volume awmv-g3-data, R2 prefix track-g3/, published under results/g06/
+
+# ------------------------------------------------------------------ path-side family
+thrust_limit:
+  label: the path itself exceeds 2.0 thrust-to-weight (peak required tilt > 60 deg); the camera
+    is honest and the pixels are physical
+  treatment: reported as its own family, never pooled with camera defects
+  power_statement: >
+    The segment machinery has NO power on this family: the depicted-vs-required residual is
+    zero by construction and the coherence tier compares the depicted lean with the required
+    lean, which agree. No path-side statistic is added in this track. The family is reported
+    to keep the set's composition honest, with its detection rate stated as not-applicable.
+
+# ------------------------------------------------------------------ metrics
+metrics:
+  primary:
+    - clip-level detection k/n per defect family, interval fraction (10/25/50/100 %) and scene
+      family, at nominal 5 % and at matched false-reject, with the yaw/null controls beside it
+    - interval IoU, F1, onset error in frames and seconds
+    - false segments per real minute on feasible clips
+    - realised false-discovery proportion
+    - minimum localisable violation: smallest lean step (deg) and shortest duration (s) at
+      which detection >= 50 % and median IoU > 0.3, with the noise-floor arithmetic beside it
+  secondary:
+    - detection versus violation magnitude (magnitude_deg) and duration
+    - testable denominator and abstention rate per arm and cell
+    - the whole-clip median baseline's own numbers on every table
+  minimum_detectable_step_curve:
+    kind: synthetic injection, pre-registered (confirmatory)
+    base: simulated feasible dev clips, reader output only
+    edit: >
+      l_dep -> l_dep + tan(Delta) * u_hat over a centred contiguous interval of duration
+      D in {0.4, 0.8, 1.6, 3.2} s, with u_hat the unit direction of the clip's mean required
+      lean (the clip's own lean direction when the clip is level).
+    grid: Delta in {2, 4, 6, 8, 10, 12, 14, 16, 20, 24} deg
+    labelling: synthetic in every table, never pooled with the labelled defects
+  intervals: >
+    scene-seed-clustered (sim) or flight-clustered (real) bootstrap, 5,000 replicates,
+    numpy.random.default_rng(1). Sim dev has 6 scene clusters and the held-out set 6, so all
+    simulated intervals are DESCRIPTIVE spreads, not 95 % confidence intervals; every cell
+    says so and is marked with a dagger. Real dev has 6 flight clusters; the same statement.
+  denominators: k/n beside every rate; no rate without its denominator
+
+# ------------------------------------------------------------------ success criteria
+success_criteria:
+  S1_primary_confirmatory: >
+    At a nominal 5 % false-reject, the 12-frame coherence scan (P1) detects at least 50 % of
+    the 25 %-coverage partial camera defects (tilt removal and mirrored roll separately) with
+    a median IoU > 0.3.
+  S2_primary_beats_comparison: >
+    It detects at least 10 percentage points more of the 25 %-coverage partial defects than
+    the 8-frame residual scan at the matched empirical false-reject.
+  S3_fdr: >
+    At q = 0.10 the realised false-discovery proportion is <= 0.20 on clips whose violation
+    covers part of the clip, and the false-segment rate does not exceed the max-over-windows
+    rule's by more than 0.5 segments per minute.
+  S4_boundaries: median IoU improves by at least 0.05 over unrefined segments.
+  S5_alignment: false segments per minute fall by at least 20 %, or median IoU rises by 0.05.
+  S6_multiscale: the joint rule detects at least 5 percentage points more than the best single
+    length at the matched false-reject.
+  failure_rule: >
+    A criterion that is not met is reported as a negative result in the report's decision
+    sentence; nothing is re-tuned on dev after this file is committed. Any variant added after
+    seeing dev results is labelled EXPLORATORY in every table and in the report summary.
+  family_reporting: >
+    Every rate is stratified by scene family and mount. The forest family is expected to have
+    a large reader bias (I02: 7.0-10.7 deg up error); it is reported separately and never
+    pooled, and its false-reject rate is the number that says what the verifier does there.
+    If it exceeds twice nominal, that is reported as a finding and a forest-excluded pooled
+    sensitivity is printed beside the pooled rate.
+
+# ------------------------------------------------------------------ protocol
+protocol:
+  dev_pass:
+    1: score the 170 available dev clips at stride 1 (reader)
+    2: run the stride-1 versus stride-2 consistency check and commit its result
+    3: render and score the 12-clip yaw slice (auxiliary, awmv-g3-)
+    4: run the ablations A1-A5 and the minimum-detectable-step curve on dev only
+    5: write reports/G06_segments_ablation_on_sim.md and commit the dev result files
+    6: freeze the evaluation recipe in a companion config (no design change) and commit
+  second_dev_batch: >
+    The remaining ~30 infeasible dev clips are scored when Track I publishes them, before the
+    held-out pass, and reported as batch 2 under the same thresholds.
+  heldout_pass:
+    1: score the 100 held-out sim clips at stride 1, once
+    2: apply the dev-frozen thresholds and segments unchanged
+    3: score the 18 held-out real clips once with the dev-frozen real thresholds
+    4: write reports/G07_segments_frozen_evaluation.md
+  prohibitions:
+    - no threshold or knob is chosen on held-out data
+    - no defect-clip statistic is examined before this file is committed
+    - no held-out scene is rendered differently or scored earlier
+    - the auxiliary yaw slice is never pooled with Track I's 300
+    - no per-clip nuisance fit, no demand selection, no confidence weighting
+    - no frozen config is edited; a change is a new amendment file with a stated reason
+
+# ------------------------------------------------------------------ cost
+cost:
+  ceiling_usd: 8.0
+  plan:
+    - dev reader, 170 clips, ~84.7k frames at ~6.8 fps on A10: ~3.7-3.8 USD
+    - yaw slice render (12 clips, ~4.8k frames, L40S) + reader: ~0.6 USD
+    - remaining ~30 dev clips at stride 1: ~0.7 USD
+    - held-out 100 clips at stride 1: ~2.2 USD
+  ledger: docs/COST_LEDGER.md

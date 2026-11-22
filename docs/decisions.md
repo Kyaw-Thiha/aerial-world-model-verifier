@@ -482,3 +482,35 @@ Every row below was read from the project's own repo/HF card on 2026-11-10. "ver
 - [consolidation] **The pre-consolidation state is preserved outside the repository** in `~/Documents/Projects/awmv-archive/`: one verified `git bundle` per branch (sha256 in `backups/SHA256SUMS.txt`), the only untracked file found (`awmv-track-c/results/pathrec_calib/intrinsics.json`), Track C's 103 MB `data/`, and a 42,535-path manifest of the 3.3 GB `data/` tree.
 - [consolidation] **`main` is the single branch; the seven merged branches and their worktrees were kept until the user approved their removal** (checkpoint 2). Each remains restorable from its `archive/*` tag or its bundle.
 - [consolidation] **`awmv-report-assets-2026-11-15.zip` was deleted, on the user's explicit instruction, only after every one of its 203 members was proved to be on `main`** (127 byte-identical, 3 pre-consolidation report scripts still reachable at `59ca0b6`, 73 unique files committed to `docs/archive/report-assets-2026-11-15/`). Its sha256 (`10134d9e…cd6d19`) is recorded in `docs/archive/report-assets-2026-11-15/README.md` and in the consolidation report. `report_tex.zip` never existed on disk, so nothing was deleted in its name and the LaTeX sources remain the one open item. Branches, worktrees, bundles, R2 objects and Modal volumes were left untouched.
+
+## Track G3 — segment detection on the simulated set (2026-11-22) — entries tagged [G3]
+
+- [G3] **A world-yaw rotation leaves the schema lean bit-identical, so a yaw control cannot be
+  composed on the depicted side.** The lean is the world-up vector in the body frame,
+  `u_b = R_bw^T e3`; `R_bw -> Rz(alpha) R_bw` gives `Rz(alpha) e3 = e3`, so `u_b` is unchanged.
+  Checked numerically on 500 random attitudes and arbitrary yaw angles (max `|Delta lean|` =
+  0; `tests/test_g3_yaw_invariance.py`). The real-clip yaw control (`Rz(alpha) R_bw`,
+  `src/negatives/edits.py`) is therefore a test of the **reader's** view dependence, not of the
+  geometry, and it can only be reproduced in simulation by rendering yawed frames. Decision
+  (user, 2026-11-22): Track G3 owns a 12-clip auxiliary rendered yaw slice
+  (`configs/g06_yaw_slice.json`), reported separately and never mixed into Track I's frozen 300.
+- [G3] **Track I's published reader scores mix two frame rates.** 8 score files are stride 1
+  (4,242 frames) and 78 are stride 2 (18,366 frames); frame indices in the rows are original, so
+  the stride is recoverable but the sampling is not uniform. A window statistic in frames cannot
+  span both rates (12 frames = 0.40 s at 30 fps, 0.80 s at 15 fps). Decision (user, 2026-11-22):
+  re-score every clip at stride 1 and check the new rows against the old stride-2 rows at the
+  overlapping even frames (expected exact, because GeoCalib is deterministic). The new scores are
+  published under `results/g06/scores/` for reuse.
+- [G3] **The handoff's "read the LaTeX report in `report/`" cannot be done from `main`.** Only the
+  generated assets (`report/tables`, `report/figures`, `report/data`, `report/scripts`,
+  `assets_test.tex`) are in the repository; the report body is still the open item recorded in
+  the consolidation log and `docs/archive/README.md`. The G3 design was written from
+  `report/ASSETS.md` plus the numbered reports, and this is recorded rather than resolved.
+- [G3] **The simulated set has no yaw or null control and no path-side statistic is added.** The
+  null edit in simulation is the unchanged feasible clip (exact identity); `thrust_limit` is a
+  path label whose depicted-vs-required residual is zero by construction, so the segment machinery
+  has no power on it and no path-side test is introduced in this track (user, 2026-11-22).
+- [G3] **Design frozen before any defect clip was scored** in `configs/g06_segments_prereg.yaml`
+  (commit recorded below): 12-frame coherence scan primary, 8-frame residual scan as comparison,
+  no per-clip nuisance fit, no demand selection, no confidence weighting, FDR/boundary/alignment/
+  multi-scale as separate pre-registered ablations.
