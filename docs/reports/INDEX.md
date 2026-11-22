@@ -77,6 +77,7 @@ Files live in `reports/` at the repository root. Numbering restarts per track: T
 | --- | --- | --- |
 | `J01_reader_error_anatomy.md` | What the depicted-tilt error is made of | current |
 | `J02_noise_budget.md` | The synthetic noise budget: how small a violation is visible | current |
+| `J04_fusion_and_learned_confidence.md` | Learned reader confidence (Stage 1c); 1b not run | current; Stage 1c is selected by rule 3's *literal* reading only — J01 states the premise is weak |
 
 ## Notes
 

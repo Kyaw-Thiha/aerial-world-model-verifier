@@ -28,6 +28,7 @@ results; none of them runs an experiment.
 | E10 | window rule and prototype | D (+ E independent test) | `track-d-verdict-stat`, `track-e-depicted-uzh` | `results/d_window_rates/`, `d_bandwidth/`, `d_uzh_v2/`, `e_verdict_v3/rule/` | D03, D04, E05 |
 | J01 | reader error anatomy | J | `track-j-reader` | `results/j01_anatomy/` | J01 |
 | J02 | synthetic noise budget | J | `track-j-reader` | `results/j02_noise_budget/` | J02 |
+| J04 | learned reader confidence (1c) | J | `track-j-reader` | `results/j04_confidence/` | J04 |
 
 R2 prefixes are `track-a/`, `track-a/a2/`, `track-b/`, `track-c/`, `track-d/`, `track-e/`
 (counts and bytes: `report/data/r2_counts.json`, measured 2026-11-15; verified read-only again
@@ -217,3 +218,17 @@ during consolidation — see `docs/DATA.md` for the current status of listing ac
 * **Results**: `results/j02_noise_budget/summary.json`.
 * **Report**: `reports/J02_noise_budget.md`.
 * **Regenerate**: `PYTHONPATH=. python experiments/j02_noise_budget.py`.
+
+## J04 — learned reader confidence (Stage 1c)
+
+* **Owning track / branch**: J, `track-j-reader`.
+* **What it is**: a logistic model on the reader's own stored per-frame outputs predicting
+  `theta > 10 deg`, leave-one-flight-out; its AUROC and calibration against the frozen S3 signal on
+  the same frames; and the G-round window statistic re-run with the predicted `1-p` as a weight
+  and as a mask on the dev block.
+* **Configs**: `configs/j04_learned_confidence_prereg.yaml`.
+* **Results**: `results/j04_confidence/{per_frame.json, downstream.json, rows.csv}`.
+* **Report**: `reports/J04_fusion_and_learned_confidence.md`.
+* **Regenerate**: `PYTHONPATH=. python experiments/j04_learned_confidence.py` (~25 s, CPU).
+* **Status**: selected by rule 3's literal reading; the premise is weak (88 % of the tail is in
+  clips the frozen gate drops). Stage 1b was not selected by any rule and was not run.

@@ -23,9 +23,10 @@ gate-kept stratum it does (42.8 %). That conflict is reported, not resolved.
    eight TII flights and both axes: 30 % of the squared error is each flight's constant offset,
    40 % is drift below 0.5 Hz, 30 % is everything above 0.5 Hz. That is the frozen GeoCalib
    reader on 5,007 frames; the G03 fine-tuned reader gives 25 / 37 / 38.
-2. **The split is not the same on every flight, and the pooled number is one flight's
-   opinion.** `flight-13a-trackRATM` alone carries about half of the corpus's squared error
-   (RMS 31.7 deg on the pitch axis). On the five clean flights the constant offset is
+2. **The split is not the same on every flight, and the pooled number is three flights'
+   opinion.** The three racing flights carry **83 %** of the corpus's squared error (`13a`
+   alone 44 %, `13p` 24 %, `16p` 15 %); `13a`'s pitch-axis RMS is 31.7 deg. On the five clean
+   flights the constant offset is
    **68 %, 72 %, 21 %, 24 % and (roll) 0 %** of the pitch/roll split — i.e. those flights are
    *bias-dominated*, while the three track flights are noise-dominated.
 3. **The bias is a pitch offset, not a random direction.** Pitch bias is positive on all eight
@@ -352,9 +353,10 @@ headroom is in the tail's admission decision, not in the fast component.**
   pre-registered population for rule 1; the all-frame and gate-kept rows are printed beside it
   and the rule outcome depends on which is used. Amendment B records this; the conflict is in
   `docs/decisions.md`.
-* **The pooled share is dominated by three flights.** `13a` contributes about half the total
-  squared error. The equal-weight-per-flight numbers (20.9 % bias all frames, 44.4 % gate-kept)
-  are printed beside the pooled ones for that reason.
+* **The pooled share is dominated by three flights.** `13a`/`13p`/`16p` carry 44/24/15 % of the
+  total squared error between them. The equal-weight-per-flight numbers (20.9 % bias all frames,
+  44.4 % gate-kept) are printed beside the pooled ones for exactly that reason, and they tell
+  the same story in the same direction.
 * **Eight flights.** Every flight-clustered interval here has 8 clusters and is a descriptive
   spread, not a 95 % confidence interval.
 * **The blur proxy is a proxy.** Laplacian variance tracks texture as well as blur, and it is

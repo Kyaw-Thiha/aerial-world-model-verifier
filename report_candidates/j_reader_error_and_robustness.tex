@@ -1,0 +1,155 @@
+% Candidate section for Track J, reports J01, J02 and J04. Not integrated into the main report.
+% Status labels: J01 and J02 are confirmatory against their pre-registrations (J01's rule 1 has
+% a stratum conflict, recorded in amendment B and docs/decisions.md [J]); J04's Stage 1c was
+% selected by rule 3's literal reading and is reported as selected-but-marginal. Stage 1a and 1b
+% were not selected and are not reported as results.
+
+\subsection{What limits the verifier: the reader's error, measured}
+\label{sec:j-reader-error}
+
+Two rounds of segment work and the published detection floors all pointed at the same open number:
+how accurately the tilt is read from pixels, and how much calibration slack sits around it. This
+section measures that number instead of assuming it. Per-frame reader output against mocap is
+taken on the frames the verdict scores (5{,}007 frames, eight TII flights, \SI{12}{Hz}), for the
+frozen GeoCalib reader and the leave-one-flight-out fine-tuned reader of G03, and the error is
+split into a per-flight constant, drift below \SI{0.5}{Hz} and everything above it with an
+orthogonal DCT split, so that the three shares are exactly additive. The estimate is log-mapped
+onto the lean tangent basis at the truth, so the two axis errors satisfy
+$\sqrt{e_{\mathrm{pitch}}^2+e_{\mathrm{roll}}^2}=\theta$ to machine precision and the axes are an
+orthogonal decomposition of the published scalar error, not a second quantity. The pipeline
+reproduces the published numbers before adding to them: the tail fraction is
+$638/5{,}007=\SI{12.75}{\percent}$ against \SI{12.7}{\percent} in report~02, and the per-flight
+tail fractions match G03 frame for frame.
+
+\paragraph{The error is not one thing.} Pooled over the eight flights and both axes the frozen
+reader's squared error is \SI{29.6}{\percent} per-flight constant, \SI{40.4}{\percent} drift below
+\SI{0.5}{Hz} and \SI{30.0}{\percent} above it (flight-clustered bootstrap, 5{,}000 replicates,
+eight clusters: a descriptive spread, not a confidence interval, and the interval on the bias share
+is wide, \numrange{12.4}{41.7}). The pooled number is three flights' opinion: the three racing
+flights carry \SI{83}{\percent} of the corpus's squared error. On the five clean flights the
+picture inverts --- \texttt{01p} and \texttt{07p} are \SI{68}{\percent} and \SI{72}{\percent}
+constant on the pitch axis at a \SI{2.7}{deg} RMS. On the clips the frozen confidence gate actually
+keeps the bias share rises to \SI{42.8}{\percent} and the fast share falls to
+\SI{19.8}{\percent}; on all frames at once the three racing flights dominate and the shares are
+\SI{29.6}{/}\SI{40.4}{/}\SI{30.0}{\percent}. The pre-registered rule that would have opened the
+per-clip-calibration branch (bias share $\ge \SI{40}{\percent}$ of the trimmed variance) does not
+fire as written (\SI{35.2}{\percent}, and the trimmed split is not even identified: trimming on
+the error selects on the sum of the components and leaves a closure of \SI{-89}{\percent} of the
+total). The stratum conflict is reported, not resolved.
+
+\paragraph{The bias is a forward pitch offset.} Pitch bias is positive on eight of eight flights
+and pinned to \SIrange{2.15}{2.69}{deg} with standard errors of \SIrange{0.03}{0.18}{deg} on the
+five clean flights; roll bias is \SIrange{-0.52}{1.43}{deg} and changes sign
+(Table~\ref{tab:j-bias}). This is the direct measurement of the \SIrange{2}{5}{deg} per-flight bias
+G2 inferred from quiet windows. It is not one rig-level mount rotation: a rotation fitted
+leave-one-flight-out moves the pooled median error from \SI{3.90}{deg} to \SI{3.74}{deg} and makes
+the three track flights \emph{worse} (\num{3.60} to \num{4.14}, \num{7.75} to \num{8.32},
+\num{7.32} to \num{8.49}). A per-flight constant removes \SIrange{1}{1.5}{deg} of median error on
+four of the five clean flights, which is what the verdict's $\pm\SI{7}{deg}$ per-clip uptilt
+nuisance already does. Within a flight the only consistent covariate is heading: the roll error
+moves with yaw at $t\approx2.4$ in both readers.
+
+\begin{table}[t]
+\centering
+\caption{Per-flight bias on the trimmed frames (frozen reader), with the frame-clustered standard
+error. Pitch is positive on every flight and essentially constant on the five clean ones; roll
+changes sign. The three racing flights carry \SI{83}{\percent} of the corpus's squared error, so
+their means are contaminated by the >\SI{10}{deg} tail.}
+\label{tab:j-bias}
+\begin{tabular}{lrrrr}
+\toprule
+flight & $n$ & pitch bias (\si{deg}) & roll bias (\si{deg}) & RMS, all frames (\si{deg}) \\
+\midrule
+\texttt{01a-ellipse} & 243 & $+2.69\pm0.18$ & $-0.33\pm0.11$ & \num{10.94} \\
+\texttt{01p-ellipse} & 1140 & $+2.15\pm0.03$ & $+1.43\pm0.05$ & \num{2.71} \\
+\texttt{04a-ellipse} & 315 & $+2.43\pm0.10$ & $-0.41\pm0.07$ & \num{7.62} \\
+\texttt{07a-lemniscate} & 333 & $+2.41\pm0.17$ & $-0.52\pm0.29$ & \num{16.11} \\
+\texttt{07p-lemniscate} & 1155 & $+2.23\pm0.03$ & $+0.04\pm0.08$ & \num{2.97} \\
+\texttt{13a-trackRATM} & 501 & $+12.05\pm0.76$ & $-3.09\pm1.23$ & \num{31.65} \\
+\texttt{13p-trackRATM} & 482 & $+4.27\pm0.62$ & $+3.29\pm0.51$ & \num{25.80} \\
+\texttt{16p-trackRATM} & 335 & $+3.23\pm0.45$ & $+1.61\pm0.54$ & \num{25.97} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{The error correlates on a sub-second to five-second scale.} The integral correlation
+time of the scalar error is \SI{0.22}{}, \SI{0.77}{}, \SI{0.26}{}, \SI{3.17}{}, \SI{0.86}{},
+\SI{5.23}{}, \SI{0.34}{} and \SI{0.29}{s} per flight (median \SI{0.56}{s}). For an error that is
+one third fast, the ``fast'' band is \SIrange{0.5}{6}{Hz}, not per-frame white noise: a
+complementary filter that averages sub-second windows buys much less than $\sqrt{n}$.
+
+\paragraph{The tail is a flight property, and the gate already removes it.} \SI{12.75}{\percent}
+of frames exceed \SI{10}{deg}, concentrated on the three racing flights (\SI{33.6}{},
+\SI{35.4}{} and \SI{34.6}{\percent}) and almost absent on the two quiet piloted ones
+(\SI{0.8}{} and \SI{0.5}{\percent}). \num{558} of the \num{638} tail frames sit in clips the
+frozen S3 gate drops; \num{80} survive. Only \SI{21.6}{\percent} of tail frames are in short
+($\le3$-frame) runs and \SI{39.5}{\percent} are in runs of a second or more, of which 9 of 12 are
+identifiable from tilt (8/8 flights), speed (6/8), the estimator's own confidence (5/8) or a
+Laplacian-variance blur proxy (7/8).
+
+\paragraph{Fusion has no usable rotation source on TII.} Measured as the error of carrying the
+true gravity forward with the estimated rotations, which is what a filter consumes: on the UZH
+indoor forward sequences DPVO and ViPE give \SIrange{0.06}{0.14}{deg} per \SI{1/15}{s} step and
+\SIrange{0.19}{0.29}{deg} after one second, twenty times inside the bar of
+\SI{0.3}{deg} per frame and \SI{1.5}{deg} per second. On TII, DPVO gives \SI{2.80}{deg} per step
+and \SI{7.76}{deg} after one second, and on \texttt{16p} its estimated relative rotation is
+\SI{1.5}{\percent} of the true rotation budget --- the rotation is close to frozen. The
+innovation-gated fusion of reader and rotation was therefore not built.
+
+\paragraph{The noise budget, and the target it sets.} Holding every real clip's path and replacing
+the depicted side by a perfect depiction plus a controlled error with the measured bias, split and
+correlation time gives the minimum detectable uniform tilt reduction at a \SI{5}{\percent}
+leave-one-flight-out false-reject (Table~\ref{tab:j-budget}). At the measured accuracy it is
+\SI{6.9}{deg} for the whole-clip median and \SI{10.5}{deg} for the eight-frame window the segment
+detector uses; with the reader's actual measured error the clean-path floor is \SI{10.7}{deg}; and
+the handoff's own construction (the mocap attitude as the perfect depiction, which carries the real
+mismatch between the attitude flown and the attitude a drag-free path demands) reproduces the
+frozen \SI{14.73}{deg} threshold at \SI{14.46}{deg} with a leave-one-flight-out spread of
+\numrange{13.21}{15.51}. Accuracy is the lever ($\sigma=3$, \num{4.8} and \SI{8}{deg} give
+\num{4.7}, \num{6.7} and \SI{9.6}{deg}); a \SI{5}{deg} per-flight bias costs about
+\SI{1.5}{deg}; the correlation time is second order across the range the generator realises
+(\SIrange{0.30}{0.73}{s}). To put the whole-clip floor at \SI{5}{deg} the trimmed RMSE has to fall
+from \num{4.8} to about \num{3} --- a further \SI{40}{\percent} on top of G03's \num{3.71}.
+
+\begin{table}[t]
+\centering
+\caption{Minimum detectable uniform tilt reduction (\si{deg}) at a \SI{5}{\percent}
+leave-one-flight-out false-reject, 100 TII clips, 8 flights, 120 draws. Left: window length at the
+measured centre point ($\sigma=\SI{4.8}{deg}$, bias \SI{2}{deg}, $\tau=\SI{0.5}{s}$, fast share
+\num{0.5}). Right: $\sigma$ at bias \SI{0}{deg} and $\tau=\SI{0.5}{s}$. The 8-frame window the
+G-round segment detector uses costs \SI{3.6}{deg} against the whole-clip median.}
+\label{tab:j-budget}
+\begin{tabular}{lrr@{\hspace{3em}}lrr}
+\toprule
+window & $H_0$ median & MDV & $\sigma$ (\si{deg}) & threshold & MDV \\
+\midrule
+whole clip & \num{6.45} & \textbf{\num{6.92}} & \num{3.0} & \num{5.78} & \textbf{\num{4.66}} \\
+24 frames & \num{7.49} & \num{7.42} & \num{4.8} & \num{8.67} & \textbf{\num{6.70}} \\
+16 frames & \num{8.40} & \num{8.17} & \num{8.0} & \num{13.21} & \textbf{\num{9.63}} \\
+12 frames & \num{9.21} & \num{9.01} & & & \\
+8 frames & \num{10.50} & \textbf{\num{10.52}} & & & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Learned confidence ranks the tail and does not decide it.} A logistic model on the
+reader's own stored per-frame outputs (44 features, leave-one-flight-out) reaches a per-frame
+AUROC of \num{0.946} [\num{0.882}, \num{0.973}] against \num{0.851} for the same model fitted on
+the frozen S3 signal alone and \num{0.866} for tilt and speed alone; at clip level, \num{0.961} on
+114 clips against the gate's published \num{0.946}. The gain is real and concentrated where S3 is
+uninformative (\texttt{04a} \num{0.95} vs \num{0.38}, \texttt{07a} \num{0.97} vs \num{0.55}). It is
+not calibrated: the held-out recalibration slope is \num{0.55} with intercept \num{-1.87}, and the
+top decile predicts \num{0.96} where \num{0.71} is observed. Downstream it changes nothing ---
+weighting the window median by \num{1-p}, masking high-$p$ frames, or both leaves every detection
+cell at or below the unweighted statistic at the same false-reject. A robust median over a window
+is already doing the job a monotone reweighting of the same information would do.
+
+\paragraph{Consequence for the design.} The measurable headroom is in the tail's admission
+decision, not in the fast component: on the flights where the reader works the error is a
+\SI{2.4}{deg} pitch offset plus a \SI{1.5}{deg} wobble correlated over half a second, and the
+verdict's per-clip mount fit already removes the first part; on the racing flights the error is
+\SIrange{17}{32}{deg} RMS with a five-second correlation time and \SI{88}{\percent} of the tail is
+already excluded by the gate. A per-clip calibration is worth \SIrange{1}{1.5}{deg} of median error
+on the clean flights and nothing on the racing ones; a complementary filter needs a rotation
+source TII does not have; and a learned confidence, however well it ranks, does not move a robust
+window statistic.
