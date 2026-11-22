@@ -146,7 +146,7 @@ tier, which is not scale-free, flags 65 % (33/51) of the same clips.
 Across the three validation draws the median per-path standard deviation of the clip
 median residual is 0.18 deg (median range 0.41); the oracle
 best-of-3 reduces the residual by a median 0.04 deg
-(path-clustered interval [0.0, 0.1831902411032802]), and 1/22 paths change class. S3 fails.
+(path-clustered interval [0.00, 0.18]), and 1/22 paths change class. S3 fails.
 The per-path spread is in `results/h04/scored_main.json`.
 
 
@@ -161,10 +161,12 @@ The per-path spread is in `results/h04/scored_main.json`.
 
 Arm A by path family (clips / testable / accepted): arc 15/11/7, S-turn 18/12/10,
 slalom 18/17/10, figure-eight 15/8/4, climb-turn 6/3/0, accelerate-brake 6/0/0.  The
-pitch-only accelerate-brake paths abstain by construction under the two-axis rule, and the
-simulated forest and urban-checker scenes — the two the reader is known to misread most
-(I02: 7-10 deg and 0.5-1.5 deg of up-vector bias) — accept nothing, while the ANWM city views
-and the industrial scene do.
+pitch-only accelerate-brake paths abstain by construction under the two-axis rule.  The two
+simulated scenes accept nothing, and they do not have the same explanation: `forest_ridge` is
+the scene the reader is known to misread most (I02: 7-10 deg of up-vector bias), while
+`urban_checker` is the scene it reads *best* (0.5-1.5 deg) — so the zero acceptance there is
+a property of what the generator produced on that first frame, not of the reader.  The three
+ANWM city views accept 4-9 clips each and the industrial scene 9.
 
 
 ### 6. Controls: yaw and null
