@@ -1,0 +1,52 @@
+% Track G3 candidate section for the report (G06/G07).
+% Numbers are filled from results/g06/ablation/*.csv and results/g07/; every value in the final
+% version must name its run directory and commit, as the report's rule requires.
+\section{Segment detection on the simulated set}
+\label{sec:g3-segments}
+
+The frozen verdict is one clip-level median, so a violation that covers part of a flight is
+averaged away. Earlier work found that a sliding window scan finds partial violations but
+localises them poorly (mean IoU 0.15--0.24 on real clips), while the scale-free coherence tier
+was the only tier a per-clip nuisance fit could not absorb and had the smallest detectable local
+step (16.8$^\circ$ at 25\,\% coverage). The simulated labelled set (300 clips, exact violation
+intervals, 30\,fps, exact required lean) makes it possible to ask which of false-discovery-rate
+control, boundary refinement, per-clip time alignment and multi-scale windows actually improve
+localisation, and what the smallest localisable violation is.
+
+\paragraph{Population and reader.}
+170 development clips over three procedural scene families and four camera mounts; 80 feasible,
+the rest whole-clip or partial camera defects plus one path-side thrust-limit clip. Every clip
+was read with GeoCalib (pinhole, focal prior) at every video frame. The reader is stochastic run
+to run: two identical runs differ by a median of $2.2\times10^{-3}$ lean units (p99
+$2.2\times10^{-2}$), and rare single frames jump by up to a few degrees. This envelope is quoted
+wherever the reader enters a number.
+
+\paragraph{Window statistic.}
+The primary arm is a 12-frame (0.40\,s) window, hop 4, with the coherence statistic
+$1-\min(r_x,r_y)$ and the clip decision taken as the maximum over windows against a
+leave-one-scene-out conformal 95th percentile. The comparison is the 8-frame residual scan; the
+whole-clip median is the baseline. Nothing is fitted per clip.
+
+\paragraph{What limits the window tier.}
+Two limits appear before any detection rate is quoted, and both are properties of the design
+rather than of the violation. First, the coherence statistic needs both axes of both leans to
+vary inside a window; on steady turns, constant-speed ellipses, straight accelerations and
+climbs one axis is constant, so the tier abstains. On the simulated set the tier is testable on
+the manoeuvres whose lean direction rotates (slalom, lemniscate) and not on the others. Second,
+and more sharply, a level camera has almost no lean variance, so \emph{tilt removal makes the
+coherence tier abstain rather than fire}: the real-corpus detection of tilt removal came from
+the reader's own $\sim4^\circ$ noise supplying that variance, which a low-noise simulated reader
+does not provide.
+
+\paragraph{Calibration.}
+Calibrating the maximum over roughly one hundred windows per clip saturates the conformal
+threshold: the coherence threshold sits at 1.94 of a maximum 2.0, and the residual threshold at
+60--80$^\circ$, carried by three feasible clips with catastrophic reader windows. Benjamini--
+Hochberg within a clip is the pre-registered response; it restores a usable calibration because
+it works in $p$-space rather than on an extreme order statistic.
+
+% \begin{table}[t]
+% \centering
+% \caption{...}
+% \input{tables/tab_g3_detection_1}
+% \end{table}
