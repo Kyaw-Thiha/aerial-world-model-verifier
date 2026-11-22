@@ -285,7 +285,7 @@ pixi run modal run remote/h04_publish.py::main --tag main                # R2 + 
 | amendment 2 (speed modulation) | `configs/h04_solarwm_continuous_prereg_amend2.yaml`, commit `dfd425b` |
 | paths and checks | `results/h04/paths/paths_summary.json` (and `paths.npz`, gitignored) |
 | inputs | `data/h04_solarwm_inputs/` (236 samples, gitignored; manifest committed copy in `results/h04/inputs_manifest.json`) |
-| clips | Modal `awmv-h3-results:/solarwm/main/<clip>/`, R2 `track-h3/clips/solarwm-main/` with a sha256 manifest at `track-h3/manifests/main.json` |
+| clips | Modal `awmv-h3-results:/solarwm/main/<clip>/`; R2 `track-h3/clips/solarwm-main/`, 234 clips (mp4 + release manifest), 179 MB, every sha256 re-read from R2 and matching, manifest at `track-h3/manifests/main.json` (local copy `results/h04/r2_manifest.json`) |
 | reader rows | `results/h04/depicted_main/depicted.jsonl` |
 | scores | `results/h04/scored_main.json`, `scored_main_rows.json` |
 | model code | `Junchao-cs/SolarWM` `bef02908` |
