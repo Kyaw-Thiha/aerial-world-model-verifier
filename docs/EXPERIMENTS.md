@@ -259,3 +259,22 @@ builds the labelled frame sets) then `modal run remote/g_tilt_reader.py` (A10G) 
 New code: `src/verdict/segments.py`. New data: `data/g03_frames/` (372 MB),
 `data/g03_uzh/` (144 MB), `data/raw/tii_video_full/` (3.6 GB) — all gitignored and rebuildable
 from the release and from R2 (`track-a/tii_video/`).
+
+## Track G2 — segment detection, round 2 (branch `track-g2-segments`, off `main` `41d1dad`)
+
+Round 2 continues Track G (branch `track-g-segments2`, unmerged when this started). It reads
+Track D's schema-v2 clips, round 1's segment code, and — read-only — Track I's I01 spike.
+Everything here is CPU; nothing was spent.
+
+| ID | experiment | stored results | report | configs |
+| --- | --- | --- | --- | --- |
+| G04 | path-demand windows (item 1): demand windows (≥6/8 frames at ≥15 deg) and quiet windows (all 8 ≤3 deg) selected from the path alone, residual and depicted-tilt statistics, LOFO conformal calibration on the gate-kept population, partial-edit injections, synthetic unrequited-tilt injection | `results/g04_path_demand/` | `reports/G04_path_demand_segments.md` | `g04_path_demand_prereg.yaml` |
+| G05 | segments on the simulated set (items 1-6): **blocked**, no I02 labelled set; the design is frozen unexecuted and one exploratory 3-clip pilot is run | `results/g05_spike_pilot/` | `reports/G05_segments_on_simulated_set.md` | `g05_round2_design_prereg.yaml` |
+
+Regenerate: `experiments/g04_path_demand.py` (CPU, ~50 s) and `experiments/g05_spike_pilot.py`
+(CPU, reads `../awmv-track-i/results/i01_spike`). The every-window arm of G04 reproduces round
+1's published detection counts exactly, which is the correctness check for the ablation.
+
+Dependency to record: G05 needs Track I report I02 (≥8 dev + ≥4 holdout scenes with partial
+violation intervals and controls). Until it exists, no item 2-6 ablation can be pre-registered
+honestly and no confirmatory evaluation can run.

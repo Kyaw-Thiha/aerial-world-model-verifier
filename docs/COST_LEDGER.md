@@ -59,3 +59,16 @@ E04, …); this file starts at Track F2 and does not restate numbers it did not 
 
 Ceilings: part 3 has a US$30 ceiling. Actual spend is filled in after each job set; the
 estimate above is posted before the run, not after.
+
+## Track G2 — segment detection, round 2 (2026-11-21)
+
+| date | track | job | GPU | hours | USD | notes |
+| --- | --- | --- | --- | --- | --- | --- |
+| 2026-11-21 | G2 | none | — | 0 | 0.00 | G04, G05 and the spike pilot are CPU-only and read stored artifacts |
+
+Notes
+* Track G2's ceiling is 10 USD (handoff 18). Nothing was spent: no Modal app was started, no
+  volume created, and no R2 object written.
+* Round 1 of this track (branches `track-g-segments` and `track-g-segments2`) spent 10.23 USD on
+  the tilt-reader fine-tune; its ledger entry lives on that branch, not here, because this
+  branch is off `main`.

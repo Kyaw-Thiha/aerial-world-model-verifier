@@ -141,3 +141,14 @@ Nothing large is committed. Track G reads existing clips and writes small summar
 R2 listing worked again on 2026-11-16 (the 403 recorded in section 2 was not reproduced), so the
 TII video zips can be fetched by key without a Modal volume. Nothing was written or deleted on
 R2 or on the other tracks' volumes; Track G created exactly one volume, `awmv-g-data`.
+
+## 8. Track G2 artefacts (2026-11-21)
+
+| path | size | what | rebuild |
+| --- | --- | --- | --- |
+| `results/g04_path_demand/` | < 1 MB | every number in report G04 (`summary.json`, `variants.csv`) | `experiments/g04_path_demand.py` |
+| `results/g05_spike_pilot/` | < 10 KB | the exploratory 3-clip pilot on Track I's I01 renders | `experiments/g05_spike_pilot.py` |
+
+No new bulk data: G2 reads `data/processed/track_d/clips` (already documented), and the pilot
+reads Track I's worktree `../awmv-track-i/results/i01_spike` read-only. No Modal volume and no
+R2 object was created or written by this track.

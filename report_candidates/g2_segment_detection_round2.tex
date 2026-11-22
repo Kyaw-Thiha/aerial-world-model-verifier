@@ -1,0 +1,93 @@
+% Candidate section for Track G2, reports G04 and G05. Not integrated into the main report.
+% Status labels: G04 is confirmatory against its pre-registration but PRELIMINARY for the track
+% (no simulated development set exists); the G05 pilot is EXPLORATORY.
+
+\subsection{Path-demand windows, and what a window statistic cannot see}
+\label{sec:g2-path-demand}
+
+Round 1 established that a window scan statistic on TII detects partial violations several times
+better than a whole-clip median, but that its thresholds are set by the reader's failure tail.
+Round 2 asks whether selecting windows from the \emph{path} alone --- demand windows where the
+path requires a tilt above the detection floor, quiet windows where it requires almost none ---
+improves that, and whether a quiet-window test adds the capability the verdict lacks: detecting
+tilt the path does not require. The design was pre-registered before scoring
+(\texttt{configs/g04\_path\_demand\_prereg.yaml}); the simulated development set the protocol
+requires does not exist, so every number here is marked \emph{preliminary} and the two held-out
+real flights remain unscored.
+
+Windows are the label-free rule's eight frames at hop four. A demand window has at least six of
+its eight frames at \SI{15}{deg} or more of required tilt (the midpoint of the published
+\SIrange{14}{17}{deg} detection floor); a quiet window has all eight at \SI{3}{deg} or less. The
+demand statistic is the frozen median residual, the quiet statistic is the median depicted tilt,
+and both are calibrated leave-one-flight-out on the gate-kept population at a nominal
+\SI{5}{\percent} false-reject on the clip maximum.
+
+\begin{table}[t]
+\centering
+\caption{Demand-window selection versus scoring every window, real TII dev block (six flights,
+gate-kept clips), nominal \SI{5}{\percent}, matched to the 53 clips both residual arms can score.
+Counts are $k/n$; the two arms reject the \emph{same} five real clips. The quiet-window test is
+shown for contrast: its real-clip false-reject is \SI{25}{\percent}, not \SI{5}{\percent}.}
+\label{tab:g2-demand}
+\begin{tabular}{lrrrr}
+\toprule
+ & \multicolumn{2}{c}{persistence 1} & \multicolumn{2}{c}{persistence 2} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+edit, coverage & every window & demand & every window & demand \\
+\midrule
+removal, 25\,\% & 9/53 & 9/53 & 16/53 & 16/53 \\
+removal, 50\,\% & 13/53 & 12/53 & 28/53 & 26/53 \\
+removal, 100\,\% & 21/53 & 20/53 & 49/53 & 49/53 \\
+mirrored roll, 25\,\% & 19/53 & 18/53 & 28/53 & \textbf{23/53} \\
+mirrored roll, 50\,\% & 31/53 & 29/53 & 38/53 & \textbf{34/53} \\
+mirrored roll, 100\,\% & 48/53 & 48/53 & 53/53 & 53/53 \\
+\midrule
+false-reject & 5/53 & 5/53 & 4/53 & 4/53 \\
+false segments per real minute & 2.00 & 2.00 & 1.55 & 1.55 \\
+yaw control / null edit & 5/53 & 5/53 & 4/53 & 4/53 \\
+quiet-window test, false-reject & \multicolumn{4}{c}{4/16 (\SI{25}{\percent}); no quiet control exists} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Result.} Demand selection is a no-op with a price (Table~\ref{tab:g2-demand}). It
+rejects exactly the same real clips, leaves the false-segment rate identical to two decimals, and
+loses up to 9 percentage points of mirrored-roll detection at persistence two; 15 of 69 admissible
+clips have no demand window at all and become untestable. The mechanism is measurable: the
+maximum-residual window is a demand window in only \SI{47}{\percent} of clips, but the windows
+that cross the threshold are demand windows anyway, so the flagged frame masks differ between the
+two arms in 2 of 82 real clips. The quiet test is the useful half in principle and fails in
+practice: its real-clip false-reject is \SI{25}{\percent} because the reader's per-flight
+\emph{level} bias (\SIrange{2}{5}{deg}) is the same size as the violation worth catching, which is
+precisely what the frozen verdict's $\pm\SI{7}{deg}$ mount-nuisance fit exists to absorb.
+
+\paragraph{Localisation.} At a nominal \SI{5}{\percent}, interval IoU exceeds \num{0.3} only from
+\SI{2}{s} of mirrored-roll violation (\num{0.30} at half coverage, \num{0.42} at full) and never
+for partial tilt removal (\num{0.23} at half coverage, \num{0.33} at full). That is the reader's
+noise, not a tuning failure: a \SIrange{5}{6}{deg} per-frame spread gives an eight-frame window
+median a standard error near \SI{2.4}{deg}, so a violation must lift the median by
+\SIrange{6}{7}{deg} before it is resolvable at two standard errors.
+
+\begin{table}[t]
+\centering
+\caption{Exploratory pipeline check on Track I's three I01 renders (91 frames each, one flight,
+full-clip violations). No calibration set exists, so this is a check that the machinery runs on
+exact truth, not a detection rate.}
+\label{tab:g2-spike}
+\begin{tabular}{lrrr}
+\toprule
+render & demand windows & demand-window median residual & per-frame residual (truth) \\
+\midrule
+feasible (physics attitude) & 17 & \SI{1.02}{deg} & 1.04 (0.00) \\
+level camera (tilt removed) & 17 & \SI{27.69}{deg} & 25.90 (25.33) \\
+mirrored roll & 17 & \SI{51.23}{deg} & 43.38 (43.72) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{What is not here.} The protocol requires design on a labelled simulated set and a
+single frozen evaluation on held-out scenes; Track I has only the spike, so items 2--6 (robust and
+confidence-weighted statistics, FDR control, boundary refinement, per-clip alignment, multi-scale
+windows) are frozen in \texttt{configs/g05\_round2\_design\_prereg.yaml} and unexecuted, and the
+real held-out block stays reserved. ANWM's \SI{1}{Hz}, 16-point paths cannot support any window
+statistic and are out of scope.

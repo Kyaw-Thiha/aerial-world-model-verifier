@@ -1,0 +1,181 @@
+version: 1
+date: '2026-11-21'
+status: preregistered
+track: G2
+owner_branch: track-g2-segments
+written: before any path-demand window statistic, threshold or rate was computed
+status_label: >
+  CONFIRMATORY with respect to this file (every rule below is fixed before scoring) and
+  PRELIMINARY with respect to the track: the development set the protocol requires (Track I's
+  labelled simulated flights, report I02) does not exist - branch `track-i-simset` carries only
+  the I01 spike, three 3 s clips with full-clip violations - so no design choice below could be
+  validated on labelled data. Every table in report G04 carries "preliminary (dev block, real
+  clips only)".
+
+question: >
+  Does selecting windows from the path alone - demand windows where the path requires a tilt
+  above the detection floor, quiet windows where it requires almost none - improve segment
+  detection or false-segment economy over scoring every window, and does a quiet-window test
+  add the capability the verdict lacks (detecting tilt the path does not require)?
+
+why_this_and_not_the_other_items: >
+  Handoff 18 asks for six method changes with their own ablations, and its protocol says that
+  until the simulated development set exists, run only item 1 on real clips with a pre-registered
+  un-tuned rule. This file is that rule. Items 2-6 are specified (not run) in
+  configs/g05_round2_design_prereg.yaml so the next round can execute them without redesign.
+
+population:
+  dataset: TII Race Against the Machine, schema-v2 clips written by Track D
+  clips: data/processed/track_d/clips/<flight>/<clip>__<condition>/verdict_clip.npz
+  n_real_clips: 100
+  flights: 8
+  dev_flights: [flight-01a-ellipse, flight-01p-ellipse, flight-04a-ellipse,
+                flight-07p-lemniscate, flight-13a-trackRATM, flight-16p-trackRATM]
+  held_out_flights: [flight-13p-trackRATM, flight-07a-lemniscate]
+  held_out_status: >
+    RESERVED, NOT SCORED HERE. These two flights were frozen in round 1
+    (configs/g01_segment_prereg.yaml) and the confirmatory evaluation on them belongs to the
+    round-2 design once the simulated set exists. G04 reports the dev block only.
+  admissibility: >
+    The frozen S3 confidence gate (configs/gate_frozen.yaml), pair level, applied to the frozen
+    reader's confidence. This population was adopted in round 1 by amendment G01-A after the
+    ungated calibration was shown to be poisoned by four `13a` clips; it is prior art here, not
+    a new choice, and the ungated block is reported beside the gated one as in round 1.
+
+window_selection_from_the_path_only:
+  window_frames: 8
+  hop_frames: 4
+  rule: >
+    Window length and hop are round 1's (the label-free rule's 0.5/f95 result with its 8-sample
+    floor applied at the 12 Hz clip rate; report G01). They are reused unchanged so that the
+    ablation isolates selection.
+  demand_tilt_floor_deg: 15.0
+  demand_floor_justification: >
+    Fixed before scoring from published results only: the verdict's detection floor is 14-17 deg
+    of required tilt (reports 04 and 07) and the frozen per-frame signal floor is 10 deg
+    (configs/gain_frozen.yaml). 15 deg is the midpoint of the published 14-17 range.
+  demand_window: at least 6 of the 8 frames have required tilt >= 15 deg
+  demand_count_justification: 6 of 8 mirrors the frozen "usable frames" rule for a window (G01)
+  quiet_tilt_ceiling_deg: 3.0
+  quiet_window: all 8 frames have required tilt <= 3 deg
+  quiet_ceiling_justification: >
+    3 deg is below the frozen 10 deg signal floor and below the reader's ~4 deg median error, so
+    a quiet period is one where neither the path nor the reader's noise should produce a large
+    depicted tilt. Fixed before scoring.
+  population_fact_measured_before_this_file_was_written: >
+    1,095 windows over the 100 real clips: 650 demand (59 %), 176 quiet (16 %); 22 clips have at
+    least one quiet window (16 of them gate-kept), concentrated in flights 01a, 04a, 13a and one
+    clip each in 01p and 07p. This is a property of the paths, not an outcome.
+
+statistics:
+  demand:
+    definition: >
+      Per frame, the angle between the depicted and required thrust axis in degrees, the frozen
+      median-residual construction (up_body_from_lean -> ZYX attitude with the path yaw -> body
+      z; identical to src.verdict.segments.frame_residual_deg). Window statistic = median over
+      usable frames.
+    direction: larger is more suspicious
+  quiet:
+    definition: >
+      Median depicted tilt in degrees over the window's usable frames, i.e.
+      asin(|depicted lean|); the required tilt is by construction <= 3 deg, so this is tilt the
+      path does not ask for. No path term enters.
+    direction: larger is more suspicious
+  per_window_abstention:
+    demand: fewer than 6 usable frames (finite depicted and required lean)
+    quiet: fewer than 6 usable frames
+  tiers_not_computed_here: >
+    Coherence, sign and gain are not part of item 1 and are not reported; round 1's window gain
+    is undefined at 8 frames anyway (the frozen gain tier abstains below 24).
+
+calibration:
+  rule: >
+    Leave-one-flight-out empirical 95th percentile of the clip MAXIMUM of the statistic over its
+    eligible windows (demand windows for the demand statistic, quiet windows for the quiet one),
+    fitted on the gate-kept real clips of the fit flights. One family-wise budget per clip, as in
+    round 1; a clip whose eligible-window count is zero is not testable for that statistic and is
+    reported as such, never as a pass.
+  alpha: 0.05
+  minimum_fit_clips: 8
+  persistence: >
+    Primary P = 1 (a single window above threshold flags the clip and defines the segments).
+    Secondary P = 2 (max over consecutive window pairs of their minimum, with its own conformal
+    calibration) because round 1 found P = 2 converts a noisy per-window statistic into a usable
+    detector. Both are pre-registered; neither is chosen on the outcome.
+  quiet_calibration_note: >
+    The quiet statistic's fit sets hold 8-14 gate-kept quiet clips per fold, so its thresholds are
+    thin and every number from it carries a dagger and is described, not inferred.
+
+injections:
+  partial_edit_composition: >
+    Unchanged from round 1: inside a centred contiguous interval of m = max(1, round(f*N)) frames
+    the depicted lean of the same clip's full-clip edit is used, outside it the real clip's.
+    Exact for a per-frame reader; the path side is asserted identical across conditions.
+  families: [tilt_removal, mirror_roll, scale_0.5, scale_1.5]
+  controls: [yaw_control, null_edit]
+  fractions: [0.10, 0.25, 0.50, 1.00]
+  unrequited_tilt_in_quiet_windows:
+    what: >
+      A SYNTHETIC depicted-side injection, not a pixel edit: in every quiet window of a clip,
+      l_dep -> l_dep + tan(Delta) * u_hat, with u_hat the clip's mean depicted-lean direction
+      (+x if undefined) and the result capped to unit length.
+    delta_deg: [10.0, 17.0]
+    why: >
+      17 deg is inside the published detection floor band (14-17 deg of required tilt); 10 deg is
+      the frozen per-frame signal floor. These test whether tilt the path does not require can be
+      caught, which the verdict cannot do at all today because its windows require >= 10 deg of
+      required tilt to carry signal.
+    label_in_every_table: synthetic, depicted side only
+
+evaluation:
+  blocks: [ungated (round-1 comparison), gated (primary)]
+  clip_level: >
+    Flag rate on real clips (false-reject) and on injected clips (detection), k/n, for: (a) every
+    window (round-1 rule, recomputed with this code), (b) demand windows only, (c) quiet windows
+    only. All at the same nominal 5 % with their own conformal thresholds.
+  interval_level: frame IoU, F1, onset error in frames, against the injected interval.
+  false_segments_per_real_minute: merged flagged intervals on real clips / total real minutes.
+  localisation_noise_floor:
+    statement: >
+      No localisation claim is made below the reader's noise: the per-frame read error on TII has
+      a trimmed spread of about 5-6 deg (report 02), so one 8-frame window's median residual has
+      a standard error of about 1.25*5.5/sqrt(8) ~ 2.4 deg and the difference of two such medians
+      about 3.4 deg; a violation must lift the window median by roughly 6-7 deg to be resolvable
+      at two standard errors. The smallest injected duration with mean IoU > 0.3 is reported as
+      the localisation limit, with this floor beside it.
+  intervals: flight-clustered bootstrap, 5,000 replicates, numpy.random.default_rng(1); 6 clusters
+    on the dev block, so descriptive spreads, not 95 % confidence intervals.
+  controls: yaw_control and null_edit beside every detection rate.
+  realised_fdr: not applicable to item 1 (that is item 3) and not computed here.
+
+success_criteria:
+  S1_demand_selection: >
+    At the same nominal 5 % false-reject, demand-window selection loses no more than 5 percentage
+    points of clip-level detection at 25 % and 50 % coverage for tilt removal and mirrored roll
+    (the two families round 1 showed the residual tier can catch), and lowers false segments per
+    real minute relative to every-window scoring.
+  S2_quiet_test: >
+    The quiet-window test holds <= 5 % false-reject on real gate-kept clips with quiet windows
+    (conformal, so near-tautological, reported as a check) and detects the 17 deg synthetic
+    unrequited tilt in at least half of the clips that have quiet windows. The 10 deg arm is
+    descriptive only.
+  S3_localisation: >
+    Reported, not claimed: the smallest injected duration (frames) with mean IoU > 0.3 for each
+    family, beside the noise floor above.
+  falsification: >
+    If demand selection loses more than 5 points, or the quiet test cannot separate 17 deg from
+    the real quiet distribution, that is the finding and is reported as such.
+
+reporting:
+  every_table: label "preliminary (dev block, real clips only)"; confirmatory/exploratory status
+  exploratory_rule: >
+    Anything not fixed in this file and computed afterwards is labelled EXPLORATORY in the table
+    and the report summary; round 1's post-hoc amendment style is not repeated.
+  caveats_to_state: >
+    No simulated development set (Track I has only the I01 spike, no I02); the quiet population is
+    16 gate-kept clips over at most 4 fit flights per fold; ANWM's 1 Hz 16-point paths cannot
+    support any window statistic and are out of scope; the TII corpus is 6 dev flights.
+
+cost:
+  gpu_usd: 0
+  note: CPU only, reads stored clips
