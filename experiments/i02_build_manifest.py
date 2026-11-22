@@ -205,13 +205,15 @@ def main() -> int:
     ap.add_argument("--pull", action="store_true")
     ap.add_argument("--verify", action="store_true")
     ap.add_argument("--docs", action="store_true")
+    ap.add_argument("--full-hash", action="store_true",
+                    help="re-hash every object on R2, not every tenth one")
     args = ap.parse_args()
     did = False
     if args.pull:
         pull()
         did = True
-    if args.verify:
-        verify()
+    if args.verify or args.full_hash:
+        verify(sample_every=1 if args.full_hash else 10)
         did = True
     if args.docs:
         docs()
