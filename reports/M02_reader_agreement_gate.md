@@ -161,12 +161,20 @@ way.
 
 | threshold | accepted | coverage | coherence false-reject | yaw control | null edit |
 | --- | --- | --- | --- | --- | --- |
-| 4.5 deg (frozen) | 40 | 0.588 | 2/40 | 0/40 | 0/40 |
+| 4.5 deg, leave-one-flight-out cut (the selection rule) | 40 | 0.588 | 5/40 | 1/40 | n/a |
+| 4.5 deg, pooled cut (the end-to-end table, M03) | 40 | 0.588 | 2/40 | 17/40 | 2/40 |
 
 Conformal risk control reaches the yaw-control target at 4.5 deg (bound 0.049) and cannot reach
-the false-reject target: the best any threshold achieves is 0.101, at full coverage. Per the
-pre-registration the threshold of the risk that reached is frozen and the other risk is
-reported beside every number.
+the false-reject target: the best any threshold achieves is 0.101, at full coverage. **The two
+rows are the same threshold and the same 40 clips, and they differ by a factor of seventeen on
+the yaw control because one estimates the coherence cut leave-one-flight-out and the other
+pools the accepted clips.** With 40 accepted clips spread over four flights the estimator
+choice dominates the guarantee, and neither row is "the" answer. This is the clearest single
+statement of the calibration-population problem this track found; the pre-registered guarantee
+holds under the rule that selected it and is not robust to changing that rule.
+
+The null edit has no reader row of its own -- it is the identity warp, so its disagreement is
+the real condition's -- which is why the first row's null cell is not applicable.
 
 ## What this supports
 

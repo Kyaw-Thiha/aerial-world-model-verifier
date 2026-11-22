@@ -97,6 +97,11 @@ the H01 ANWM paths, read through their own published verdicts and never used for
 | C2 | GB | 40 | 2/40 | 40/40 | 40/40 | 35/40 | 8/40 | 15/40 | 2/40 |
 | C2 | GAB | 15 | 1/15 | 15/15 | 15/15 | 13/15 | 2/15 | 5/15 | 1/15 |
 
+The same-threshold sensitivity matters as much as the table: under Gate B, the coherence
+tier's yaw-control count is 1/40 with a leave-one-flight-out cut and 17/40 with the pooled cut
+(M02, table of the same name). With 40 accepted clips over four flights the threshold
+estimator, not the gate, decides the yaw rate. Both are reported; neither is the answer.
+
 The thresholds are pooled conformal 95th percentiles over the accepted real dev clips (one cut
 per configuration and tier), not leave-one-flight-out, because under GAB only 15 clips over
 three flights survive and a LOFO fold is undefined for most flights. Under LOFO — Track K's
