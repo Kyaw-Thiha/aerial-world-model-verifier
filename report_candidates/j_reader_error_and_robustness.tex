@@ -26,7 +26,7 @@ reader's squared error is \SI{29.6}{\percent} per-flight constant, \SI{40.4}{\pe
 \SI{0.5}{Hz} and \SI{30.0}{\percent} above it (flight-clustered bootstrap, 5{,}000 replicates,
 eight clusters: a descriptive spread, not a confidence interval, and the interval on the bias share
 is wide, \numrange{12.4}{41.7}). The pooled number is three flights' opinion: the three racing
-flights carry \SI{83}{\percent} of the corpus's squared error. On the five clean flights the
+flights carry \SI{83}{\percent} of the corpus's squared error. On the five non-racing flights the
 picture inverts --- \texttt{01p} and \texttt{07p} are \SI{68}{\percent} and \SI{72}{\percent}
 constant on the pitch axis at a \SI{2.7}{deg} RMS. On the clips the frozen confidence gate actually
 keeps the bias share rises to \SI{42.8}{\percent} and the fast share falls to
@@ -39,20 +39,20 @@ total). The stratum conflict is reported, not resolved.
 
 \paragraph{The bias is a forward pitch offset.} Pitch bias is positive on eight of eight flights
 and pinned to \SIrange{2.15}{2.69}{deg} with standard errors of \SIrange{0.03}{0.18}{deg} on the
-five clean flights; roll bias is \SIrange{-0.52}{1.43}{deg} and changes sign
+five non-racing flights; roll bias is \SIrange{-0.52}{1.43}{deg} and changes sign
 (Table~\ref{tab:j-bias}). This is the direct measurement of the \SIrange{2}{5}{deg} per-flight bias
 G2 inferred from quiet windows. It is not one rig-level mount rotation: a rotation fitted
 leave-one-flight-out moves the pooled median error from \SI{3.90}{deg} to \SI{3.74}{deg} and makes
 the three track flights \emph{worse} (\num{3.60} to \num{4.14}, \num{7.75} to \num{8.32},
 \num{7.32} to \num{8.49}). A per-flight constant removes \SIrange{1}{1.5}{deg} of median error on
-four of the five clean flights, which is what the verdict's $\pm\SI{7}{deg}$ per-clip uptilt
+four of the five non-racing flights, which is what the verdict's $\pm\SI{7}{deg}$ per-clip uptilt
 nuisance already does. Within a flight the only consistent covariate is heading: the roll error
 moves with yaw at $t\approx2.4$ in both readers.
 
 \begin{table}[t]
 \centering
 \caption{Per-flight bias on the trimmed frames (frozen reader), with the frame-clustered standard
-error. Pitch is positive on every flight and essentially constant on the five clean ones; roll
+error. Pitch is positive on every flight and essentially constant on the five non-racing ones; roll
 changes sign. The three racing flights carry \SI{83}{\percent} of the corpus's squared error, so
 their means are contaminated by the >\SI{10}{deg} tail.}
 \label{tab:j-bias}
@@ -150,6 +150,6 @@ decision, not in the fast component: on the flights where the reader works the e
 verdict's per-clip mount fit already removes the first part; on the racing flights the error is
 \SIrange{17}{32}{deg} RMS with a five-second correlation time and \SI{88}{\percent} of the tail is
 already excluded by the gate. A per-clip calibration is worth \SIrange{1}{1.5}{deg} of median error
-on the clean flights and nothing on the racing ones; a complementary filter needs a rotation
+on the non-racing flights and nothing on the racing ones; a complementary filter needs a rotation
 source TII does not have; and a learned confidence, however well it ranks, does not move a robust
 window statistic.

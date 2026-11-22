@@ -11,7 +11,7 @@ committed before the numbers they govern were computed. Code `src/depicted/anato
 actually scores (gate-kept) a per-flight constant is 43 % of the squared error and slow drift
 another 40 %; on all frames at once, three track flights with 17-32 deg RMS dominate the
 pooled share and the bias is 30 %. **The bias itself is real and almost purely pitch:
-+2.15 to +2.69 deg, standard error 0.03-0.18, on the five clean flights** — a mount-shaped
++2.15 to +2.69 deg, standard error 0.03-0.18, on the five non-racing flights** — a mount-shaped
 offset the verdict's ±7 deg uptilt nuisance already absorbs. The pre-registered rule that would
 have opened the per-clip-calibration branch (bias share ≥ 40 % of the *trimmed* variance) does
 not fire as written (35.2 %), and the trimmed split is not even identifiable (see below); on the
@@ -25,15 +25,15 @@ gate-kept stratum it does (42.8 %). That conflict is reported, not resolved.
    reader on 5,007 frames; the G03 fine-tuned reader gives 25 / 37 / 38.
 2. **The split is not the same on every flight, and the pooled number is three flights'
    opinion.** The three racing flights carry **83 %** of the corpus's squared error (`13a`
-   alone 44 %, `13p` 24 %, `16p` 15 %); `13a`'s pitch-axis RMS is 31.7 deg. On the five clean
-   flights the constant offset is
-   **68 %, 72 %, 21 %, 24 % and (roll) 0 %** of the pitch/roll split — i.e. those flights are
-   *bias-dominated*, while the three track flights are noise-dominated.
+   alone 44 %, `13p` 24 %, `16p` 15 %); `13a`'s pitch-axis RMS is 31.7 deg. On the two quiet
+   piloted flights (`01p`, `07p`) the pitch constant is **68 % and 72 %** of the squared error —
+   they are *bias-dominated*; on the other three non-racing flights it is 21 %, 24 % and 14 %, and
+   the corpus as a whole is noise- or drift-dominated.
 3. **The bias is a pitch offset, not a random direction.** Pitch bias is positive on all eight
-   flights and sits at **+2.15 to +2.69 deg** on the five clean ones, with standard errors of
+   flights and sits at **+2.15 to +2.69 deg** on the five non-racing ones, with standard errors of
    0.03-0.18 deg: this is not sampling noise. Roll bias on the same flights is −0.52 to
    +1.43 deg and changes sign. A constant rotation fitted per flight removes about 1-1.5 deg of
-   median error on four of the five clean flights.
+   median error on four of the five non-racing flights.
 4. **But it is not one mount rotation for the rig.** A single rotation fitted leave-one-flight-
    out moves the pooled median error from 3.90 to 3.74 deg and *makes the answer worse* on
    `flight-07p`, `flight-13p` and `flight-16p` (3.60→4.14, 7.75→8.32, 7.32→8.49). The offset is
@@ -127,8 +127,9 @@ three strata):
 | 13p-trackRATM | pitch / roll | 10.08 / 8.15 | 25.80 / 21.65 | 15 / 14 | 30 / 38 | 54 / 48 |
 | 16p-trackRATM | pitch / roll | 10.58 / 5.57 | 25.97 / 17.21 | 17 / 11 | 31 / 31 | 52 / 59 |
 
-The two regimes are different problems. The clean flights are bias-dominated at a 3 deg RMS;
-the racing flights are 17-32 deg RMS and noise-dominated, and no offset fix touches them.
+The two regimes are different problems. The two quiet piloted flights are bias-dominated at a
+2.7-3.0 deg RMS; everything else is 7-32 deg RMS and noise- or drift-dominated, and no offset fix
+touches those.
 
 **The trimmed column is not usable and is reported as such.** Trimming to the smallest 90 % of
 |error| is a selection on the *sum* of the components, which induces a large negative
@@ -177,7 +178,7 @@ Per-flight mean error on the trimmed frames, with the frame-clustered standard e
 | 16p-trackRATM | +3.23 ± 0.45 | +1.61 ± 0.54 |
 
 Sign consistency: **pitch positive on 8 of 8 flights**, and pinned to +2.2 to +2.7 deg on the
-five clean ones. Roll is −0.5 to +1.4 deg and changes sign. Whatever the reader is doing, it is
+five non-racing ones. Roll is −0.5 to +1.4 deg and changes sign. Whatever the reader is doing, it is
 biased in the forward-tilt direction by about 2.4 deg on the flights where it works.
 
 **A constant rotation per domain** (orthogonal Procrustes on the up vectors, so it is the
@@ -313,7 +314,7 @@ per-clip mount fit already removes the first part — which is why the clip-leve
 time and 88 % of it lands in clips the gate already discards, so the binding constraint is not
 the estimator's noise but the fact that a third of those flights is unreadable. The handoff's
 three proposed fixes map onto this as follows: a per-clip calibration is worth ~1-1.5 deg of
-median error on the clean flights and nothing on the racing ones; a complementary filter needs a
+median error on the non-racing flights and nothing on the racing ones; a complementary filter needs a
 rotation source that TII does not have (DPVO is 10-70× short) but UZH does (0.1 deg/step); and a
 learned confidence would be trained on a tail that is 88 % already excluded. **The measurable
 headroom is in the tail's admission decision, not in the fast component.**
