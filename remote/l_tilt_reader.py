@@ -208,33 +208,73 @@ def _train_and_eval(arm: str, holdout: str, seed: int, epochs: int, lr: float, b
     warp_cache: dict = {}
 
     def batches(n_frames):
-        idx = rng.permutation(len(pool))[:n_frames] if n_frames <= len(pool) else \
-            rng.choice(len(pool), size=n_frames, replace=True)
-        buf, ys, cms, shape = [], [], [], None
-        for i in idx:
-            item = pool[i]
-            if isinstance(item, tuple):
-                tag, fr = item
-            else:
-                tag = "real" if arm == "real" else "sim"
-                fr = item
-            got = load(fr, tag)
-            if got is None:
-                continue
-            x, y, cm = got
-            if shape is not None and tuple(x.shape) != shape:
-                # never stack a 640x360 simulated frame with a 640x480 real one
+        """Yield batches that never mix domains (and therefore never mix camera models).
+
+        Mixed arms alternate one batch from each domain, half the epoch each: the pre-registered
+        budget is matched in steps, and G03's rule (no fold mixes two camera models) is met at the
+        batch level as well as the fold level.
+        """
+        if arm != "mixed":
+            tag = "real" if arm == "real" else "sim"
+            sub = pool
+            idx = rng.permutation(len(sub))[:n_frames] if n_frames <= len(sub) else \
+                rng.choice(len(sub), size=n_frames, replace=True)
+            buf, ys, cms, shape = [], [], [], None
+            for i in idx:
+                got = load(sub[i], tag)
+                if got is None:
+                    continue
+                x, y, cm = got
+                if shape is not None and tuple(x.shape) != shape:
+                    yield torch.stack(buf), torch.stack(ys), cms
+                    buf, ys, cms = [], [], []
+                shape = tuple(x.shape)
+                buf.append(x)
+                ys.append(y)
+                cms.append(cm)
+                if len(buf) == batch:
+                    yield torch.stack(buf), torch.stack(ys), cms
+                    buf, ys, cms, shape = [], [], [], None
+            if buf:
                 yield torch.stack(buf), torch.stack(ys), cms
-                buf, ys, cms = [], [], []
-            shape = tuple(x.shape)
-            buf.append(x)
-            ys.append(y)
-            cms.append(cm)
-            if len(buf) == batch:
+            return
+
+        # mixed: separate streams, one batch from each in turn
+        streams = {}
+        for tag in ("real", "sim"):
+            sub = real_pool if tag == "real" else sim_pool
+            n = n_frames // 2 if tag == "real" else n_frames - n_frames // 2
+            idx = (rng.permutation(len(sub))[:n] if n <= len(sub)
+                   else rng.choice(len(sub), size=n, replace=True))
+            streams[tag] = idx
+
+        def stream(tag):
+            buf, ys, cms = [], [], []
+            for i in streams[tag]:
+                got = load(real_pool[i] if tag == "real" else sim_pool[i], tag)
+                if got is None:
+                    continue
+                x, y, cm = got
+                buf.append(x)
+                ys.append(y)
+                cms.append(cm)
+                if len(buf) == batch:
+                    yield torch.stack(buf), torch.stack(ys), cms
+                    buf, ys, cms = [], [], []
+            if buf:
                 yield torch.stack(buf), torch.stack(ys), cms
-                buf, ys, cms, shape = [], [], [], None
-        if buf:
-            yield torch.stack(buf), torch.stack(ys), cms
+
+        it_r, it_s = stream("real"), stream("sim")
+        while True:
+            got_any = False
+            for it in (it_r, it_s):
+                try:
+                    yield next(it)
+                    got_any = True
+                except StopIteration:
+                    pass
+            if not got_any:
+                break
 
     opt = torch.optim.AdamW([p for p in net.parameters() if p.requires_grad], lr=lr,
                             weight_decay=1e-4)
@@ -262,6 +302,11 @@ def _train_and_eval(arm: str, holdout: str, seed: int, epochs: int, lr: float, b
                     out.append(F.normalize(o["gravity"].vec3d, dim=-1))
                 up = torch.cat(out, 0)
             loss = (1.0 - (up * F.normalize(yb.to("cuda"), dim=-1)).sum(-1)).mean()
+            if not loss.requires_grad:
+                raise RuntimeError(
+                    f"loss has no grad: arm={arm} holdout={holdout} cms={set(cms)} "
+                    f"n_requires_grad={sum(p.requires_grad for p in net.parameters())} "
+                    f"training={net.training}")
             opt.zero_grad(set_to_none=True)
             loss.backward()
             torch.nn.utils.clip_grad_norm_(net.parameters(), 1.0)
@@ -401,6 +446,11 @@ def smoke(arm: str = "mixed", steps: int = 6) -> dict:
             o = net(calib.image_processor(xb[j:j + 1].to("cuda")) | {"camera_R_rig": None})
             up = F.normalize(o["gravity"].vec3d, dim=-1)
             loss = (1.0 - (up * F.normalize(ys[j:j + 1].to("cuda"), dim=-1)).sum(-1)).mean()
+            if not loss.requires_grad:
+                raise RuntimeError(
+                    f"loss has no grad: arm={arm} holdout={holdout} cms={set(cms)} "
+                    f"n_requires_grad={sum(p.requires_grad for p in net.parameters())} "
+                    f"training={net.training}")
             opt.zero_grad(set_to_none=True)
             loss.backward()
             opt.step()
@@ -448,6 +498,11 @@ def check() -> dict:
             up = F.normalize(o["gravity"].vec3d, dim=-1)
             yb = F.normalize(torch.tensor(y, dtype=torch.float32)[None].to("cuda"), dim=-1)
             loss = (1.0 - (up * yb).sum(-1)).mean()
+            if not loss.requires_grad:
+                raise RuntimeError(
+                    f"loss has no grad: arm={arm} holdout={holdout} cms={set(cms)} "
+                    f"n_requires_grad={sum(p.requires_grad for p in net.parameters())} "
+                    f"training={net.training}")
             opt.zero_grad(set_to_none=True)
             loss.backward()
             opt.step()

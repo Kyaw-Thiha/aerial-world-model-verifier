@@ -553,3 +553,14 @@ Every row below was read from the project's own repo/HF card on 2026-11-10. "ver
   +0.23 (yaw), all inside amendment B's 0.25 deg line, with the absolute reader offset 0.30 deg on
   the real condition. Recorded because the first check (single clip, recomputed maps) had passed at
   0.07 deg and the five-clip version did not; the difference was the map convention, not the reader.
+
+- [L] **The mixed arm needed a second sampling fix: batches are now domain-homogeneous.** After
+  the frame-shape fix, the mixed arm still died in `backward` with "element 0 of tensors does not
+  require grad" on the per-sample forward path (a mixed batch with real and simulated samples
+  calling `set_camera_model` per item). Rather than debug a path the other two arms never take,
+  the sampler now builds **separate streams** for the real and simulated halves of the epoch and
+  alternating batches from each, so every batch has one camera model and one resolution. This is
+  also the strict reading of G03's rule that no fold mixes camera models, applied at batch level.
+  Half the 600-frame epoch comes from each domain. A guard now raises with the camera-model set
+  and parameter-grad count if a loss ever arrives without a graph. Tested on a 4-step mixed fold
+  before relaunching; the real-only and simulated-only arms are untouched.
