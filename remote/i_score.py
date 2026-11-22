@@ -51,7 +51,7 @@ def _summ(x) -> dict:
 
 @app.function(image=image, gpu="A10G", volumes={"/vol": volume}, timeout=3600)
 def score(clip_ids: str = "", camera_model: str = "pinhole", focal_prior: bool = True,
-          stride: int = 1, allow_heldout: bool = False) -> dict:
+          stride: int = 1, allow_heldout: bool = False, force: bool = False) -> dict:
     import subprocess
     import time
     from pathlib import Path
@@ -73,6 +73,11 @@ def score(clip_ids: str = "", camera_model: str = "pinhole", focal_prior: bool =
     out = {}
     for cid in ids:
         cdir = Path("/vol/i02/clips") / cid
+        done = Path("/vol/i02/scores") / f"{cid}_score.json"
+        if done.is_file() and not force:
+            out[cid] = json.loads(done.read_text())
+            out[cid] = {k: v for k, v in out[cid].items() if k != "rows"}
+            continue
         man = cdir / "manifest_row.json"
         if man.is_file():
             split = json.loads(man.read_text())["split"]
