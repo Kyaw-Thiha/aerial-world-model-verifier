@@ -1,14 +1,14 @@
 value_deg,quantity,construction,mode_k_d,nuisance,population,source,label_status,note
-14.73,conformal threshold,"A2 implied-axis, per-clip median residual",0 (drag-free),lag only (uptilt offset fixed 0),"8 flights, gate per clip, 58 testable",a2_modes 20261110T165343Z / reproduced this run,correct,report 07 amendment 9
-12.95,conformal threshold,A2 implied-axis,0 (drag-free),full parity (uptilt + lag),"8 flights, gate per clip",a2_modes,correct,
-8.96,conformal threshold,A2 implied-axis,0.295,lag only,"8 flights, gate per clip",a2_modes,correct,
+14.73,conformal threshold,"A2 implied-axis, per-clip median residual",0 (drag-free),lag only (uptilt offset fixed 0),"8 flights, gate per clip, 58 testable",a2_modes 20261110T165343Z (A2 branch 71fb651) / reproduced 20261122T071523Z (e7e3d84),correct,report 07 amendment 9
+12.95,conformal threshold,A2 implied-axis,0 (drag-free),full parity (uptilt + lag),"8 flights, gate per clip",a2_modes (A2 branch 71fb651),correct,
+8.96,conformal threshold,A2 implied-axis,0.295,lag only,"8 flights, gate per clip",a2_modes (A2 branch 71fb651),correct,
 6.46,conformal threshold (TII),A2 implied-axis,0.295,full parity,"8 flights, gate per clip",a2_modes,correct,binding primary is the ANWM cruise p99 8.48
-15.6,detection floor,threshold + ANWM cruise median,0 (drag-free),lag only,8 flights + ANWM cruise,a2_modes,correct,
-13.8,detection floor,threshold + ANWM cruise median,0 (drag-free),full parity,8 flights + ANWM cruise,a2_modes,correct,
-16.6,detection floor,threshold + ANWM cruise median,0.295,lag only,8 flights + ANWM cruise,a2_modes,correct,
-16.1,detection floor,threshold + ANWM cruise median,0.295,full parity,8 flights + ANWM cruise,a2_modes,correct,
-1.24,pooled held-out median residual (physics floor),E1 flatness vs mocap attitude,fitted per fold (~0.297),none,"8 flights, 114,059 frames",phase0_floor 20261108T044153Z / reproduced 20261122T072349Z,correct,
-5.46,pooled held-out median residual (drag-free physics floor),E1 flatness vs mocap attitude,0,none,"8 flights, 114,059 frames",phase0_floor,correct,
+15.6,detection floor,threshold + ANWM cruise median,0 (drag-free),lag only,8 flights + ANWM cruise,a2_modes (A2 branch 71fb651),correct,
+13.8,detection floor,threshold + ANWM cruise median,0 (drag-free),full parity,8 flights + ANWM cruise,a2_modes (A2 branch 71fb651),correct,
+16.6,detection floor,threshold + ANWM cruise median,0.295,lag only,8 flights + ANWM cruise,a2_modes (A2 branch 71fb651),correct,
+16.1,detection floor,threshold + ANWM cruise median,0.295,full parity,8 flights + ANWM cruise,a2_modes (A2 branch 71fb651),correct,
+1.24,pooled held-out median residual (physics floor),E1 flatness vs mocap attitude,fitted per fold (~0.297),none,"8 flights, 114,059 frames",phase0_floor 20261108T044153Z (f3b5d2bf) / reproduced 20261122T072349Z (41d1dad),correct,
+5.46,pooled held-out median residual (drag-free physics floor),E1 flatness vs mocap attitude,0,none,"8 flights, 114,059 frames",phase0_floor (f3b5d2bf),correct,
 1.22,body-frame x/y drag diagnostic (median residual),E1 body drag vs mocap attitude,body k_xy fitted,none,8 flights,phase0_floor,correct,diagnostic only
 14.46,"LOFO threshold, mocap-attitude anchor","J02 arm (c): mocap attitude + synthetic error (pre-f7ba108 code, required=lean_req)",0 (drag-free),none,"100 TII clips, 8 flights",track-j <f7ba108,MODE LABEL WRONG,"J02 calls this k_d=0.295; lean_req is drag-free, so this is the drag-free arm"
 31.11,"LOFO threshold, mocap-attitude anchor",J02 arm (c) with ARM_B_KD=0.0,-0.295 (negative drag),none,"100 TII clips, 8 flights",track-j f7ba108 (ARM_B_KD=0.0),MODE LABEL WRONG,J02 calls this drag-free; it is k_d=-0.295
@@ -20,9 +20,9 @@ value_deg,quantity,construction,mode_k_d,nuisance,population,source,label_status
 15.91,"LOFO median threshold, C1 (offset only)",J03 C1,0 (drag-free),per-clip Huber offset,gate-kept dev 69,track-j f7ba108,MODE LABEL WRONG,the offset arm also used the drag-free required side
 13.84,"LOFO median threshold, C2 (offset + k_d)",J03 C2,linear grid shifted by -0.295,offset + bounded k_d,gate-kept dev 69,track-j f7ba108,MODE LABEL WRONG,"k=0.40 means k_d,eff=+0.105; k=0 means -0.295; and the term is linearised"
 14.05,"LOFO median threshold, F0",J03 F0,0 (drag-free),none,"gate-kept six dev flights, 69 clips",track-j f7ba108,MODE LABEL WRONG,our exact reconstruction gives 14.10
-13.43,"LOFO median threshold, F0, schema linear reparameterisation",clean lean_req + 0.295*vel_req (J03's intended reading),0.295 linearised,none,"gate-kept six dev flights, 69 clips",this run,proposed correction (linearised),not the frozen construction; the linearisation overstates the threshold
-8.90,"LOFO median threshold, F0, exact construction",normalise(a + g e3 + 0.295 v) from native mocap,0.295 exact,none,"gate-kept six dev flights, 69 clips",this run,proposed correction (exact),the construction A2's 8.96 uses
-7.68,"LOFO median threshold, F0, exact + lag","normalise(a + g e3 + 0.295 v), per-clip lag nuisance",0.295 exact,lag,"gate-kept six dev flights, 69 clips",this run,"proposed correction (exact, lag)",
+13.43,"LOFO median threshold, F0, schema linear reparameterisation",clean lean_req + 0.295*vel_req (J03's intended reading),0.295 linearised,none,"gate-kept six dev flights, 69 clips",this run (K01 script),proposed correction (linearised),not the frozen construction; the linearisation overstates the threshold
+8.90,"LOFO median threshold, F0, exact construction",normalise(a + g e3 + 0.295 v) from native mocap,0.295 exact,none,"gate-kept six dev flights, 69 clips",this run (K01 script),proposed correction (exact),the construction A2's 8.96 uses
+7.68,"LOFO median threshold, F0, exact + lag","normalise(a + g e3 + 0.295 v), per-clip lag nuisance",0.295 exact,lag,"gate-kept six dev flights, 69 clips",this run (K01 script),"proposed correction (exact, lag)",
 6.9 / 4.9,"whole-clip MDV, perfect path + synthetic error",J02 calibration_mode arms,6.9: drag-free; 4.9: k_d=-0.295,none,100 TII clips,track-j f7ba108,MODE LABEL WRONG,J02 labels 6.9 as k_d=0.295 and 4.9 as drag-free
 10.65,"whole-clip MDV, measured reader error replay",J02 replay,0 (drag-free),none,100 TII clips,track-j f7ba108,MODE LABEL WRONG,labelled k_d=0.295
 6.88 / 8.35,"perfect-path floor, whole clip / 8-frame window",J02,0 (drag-free),none,100 TII clips,track-j f7ba108,MODE LABEL WRONG,labelled k_d=0.295
