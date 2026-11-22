@@ -187,6 +187,13 @@ def infer(sample_ids: str, tag: str, steps: int = 50, frames: int = 81,
     out = Path("/tmp/solar_out") / f"{tag}-{uuid.uuid4().hex[:8]}" / "run"
     out.parent.mkdir(parents=True, exist_ok=True)
     cfg = _write_config(release, out, len(ids), steps, frames, world_size=world_size)
+    if measure == "config":
+        import yaml as _yaml
+        doc = _yaml.safe_load(Path(cfg).read_text())
+        return {"config_distributed": doc["distributed"],
+                "config_train": {k: doc["train"][k] for k in
+                                 ("micro_batch_size", "grad_accum", "global_batch_size")},
+                "passes": doc["validation"]["passes"], "ids": len(ids)}
     env = dict(os.environ, PYTHONPATH="/solarwm")
     t0 = time.time()
     proc = subprocess.run(["torchrun", "--standalone",
