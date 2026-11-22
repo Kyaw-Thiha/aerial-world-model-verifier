@@ -3,7 +3,9 @@
 For each flatness-arm grid clip: required tilt from the designed path (dt = 1 s, k_d = 0.295,
 per-step acceleration), interpolated to the 81 generated frames; depicted tilt from the H02
 reader; residual = median |required - depicted|; feasible when <= 6.46 deg. Testable when the
-frozen gate keeps the clip, it is not collapsed and at least 12 frames require >= 10 deg.
+frozen gate keeps the clip, it is not collapsed and at least 12 frames require >= 10 deg
+(H02's absolute pre-registered rule; H01's was 12 of 16 frames, and the CSV also carries the
+strict 12/16-fraction sensitivity).
 
     pixi run python experiments/h02_verdict.py --depicted results/h02_solarwm_depicted/depicted.jsonl \
         --out results/h02_solarwm

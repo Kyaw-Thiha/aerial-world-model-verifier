@@ -84,14 +84,17 @@ path translations are uniformly scaled to at most 16 m to satisfy the released c
 864x480 with edge replication, matching the H01 convention. Prompt is the same fixed aerial
 scene description for every sample.
 
-**LingBot full precision.** `robbyant/lingbot-world-fast` (74 GB, bf16, four-step) with the
-VAE and T5 encoder from `robbyant/lingbot-world-base-cam`, on one A100-80GB. Same five probe
+**LingBot full precision.** `robbyant/lingbot-world-fast` (74 GB, bf16, four-step; Apache-2.0,
+Hugging Face/ModelScope, upstream repo no longer actively maintained) with the VAE and T5
+encoder from `robbyant/lingbot-world-base-cam`, on one A100-80GB. Same five probe
 poses as H01 (level, linear +/-20, triangular 0->20->0, linear 0->60), same first frame,
-49 frames. The upstream pipeline's multi-clip offload bug is fixed explicitly by moving the
+49 input frames (45 decoded). The upstream pipeline's multi-clip offload bug is fixed explicitly by moving the
 transformer and VAE back to the GPU before each clip.
 
-**Population and statistics.** The reader, required-tilt expression, 6.46 deg threshold and
-testability rule are exactly H01's. The five probes are read on all 81 frames; the grid and
+**Population and statistics.** The reader, required-tilt expression and 6.46 deg threshold are
+H01's. Testability follows H02's pre-registration (`min_frames_required_ge_10_deg: 12`), which
+is absolute rather than H01's 12 of 16; the mismatch and its sensitivity are reported below.
+The five SolarWM probes are read on all 81 frames and the LingBot probes on 45; the grid and
 seed clips are read every second frame (41) to bound the reader cost. No 95 % interval is
 claimed: the clusters are five paths/first frames (ten for the seed set), below the ~10-cluster
 rule, so every rate is descriptive with its denominator. The SolarWM grid is 5 frames x 5 paths x 3 arms = 75
