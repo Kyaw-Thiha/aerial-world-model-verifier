@@ -81,7 +81,7 @@ arms:
 
 # ------------------------------------------------------------------ matched budget
 budget:
-  frames_per_epoch: 1200          # sampled from the training pool, so every fold takes the same steps
+  frames_per_epoch: 600           # sampled from the training pool, so every fold takes the same steps
   epochs: 2
   batch: 2
   lr: 2e-5                        # G03
@@ -94,12 +94,15 @@ budget:
     2 x 800 = 1600 steps. A fold whose pool is smaller than 1600 frames samples with
     replacement. The cost therefore does not depend on the arm.
   cost_estimate_usd: >
-    measured: the smoke gives 0.67 s per frame at batch 1 on an A10 (remote/l_tilt_reader.py
-    --mode smoke); at batch 2 the 1200 frames/epoch are 600 steps, about 20-25 min per model on
-    the A10G. 21 models (6 real folds, 3 sim folds, 9 mixed folds, 3 final) plus the 3 all-real
-    evaluation passes: about 9-11 A10G-hours, USD 10-12. The downstream edit pass adds about
-    4 A10G-hours (USD 4.4) and the L01 scoring about 2.7 (USD 3.0). Total round estimate
-    USD 18-20, recorded in docs/COST_LEDGER.md before the first fold.
+    measured, not assumed: the smoke gives 0.67 s per frame at batch 1, but the first real fold
+    ran at about 2 s per frame once the LM was in the loop on simulated forest frames (many
+    frames exhaust the 10 LM steps), so 1,200 frames/epoch would have cost about 28 A10G-hours
+    for the 21 models. The budget was therefore halved to **600 frames/epoch (2 x 300 = 600
+    steps)** before any fold was scored; the cost is then about 14 A10G-hours (USD 15) for the
+    folds and finals. This is a budget amendment made before any fold outcome existed, not a
+    result-driven change; every arm keeps the same number of steps. The L01 scoring and the
+    downstream edit pass are logged separately in docs/COST_LEDGER.md; the round estimate is
+    now about USD 30, still below the USD 50 ceiling.
 
 # ------------------------------------------------------------------ evaluation
 evaluation:
