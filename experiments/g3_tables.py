@@ -175,6 +175,20 @@ def main() -> int:
                     cells.append(f(m[0]["rate"], 2) if m else "—")
                 out.append(f"| {dl:g} | " + " | ".join(cells) + " |")
 
+    mdvf = read(d / "mdv_fdr_exploratory.csv")
+    if mdvf:
+        out.append("\n## Minimum detectable step with BH (EXPLORATORY)\n")
+        durs = sorted({float(r["duration_s"]) for r in mdvf})
+        deltas = sorted({float(r["delta_deg"]) for r in mdvf})
+        out.append("| Δ (deg) | " + " | ".join(f"{dd:g} s" for dd in durs) + " |")
+        out.append("| --- | " + " | ".join("---" for _ in durs) + " |")
+        for dl in deltas:
+            cells = []
+            for dd in durs:
+                m = [r for r in mdvf if float(r["delta_deg"]) == dl and float(r["duration_s"]) == dd]
+                cells.append(f(m[0]["rate"], 2) if m else "—")
+            out.append(f"| {dl:g} | " + " | ".join(cells) + " |")
+
     y = json.loads(Path(args.yaw).read_text()) if Path(args.yaw).is_file() else {}
     if y:
         out.append("\n## Yaw slice\n")

@@ -1,0 +1,58 @@
+# G3 evaluation recipe, frozen after the development pass and before the held-out pass.
+#
+# This file fixes exactly what the held-out pass will run. It selects nothing on the basis of a
+# held-out outcome and nothing on the basis of which ablation "looked best": every arm that was
+# pre-registered in configs/g06_segments_prereg.yaml is evaluated, and the success criteria are
+# the ones in that file.
+date: '2026-11-22'
+track: G3
+amends: none
+status: frozen_after_dev_pass
+
+populations:
+  sim_heldout:
+    scenes: [field_settlement, coastal_cliff]
+    seeds: [201, 202, 203, 204, 205, 206]
+    clips: 100
+    reader: GeoCalib pinhole, focal prior, stride 1, same settings as the dev pass
+  real_heldout:
+    flights: [flight-13p-trackRATM, flight-07a-lemniscate]
+    clips: 18, gate-kept subset testable
+    edits: the G01/G04 partial-edit composition, unchanged
+
+thresholds:
+  sim: empirical 95th percentile of the clip statistic on ALL feasible dev clips
+       (folds are not used for the held-out application; the fold spread is reported in G06)
+  real: leave-one-flight-out on the gate-kept dev flights, as in rounds 1-2
+  alpha: 0.05
+  no_recalibration_on_heldout: true
+
+arms_evaluated:
+  - {name: coh12_p1, tier: coherence, length: 12, hop: 4, persistence: 1, role: primary}
+  - {name: coh12_p2, tier: coherence, length: 12, hop: 4, persistence: 2}
+  - {name: coh8_p1,  tier: coherence, length: 8,  hop: 4, persistence: 1}
+  - {name: res12_p1, tier: residual,  length: 12, hop: 4, persistence: 1}
+  - {name: res8_p1,  tier: residual,  length: 8,  hop: 4, persistence: 1, role: comparison}
+  - {name: res8_p2,  tier: residual,  length: 8,  hop: 4, persistence: 2}
+  - {name: sign12_p1,tier: sign,      length: 12, hop: 4, persistence: 1}
+  - {name: median_baseline, tier: median, role: baseline}
+  - {name: a2_bh_coh12_q10,  rule: BH within clip, q: 0.10, tier: coherence, length: 12}
+  - {name: a2_bh_res8_q10,   rule: BH within clip, q: 0.10, tier: residual,  length: 8}
+  - {name: a5_joint, rule: standardised max over lengths {8,12,16}}
+  - {name: a4_lag_coh12, rule: primary with the per-clip lag applied}
+  - {name: a3_refined, rule: primary segments refined by the two-state fit}
+
+success_criteria: as configs/g06_segments_prereg.yaml (S1-S6), evaluated once here
+controls:
+  null: the unchanged feasible clip
+  yaw: the 12-clip auxiliary slice is a dev instrument; it is not re-rendered for held-out scenes
+       and is reported in G06 only
+  thrust_limit: reported as its own family, no power claimed
+
+outputs:
+  - results/g07/ (JSON + CSV, one row per clip)
+  - reports/G07_segments_frozen_evaluation.md
+  - report_candidates/g3_segments_sim.tex
+
+cost:
+  projected_usd: 2.3 (100 sim clips + 18 real clips at the dev-measured rate)

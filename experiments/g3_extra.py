@@ -417,6 +417,65 @@ def _mdv_arm(man, dev, stats, seeds, feasible, arm, deltas, durations):
     return rows
 
 
+def run_mdv_fdr(man, dev, stats, seeds, feasible, out,
+                deltas=(2, 4, 6, 8, 10, 12, 14, 16, 20, 24),
+                durations=(0.4, 0.8, 1.6, 3.2), q=0.10):
+    """EXPLORATORY (added after the pre-registered MDV showed no response): the same synthetic
+    step scored with the A2 rule, Benjamini-Hochberg within the clip, instead of the family-wise
+    maximum. Labelled exploratory in every table."""
+    rows = []
+    tier, length = PRIMARY["tier"], PRIMARY["length"]
+    for D in durations:
+        for delta in deltas:
+            k = n = 0
+            ious = []
+            for c in feasible:
+                x = dev[c]
+                if len(x) < int(D * 30) + 5:
+                    continue
+                dirv = np.mean(x.lean_req, axis=0)
+                norm = np.linalg.norm(dirv)
+                u = dirv / norm if norm > 1e-9 else np.array([1.0, 0.0])
+                m = int(round(D * 30))
+                start = (len(x) - m) // 2
+                lean = x.lean_dep.copy()
+                lean[start:start + m] += np.tan(np.radians(delta)) * u
+                injected = type(x)(clip_id=x.clip_id, t=x.t, lean_dep=lean,
+                                   lean_req=x.lean_req, tilt_req_deg=x.tilt_req_deg,
+                                   truth=np.zeros(len(x), bool), meta=x.meta)
+                st = window_statistics(injected, length=length, hop=4)
+                seed = int(man[c]["scene_seed"])
+                fit = [cc for cc in feasible if int(man[cc]["scene_seed"]) != seed]
+                pv = np.sort(np.concatenate([window_values(stats[(cc, length)], tier)
+                                             for cc in fit])) if fit else np.array([])
+                ps, ss = [], []
+                for w in st:
+                    if w.abstained:
+                        continue
+                    v = w.get(tier)
+                    if np.isfinite(v):
+                        ps.append(empirical_p(v, pv))
+                        ss.append(w)
+                rej = bh_reject(ps, q)
+                mask = np.zeros(len(x), bool)
+                for w, r in zip(ss, rej):
+                    if r:
+                        mask[w.start:w.stop] = True
+                truth = np.zeros(len(x), bool)
+                truth[start:start + m] = True
+                sc = interval_scores(mask, truth)
+                k += int(bool(mask.any()))
+                n += 1
+                ious.append(sc["iou"] if mask.any() else 0.0)
+            rows.append({"arm": f"coh12_bh_q{q:g}_EXPLORATORY", "duration_s": D,
+                         "delta_deg": delta, "k": k, "n": n,
+                         "rate": k / n if n else None,
+                         "iou_med": float(np.median(ious)) if ious else None,
+                         "rate_iou_gt_0_3": (sum(1 for x in ious if x > 0.3) / n) if n else None})
+    dump(rows, out / "mdv_fdr_exploratory.csv")
+    return rows
+
+
 def dump(rows, path):
     if not rows:
         return
@@ -453,6 +512,8 @@ def main() -> int:
     print("A5 done")
     run_mdv(man, dev, stats, seeds, feasible, out)
     print("MDV done")
+    run_mdv_fdr(man, dev, stats, seeds, feasible, out)
+    print("MDV (BH, exploratory) done")
     return 0
 
 
