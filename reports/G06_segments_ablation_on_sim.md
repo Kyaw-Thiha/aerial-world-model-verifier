@@ -217,7 +217,7 @@ segments have IoU 0.20-0.68 depending on family.
 Benjamini-Hochberg within each clip, on the same windows and the same empirical null (the fit
 clips' window distribution, leave-one-scene-out):
 
-| arm | rule | q | detection (k/72 defect clips) | feasible clip false-reject |
+| arm | rule | q | detection (k/90 defect clips) | feasible clip false-reject |
 | --- | --- | --- | --- | --- |
 | residual 8 | per clip | 0.05 | 33 (36.7 %) | 3/64 (4.7 %) |
 | residual 8 | per clip | 0.10 | 42 (46.7 %) | 7/64 (10.9 %) |
@@ -233,7 +233,7 @@ of removals and 20 % of mirrors at a 6.2 % false-reject; the same windows under 
 variant is worse at q = 0.05 and over-flags at q = 0.10, so the per-clip multiplicity correction
 is the useful one. The coherence arm gains little (it is still limited by its abstention), and
 its BH rule keeps a 0/17 false-reject. The realised false-discovery proportion is ~0.001 in every
-cell, but that number is uninformative on this batch: 70 of the 72 defect clips are whole-clip, so
+cell, but that number is uninformative on this batch: 88 of the 90 defect clips are whole-clip, so
 a flagged window is almost always inside the truth. The informative control is the clip-level
 false-reject on the 80 feasible clips, which is in the last column.
 
