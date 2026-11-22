@@ -310,7 +310,7 @@ pixi run python experiments/h02_analyze_generated.py --depicted results/h02_ling
 | inventory | `results/h02_inventory.json` (primary-source URLs per model) |
 | SolarWM inputs | `data/h02_solarwm_inputs/` (110 samples: image, 81 poses, prompt, meta) |
 | SolarWM clips | Modal volume `awmv-h2-results:/solarwm/{probes,grid,seeds}`, R2 `track-h2/clips/solarwm-*` |
-| SolarWM results | `results/h02_solarwm/` (clips, frames, by-arm, roll criteria, verdict), `results/h02_solarwm_*_depicted/` |
+| SolarWM results | `results/h02_solarwm/` (clips, frames, by-arm, roll criteria, verdict, cost.json), `results/h02_solarwm_*_depicted/` |
 | full LingBot clips | volume `awmv-h2-results:/lingbot_full`, R2 `track-h2/clips/lingbot-full` |
 | full LingBot results | `results/h02_lingbot_full/` (clips, frames, compare_h01.csv) |
 | reader | `remote/h02_gate.py` (GeoCalib commit `1dedb29…`) |
