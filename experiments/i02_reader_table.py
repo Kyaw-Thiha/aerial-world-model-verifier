@@ -26,14 +26,38 @@ OUT_CSV = ROOT / "results/i02/reader_feasible_grid.csv"
 OUT_JSON = ROOT / "results/i02/reader_feasible_grid.json"
 
 
+def _pull_scores(man: dict, split: str, defect: str) -> None:
+    """Copy this split's score files from the volume, skipping ones already local."""
+    import subprocess
+
+    SCORES.mkdir(parents=True, exist_ok=True)
+    pixi = Path.home() / "Documents/Projects/aerial-world-model-verifier/.pixi/envs/default/bin/modal"
+    exe = str(pixi) if pixi.is_file() else "modal"
+    cids = [cid for cid, m in man.items()
+            if m.get("split") == split and (defect == "all" or m.get("defect_family") == defect)]
+    missing = [c for c in sorted(cids) if not (SCORES / f"{c}_score.json").is_file()]
+    print(f"pulling {len(missing)} score files ({len(cids) - len(missing)} already local)")
+    for cid in missing:
+        try:
+            subprocess.run([exe, "volume", "get", "awmv-i-data",
+                            f"i02/scores/{cid}_score.json", str(SCORES)],
+                           check=True, capture_output=True, cwd=ROOT)
+        except subprocess.CalledProcessError:
+            pass                      # not scored yet
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--split", default="dev", choices=["dev", "heldout"])
     ap.add_argument("--defect", default="feasible",
                     help="defect_family to include ('feasible', 'all', or a family name)")
+    ap.add_argument("--pull", action="store_true",
+                    help="fetch score files for the selected clips from the Modal volume")
     args = ap.parse_args()
 
     man = {r["clip_id"]: r for r in csv.DictReader(MANIFEST.open())}
+    if args.pull:
+        _pull_scores(man, args.split, args.defect)
     rows = []
     for f in sorted(glob.glob(str(SCORES / "*_score.json"))):
         d = json.loads(Path(f).read_text())

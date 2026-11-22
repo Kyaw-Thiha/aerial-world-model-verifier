@@ -68,8 +68,9 @@ video is on the volume is skipped) and publishing is idempotent.
 
 ## The reader on the new families
 
-The number Step 3 asks for first, measured on development clips only (six clips, 3,058 frames,
-GeoCalib with the project's settings, no tuning):
+The number Step 3 asks for first, measured on development clips only (GeoCalib with the
+project's settings, no tuning). The first six clips scored, before the grid existed, are what
+showed that the sample confounds family with mount:
 
 | clip | family | maneuver | mount | truth (tilt med) | reader (tilt med) | up error, med (p90) | gain fwd / left |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -80,25 +81,24 @@ GeoCalib with the project's settings, no tuning):
 | `i02_dev_134` | forest_ridge | ellipse | 30 deg | 4.72 | 10.41 | 11.90 (15.29) | -0.51 / 0.65 |
 | `i02_dev_135` | industrial | lemniscate | 45 deg | 12.90 | 8.21 | 7.58 (12.30) | 1.43 / 0.57 |
 
-The six clips above confound family with mount (three of the four hard ones are forest), so a
-3 x 4 feasible grid -- one clip per (family, mount), no defect, all development scenes -- was
-rendered and scored before any detection number was claimed. 1,700 development clips are not
-needed to see the structure; 12 are enough to see that it exists:
+All **56 scored feasible development clips**, 13,516 frames, one row per
+(family, mount) cell -- the 3 x 4 grid the downstream tracks asked for, filled with every
+feasible development clip rather than one example:
 
-| family | mount | clip | up error, median (p90) | gain fwd / left |
-| --- | --- | --- | --- | --- |
-| urban_checker | 0 | `i02_dev_004` | 0.80 (1.41) | 0.88 / 0.99 |
-| urban_checker | 15 | `i02_dev_001` | 0.28 (0.57) | 1.00 / 1.01 |
-| urban_checker | 30 | `i02_dev_022` | 1.13 (1.98) | 1.05 / 0.99 |
-| urban_checker | 45 | `i02_dev_007` | 1.95 (2.93) | 1.10 / 1.00 |
-| industrial | 0 | `i02_dev_012` | 1.14 (1.61) | 0.70 / 0.97 |
-| industrial | 15 | `i02_dev_009` | 1.45 (1.92) | 0.86 / 0.92 |
-| industrial | 30 | `i02_dev_006` | 1.42 (7.87) | 0.89 / -- |
-| industrial | 45 | `i02_dev_003` | 4.94 (28.06) | 0.88 / 0.70 |
-| forest_ridge | 0 | `i02_dev_008` | **6.32** (9.26) | 0.27 / 1.07 |
-| forest_ridge | 15 | `i02_dev_005` | **8.31** (11.33) | 0.53 / 1.29 |
-| forest_ridge | 30 | `i02_dev_002` | **9.40** (13.56) | 0.61 / 0.56 |
-| forest_ridge | 45 | `i02_dev_011` | **10.54** (14.18) | 1.22 / 0.80 |
+| family | mount | clips | frames | up error, median (range across clips) | gain, fwd |
+| --- | --- | --- | --- | --- | --- |
+| forest_ridge | 0 | 5 | 1231 | **7.52** (6.27-8.59) | 0.26 |
+| forest_ridge | 15 | 4 | 1056 | **7.73** (6.95-8.31) | 0.55 |
+| forest_ridge | 30 | 4 | 1083 | **9.41** (8.65-14.86) | 0.61 |
+| forest_ridge | 45 | 5 | 851 | **10.54** (9.02-12.60) | 1.01 |
+| industrial | 0 | 5 | 1398 | **1.18** (1.03-1.19) | 0.70 |
+| industrial | 15 | 5 | 1400 | **1.29** (0.67-1.45) | 0.90 |
+| industrial | 30 | 5 | 1292 | **1.27** (0.70-1.42) | 0.93 |
+| industrial | 45 | 4 | 779 | **3.23** (2.02-4.94) | 0.97 |
+| urban_checker | 0 | 4 | 997 | **0.95** (0.80-1.15) | 0.86 |
+| urban_checker | 15 | 5 | 1428 | **0.49** (0.28-0.57) | 1.00 |
+| urban_checker | 30 | 5 | 1162 | **0.93** (0.92-1.13) | 1.07 |
+| urban_checker | 45 | 5 | 839 | **1.39** (1.29-1.95) | 1.06 |
 
 Three conclusions, and they are findings about the *reader*, not about the defects:
 
