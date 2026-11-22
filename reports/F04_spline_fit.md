@@ -5,11 +5,11 @@ Track F2. Written 2026-11-21. Pre-registration `configs/f04_round2_prereg.yaml` 
 "Reproduce"; results in `results/f04_spline/` (one combined run over all five paths).
 
 **Decision: fail.** With estimated attitude and any stored pixel path the pre-registered
-spline statistic flags at most 2/8 real clips but detects only 1/8 tilt removals and 2–3/8
-mirrored rolls (AUC 0.53–0.70), far short of the 90 % bar on both paths the gate names. On the
-truth path the same statistic detects 8/8 removals and 6/8 mirrors (AUC 1.00/0.97), so the
-analytic-derivative form is sound but far more path-sensitive than round 1's integrated
-statistic, whose pixel-path AUC was 0.95/0.89.
+spline statistic flags 1–2/8 real clips but detects only 0–1/8 tilt removals and 2–3/8 mirrored
+rolls (AUC 0.53–0.70), far short of the 90 % bar on both paths the gate names; on the truth
+path the same statistic detects 8/8 removals and 6/8 mirrors (AUC 1.00/0.97), so the
+analytic-derivative form is sound but more path-sensitive than round 1's integrated statistic
+(pixel-path AUC 0.95/0.89).
 
 ## Plain-language summary
 
