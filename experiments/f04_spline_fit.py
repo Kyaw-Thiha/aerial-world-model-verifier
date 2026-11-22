@@ -374,6 +374,7 @@ def main() -> int:
                               "pose_sha256": {}},
                "paths": {}}
 
+    csv_rows: list[dict] = []
     for path_name in paths:
         roots = {"uzh": Path(args.uzh), "poses": Path(args.poses_root) / path_name}
         if not (roots["poses"] / "indoor_forward_3.npz").exists():
@@ -457,6 +458,7 @@ def main() -> int:
                 path_block["by_arm"][arm][path_kind] = block
         path_block["knots_median"] = float(np.median(
             [r["knots"] for r in all_rows if r["cond"] == "real"]))
+        csv_rows.extend(all_rows)
         # per-row values live in rows.csv; the summary holds aggregates only
         summary["paths"][path_name] = path_block
 
@@ -469,9 +471,8 @@ def main() -> int:
     with open(out_root / "rows.csv", "w", newline="") as fh:
         w = csv.DictWriter(fh, fieldnames=fields, extrasaction="ignore")
         w.writeheader()
-        for pn in paths:
-            for r in summary["paths"].get(pn, {}).get("rows", []):
-                w.writerow({k: r.get(k) for k in fields})
+        for r in csv_rows:
+            w.writerow({k: r.get(k) for k in fields})
     for pn in paths:
         b = summary["paths"].get(pn, {})
         if "by_arm" not in b:
