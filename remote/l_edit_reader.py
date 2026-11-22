@@ -59,7 +59,6 @@ def edits(flights: str, model: str = "frozen", lm_steps: int = 10,
     from geocalib import GeoCalib
     from scipy.spatial.transform import Rotation
 
-    from src.negatives.edits import condition_maps, rotation_angle_deg
     from src.negatives.fisheye_warp import equidistant_f, remap_arrays
     from src.perception.frames import camera_to_body_pitched
 
@@ -77,6 +76,7 @@ def edits(flights: str, model: str = "frozen", lm_steps: int = 10,
     net.eval()
 
     specs = Path(VOL) / "l02" / "p3a"
+    edit_specs = Path(VOL) / "l02" / "edits"
     clips_json = json.loads((specs / "clips.json").read_text())["clips"]
     store = Path(VOL) / "l02" / "downstream" / "clips"
     out_dir = Path(VOL) / "l02" / "downstream"
@@ -85,7 +85,10 @@ def edits(flights: str, model: str = "frozen", lm_steps: int = 10,
     out = {}
     for flight in [f for f in flights.split(",") if f]:
         spec = np.load(specs / f"{flight}.npz", allow_pickle=False)
+        edit_spec = np.load(edit_specs / f"{flight}.npz", allow_pickle=False)
         names = [str(n) for n in spec["names"]]
+        if [str(n) for n in edit_spec["names"]] != names:
+            raise RuntimeError(f"{flight}: edit-spec names do not match the frame table")
         R_bw = Rotation.from_quat(np.asarray(spec["quat"])).as_matrix()
         R_cb = camera_to_body_pitched(np.deg2rad(float(spec["uptilt_deg"])))
         R_cw = np.einsum("nij,jk->nik", R_bw, R_cb)
@@ -117,23 +120,14 @@ def edits(flights: str, model: str = "frozen", lm_steps: int = 10,
                     real_rows.append(None)
                     continue
                 maps = {}
-                Ms = {}
+                key_map = {"null_edit": "M_identity", "tilt_k0": "M_tilt_k0",
+                           "mirror_roll": "M_mirror_roll", "yaw_control": "M_yaw_control"}
                 for cond in CONDS:
-                    if cond == "null_edit":
-                        M = condition_maps("identity", R_bw[i:i + 1], R_cw[i:i + 1])[0]
-                    elif cond == "tilt_k0":
-                        M = condition_maps("tilt_k", R_bw[i:i + 1], R_cw[i:i + 1], k=0.0)[0]
-                    elif cond == "mirror_roll":
-                        M = condition_maps("mirror_roll", R_bw[i:i + 1], R_cw[i:i + 1])[0]
-                    else:
-                        mag = min(float(rotation_angle_deg(
-                            condition_maps("tilt_k", R_bw[i:i + 1], R_cw[i:i + 1], k=0.0)[0])),
-                            60.0)
-                        M = condition_maps("yaw_control", R_bw[i:i + 1], R_cw[i:i + 1],
-                                           yaw_rot_rad=np.deg2rad(mag))[0]
+                    # Track A's own per-frame camera-frame map, not a recomputation: the
+                    # stored conditions were produced with these exact matrices.
+                    M = np.asarray(edit_spec[key_map[cond]][i], dtype=np.float64)
                     mx, my = remap_arrays(M, w, h, fpx)
                     maps[cond] = (mx, my, (mx >= 0) & (my >= 0))
-                    Ms[cond] = M
                 warped = {}
                 for cond in CONDS:
                     mx, my, _ = maps[cond]
@@ -216,6 +210,7 @@ def probe(flight: str = "flight-01a-ellipse", clip: str = "flight-01a-ellipse#00
     from src.verdict.lean import depicted_lean_from_gravity
 
     specs = Path(VOL) / "l02" / "p3a"
+    edit_specs = Path(VOL) / "l02" / "edits"
     clips = json.loads((specs / "clips.json").read_text())["clips"]
     c = [x for x in clips if x["clip_id"] == clip][0]
     spec = np.load(specs / f"{flight}.npz", allow_pickle=False)

@@ -542,3 +542,14 @@ Every row below was read from the project's own repo/HF card on 2026-11-10. "ver
   never mixes resolutions; nothing else about the arm changes. The failed runs produced no fold
   record and are rerun at the same pre-registered budget. Cost of the failure: one finals attempt
   and the mixed folds' queued time, recorded in the ledger.
+
+- [L] **The edit reader now uses Track A's stored per-frame edit matrices, and the mismatch
+  disappears.** Recomputing the camera-frame maps from the mocap quaternion and mount gave the
+  right rotation *angle* but a slightly different *axis* (0.4-0.8 deg on a 2.7 deg edit), which on
+  the mirror condition reached 0.48 deg between our regenerated condition and the stored one. The
+  matrices that produced the stored clips are on `awmv-a-data` at `/edits/p3a_v1/<flight>.npz`;
+  using them directly (verified name-for-name against the frame table) brings the condition-relative
+  offsets on five `flight-01a` clips to +0.00 (null), +0.11 (tilt removal), +0.02 (mirror) and
+  +0.23 (yaw), all inside amendment B's 0.25 deg line, with the absolute reader offset 0.30 deg on
+  the real condition. Recorded because the first check (single clip, recomputed maps) had passed at
+  0.07 deg and the five-clip version did not; the difference was the map convention, not the reader.
