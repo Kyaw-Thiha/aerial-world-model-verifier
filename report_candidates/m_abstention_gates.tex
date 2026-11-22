@@ -65,14 +65,27 @@ reader's 3.7$^\circ$, so the real arm uses the project's 100$^\circ$ virtual pin
 instead. Gate B abstains when the clip-median lean difference between the readers exceeds a
 threshold calibrated by the same conformal risk control.
 
-\begin{center}
-\emph{Tables for Gate B and for the end-to-end comparison are generated from}
-\texttt{results/m02} \emph{and} \texttt{results/m03}\emph{.}
-\end{center}
+On the simulated renders, whose camera is a genuine pinhole, disagreement separates the clips
+the frozen gate mis-orders: AUROC 0.835 [0.806, 0.865] against S3's 0.058 for a clip-median
+reader error above 5$^\circ$, and on the real clips 0.880 against 0.226. The mechanism is
+scene bias. The frozen gate keeps 11 of 26 dense-forest clips whose median reader error is
+9.08$^\circ$ against 7.72$^\circ$ for the ones it drops, and their median reader disagreement
+is 5.69$^\circ$ against 3.57$^\circ$ in the open families; the disagreement gate abstains on
+9 of those 11. Conformal risk control reaches the 5\,\% yaw-control bound at
+$\tau_B=4.5^\circ$ (0.049, 40 of 68 clips, 58.8\,\% coverage). It cannot reach the
+false-reject bound (best 0.101, at full coverage), so Gate B protects the yaw control --- the
+failure Gate A could not fix --- and does nothing for false rejects.
+
+Averaging the two readers is worth reporting as its own instrument and is not proposed as a
+replacement. Pooled trimmed RMSE over the 80 feasible simulated clips: frozen reader
+4.08$^\circ$, GeoCalib-224 3.93$^\circ$, Perspective Fields 3.34$^\circ$, their mean
+3.11$^\circ$; medians run the other way (1.27, 1.42, 3.36, 2.25). In the forest the mean is a
+large win (5.44 against 8.24) and in the open scenes a loss (1.69 against 0.87).
 
 \paragraph{What abstention costs and buys.}
 The end-to-end comparison is G0 (the frozen S3 gate), G0$+$A, G0$+$B and G0$+$A$+$B across the
-three published tiers --- the scale-free coherence $R$, the fixed-calibration median residual
+three published tiers --- the ungated rows of which reproduce Track~K's exact re-derivation
+digit for digit, so the comparison rests on verified machinery --- --- the scale-free coherence $R$, the fixed-calibration median residual
 $F0$, and the per-clip offset-plus-drag fit $C2$ --- on the real development clips, the
 simulated development clips and, one-shot, the SolarWM and ANWM generator clips. Every
 abstention carries a reason code (\texttt{weak\_signal}, \texttt{near\_vertical},

@@ -125,6 +125,12 @@ is **descriptive**, not a 95 % confidence interval, and most are very wide.
 | C2 | GB | 78 | 0.46 | 2/42 | 12/36 |
 | C2 | GAB | 17 | 0.10 | 0/7 | 10/10 |
 
+Tier medians on the simulated feasible clips, by family: F0 11.30 deg in forest against 4.20
+industrial and 2.12 urban; C2 5.37 / 1.12 / 1.19; R 1.72 / 1.44 / 1.86. The forest's reader
+error (8.10 deg median) is what the gates are asked to catch, and the transfer threshold sits
+inside the forest distribution rather than above it — which is why the simulated false-reject
+is 25 % ungated.
+
 Two things differ from the real table and both matter. The thresholds are *transferred* from
 the real dev clips (R 1.58, F0 7.60, C2 4.24 on the simulated reader's scale), so no
 calibration-population collapse can happen; and the simulated reader on the open families is
