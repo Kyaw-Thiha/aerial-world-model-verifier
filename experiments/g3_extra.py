@@ -123,8 +123,12 @@ def run_fdr_rates(man, dev, stats, seeds, feasible, out):
                             elif not dev[c].truth.any():
                                 fseg += len(merge_intervals(mask))
                                 minutes += len(dev[c]) / 30.0 / 60.0
-                                fk += int(bool(mask.any()))
-                                fn += 1
+                                testable_c = any((not w.abstained)
+                                                 and np.isfinite(w.get(tier))
+                                                 for w in stats[(c, length)])
+                                if testable_c:
+                                    fk += int(bool(mask.any()))
+                                    fn += 1
                     else:
                         for c in fold_clips:
                             ps, ss = [], []
@@ -145,8 +149,12 @@ def run_fdr_rates(man, dev, stats, seeds, feasible, out):
                             elif not dev[c].truth.any():
                                 fseg += len(merge_intervals(mask))
                                 minutes += len(dev[c]) / 30.0 / 60.0
-                                fk += int(bool(mask.any()))
-                                fn += 1
+                                testable_c = any((not w.abstained)
+                                                 and np.isfinite(w.get(tier))
+                                                 for w in stats[(c, length)])
+                                if testable_c:
+                                    fk += int(bool(mask.any()))
+                                    fn += 1
                 for (fam, tgt, frac), (k, n) in sorted(det.items()):
                     rows.append({"arm": arm["name"], "q": q, "mode": mode, "family": fam,
                                  "defect": tgt, "fraction": frac, "k": k, "n": n,

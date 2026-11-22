@@ -12,11 +12,51 @@ Spend: see `docs/COST_LEDGER.md`.
 
 ## Decision
 
-<!-- FILL: two sentences -->
+**The smallest violation this design localises on the simulated set is a whole-clip one:** the
+12-frame coherence scan catches 5 of 5 testable mirrored rolls and 3 of 5 testable tilt removals
+at a 5.9 % false-reject, but it is testable on only 17 of 80 feasible clips (the manoeuvres whose
+lean direction rotates) and nothing below whole-clip coverage is localised, because the
+family-wise max-over-windows threshold saturates (coherence 1.934 of a possible 2.0; residual
+61-75 deg) and the pre-registered synthetic step curve stays at the false-reject rate for every
+step up to 24 deg. **What helps is false-discovery-rate control:** per-clip Benjamini-Hochberg on
+the 8-frame residual scan detects 40 % of the defect clips at a 4.7 % false-reject, against 8 %
+for the family-wise rule at 6.2 %; boundary refinement adds 0.09 IoU on the eight clips where a
+region was flagged, while per-clip time alignment (-0.003 IoU) and the joint multi-scale maximum
+(detects nothing) do not help.
 
 ## Plain-language summary
 
-<!-- FILL -->
+1. **The window machinery runs and the labels are exact, but the population is not what the
+   protocol assumed.** Of the 170 development clips available at freeze, only two have partial
+   intervals (both 10 %); the 18 remaining partial clips are among the ~30 dev clips Track I has
+   not yet published. The confirmatory partial-interval criteria (S1, S2) therefore cannot be
+   evaluated on this batch, and the report says so rather than substituting a different test.
+2. **The coherence tier is precise but narrow.** Where its window is defined (the lean direction
+   rotates on both body axes: slalom and lemniscate, 17 of 80 feasible clips) it detects every
+   testable mirrored roll and most testable removals, with a 5.9 % false-reject. Where the lean is
+   constant on one axis (steady turns, constant-speed ellipses, straight accelerations, climbs) it
+   abstains by construction. It also loses power on tilt removal, because a level camera supplies
+   almost no lean variance for a correlation to work with.
+3. **The family-wise maximum is the wrong calibration on long clips.** A simulated clip has about
+   100 windows where the real TII clips had 10-11, so the 95th percentile of the maximum sits at
+   the ceiling of the statistic. The result is a threshold no realistic violation can cross: the
+   residual scan detects 8 % of removals and 20 % of mirrors at 6.2 % false-reject, *worse* than
+   the whole-clip median baseline (74 % and 48 %) which is designed for whole-clip edits.
+4. **FDR control is the one change that works.** Benjamini-Hochberg within a clip, on the same
+   8-frame residual windows, gives 40 % detection at a 4.7 % clip-level false-reject (q = 0.05)
+   and 51 % at 10.9 % (q = 0.10), against 8 % for the family-wise rule. It restores the power the
+   multiplicity of 100 windows had taken away.
+5. **Localisation below whole-clip coverage is not achieved.** The pre-registered synthetic step
+   curve is flat at the false-reject rate for the coherence arm at every step and duration tested;
+   the residual arm only begins to respond at 20-24 deg lasting at least 0.8 s, and even there
+   reaches 11-16 %. The exploratory BH-scored curve is also flat: a short step produces evidence
+   only in the two windows that straddle its boundaries, and the multiplicity penalty removes it.
+6. **The baseline's failure is the forest.** The whole-clip median false-flags 8 of 26 feasible
+   forest clips (30.8 %) against 0 of 54 in the two open families; a pooled 10 % false-reject
+   hides that. Any pooled claim on this set is an average over two very different readers.
+
+
+
 
 ## Question
 
@@ -142,13 +182,111 @@ The whole-clip median baseline is the worst-behaved rule on the forest family: i
 the threshold. That is the practical content of the scene stratification: a pooled false-reject
 of 10 % hides a 0.8 % rate on two families and a 31 % rate on the third.
 
-Detection, IoU, the ablations and the controls follow from the full defect set.
+**Detection on whole-clip defects** (nominal threshold; k/testable, with the testable
+denominator below the full family size in brackets):
+
+| arm | tilt removed | mirrored roll | tilt scaled | false-reject |
+| --- | --- | --- | --- | --- |
+| coh12_p1 | 3/5 (60 %) | 5/5 (100 %) | 0/4 (0 %) | 1/17 (5.9 %) |
+| coh8_p1 | 2/5 (40 %) | 5/5 (100 %) | 0/3 (0 %) | 2/13 (15.4 %) |
+| res12_p1 | 2/25 (8 %) | 7/20 (35 %) | 3/15 (20 %) | 4/64 (6.2 %) |
+| res8_p1 | 2/25 (8 %) | 4/20 (20 %) | 3/15 (20 %) | 4/64 (6.2 %) |
+| res8_p2 | 2/25 (8 %) | 6/20 (30 %) | 3/15 (20 %) | 4/64 (6.2 %) |
+| sign12_p1 | 0/5 | 0/5 | 0/4 | 0/17 |
+| whole-clip median | 20/27 (74 %) | 13/27 (48 %) | 7/18 (39 %) | 8/80 (10 %) |
+
+The family sizes are 27 removal, 27 mirror, 33 scale, so the arm denominators (5, 20, 15) show
+the abstention: the arms are scored on the clips where a window exists, never on the full family.
+The whole-clip median is testable on every clip, which is why its counts are larger; at the
+*family-wise* threshold it is also the better detector of whole-clip edits, which is the regime
+it was built for. The window scan's advantage has to come from partial coverage, and this batch
+does not contain enough partial clips to measure it (section 5).
+
+**Localisation.** For the clips the coherence arm detects, the mirrored-roll segment has a median
+IoU of 0.95 (12-frame, 4/5 detected) and 0.69 (8-frame), because the edit covers the whole clip
+and the flagged mask covers it too. Tilt-removal detections have IoU 0.06: the arm fires on a few
+windows rather than the whole clip, so the segment is a fragment. The residual arm's detected
+segments have IoU 0.20-0.68 depending on family.
 
 
 
 ### 2. A2 — FDR control
 
-<!-- FILL: realised FDP, false segments/min, detection at q = 0.05/0.10/0.20, per-clip vs corpus -->
+Benjamini-Hochberg within each clip, on the same windows and the same empirical null (the fit
+clips' window distribution, leave-one-scene-out):
+
+| arm | rule | q | detection (k/72 defect clips) | feasible clip false-reject |
+| --- | --- | --- | --- | --- |
+| residual 8 | per clip | 0.05 | 29 (40.3 %) | 3/64 (4.7 %) |
+| residual 8 | per clip | 0.10 | 37 (51.4 %) | 7/64 (10.9 %) |
+| residual 8 | per clip | 0.20 | 46 (63.9 %) | 14/64 (21.9 %) |
+| residual 8 | corpus | 0.05 | 8 (11.1 %) | 1/64 (1.6 %) |
+| residual 8 | corpus | 0.10 | 33 (45.8 %) | 13/64 (20.3 %) |
+| coherence 12 | per clip | 0.05 | 7 (9.7 %) | 0/17 (0 %) |
+| coherence 12 | per clip | 0.10 | 9 (12.5 %) | 0/17 (0 %) |
+
+This is the ablation that changes the conclusion. The family-wise rule's residual arm detects 8 %
+of removals and 20 % of mirrors at a 6.2 % false-reject; the same windows under per-clip BH detect
+40 % of all defect clips at a **lower** false-reject (4.7 %), and 51 % at 10.9 %. The corpus-level
+variant is worse at q = 0.05 and over-flags at q = 0.10, so the per-clip multiplicity correction
+is the useful one. The coherence arm gains little (it is still limited by its abstention), and
+its BH rule keeps a 0/17 false-reject. The realised false-discovery proportion is ~0.001 in every
+cell, but that number is uninformative on this batch: 70 of the 72 defect clips are whole-clip, so
+a flagged window is almost always inside the truth. The informative control is the clip-level
+false-reject on the 80 feasible clips, which is in the last column.
+
+### 3. A3 — boundary refinement
+
+Eight clips had a flagged region to refine (the coherence arm's detections). Inside each region the
+two-state half-normal fit moved the median IoU from **0.686 to 0.824** (mean Δ +0.088) and the
+median F1 from **0.814 to 0.902**, meeting the pre-registered S4 bar (Δ ≥ 0.05). The eight clips
+are all whole-clip edits, so the gain is the trim of the flagged region's false-positive edges
+rather than the discovery of an interior onset; with two 10 % partial clips in the batch, the
+interior-onset case is not exercised.
+
+### 4. A4 — per-clip time alignment
+
+The chosen lag is zero on most clips: median 0 ms, IQR 0-25 ms (industrial 0/13, urban 0/25,
+forest 0/0). Applying it moves the mean IoU from 0.0614 to 0.0589 and leaves the false-segment
+rate unchanged (1.0 per 20.8 real minutes). **Alignment does not help**; the pre-registered S5
+criterion is not met. The simulated videos are rendered on the same clock as the truth, so a
+positive result would have been surprising; the measurement confirms the machinery is not
+introducing a lag of its own.
+
+### 5. A5 — multi-scale windows
+
+Lengths {8, 12, 16} standardised per length and maximised jointly: mean IoU 0.000, i.e. the joint
+rule detects essentially nothing, because the standardised maximum's conformal threshold inherits
+the saturation of each component. Each length alone: 8 frames IoU 0.041, 12 frames 0.061, 16
+frames 0.066. **The joint rule does not help** and fails S6; 16 frames alone is marginally the best
+single length, which is consistent with the correlation needing a longer window, but the
+difference from 12 is inside the noise of 72 clips.
+
+### 6. Minimum localisable violation
+
+The pre-registered synthetic step (a lean offset of Δ over a centred interval of duration D,
+added to the reader's output on a feasible clip, labelled synthetic):
+
+| Δ (deg) | coherence 12, 0.4-3.2 s | residual 8, 0.4 s | residual 8, 1.6 s | residual 8, 3.2 s |
+| --- | --- | --- | --- | --- |
+| 2-14 | 1 % (the FRR) | 5 % | 5 % | 5 % |
+| 16 | 1 % | 7 % | 9 % | 11 % |
+| 20 | 1 % | 11 % | 12 % | 12 % |
+| 24 | 1 % | 11 % | 14 % | 16 % |
+
+The coherence arm is **flat at its false-reject rate at every step and duration**: a constant
+offset inside an interval does not change a correlation computed inside that interval, and only
+the boundary windows carry evidence, which the family-wise maximum over 100 windows does not
+reward. The residual arm responds only above ~20 deg and only for durations of 0.8 s or more, and
+even then at 11-16 %. The exploratory BH-scored curve (same injection, BH instead of the maximum)
+is **also flat at zero** at every cell: with a 0.4-3.2 s step, at most a few windows straddle the
+boundaries, and a within-clip multiplicity correction over ~100 windows removes them.
+
+**No violation below whole-clip coverage is localised by this design.** The pre-registered
+criteria S1 and S2 (partial-interval detection and IoU) cannot be evaluated on this batch for the
+separate reason that the batch contains two partial clips; that is stated as a population
+limitation, not as a failure.
+
 
 ### 3. A3 — boundary refinement
 

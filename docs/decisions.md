@@ -536,3 +536,22 @@ Every row below was read from the project's own repo/HF card on 2026-11-10. "ver
   The estimate in the first version of the ledger was wrong and is corrected there; the user's
   raise of the ceiling to 14.00 is recorded but was not needed. Practical rule retained anyway:
   **one GPU container at a time**, because concurrency buys wall time only if capacity exists.
+- [G3] **The 170 development clips available at freeze contain only two partial-interval clips
+  (both 10 %).** The frozen table plans 20 partial clips (10/25/50 %), but 18 of them are among
+  the ~30 dev clips Track I has not yet rendered (`results/i02/manifest.csv`: 80 feasible, 27
+  tilt-removed full, 27 mirrored-roll full, 33 tilt-scaled full, 2 partial at 0.1, 1 thrust-limit).
+  The pre-registered partial-interval criteria (S1, S2) therefore cannot be evaluated on batch 1;
+  the report states this as a population limitation and does not substitute a different test. The
+  partial-interval ablation is re-run when batch 2 arrives, under the same thresholds.
+- [G3] **The family-wise max-over-windows calibration saturates on 100-window clips, and per-clip
+  BH is the fix.** A simulated clip yields ~100 windows where a real TII clip had 10-11; the
+  conformal 95th percentile of the maximum reaches 1.934 of the coherence ceiling 2.0 (sign 1.000,
+  no power) and 61-75 deg on the residual. Per-clip BH on the same residual windows detects 40 %
+  of the 72 whole-clip defect clips at a 4.7 % clip-level false-reject, against 8 % for the
+  family-wise rule at 6.2 %. This is a pre-registered result (A2), not a post-hoc fix.
+- [G3] **The coherence tier's scope is set by manoeuvre geometry, not by violation size.** It
+  needs both body-axis components of both leans to vary inside a window: 17 of 80 feasible clips
+  (slalom 13/16, lemniscate 4/8) are testable, and none of the steady turns, constant-speed
+  ellipses, straight accelerations or climbs are. A level camera also supplies little variance, so
+  tilt removal loses most of the tier's power; J03's real-clip removal detection depended on the
+  reader's ~4 deg noise, which a low-noise simulated reader does not provide.
