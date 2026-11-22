@@ -1,0 +1,736 @@
+{
+ "threshold_deg": 15.0,
+ "prereg": "configs/m05_dynamic_coverage_prereg.yaml (c6df271)",
+ "real": {
+  "all": {
+   "G0_S3_only": {
+    "kept": 61,
+    "n": 85,
+    "coverage": 0.7176470588235294
+   },
+   "GA": {
+    "kept": 23,
+    "n": 85,
+    "coverage": 0.27058823529411763
+   },
+   "GB": {
+    "kept": 40,
+    "n": 85,
+    "coverage": 0.47058823529411764
+   },
+   "GAB": {
+    "kept": 15,
+    "n": 85,
+    "coverage": 0.17647058823529413
+   },
+   "reason_counts": {
+    "low_confidence_S3": 24,
+    "weak_signal": 34,
+    "near_vertical": 25,
+    "readers_disagree": 45
+   }
+  },
+  "s3_kept": {
+   "G0_S3_only": {
+    "kept": 61,
+    "n": 61,
+    "coverage": 1.0
+   },
+   "GA": {
+    "kept": 23,
+    "n": 61,
+    "coverage": 0.3770491803278688
+   },
+   "GB": {
+    "kept": 40,
+    "n": 61,
+    "coverage": 0.6557377049180327
+   },
+   "GAB": {
+    "kept": 15,
+    "n": 61,
+    "coverage": 0.2459016393442623
+   },
+   "reason_counts": {
+    "weak_signal": 32,
+    "near_vertical": 6,
+    "readers_disagree": 21
+   }
+  },
+  "by_flight": {
+   "flight-01a-ellipse": {
+    "G0_S3_only": {
+     "kept": 4,
+     "n": 4,
+     "coverage": 1.0
+    },
+    "GA": {
+     "kept": 0,
+     "n": 4,
+     "coverage": 0.0
+    },
+    "GB": {
+     "kept": 0,
+     "n": 4,
+     "coverage": 0.0
+    },
+    "GAB": {
+     "kept": 0,
+     "n": 4,
+     "coverage": 0.0
+    },
+    "reason_counts": {
+     "weak_signal": 2,
+     "near_vertical": 2,
+     "readers_disagree": 4
+    }
+   },
+   "flight-01p-ellipse": {
+    "G0_S3_only": {
+     "kept": 26,
+     "n": 26,
+     "coverage": 1.0
+    },
+    "GA": {
+     "kept": 7,
+     "n": 26,
+     "coverage": 0.2692307692307692
+    },
+    "GB": {
+     "kept": 22,
+     "n": 26,
+     "coverage": 0.8461538461538461
+    },
+    "GAB": {
+     "kept": 5,
+     "n": 26,
+     "coverage": 0.19230769230769232
+    },
+    "reason_counts": {
+     "weak_signal": 19,
+     "readers_disagree": 4
+    }
+   },
+   "flight-04a-ellipse": {
+    "G0_S3_only": {
+     "kept": 2,
+     "n": 3,
+     "coverage": 0.6666666666666666
+    },
+    "GA": {
+     "kept": 0,
+     "n": 3,
+     "coverage": 0.0
+    },
+    "GB": {
+     "kept": 0,
+     "n": 3,
+     "coverage": 0.0
+    },
+    "GAB": {
+     "kept": 0,
+     "n": 3,
+     "coverage": 0.0
+    },
+    "reason_counts": {
+     "low_confidence_S3": 1,
+     "weak_signal": 1,
+     "near_vertical": 1,
+     "readers_disagree": 3
+    }
+   },
+   "flight-07a-lemniscate": {
+    "G0_S3_only": {
+     "kept": 0,
+     "n": 3,
+     "coverage": 0.0
+    },
+    "GA": {
+     "kept": 0,
+     "n": 3,
+     "coverage": 0.0
+    },
+    "GB": {
+     "kept": 0,
+     "n": 3,
+     "coverage": 0.0
+    },
+    "GAB": {
+     "kept": 0,
+     "n": 3,
+     "coverage": 0.0
+    },
+    "reason_counts": {
+     "low_confidence_S3": 3,
+     "weak_signal": 1,
+     "readers_disagree": 3
+    }
+   },
+   "flight-07p-lemniscate": {
+    "G0_S3_only": {
+     "kept": 25,
+     "n": 26,
+     "coverage": 0.9615384615384616
+    },
+    "GA": {
+     "kept": 15,
+     "n": 26,
+     "coverage": 0.5769230769230769
+    },
+    "GB": {
+     "kept": 18,
+     "n": 26,
+     "coverage": 0.6923076923076923
+    },
+    "GAB": {
+     "kept": 10,
+     "n": 26,
+     "coverage": 0.38461538461538464
+    },
+    "reason_counts": {
+     "low_confidence_S3": 1,
+     "weak_signal": 11,
+     "readers_disagree": 8
+    }
+   },
+   "flight-13a-trackRATM": {
+    "G0_S3_only": {
+     "kept": 0,
+     "n": 5,
+     "coverage": 0.0
+    },
+    "GA": {
+     "kept": 0,
+     "n": 5,
+     "coverage": 0.0
+    },
+    "GB": {
+     "kept": 0,
+     "n": 5,
+     "coverage": 0.0
+    },
+    "GAB": {
+     "kept": 0,
+     "n": 5,
+     "coverage": 0.0
+    },
+    "reason_counts": {
+     "low_confidence_S3": 5,
+     "near_vertical": 5,
+     "readers_disagree": 5
+    }
+   },
+   "flight-13p-trackRATM": {
+    "G0_S3_only": {
+     "kept": 3,
+     "n": 11,
+     "coverage": 0.2727272727272727
+    },
+    "GA": {
+     "kept": 1,
+     "n": 11,
+     "coverage": 0.09090909090909091
+    },
+    "GB": {
+     "kept": 0,
+     "n": 11,
+     "coverage": 0.0
+    },
+    "GAB": {
+     "kept": 0,
+     "n": 11,
+     "coverage": 0.0
+    },
+    "reason_counts": {
+     "low_confidence_S3": 8,
+     "near_vertical": 10,
+     "readers_disagree": 11
+    }
+   },
+   "flight-16p-trackRATM": {
+    "G0_S3_only": {
+     "kept": 1,
+     "n": 7,
+     "coverage": 0.14285714285714285
+    },
+    "GA": {
+     "kept": 0,
+     "n": 7,
+     "coverage": 0.0
+    },
+    "GB": {
+     "kept": 0,
+     "n": 7,
+     "coverage": 0.0
+    },
+    "GAB": {
+     "kept": 0,
+     "n": 7,
+     "coverage": 0.0
+    },
+    "reason_counts": {
+     "low_confidence_S3": 6,
+     "near_vertical": 7,
+     "readers_disagree": 7
+    }
+   }
+  },
+  "by_track": {
+   "ellipse": {
+    "G0_S3_only": {
+     "kept": 32,
+     "n": 33,
+     "coverage": 0.9696969696969697
+    },
+    "GA": {
+     "kept": 7,
+     "n": 33,
+     "coverage": 0.21212121212121213
+    },
+    "GB": {
+     "kept": 22,
+     "n": 33,
+     "coverage": 0.6666666666666666
+    },
+    "GAB": {
+     "kept": 5,
+     "n": 33,
+     "coverage": 0.15151515151515152
+    },
+    "reason_counts": {
+     "low_confidence_S3": 1,
+     "weak_signal": 22,
+     "near_vertical": 3,
+     "readers_disagree": 11
+    }
+   },
+   "lemniscate": {
+    "G0_S3_only": {
+     "kept": 25,
+     "n": 29,
+     "coverage": 0.8620689655172413
+    },
+    "GA": {
+     "kept": 15,
+     "n": 29,
+     "coverage": 0.5172413793103449
+    },
+    "GB": {
+     "kept": 18,
+     "n": 29,
+     "coverage": 0.6206896551724138
+    },
+    "GAB": {
+     "kept": 10,
+     "n": 29,
+     "coverage": 0.3448275862068966
+    },
+    "reason_counts": {
+     "low_confidence_S3": 4,
+     "weak_signal": 12,
+     "readers_disagree": 11
+    }
+   },
+   "trackRATM": {
+    "G0_S3_only": {
+     "kept": 4,
+     "n": 23,
+     "coverage": 0.17391304347826086
+    },
+    "GA": {
+     "kept": 1,
+     "n": 23,
+     "coverage": 0.043478260869565216
+    },
+    "GB": {
+     "kept": 0,
+     "n": 23,
+     "coverage": 0.0
+    },
+    "GAB": {
+     "kept": 0,
+     "n": 23,
+     "coverage": 0.0
+    },
+    "reason_counts": {
+     "low_confidence_S3": 19,
+     "near_vertical": 22,
+     "readers_disagree": 23
+    }
+   }
+  },
+  "n_dynamic": 85,
+  "n_total": 100
+ },
+ "sim": {
+  "all": {
+   "G0_S3_only": {
+    "kept": 107,
+    "n": 107,
+    "coverage": 1.0
+   },
+   "GA": {
+    "kept": 29,
+    "n": 107,
+    "coverage": 0.27102803738317754
+   },
+   "GB": {
+    "kept": 57,
+    "n": 107,
+    "coverage": 0.5327102803738317
+   },
+   "GAB": {
+    "kept": 16,
+    "n": 107,
+    "coverage": 0.14953271028037382
+   },
+   "reason_counts": {
+    "weak_signal": 78,
+    "readers_disagree": 50
+   }
+  },
+  "by_family": {
+   "forest_ridge": {
+    "G0_S3_only": {
+     "kept": 38,
+     "n": 38,
+     "coverage": 1.0
+    },
+    "GA": {
+     "kept": 4,
+     "n": 38,
+     "coverage": 0.10526315789473684
+    },
+    "GB": {
+     "kept": 2,
+     "n": 38,
+     "coverage": 0.05263157894736842
+    },
+    "GAB": {
+     "kept": 0,
+     "n": 38,
+     "coverage": 0.0
+    },
+    "reason_counts": {
+     "weak_signal": 34,
+     "readers_disagree": 36
+    }
+   },
+   "industrial": {
+    "G0_S3_only": {
+     "kept": 31,
+     "n": 31,
+     "coverage": 1.0
+    },
+    "GA": {
+     "kept": 12,
+     "n": 31,
+     "coverage": 0.3870967741935484
+    },
+    "GB": {
+     "kept": 26,
+     "n": 31,
+     "coverage": 0.8387096774193549
+    },
+    "GAB": {
+     "kept": 7,
+     "n": 31,
+     "coverage": 0.22580645161290322
+    },
+    "reason_counts": {
+     "weak_signal": 19,
+     "readers_disagree": 5
+    }
+   },
+   "urban_checker": {
+    "G0_S3_only": {
+     "kept": 38,
+     "n": 38,
+     "coverage": 1.0
+    },
+    "GA": {
+     "kept": 13,
+     "n": 38,
+     "coverage": 0.34210526315789475
+    },
+    "GB": {
+     "kept": 29,
+     "n": 38,
+     "coverage": 0.7631578947368421
+    },
+    "GAB": {
+     "kept": 9,
+     "n": 38,
+     "coverage": 0.23684210526315788
+    },
+    "reason_counts": {
+     "weak_signal": 25,
+     "readers_disagree": 9
+    }
+   }
+  },
+  "by_mount": {
+   "0.0": {
+    "G0_S3_only": {
+     "kept": 11,
+     "n": 11,
+     "coverage": 1.0
+    },
+    "GA": {
+     "kept": 3,
+     "n": 11,
+     "coverage": 0.2727272727272727
+    },
+    "GB": {
+     "kept": 7,
+     "n": 11,
+     "coverage": 0.6363636363636364
+    },
+    "GAB": {
+     "kept": 3,
+     "n": 11,
+     "coverage": 0.2727272727272727
+    },
+    "reason_counts": {
+     "weak_signal": 8,
+     "readers_disagree": 4
+    }
+   },
+   "15.0": {
+    "G0_S3_only": {
+     "kept": 35,
+     "n": 35,
+     "coverage": 1.0
+    },
+    "GA": {
+     "kept": 8,
+     "n": 35,
+     "coverage": 0.22857142857142856
+    },
+    "GB": {
+     "kept": 19,
+     "n": 35,
+     "coverage": 0.5428571428571428
+    },
+    "GAB": {
+     "kept": 6,
+     "n": 35,
+     "coverage": 0.17142857142857143
+    },
+    "reason_counts": {
+     "weak_signal": 27,
+     "readers_disagree": 16
+    }
+   },
+   "30.0": {
+    "G0_S3_only": {
+     "kept": 29,
+     "n": 29,
+     "coverage": 1.0
+    },
+    "GA": {
+     "kept": 8,
+     "n": 29,
+     "coverage": 0.27586206896551724
+    },
+    "GB": {
+     "kept": 16,
+     "n": 29,
+     "coverage": 0.5517241379310345
+    },
+    "GAB": {
+     "kept": 4,
+     "n": 29,
+     "coverage": 0.13793103448275862
+    },
+    "reason_counts": {
+     "weak_signal": 21,
+     "readers_disagree": 13
+    }
+   },
+   "45.0": {
+    "G0_S3_only": {
+     "kept": 32,
+     "n": 32,
+     "coverage": 1.0
+    },
+    "GA": {
+     "kept": 10,
+     "n": 32,
+     "coverage": 0.3125
+    },
+    "GB": {
+     "kept": 15,
+     "n": 32,
+     "coverage": 0.46875
+    },
+    "GAB": {
+     "kept": 3,
+     "n": 32,
+     "coverage": 0.09375
+    },
+    "reason_counts": {
+     "weak_signal": 22,
+     "readers_disagree": 17
+    }
+   }
+  },
+  "by_defect": {
+   "feasible": {
+    "G0_S3_only": {
+     "kept": 53,
+     "n": 53,
+     "coverage": 1.0
+    },
+    "GA": {
+     "kept": 14,
+     "n": 53,
+     "coverage": 0.2641509433962264
+    },
+    "GB": {
+     "kept": 34,
+     "n": 53,
+     "coverage": 0.6415094339622641
+    },
+    "GAB": {
+     "kept": 7,
+     "n": 53,
+     "coverage": 0.1320754716981132
+    },
+    "reason_counts": {
+     "weak_signal": 39,
+     "readers_disagree": 19
+    }
+   },
+   "mirrored_roll": {
+    "G0_S3_only": {
+     "kept": 16,
+     "n": 16,
+     "coverage": 1.0
+    },
+    "GA": {
+     "kept": 5,
+     "n": 16,
+     "coverage": 0.3125
+    },
+    "GB": {
+     "kept": 11,
+     "n": 16,
+     "coverage": 0.6875
+    },
+    "GAB": {
+     "kept": 5,
+     "n": 16,
+     "coverage": 0.3125
+    },
+    "reason_counts": {
+     "weak_signal": 11,
+     "readers_disagree": 5
+    }
+   },
+   "partial": {
+    "G0_S3_only": {
+     "kept": 0,
+     "n": 0,
+     "coverage": NaN
+    },
+    "GA": {
+     "kept": 0,
+     "n": 0,
+     "coverage": NaN
+    },
+    "GB": {
+     "kept": 0,
+     "n": 0,
+     "coverage": NaN
+    },
+    "GAB": {
+     "kept": 0,
+     "n": 0,
+     "coverage": NaN
+    },
+    "reason_counts": {}
+   },
+   "thrust_limit": {
+    "G0_S3_only": {
+     "kept": 1,
+     "n": 1,
+     "coverage": 1.0
+    },
+    "GA": {
+     "kept": 0,
+     "n": 1,
+     "coverage": 0.0
+    },
+    "GB": {
+     "kept": 0,
+     "n": 1,
+     "coverage": 0.0
+    },
+    "GAB": {
+     "kept": 0,
+     "n": 1,
+     "coverage": 0.0
+    },
+    "reason_counts": {
+     "weak_signal": 1,
+     "readers_disagree": 1
+    }
+   },
+   "tilt_removed": {
+    "G0_S3_only": {
+     "kept": 16,
+     "n": 16,
+     "coverage": 1.0
+    },
+    "GA": {
+     "kept": 4,
+     "n": 16,
+     "coverage": 0.25
+    },
+    "GB": {
+     "kept": 4,
+     "n": 16,
+     "coverage": 0.25
+    },
+    "GAB": {
+     "kept": 0,
+     "n": 16,
+     "coverage": 0.0
+    },
+    "reason_counts": {
+     "weak_signal": 12,
+     "readers_disagree": 12
+    }
+   },
+   "tilt_scaled": {
+    "G0_S3_only": {
+     "kept": 21,
+     "n": 21,
+     "coverage": 1.0
+    },
+    "GA": {
+     "kept": 6,
+     "n": 21,
+     "coverage": 0.2857142857142857
+    },
+    "GB": {
+     "kept": 8,
+     "n": 21,
+     "coverage": 0.38095238095238093
+    },
+    "GAB": {
+     "kept": 4,
+     "n": 21,
+     "coverage": 0.19047619047619047
+    },
+    "reason_counts": {
+     "weak_signal": 15,
+     "readers_disagree": 13
+    }
+   }
+  },
+  "n_dynamic": 107,
+  "n_total": 170
+ }
+}
