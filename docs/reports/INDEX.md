@@ -71,6 +71,22 @@ Files live in `reports/` at the repository root. Numbering restarts per track: T
 | `E04_v3_r2_coherence.md` | v3: fixed-crop edits, official schema v2, Track D's R2 + coherence on UZH | current |
 | `E05_window_rule.md` | Independent test of Track D's label-free window rule (`0.5 / f95`) | current; **supersedes** D04's UZH window numbers (0.07-0.12 s → 0.34-1.42 s at 500 Hz) |
 
+## Track F — pixel-path verdict (branch `track-f-pixel-path`)
+
+| report | title | status |
+| --- | --- | --- |
+| `F01_pixel_path_stage0.md` | Stage 0: statistics that avoid the second derivative | current; **decision: fail** (shooting 6/8 removal, 4/8 mirror; truth path 8/8 and 7/8) |
+| `F02_stage1_extractors.md` | Stage 1: ViPE and MASt3R-SLAM on UZH-FPV, and the stage-0 tests on the best | current; ViPE 10/10 on the bake-off and no improvement to the gate; MASt3R 5/10; MegaSaM not run (Drive-only weights) |
+| `F03_stage2_anwm.md` | Stage 2: ANWM clips against their commanded path | current; ViPE paths unusable on generated clips |
+
+## Track F2 — pixel-path round 2 (branch `track-f2-pixel-path`)
+
+| report | title | status |
+| --- | --- | --- |
+| `F04_spline_fit.md` | Spline-smoothed joint fit | current; **decision: fail** (pixel path 1/8 removal, 2/8 mirror; truth path 8/8, 6/8); the joint fit's scale collapse is a finding |
+| `F05_lean_error_scoring.md` | What path error the verifier needs | current; windowed thrust-axis error ranks paths differently from the bake-off metric (correlation 0.65) and does not predict per-clip verdict quality |
+| `F06_feedforward_and_sim.md` | MapAnything, Pi3X, and the simulated set | current; MapAnything 0/10 with metric scale, Pi3X 6/10 with Kalibr K; no extractor moves the gate; part 4 waiting on Track I (8/300 clips, no I02 report) |
+
 ## Notes
 
 * Report 04 quotes the pre-registration sha256 `b8fd7013…` for `configs/verdict_preregistration.yaml`
@@ -84,11 +100,3 @@ Files live in `reports/` at the repository root. Numbering restarts per track: T
   ("Known open discrepancies"). Nothing was re-analysed during consolidation.
 * Superseded material is listed in `docs/archive/README.md`; it stays where the reports and
   scripts expect it.
-
-## Track F — pixel-path verdict (branch `track-f-pixel-path`)
-
-| report | title | status |
-| --- | --- | --- |
-| `F01_pixel_path_stage0.md` | Stage 0: statistics that avoid the second derivative | current; **decision: fail** (shooting 6/8 removal, 4/8 mirror; truth path 8/8 and 7/8) |
-| `F02_stage1_extractors.md` | Stage 1: ViPE and MASt3R-SLAM on UZH-FPV, and the stage-0 tests on the best | current; ViPE 10/10 on the bake-off and no improvement to the gate; MASt3R 5/10; MegaSaM not run (Drive-only weights) |
-| `F03_stage2_anwm.md` | Stage 2: ANWM clips against their commanded path | current; ViPE paths unusable on generated clips |

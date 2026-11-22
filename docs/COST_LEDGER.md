@@ -1,7 +1,16 @@
-# Cost ledger
+# GPU cost ledger
 
-One line per job set. GPU prices are Modal list prices at the time of the job (A10G 1.10,
-L40S 1.95, A100-80GB 2.50, H100 3.95 USD/h) unless a dashboard figure says otherwise.
+One line per job set. GPU prices are Modal list prices at the time of the job (A10/A10G 1.10,
+L40S 1.95, A100-80GB 2.50, H100 3.95 USD/h) unless a dashboard figure says otherwise; CPU jobs
+are recorded at $0.05/core-hour where the track did so. Rows are carried **verbatim** from each
+track's branch ledger, which is the source of truth; no spend was added, removed or recomputed
+during the round-2 consolidation.
+
+The tables have different column sets because each track kept its own; "estimate" rows were
+posted before the job set, "actual" rows are measured. Totals per track are the sum of that
+track's USD column as recorded in its own report.
+
+## Track F — pixel-path verdict, stage 0 (2026-11-16)
 
 Spend from the pre-Track-F tracks is recorded in their own reports (for example Track E's
 ~US$6.2 cumulative in `reports/E04_v3_r2_coherence.md`); this file starts at Track F and does
@@ -17,3 +26,17 @@ not restate numbers it did not measure.
 
 Ceilings: Track F stage 1 has a US$40 ceiling. Actual spend is filled in after each job
 set from the Modal dashboard; the estimate above is posted before the run, not after.
+
+## Track F2 — pixel-path round 2 (2026-11-21)
+
+Spend from earlier tracks is recorded in their own reports (F01-F03 on `track-f-pixel-path`,
+E04, …); this file starts at Track F2 and does not restate numbers it did not measure.
+
+| date | track | job | GPU | hours | USD | note |
+| --- | --- | --- | --- | --- | --- | --- |
+| 2026-11-21 | F2 | F04/F05 parts 1-2: spline fits, lean-error scoring | none (CPU) | 0 | 0.00 | stored poses only |
+| 2026-11-21 | F2 | F06 part 3 **estimate** (posted before the job set): two image builds, MapAnything 10x150 frames, Pi3X 10x150 frames, probes | A100-80GB | ~1.0 | <= 8.00 | ceiling 30 USD |
+| 2026-11-21 | F2 | F06 part 3 actual: MapAnything 10 sequences (501 s), Pi3X 10 sequences (378 s), one probe each | A100-80GB | ~0.25 | ~0.70 | from job wall times; image builds are CPU-billed |
+
+Ceilings: part 3 has a US$30 ceiling. Actual spend is filled in after each job set; the
+estimate above is posted before the run, not after.

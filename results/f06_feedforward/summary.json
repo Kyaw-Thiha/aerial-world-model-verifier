@@ -1,0 +1,258 @@
+{
+ "provenance": {
+  "commit": "63002b846486a7ff29bbad5dc30c983acdb7c4d8",
+  "prereg": "configs/f04_round2_prereg.yaml"
+ },
+ "preflight": {
+  "mapanything": {
+   "code": "https://github.com/facebookresearch/map-anything (Apache-2.0)",
+   "weights": "facebook/map-anything-apache (Apache-2.0); facebook/map-anything (CC BY-NC 4.0)",
+   "gated": false,
+   "intrinsics_input": "documented per-view key, but broken in the released code: IndexError in _encode_and_fuse_ray_dirs when a 640x480 K is combined with load_images' 392x518 resize",
+   "run": "image-only, estimated intrinsics"
+  },
+  "pi3x": {
+   "code": "https://github.com/yyfz/Pi3 (BSD-3 code, BSD-2 weights per C02)",
+   "weights": "yyfz233/Pi3X",
+   "gated": false,
+   "intrinsics_input": "intrinsics conditioning accepted and used (Kalibr K)",
+   "run": "yes, with the Kalibr intrinsics"
+  },
+  "vggt": {
+   "code": "https://github.com/facebookresearch/vggt",
+   "weights": "facebook/VGGT-1B (CC BY-NC 4.0)",
+   "gated": false,
+   "intrinsics_input": "none in the released API",
+   "run": "not run with a calibration; C03's uncalibrated 2/9 quoted"
+  },
+  "ffvo": {
+   "code": "none found (arXiv 2609.13733 has no code or project link)",
+   "weights": "none",
+   "gated": null,
+   "intrinsics_input": "unknown",
+   "run": "not runnable"
+  }
+ },
+ "paths": {
+  "mapanything": {
+   "n_sequences": 10,
+   "n_pass": 0,
+   "median_dir_err_deg": 40.605152188652525,
+   "median_mag_ratio": 2.1158094196745143,
+   "min_scale_sim3": 0.8279677619638977,
+   "max_scale_sim3": 1.4684481811109165,
+   "rows": {
+    "indoor_forward_3": {
+     "accel_dir_err_deg_median": 37.1373523950007,
+     "accel_mag_ratio": 1.9088248481540242,
+     "coverage_fraction": 0.7638888888888888,
+     "ate_sim3_m": 0.5241859590053551,
+     "scale_sim3": 1.2625366129234914,
+     "step_dir_err_deg_median": 12.872968819450902,
+     "rel_rot_err_deg_median": 3.995707495901983,
+     "pass": false
+    },
+    "indoor_forward_5": {
+     "accel_dir_err_deg_median": 39.13747453993476,
+     "accel_mag_ratio": 2.322793991195004,
+     "coverage_fraction": 0.5347222222222222,
+     "ate_sim3_m": 0.31084513170459116,
+     "scale_sim3": 1.2030388199107136,
+     "step_dir_err_deg_median": 15.61559491009273,
+     "rel_rot_err_deg_median": 1.3457777317793815,
+     "pass": false
+    },
+    "indoor_forward_6": {
+     "accel_dir_err_deg_median": 30.144538102898203,
+     "accel_mag_ratio": 1.4265185678519534,
+     "coverage_fraction": 0.8472222222222222,
+     "ate_sim3_m": 0.6430590291788792,
+     "scale_sim3": 1.1405801640538862,
+     "step_dir_err_deg_median": 11.601239845924225,
+     "rel_rot_err_deg_median": 5.542290960098233,
+     "pass": false
+    },
+    "indoor_forward_7": {
+     "accel_dir_err_deg_median": 21.801683654551685,
+     "accel_mag_ratio": 1.7201334983513135,
+     "coverage_fraction": 0.8611111111111112,
+     "ate_sim3_m": 1.1646478342864375,
+     "scale_sim3": 1.1576121351377153,
+     "step_dir_err_deg_median": 20.9685636359931,
+     "rel_rot_err_deg_median": 12.363750193613999,
+     "pass": false
+    },
+    "indoor_forward_9": {
+     "accel_dir_err_deg_median": 37.94892583521485,
+     "accel_mag_ratio": 1.707261480867631,
+     "coverage_fraction": 0.6527777777777778,
+     "ate_sim3_m": 0.29735686695183916,
+     "scale_sim3": 1.1258534446274504,
+     "step_dir_err_deg_median": 17.99421801695682,
+     "rel_rot_err_deg_median": 2.8765288269581633,
+     "pass": false
+    },
+    "indoor_forward_10": {
+     "accel_dir_err_deg_median": 42.07282983737029,
+     "accel_mag_ratio": 1.8621833888416925,
+     "coverage_fraction": 0.625,
+     "ate_sim3_m": 0.49716425407961196,
+     "scale_sim3": 1.1893652495860674,
+     "step_dir_err_deg_median": 17.336006998976018,
+     "rel_rot_err_deg_median": 4.96136192562417,
+     "pass": false
+    },
+    "outdoor_forward_1": {
+     "accel_dir_err_deg_median": 83.19635180775332,
+     "accel_mag_ratio": 13.729626143210012,
+     "coverage_fraction": 0.4861111111111111,
+     "ate_sim3_m": 3.769270504912661,
+     "scale_sim3": 1.2382181551561051,
+     "step_dir_err_deg_median": 57.93693566998369,
+     "rel_rot_err_deg_median": 2.640726650822698,
+     "pass": false
+    },
+    "outdoor_forward_3": {
+     "accel_dir_err_deg_median": 81.196343141166,
+     "accel_mag_ratio": 15.07364178093625,
+     "coverage_fraction": 0.6111111111111112,
+     "ate_sim3_m": 5.992010481978034,
+     "scale_sim3": 1.2649234042599733,
+     "step_dir_err_deg_median": 44.60305210157812,
+     "rel_rot_err_deg_median": 2.371319334166687,
+     "pass": false
+    },
+    "outdoor_forward_5": {
+     "accel_dir_err_deg_median": 66.6805156910551,
+     "accel_mag_ratio": 8.67301555298829,
+     "coverage_fraction": 0.8402777777777778,
+     "ate_sim3_m": 9.186588150676926,
+     "scale_sim3": 1.4684481811109165,
+     "step_dir_err_deg_median": 50.28546198665083,
+     "rel_rot_err_deg_median": 3.8763969309801887,
+     "pass": false
+    },
+    "indoor_45_9": {
+     "accel_dir_err_deg_median": 81.83133866741076,
+     "accel_mag_ratio": 3.0127447557270326,
+     "coverage_fraction": 0.8958333333333334,
+     "ate_sim3_m": 7.246554454368701,
+     "scale_sim3": 0.8279677619638977,
+     "step_dir_err_deg_median": 80.37534764783008,
+     "rel_rot_err_deg_median": 14.162407209778426,
+     "pass": false
+    }
+   }
+  },
+  "pi3x": {
+   "n_sequences": 10,
+   "n_pass": 6,
+   "median_dir_err_deg": 12.916240213381501,
+   "median_mag_ratio": 1.12218537312329,
+   "min_scale_sim3": 1.0440015783706051,
+   "max_scale_sim3": 1.5915733366313571,
+   "rows": {
+    "indoor_forward_3": {
+     "accel_dir_err_deg_median": 10.21468772563678,
+     "accel_mag_ratio": 1.0866387825663972,
+     "coverage_fraction": 0.7638888888888888,
+     "ate_sim3_m": 0.1132940571906863,
+     "scale_sim3": 1.2083355339895245,
+     "step_dir_err_deg_median": 3.8435926457182905,
+     "rel_rot_err_deg_median": 3.9438283963239145,
+     "pass": true
+    },
+    "indoor_forward_5": {
+     "accel_dir_err_deg_median": 10.936396762613604,
+     "accel_mag_ratio": 1.1500853191317333,
+     "coverage_fraction": 0.5347222222222222,
+     "ate_sim3_m": 0.11983333998835488,
+     "scale_sim3": 1.3266104275327437,
+     "step_dir_err_deg_median": 3.3567606379361625,
+     "rel_rot_err_deg_median": 1.41650859327539,
+     "pass": true
+    },
+    "indoor_forward_6": {
+     "accel_dir_err_deg_median": 10.959872761652132,
+     "accel_mag_ratio": 1.0708862419477934,
+     "coverage_fraction": 0.8472222222222222,
+     "ate_sim3_m": 0.11764877830080966,
+     "scale_sim3": 1.2623690434003862,
+     "step_dir_err_deg_median": 3.5532163353336044,
+     "rel_rot_err_deg_median": 5.25403150111704,
+     "pass": true
+    },
+    "indoor_forward_7": {
+     "accel_dir_err_deg_median": 6.506823288440328,
+     "accel_mag_ratio": 1.094285427114847,
+     "coverage_fraction": 0.8611111111111112,
+     "ate_sim3_m": 0.3218793806534723,
+     "scale_sim3": 1.290114335692522,
+     "step_dir_err_deg_median": 4.101691968469984,
+     "rel_rot_err_deg_median": 12.551395889716781,
+     "pass": true
+    },
+    "indoor_forward_9": {
+     "accel_dir_err_deg_median": 13.984192790733989,
+     "accel_mag_ratio": 1.0704905201522616,
+     "coverage_fraction": 0.6527777777777778,
+     "ate_sim3_m": 0.10535664484863211,
+     "scale_sim3": 1.2018001892208159,
+     "step_dir_err_deg_median": 3.8149567903447545,
+     "rel_rot_err_deg_median": 2.72324481753304,
+     "pass": true
+    },
+    "indoor_forward_10": {
+     "accel_dir_err_deg_median": 11.848287636029013,
+     "accel_mag_ratio": 1.0801204175743222,
+     "coverage_fraction": 0.625,
+     "ate_sim3_m": 0.1080074470934625,
+     "scale_sim3": 1.367199133101185,
+     "step_dir_err_deg_median": 3.250268755879832,
+     "rel_rot_err_deg_median": 4.851526865819744,
+     "pass": true
+    },
+    "outdoor_forward_1": {
+     "accel_dir_err_deg_median": 33.609873275755504,
+     "accel_mag_ratio": 1.365037675084491,
+     "coverage_fraction": 0.4861111111111111,
+     "ate_sim3_m": 0.5375514142184589,
+     "scale_sim3": 1.0440015783706051,
+     "step_dir_err_deg_median": 5.655583227398701,
+     "rel_rot_err_deg_median": 2.4939398641513386,
+     "pass": false
+    },
+    "outdoor_forward_3": {
+     "accel_dir_err_deg_median": 41.871881262260004,
+     "accel_mag_ratio": 2.864887475836559,
+     "coverage_fraction": 0.6111111111111112,
+     "ate_sim3_m": 0.7167060267049539,
+     "scale_sim3": 1.2364884950446262,
+     "step_dir_err_deg_median": 14.887121041519475,
+     "rel_rot_err_deg_median": 1.4787348382801144,
+     "pass": false
+    },
+    "outdoor_forward_5": {
+     "accel_dir_err_deg_median": 41.91460469214968,
+     "accel_mag_ratio": 1.9965954667419217,
+     "coverage_fraction": 0.8402777777777778,
+     "ate_sim3_m": 1.845495092920314,
+     "scale_sim3": 1.574355335771064,
+     "step_dir_err_deg_median": 11.503696226836322,
+     "rel_rot_err_deg_median": 2.843042170529689,
+     "pass": false
+    },
+    "indoor_45_9": {
+     "accel_dir_err_deg_median": 47.9996633718755,
+     "accel_mag_ratio": 4.466562016733066,
+     "coverage_fraction": 0.8958333333333334,
+     "ate_sim3_m": 4.246772124424854,
+     "scale_sim3": 1.5915733366313571,
+     "step_dir_err_deg_median": 22.397517752160052,
+     "rel_rot_err_deg_median": 8.215097060185794,
+     "pass": false
+    }
+   }
+  }
+ }
+}

@@ -1,0 +1,220 @@
+# Track F2, round 2 pre-registration — spline-smoothed joint fit, lean-error scoring, and the
+# feed-forward extractors.
+#
+# Written 2026-11-21 BEFORE any statistic in this file was computed on any real clip. The
+# commit that adds this file is the pre-registration commit and must be an ancestor of every
+# result file quoted in reports/F04, F05 and F06. Immutable once committed; amendments are new
+# files, never edits, and anything added after seeing results is labelled exploratory.
+
+id: F04
+status: pre-registered
+date: "2026-11-21"
+track: F2
+round: 2
+depends_on:
+  - reports F01, F02, F03 (branch `track-f-pixel-path`, head a9dc5cf at the time of writing)
+  - configs/f01_pixel_path_prereg.yaml (6b88d5a) and amend1 (17d21c6)
+
+question: >
+  Round 1's zero-differentiation statistic separated real from edited clips (AUC 0.95 removal,
+  0.89 mirror) but the leave-one-sequence-out conformal threshold (a 95th percentile over six
+  calibration clips in four clusters) converted that into 6/8 and 4/8 detection. Round 2 asks
+  whether a smooth B-spline path with analytic derivatives, tied to the flatness prediction
+  through a joint fit of scale, yaw and initial velocity, moves the gate; and separately, what
+  path error the verifier actually needs, and whether any open feed-forward extractor supplies
+  it.
+
+parts:
+  part1: spline-smoothed joint fit (confirmatory, gate below)
+  part2: lean-error scoring of stored paths (analysis, no gate; pre-registered metric)
+  part3: feed-forward extractors (exploratory run, gated only through part1)
+  part4: simulated calibration set (Track I; run only if I02 exists when parts 1-3 are done)
+
+# --------------------------------------------------------------------------- inputs
+inputs:
+  pixel_paths:
+    dpvo:
+      what: Track C bake-off DPVO camera-to-world poses on the prepared UZH pinhole frames
+        (150 frames, 15.07 Hz, Kalibr intrinsics supplied)
+      local: data/pathrec/poses/dpvo/<sequence>.npz
+      role: primary (round 1's path, so a change is attributable to the statistic)
+    vipe:
+      what: Track F round 1 ViPE (`nvidia-vipe` 1.2.0, default pinhole pipeline, its own
+        SharedK intrinsics) on the same frames
+      local: data/pathrec/poses/vipe/<sequence>.npz
+      role: primary (the best bake-off path from F02)
+    mast3r:
+      what: Track F round 1 MASt3R-SLAM with the Kalibr K, interpolated onto the 150-frame grid
+      local: data/pathrec/poses/mast3r/<sequence>.npz
+      role: exploratory only (F02: 5/10 on the bake-off)
+  truth:
+    what: Leica MS60 truth at the prepared frame grid (pos, quat xyzw body->world, gravity-
+      aligned world); 500 Hz table for testability
+    local: data/uzh/<sequence>/truth.npz
+  depicted_lean:
+    what: Track E v3 clips, official schema v2 at the 0.37 s window (`depicted_lean`,
+      `lean_req`, `tilt_req_deg`, `depicted_conf`)
+    local: data/clips_v2_w370ms/<sequence>/<clip>_<condition>.npz
+    conditions: [real, null_edit, yaw_control, tilt_removal, mirror_roll, scale_0.5, scale_1.5]
+  window_rule:
+    what: E05 `f95` per sequence, `0.5/f95` window
+    local: results/e_window_rule.json
+  mount:
+    what: published Kalibr T_cam_imu per rig, as stored in each clip meta (R_cb camera->body)
+
+# --------------------------------------------------------------------------- part 1 statistic
+part1:
+  name: S_dyn
+  role: confirmatory primary
+  spline:
+    basis: cubic B-spline, least squares (scipy make_lsq_spline), clamped end knots
+    knots: >
+      uniform in time on each clip. Spacing h = 0.5 / f95 (the E05 window rule, per sequence,
+      not fitted). Number of interior intervals K = max(4, round(T / h)) with T the clip span,
+      capped at floor((N-1)/3) so every interval carries at least three samples. With 60
+      frames at 15.07 Hz and the per-sequence windows this gives K in [4, 12].
+    evaluation: interior samples only, [3, N-3), because a clamped cubic spline's second
+      derivative is unreliable at the boundary (the same interior-masking rule as the SG
+      stencils in F01).
+    derivatives: analytic, d/dt and d2/dt2 of the fitted spline.
+    no_smoothing_penalty: the knot count is the only regularizer; nothing is tuned.
+  model: >
+    flatness, in the horizontal plane perpendicular to the up direction supplied by the
+    attitude source: v_m' = -k_d v_m + g Rz(psi + yaw(t)) lean(t), v_m(t0) = v0, and
+    a_m = g Rz(psi + yaw(t)) lean(t) - k_d v_m. k_d = 0.295 1/s fixed.
+  fit: >
+    per clip and fixed psi on a 1 degree grid over [-180, 180): least squares in (s, v0) of
+    s * a_spline(t) = a_m(t), where a_spline = d2 X_h/dt2 of the spline (path units/s2) and s
+    is the positive metric scale. s > 0 is enforced by projecting out the v0 columns and
+    solving s = (u.w)/(u.u) in the projected space (the same elimination as F01's
+    `_scaled_fit`); a psi whose only stationary scale is non-positive is not a candidate.
+    The psi and s with the smallest SSE are chosen.
+  statistic: >
+    rho = sqrt(SSE / sum_t |s * a_spline(t)|^2), the fraction of observed horizontal
+    acceleration energy that the flatness prediction does not explain. No demeaning: a
+    constant residual is a real inconsistency (gravity/frame error), not nuisance. Higher is
+    more suspicious. Scale-free by construction (numerator and denominator both carry s^2).
+  secondary_statistics:
+    - rho_model = sqrt(SSE / sum_t |a_m(t)|^2), model-normalised, reported beside it
+    - rho_demeaned = the same primary with the observed acceleration demeaned, reported
+    Declared now so that the choice of normalisation cannot be made after seeing results.
+  amendment_1_pairing: >
+    scale s, yaw offset psi and initial velocity v0 are estimated ONCE on the clip's `real`
+    condition and held fixed for all six edits. The spline is fitted to the observed path,
+    which is the same for every condition (the v3 edits are pixel-space rotations; F01's
+    edit-invariance check measured 0.81 deg median step-direction change on the one sequence
+    with edited-frame DPVO). A free scale would let tilt removal be absorbed by s -> 0.
+  attitude_arms:
+    oracle_attitude: lean and up from the truth quaternion; yaw from truth
+    estimated_attitude: lean = depicted_lean, up from up_body_from_lean through the published
+      mount, yaw from the pixel path's rotation (body->world = R_wc R_cb^T)
+  path_arms:
+    pixel: dpvo and vipe are the two primary paths; mast3r exploratory
+    oracle: truth position at the clip frame times (ceiling/attribution row only)
+  population: >
+    Identical to F01: primary = 8 real clips in 4 indoor-forward sequences
+    (indoor_forward_3/_5/_9/_10, clips #00 and #01) that Track E finds testable, the frozen
+    confidence gate keeps, and the path covers in full (60 frames); exploratory = every other
+    real clip with a pixel path, thresholded with the pooled primary 95th percentile and
+    labelled. Exclusions: indoor_forward_7 (broken v3 export), indoor_45_9 (45-degree rig).
+  thresholds: >
+    leave-one-sequence-out conformal, on real clips only, per path and arm. Headline level
+    0.95, identical to F01; a clip flags when rho > tau_j built from the other three
+    sequences. Edited clips of the held-out sequence are scored against tau_j.
+  threshold_sensitivity: >
+    the same statistic and flags are also computed at conformal levels 0.90 and 0.99 and the
+    full FRR/detection curve is reported, so threshold and statistic are separated. Only the
+    0.95 level decides the gate; 0.90 and 0.99 are descriptive and labelled as such.
+  auc: >
+    rank AUC of real against each edit per path/arm/condition (ties half), reported beside
+    every rate.
+  robustness_pre_registered:
+    - knot density K-1 and K+1 intervals (coarser/finer than the rule), same everything else
+    - k_d = 0 (drag-free) beside the headline k_d = 0.295
+    - psi refitted per condition at the fixed s and v0 (sensitivity only; the gate uses the
+      real-condition psi)
+    All are labelled sensitivities; none may replace the headline after the fact.
+  gate: >
+    With estimated attitude and a pixel path, real-clip false-reject <= 15 % AND detection
+    >= 90 % for each of tilt_removal and mirror_roll under S_dyn at the 0.95 conformal level,
+    on the primary population. Evaluated separately for DPVO and ViPE. PASS = both paths meet
+    it; PARTIAL = exactly one does; FAIL = neither. The oracle-path and oracle-attitude rows
+    are never a verdict. No retuning after the outcome.
+  expected_directions:
+    tilt_removal: rho rises (the prediction loses its acceleration).
+    mirror_roll: rho rises by twice the lateral acceleration term; it can only rise where the
+      flight has lateral excitation, which round 1 showed is not all clips.
+    scale_0.5/1.5: with the ruler fixed on the real clip these are inconsistent and should
+      rise; reported, not part of the gate.
+    yaw_control: approximately unchanged (psi is nuisance); its rate is the artefact floor.
+    null_edit: approximately unchanged (same pixels up to re-encode).
+
+# --------------------------------------------------------------------------- part 2
+part2:
+  name: windowed lean error
+  role: analysis (no gate); pre-registered metric because part 3 is scored with it
+  metric: >
+    For one stored path on one sequence, with ORACLE attitude: metric-scale the path with the
+    Sim(3) scale from the whole 150-frame alignment to truth (evaluation only), fit the
+    part-1 spline (same knot rule), and form the path-implied thrust axis
+    u_path = (s*a + g e3 + k_d*s*v) / norm with the same k_d. The truth thrust axis is
+    u_true = R_bw e3. The lean error at a sample is the angle between u_path and u_true (yaw-
+    invariant). Partition the 150-frame path into non-overlapping windows of 0.5/f95 seconds
+    (the E05 rule) and take the median lean error per window. Report per sequence: the median
+    and p75 of the window values, and the number of windows.
+  comparisons:
+    - beside the E7 bake-off direction error per sequence (`results/f02_stage1/scores.json`)
+    - Spearman rank correlation across sequences between the median windowed lean error and
+      the bake-off direction error, with a sequence-clustered bootstrap (5,000 replicates,
+      numpy.random.default_rng(1)); descriptive at 10 clusters
+    - per clip (primary and exploratory): median windowed lean error over the clip versus the
+      part-1 real-condition rho; Spearman across clips with a sequence-clustered bootstrap,
+      labelled exploratory. The hypothesis is that lean error predicts verdict quality better
+      than the bake-off direction error does; the reverse is also a finding.
+  withheld: no threshold, no detection rate; this part ranks paths, it does not judge clips.
+
+# --------------------------------------------------------------------------- part 3
+part3:
+  name: feed-forward extractors
+  preflight: >
+    Before any GPU job: verify weights, licence and gating for MapAnything, VGGT, Pi3 and
+    FFVO (arXiv 2609.13733), and record the result in the report and decisions log. A model
+    is run only if its weights are openly downloadable without an access request. Gated
+    weights are reported and not worked around.
+  run: >
+    Those that are open, on the 10 UZH sequences with the Kalibr intrinsics (where the model
+    accepts them), 150 frames at 15.07 Hz, same as the bake-off. Scored with (i) Track C's
+    bake-off metrics and pass rule, and (ii) part 2's windowed lean error.
+  selection: >
+    The extractor with the lowest median windowed lean error (part 2) is fed into part 1's
+    statistic with no change to the statistic, population, thresholds or gate. If it beats
+    the round-1 paths on the gate, that is reported; it is not a new gate.
+  cost: estimate posted in docs/COST_LEDGER.md before the job set; ceiling 30 USD.
+
+# --------------------------------------------------------------------------- part 4
+part4:
+  condition: run only if Track I's I02 (simulated calibration set) exists when parts 1-3 are
+    done
+  protocol: >
+    Run the best pixel-path pipeline (path + statistic) on the simulated set with
+    leave-scene-out calibration, and report detection and false-reject with the larger
+    calibration set. State that simulated frames are cleaner than real or generated video, so
+    the result is an upper bound on transfer.
+  if_absent: finish parts 1-3, write the report, and say plainly what is waiting and on what.
+
+# --------------------------------------------------------------------------- reporting
+reporting:
+  deliverables:
+    - reports/F04_spline_fit.md (two-sentence decision against the gate first)
+    - reports/F05_lean_error_scoring.md
+    - reports/F06_feedforward_and_sim.md
+    - report_candidates/e11b_pixel_path_round2.tex
+    - results/f04_spline/, results/f05_lean_error/, results/f06_feedforward/
+  required_columns: path, arm, population, real FRR (k/n), null, yaw, removal, mirror,
+    x0.5, x1.5, AUCs, LOSO thresholds, sequence-clustered interval, abstention
+  caveats_must_include:
+    - 8 clips in 4 sequences; intervals descriptive, not 95 % confidence intervals
+    - the real path is reused for every edit (one-sequence edit-invariance check only)
+    - threshold granularity is part of the result; the 0.90/0.99 curve is descriptive
+    - the spline's knot rule is fixed by the E05 window, not validated per sequence
+    - any post-hoc analysis is labelled exploratory in tables and summary
