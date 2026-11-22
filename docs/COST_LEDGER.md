@@ -128,3 +128,14 @@ US$0.6, R2/uploads negligible. No 14B or larger SolarWM route was run.
 Round 1 (F/G/H) and round 2 (G2, I) kept their ledgers on their own branches
 (`track-g-segments2`, `track-g2-segments`, `track-i-simset`), because those branches are not
 merged into `main`. This file starts on `main` with the J entry.
+
+## Track N — attitude from video rotation (2026-11-22)
+
+Ceiling for the track: **30 USD** (handoff 26). Estimate posted before any job; the Part 0 job
+set is expected to be about **1.5 USD** (rental), so no 20 USD pre-approval is needed.
+
+| date | track | job | GPU | hours | USD | notes |
+| --- | --- | --- | --- | --- | --- | --- |
+| 2026-11-22 | N | `awmv-n-rotation` Part 0 (estimate, before the run) | A10 | 0.75 | 1.50 est. | ~53k frames (11 UZH sequences x 450; 80 sim clips x 300-900) at a conservative 20 frames/s, plus container start and a cached image build; A10 at 1.10 USD/h |
+
+Actuals are added below when the run finishes. Cached Modal image builds are not billed as GPU.
