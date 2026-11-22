@@ -1,0 +1,258 @@
+# Track F, stage 0 pre-registration — pixel-path verdict statistics that avoid the second
+# derivative of the observed path.
+#
+# Written 2026-11-16 BEFORE any statistic in this file was computed on any clip. The commit
+# that adds this file is the pre-registration commit; it must be an ancestor of every result
+# file quoted in reports/F01_pixel_path_stage0.md.
+#
+# Immutable once committed: add amendments as new keys with a new file, never edit this one.
+
+id: F01
+status: pre-registered
+date: "2026-11-16"
+track: F
+stage: 0
+
+question: >
+  Can a pixel-path verdict be built from UZH-FPV DPVO paths and Track E's depicted lean
+  without double-differentiating the observed path? The earlier pilot (C09) double-
+  differentiated the path and required metric scale; this stage tests five variants that do
+  not, on the stored paths, with oracle and estimated attitude so path error and lean error
+  are separated.
+
+inputs:
+  pixel_path:
+    what: DPVO camera-to-world poses from Track C's Gate-1 bake-off, run on the prepared
+      UZH pinhole frames (150 frames per sequence, 15.07 Hz, Kalibr intrinsics supplied).
+    modal_volume: awmv-c-data
+    volume_path: poses/dpvo/<sequence>.npz
+    local_copy: data/pathrec/poses/dpvo/<sequence>.npz   # gitignored; sha256 recorded in results
+    provenance: reports/C07_widened_uzh_and_dpvo.md (DPVO passes 10/10; direction error
+      1.5-20.9 deg, magnitude ratio 0.73-1.15)
+    sequences:
+      - indoor_forward_3
+      - indoor_forward_5
+      - indoor_forward_6
+      - indoor_forward_7
+      - indoor_forward_9
+      - indoor_forward_10
+      - outdoor_forward_1
+      - outdoor_forward_3
+      - outdoor_forward_5
+    out_of_scope:
+      - indoor_45_9   # 45-degree rig; Track E's depicted-lean verdict is out of scope there (E03 s4)
+  truth:
+    what: Leica MS60 truth at the prepared frame grid (pos, quat xyzw body->world, gravity-
+      aligned world), plus the 500 Hz table.
+    path: data/uzh/<sequence>/truth.npz
+    conventions: docs/decisions.md [E] entries of 2026-11-13 (quat is body->world; world is
+      z-up to 1.41 deg with k_d = 0.295; IMU frame is FLU).
+  depicted_lean:
+    what: Track E v3 clips at the official schema-v2 0.37 s window (depicted_lean at the
+      camera frame times, from GeoCalib on the v3 fixed crop). The 0.37 s tree is the
+      headline; 0.10 s and 0.185 s are sensitivities, never the headline.
+    path: data/clips_v2_w370ms/<sequence>/<clip>_<condition>.npz
+    conditions: [real, null_edit, yaw_control, tilt_removal, mirror_roll, scale_0.5, scale_1.5]
+    provenance: reports/E04_v3_r2_coherence.md
+  required_lean_for_testability_only:
+    what: lean_req / tilt_req_deg from the same v2 arrays, derived from the 500 Hz truth by
+      Track E. Used ONLY for the population rule (signal frames), exactly as E8/E9 use it.
+      It is never an input to any statistic.
+  mount:
+    what: published Kalibr T_cam_imu per rig, as stored in each clip meta
+      (mount_rotation_R_cb, camera->body).
+    provenance: docs/decisions.md [E] 2026-11-13 (mount is published; R_cb = R(T_cam_imu)^T)
+  window_rule:
+    what: results/e_window_rule.json (E05), f95 per sequence, window_s = 0.5/f95, floor 8
+      samples at the truth rate.
+    use: V1/V3/V4 low band and differentiation window. Not refit.
+
+population:
+  clip_grid: Track E clips are 60 frames at 15.07 Hz at index [start, start+60) of the
+    prepared sequence. A stored DPVO path covers prepared frames 0..149, so a clip is
+    scoreable only when start + 60 <= 150.
+  primary:
+    description: >
+      The clips E9 scores under Track D's scale-free tier (its 9 R2/coherence-testable real
+      clips in 4 indoor-forward sequences), restricted to those the stored pixel path
+      covers in full. This is 8 clips in 4 sequences; indoor_forward_5_02 is E-testable but
+      the stored path covers only its last 30 frames, so it enters the exploratory set only.
+    rule: >
+      per clip: (i) frozen confidence gate kept (configs/gate_frozen.yaml, as E uses it);
+      (ii) n_frames = 60 and all 60 frames have a finite pixel-path sample and a finite
+      depicted lean; (iii) signal frames n_signal >= 12 (tilt_req_deg >= 10 deg) and
+      n_signal / n_frames >= 0.20, the E8 rule, from the truth-side tilt only;
+      (iv) the clip's schematic must be the 0.37 s tree.
+  exploratory:
+    description: >
+      Every real clip on the 60-frame grid with full path coverage, plus the 30-frame
+      truncated indoor_forward_5_02, plus outdoor-forward clips. Reported separately and
+      labelled exploratory; never used for the gate.
+  exclusions:
+    - indoor_forward_7   # E04: its v3 export is broken (1 of 60 frames evaluated); excluded
+    - indoor_45_9        # 45-degree rig, out of scope for the depicted lean
+  denominators: every rate is printed with k/n and its sequence count; n_clips below ~10
+    clusters makes intervals descriptive, and the report must say so.
+
+attitude_arms:
+  - name: oracle_attitude
+    lean: truth-attitude lean from the truth quaternion: l_att = Rz(-yaw)[(R_bw e3)_x,
+      (R_bw e3)_y]; yaw = ZYX yaw of R_bw.
+    up_in_path_frame: mean over frames of R_wc R_cb^T u_b, u_b = R_bw^T e3.
+    note: attitude from mocap, path from pixels. Separates path error from lean error.
+  - name: estimated_attitude
+    lean: depicted_lean as stored (GeoCalib through the published mount).
+    up_in_path_frame: mean over frames of R_wc R_cb^T u_b, u_b = up_body_from_lean(l_dep).
+    yaw: from the pixel path (body->DPVO-world = R_wc R_cb^T, ZYX yaw), which is what a
+      real system has; GeoCalib cannot supply yaw.
+  - name: oracle_path_ceiling
+    path: truth position at the clip frame times (same 15.07 Hz grid), up = world z
+    attitude: oracle and estimated (two rows), so the lean side alone is measured.
+  note: oracle_path is a ceiling/attribution row, not a candidate verdict.
+
+common_mechanics:
+  frame: >
+    horizontal plane perpendicular to the estimated up in the path's world frame; a free
+    constant yaw offset psi is fitted per clip wherever the statistic needs an alignment.
+    Yaw is unconstrained in this project, so psi is nuisance, never evidence.
+  drag: k_d = 0.295 1/s fixed (Phase 0), with k_d = 0 as a declared sensitivity.
+  scale: >
+    the pixel path's scale is unknown. V1-V4 are scale-free by construction (ratios or
+    correlations). V2/V1 fit a positive scale s jointly with the nuisance parameters; V5
+    reports s against independent anchors.
+  differentiation: Savitzky-Golay polyorder 3, window = 0.5/f95 at the clip rate (odd,
+    >= 5 samples), never a zero-padded or one-sided stencil; interior masked.
+  time_base: clip t from the stored arrays (relative, uniform 1/15.07 s).
+
+variants:
+  V2_shooting:
+    role: primary
+    why_primary: >
+      Uses the observed path undifferentiated (the only variant that does), integrates the
+      smooth depicted side, and fits exactly the nuisances the project declares
+      unconstrained (yaw, scale, initial state). It is therefore the least noise-exposed
+      of the five and the fairest test of the "avoid the second derivative" question.
+    model: >
+      horizontal acceleration a_h(t) = g Rz(psi + yaw(t)) l_dep(t) - k_d v_h(t), with
+      v_h' = a_h; integrate on the clip grid with the exact exponential step for constant
+      forcing; predict x_h(t) from initial state (v0, x0).
+    fit: >
+      per clip, grid psi in [-180, 180) at 1 deg; for each psi solve the linear least
+      squares in (s, v0_x, v0_y, x0_x, x0_y) of s * X_h(t) against the prediction; keep the
+      positive-s solution with the smallest SSE.
+    statistic: rho = sqrt(SSE / SST) in [0, inf], the unexplained fraction of the observed
+      horizontal path after the fit; SST is about the observed mean. Higher is more
+      suspicious.
+    flag: rho > tau (conformal, see threshold_rule).
+  V1_preintegration:
+    role: secondary
+    model: >
+      v_obs = d(X_h)/dt by one Savitzky-Golay derivative. Model velocity v_m(t) from
+      v_m' = -k_d v_m + g Rz(psi + yaw(t)) l_dep(t), integrated from v_m(t0) = v0.
+    fit: grid psi at 1 deg; linear least squares in (s, v0) of s * v_obs against v_m.
+    statistic: rho_v = sqrt(SSE / SST) of that fit (unexplained fraction of velocity, after
+      scale and offset). Report beside it the per-axis Pearson correlation r_x, r_y and
+      sign agreement s_x, s_y at the chosen psi, and the rotation-invariant complex
+      correlation magnitude |r_c|, all scale-free.
+    flag: rho_v > tau.
+  V3_band_coherence:
+    role: secondary
+    model: >
+      band-limited cross-spectral coherence between the depicted lean and the pixel-path
+      horizontal acceleration. Path acceleration is the second SG derivative with the
+      low-band window (0.5/f95 at the clip rate); the depicted lean is scalar-projected to
+      the complex plane z_l = l_x + i l_y, the path acceleration z_a = a_x + i a_y.
+    statistic: gamma = max over frequency bins in [0.05 Hz, f95] of the complex
+      magnitude-squared coherence |S_la|^2 / (S_ll S_aa) from Welch CSD (Hann, segment
+      about half the clip, 50 percent overlap). Complex coherence is invariant to a constant
+      rotation, so no psi is fitted and the statistic is exactly yaw-free.
+    flag: (1 - gamma) > tau.
+  V4_velocity_drag:
+    role: secondary
+    model: near-steady flight: l_dep about (k_d/g) v_h.
+    fit: grid psi; least squares scale s of s * l_model against v_obs (one derivative).
+    statistic: rho_d = sqrt(SSE / SST) of that fit. Testability additionally requires the
+      pixel path to be drag-dominated on most frames: median |a_h| / (k_d |v_h|) < 0.5,
+      with a_h from the same one-differentiation pipeline; else the clip is reported
+      not-testable for V4 and excluded from its denominators (pre-registered, counts shown).
+    flag: rho_d > tau.
+  V5_physics_scale:
+    role: secondary / sanity
+    model: the scale s fitted by V2 is the metric ruler g*lean gives the pixel path.
+    checks:
+      - identifiability: relative standard error of s from the linear fit; if the V2 design
+        is rank-deficient in s (relative SE > 1) or s <= 0, the scale is unidentifiable and
+        the clip is flagged (a tilt-removed clip has no acceleration to scale to).
+      - oracle agreement (validation only, not a verdict): s / s_sim3 from a Sim(3)
+        alignment of the pixel path to truth.
+      - depth prior (weak, declared): DA3METRIC-LARGE median depth per frame
+        (results/pathrec_calib/depth.json); plausibility bounds 1e-4 < s * median(|dP|) /
+        depth < 0.5 per frame. This is a loose physical-consistency band, not a calibrated
+        test; said so in the report.
+    statistic: 1 if unidentifiable or outside the plausibility band, else 0.
+    flag: statistic == 1.
+    note: its detection of removal is expected and is a scale-identifiability effect, not
+      an independent physical test.
+
+threshold_rule:
+  what: >
+    leave-one-sequence-out conformal threshold on REAL clips only, per variant, per arm
+    (each variant's statistic, computed with the same pipeline). For held-out sequence j,
+    tau_j = the 95th percentile (numpy linear interpolation) of the real-clip statistics
+    from the other sequences; a clip is flagged when its statistic > tau_j. Edited clips of
+    sequence j are scored against tau_j too, so no edited clip ever helps set its own bar.
+  direction: high statistic = suspicion, for every variant (V3 uses 1 - gamma, V5 as above).
+  reporting: in-sample (all-real fit) thresholds are also printed for transparency but are
+    not the headline; the headline is the LOSO rate.
+  inference: >
+    with 4 primary sequences / 8 primary clips the conformal rank test has granularity
+    1/(n+1) = 1/9, so a false-reject rate of 0 is the expected in-control value and 1/8 is
+    one exceedance. Intervals are sequence-clustered bootstrap (5,000 replicates,
+    numpy.random.default_rng(1)) over sequences, and are descriptive, not 95 % confidence
+    intervals, below ~10 clusters.
+
+controls_and_edits:
+  edits: [tilt_removal, mirror_roll]
+  scale_edits: [scale_0.5, scale_1.5]   # expected at chance for scale-free tiers; reported
+  controls: [null_edit, yaw_control]
+  pairing: >
+    the pixel path is the real video's path for every condition. The v3 edits are
+    pixel-space rotations (tilt removal, mirror, yaw control) and a positive lean scaling;
+    under a rotation about the optical centre the camera's translation in its own frame is
+    unchanged, so the real path is the correct path for those conditions up to the
+    estimator's own sensitivity to the re-render. That sensitivity is NOT measured here
+    (it needs DPVO on the edited frames, a GPU job in stage 1); the null edit and yaw
+    control are the artefact floor this design can see, and the report must say so.
+  expected_directions:
+    tilt_removal: statistic rises (path curves, depicted lean does not).
+    mirror_roll: statistic rises (lateral term has the wrong sign).
+    scale_0.5/1.5: absorbed by the fitted scale for V1/V2/V4 and by the correlation for V3,
+      so at chance; V5 should catch them through the scale check.
+    yaw_control: statistic about unchanged (yaw is nuisance by construction).
+    null_edit: statistic about unchanged (same pixels up to re-encode).
+
+decision_gate:
+  pass: >
+    with estimated attitude and the pixel path, on the primary population: real-clip
+    false-reject <= 15 % AND detection >= 90 % for each of tilt_removal and mirror_roll
+    under the primary variant V2. (Scale-free and secondary variants are reported; if V2
+    fails and a secondary passes, the outcome is partial, not pass.)
+  partial: >
+    the same holds for a scale-free tier only (a secondary statistic), or only with oracle
+    attitude.
+  fail: otherwise.
+  no_rescue: no retuning after seeing the outcome; the numbers in this file are not adjusted.
+
+reporting:
+  deliverables:
+    - reports/F01_pixel_path_stage0.md (decision paragraph first, then the table)
+    - results/f01_stage0/*.json, *.csv
+    - report_candidates/e11_pixel_path_verdict.tex
+  required_columns: variant, arm, population, real FRR (k/n), null, yaw, removal, mirror,
+    x0.5, x1.5, sequence-clustered interval, abstention, thresholds
+  caveats_must_include:
+    - truncated-clip and outdoor exclusions
+    - real path reused across edits (edit-invariance unmeasured)
+    - scale edits at chance by construction
+    - 4-8 clusters, descriptive intervals
+    - V5 is a loose plausibility check, not a calibrated test
