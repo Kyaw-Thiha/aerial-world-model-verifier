@@ -298,13 +298,26 @@ def build_sim_table(scores: pd.DataFrame) -> pd.DataFrame:
 
 
 # --------------------------------------------------------------------------- gate B
+def _clip_disagreement(real: pd.DataFrame) -> pd.Series:
+    """One disagreement value per clip: the clip's REAL-condition reader disagreement.
+
+    Gate B decides once per clip, on the video that exists in operation.  Using each
+    condition's own pixels instead would drop 68 of the 69 development tilt-removal clips,
+    because removing the tilt changes what the readers say about the same scene.
+    """
+    r = real[real.cond == "real"].set_index("clip_id").dis_med
+    return real.clip_id.map(r)
+
+
 def gate_b_select(real: pd.DataFrame, tau_grid=TAU_GRID) -> dict:
-    """CRC on the real dev clips: accept iff disagreement <= tau."""
+    """CRC on the real dev clips: accept iff the clip's real-condition disagreement <= tau."""
+    real = real.copy()
+    real["dis_clip"] = _clip_disagreement(real)
     base = real[real.in_dev & real.kept_S3]
     n_total = base.clip_id.nunique()
     curve = []
     for tau in tau_grid:
-        acc = base.dis_med <= tau
+        acc = base.dis_clip <= tau
         n_clips = base[acc].clip_id.nunique()
         res = {"tau": float(tau), "accepted": int(n_clips),
                "coverage": n_clips / max(n_total, 1)}
@@ -341,8 +354,10 @@ def gate_b_select(real: pd.DataFrame, tau_grid=TAU_GRID) -> dict:
 
 
 def at_tau(real: pd.DataFrame, tau: float) -> dict:
+    real = real.copy()
+    real["dis_clip"] = _clip_disagreement(real)
     base = real[real.in_dev & real.kept_S3]
-    acc = base.dis_med <= tau
+    acc = base.dis_clip <= tau
     out = {"tau": float(tau), "n_total": int(base.clip_id.nunique()),
            "n_accepted": int(base[acc].clip_id.nunique())}
     out["coverage"] = out["n_accepted"] / max(out["n_total"], 1)

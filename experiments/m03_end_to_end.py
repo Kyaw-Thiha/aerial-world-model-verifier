@@ -48,7 +48,8 @@ WIN, HOP = 8, 4
 VAR_FLOOR = 0.01
 HUBER_DEG = 3.0
 HUBER_DELTA = float(np.sin(np.deg2rad(HUBER_DEG)))
-KD_GRID = np.round(np.arange(0.0, 0.401, 0.05), 3)
+KD_GRID = np.unique(np.round(np.concatenate([np.arange(0.0, 0.401, 0.05),
+                                             np.array([0.295])]), 3))
 TAU_ALPHA = 0.05
 
 
@@ -260,7 +261,13 @@ def world_to_yaw_frame_np(vec, yaw):
 def gate_masks(real: pd.DataFrame, fr: dict) -> dict:
     out = {}
     weak = (real.sigma_min >= fr["lam_a"]) & (real.tilt_max <= fr["near_vertical"])
-    dis = real.dis_med <= fr["tau_b"]
+    # Gate B, like S3, decides ONCE per clip, on the clip's real video.  Applying it to each
+    # condition's own pixels is A2's per-condition convention and is reported separately: it
+    # drops 68 of the 69 development tilt-removal clips, because removing the tilt changes
+    # what the readers say about the same scene.
+    real_dis = real[real.cond == "real"].set_index("clip_id").dis_med
+    dis = real.clip_id.map(real_dis).le(fr["tau_b"])
+    dis = dis.fillna(False)
     # The S3 decision is taken ONCE per clip, on the clip's real video: in operation the gate
     # sees one video, and the edited conditions are counterfactual probes.  A2's published
     # convention gates each condition on its own pixels; that is kept as a separate row
@@ -271,7 +278,22 @@ def gate_masks(real: pd.DataFrame, fr: dict) -> dict:
     out["GB"] = s3 & dis
     out["GAB"] = s3 & weak & dis
     out["G0_S3_per_condition"] = real.kept_S3_cond.fillna(False)
+    out["GB_per_condition"] = s3 & (real.dis_med <= fr["tau_b"]).fillna(False)
     return out
+
+
+def _tau_pooled(acc: pd.DataFrame, tier: str) -> float:
+    """Conformal 95th percentile over every accepted real development clip (pooled cut).
+
+    Used as the primary comparison because for GB/GAB the accepted set can hold fewer than
+    five real clips on a flight, which makes a leave-one-flight-out fold undefined.  The LOFO
+    variant is reported beside it wherever it is computable.
+    """
+    vals = acc[(acc.cond == "real") & acc.in_dev][tier].values
+    vals = vals[np.isfinite(vals)]
+    if len(vals) < 5:
+        return float("nan")
+    return float(np.quantile(vals, 1.0 - TAU_ALPHA))
 
 
 def _tau_lofo(acc: pd.DataFrame, tier: str, flight: str) -> float:
@@ -295,13 +317,11 @@ def evaluate(real: pd.DataFrame, masks: dict, tier: str, dev: bool = True) -> di
         ent = {"accepted_clips": int(acc.clip_id.nunique()),
                "total_clips": int(base.clip_id.nunique()),
                "coverage": acc.clip_id.nunique() / max(base.clip_id.nunique(), 1)}
-        # thresholds: for a dev flight, the other dev flights; for a held-out flight, all dev
-        tau_fit = acc if dev else real[(real.in_dev)]
-        tau_fit = tau_fit if dev else tau_fit
-        taus = {}
-        for f in (DEV if dev else HELD):
-            taus[f] = _tau_lofo(tau_fit, tier, f if dev else None)
-        ent["tau_median"] = float(np.nanmedian(list(taus.values())))
+        tau_pool = _tau_pooled(acc if dev else real[real.in_dev], tier)
+        taus = {f: tau_pool for f in (DEV if dev else HELD)}
+        ent["tau_pooled"] = tau_pool
+        ent["tau_lofo_median"] = float(np.nanmedian(
+            [_tau_lofo(acc, tier, f) for f in (DEV if dev else HELD)]))
         for cond in CONDS:
             hit = tot = 0
             for _, r in acc[acc.cond == cond].iterrows():
@@ -345,8 +365,11 @@ def clustered_rates(real: pd.DataFrame, masks: dict, tier: str) -> dict:
         sub = base.copy()
         sub["acc"] = mask.reindex(base.index).fillna(False)
         acc = sub[sub.acc]
-        taus = {f: _tau_lofo(acc, tier, f) for f in DEV}
-        ent = {}
+        tau_pool = _tau_pooled(acc, tier)
+        taus = {f: tau_pool for f in DEV}
+        ent = {"tau_pooled": tau_pool}
+        ent["tau_lofo_median"] = float(np.nanmedian(
+            [_tau_lofo(acc, tier, f) for f in DEV]))
         for cond in CONDS:
             hits, dens, flags = [], [], []
             for f in DEV:
@@ -430,7 +453,7 @@ def main() -> None:
     simres = {}
     for tier in TIERS:
         ent = {}
-        thr = res[f"real_dev_{tier}"]["G0_S3_only"]["tau"]
+        thr = res[f"real_dev_{tier}"]["G0_S3_only"]["tau_pooled"]
         for cfg, m in sim_masks.items():
             acc = sim[m.fillna(False)]
             feas = acc[acc.defect == "feasible"]
