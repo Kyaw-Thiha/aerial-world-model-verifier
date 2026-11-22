@@ -62,8 +62,13 @@ def real_truth():
     return out
 
 
+_SIM_TRUTH_CACHE: dict = {}
+
+
 def sim_truth(clip_id: str):
-    """frame index -> (up_cam, lean_gt, R_cb) for one simulated clip."""
+    """frame index -> (up_cam, lean_gt, R_cb) for one simulated clip (cached)."""
+    if clip_id in _SIM_TRUTH_CACHE:
+        return _SIM_TRUTH_CACHE[clip_id]
     row = SIM_META[clip_id]
     z = np.load(GT / f"{clip_id}.npz")
     R = np.asarray(z["R_bw_cam"], float)
@@ -76,6 +81,7 @@ def sim_truth(clip_id: str):
         i = int(min(max(round((k / 30.0) * hz), 0), len(R) - 1))
         up = (R[i] @ R_cb).T @ e3
         out[k] = (up, lean[i], R_cb)
+    _SIM_TRUTH_CACHE[clip_id] = out
     return out
 
 
@@ -142,15 +148,16 @@ def main() -> int:
             e = np.asarray([angle(np.asarray([r["up_cam"]]), np.asarray([r["up_cam_ft"]]))[0]
                             for r in rec["held_out_sim"] if r["up_cam_ft"]])
             entry["sim_error"] = stats(e)
-        if rec.get("all_real"):
+        held = rec.get("held_real") or rec.get("all_real")
+        if held:
             by = {}
-            for r in rec["all_real"]:
+            for r in held:
                 by.setdefault(r["flight"], []).append(r)
-            entry["all_real"] = {}
+            entry["held_real"] = {}
             for fl, rs in by.items():
                 e = np.asarray([angle(np.asarray([r["up_cam"]]), np.asarray([r["up_cam_ft"]]))[0]
                                 for r in rs if r["up_cam_ft"]])
-                entry["all_real"][fl] = stats(e)
+                entry["held_real"][fl] = stats(e)
         out["folds"][key] = entry
 
     # ---------------- S1: held-out real error ----------------
@@ -167,13 +174,14 @@ def main() -> int:
     out["criteria"]["s1_arms"] = {}
     for arm in ("real", "sim", "mixed"):
         rec = folds.get(f"{arm}__none")
-        if not rec or not rec.get("all_real"):
+        rows_final = (rec or {}).get("held_real") or (rec or {}).get("all_real")
+        if not rows_final:
             continue
         e_all = []
         per = {}
         for fl in HELD:
             e = [angle(np.asarray([r["up_cam"]]), np.asarray([r["up_cam_ft"]]))[0]
-                 for r in rec["all_real"] if r.get("flight") == fl and r["up_cam_ft"]]
+                 for r in rows_final if r.get("flight") == fl and r["up_cam_ft"]]
             per[fl] = stats(e)
             e_all.extend(e)
         s = stats(e_all)

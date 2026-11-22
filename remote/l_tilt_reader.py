@@ -318,6 +318,8 @@ def _train_and_eval(arm: str, holdout: str, seed: int, epochs: int, lr: float, b
             rec["held_out_sim"] = evaluate([fr for k in keys for fr in sim_units[k]], "sim")
     elif eval_rows == "all_real":
         rec["all_real"] = evaluate([fr for k in real_units for fr in real_units[k]], "real")
+    elif eval_rows == "held_real":
+        rec["held_real"] = evaluate([fr for k in HELD_FLIGHTS for fr in real_units[k]], "real")
     elif eval_rows == "all_sim":
         rec["all_sim"] = evaluate([fr for k in sim_units for fr in sim_units[k]], "sim")
 
@@ -352,7 +354,7 @@ def final(arm: str, seed: int = 101, epochs: int = 2, lr: float = 2e-5, batch: i
     """Train on every development unit the arm may use, then score all real frames once."""
     holdout = "none"
     return _train_and_eval(arm, holdout, seed, epochs, lr, batch, lm_steps,
-                           frames_per_epoch, "all_real")
+                           frames_per_epoch, "held_real")
 
 
 @app.function(image=image, gpu="A10G", volumes={VOL: volume}, timeout=1800)
@@ -473,6 +475,12 @@ def main(mode: str = "smoke", arm: str = "mixed", holdout: str = "", seed: int =
         return
     if mode == "final":
         print(final.remote(arm, seed, epochs, lr, batch, lm_steps, frames_per_epoch))
+        return
+    if mode == "finals":
+        calls = [final.spawn(a, 101, epochs, lr, batch, lm_steps, frames_per_epoch)
+                 for a in ("real", "sim", "mixed")]
+        for c in calls:
+            print(c.get())
         return
     if mode == "batch":
         # jobs: "arm:holdout:seed,..." -- spawn one container per fold, wait in order

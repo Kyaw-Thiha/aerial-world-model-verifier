@@ -258,7 +258,7 @@ def probe(flight: str = "flight-01a-ellipse", clip: str = "flight-01a-ellipse#00
 
 @app.local_entrypoint()
 def main(model: str = "frozen", flights: str = "", all: bool = False, max_clips: int = 0,
-         lm_steps: int = 10):
+         lm_steps: int = 10, shards: int = 4):
     if model == "probe":
         print(probe.remote(flights or "flight-01a-ellipse"))
         return
@@ -266,5 +266,13 @@ def main(model: str = "frozen", flights: str = "", all: bool = False, max_clips:
         flights = ",".join(["flight-01a-ellipse", "flight-01p-ellipse", "flight-04a-ellipse",
                             "flight-07a-lemniscate", "flight-07p-lemniscate",
                             "flight-13a-trackRATM", "flight-13p-trackRATM",
-                            "flight-16b-trackRATM".replace("16b", "16p")])
+                            "flight-16p-trackRATM"])
+    ids = [f for f in flights.split(",") if f]
+    if shards > 1 and len(ids) > 1:
+        chunk = max(1, (len(ids) + shards - 1) // shards)
+        calls = [edits.spawn(",".join(ids[i:i + chunk]), model, lm_steps, max_clips)
+                 for i in range(0, len(ids), chunk)]
+        for c in calls:
+            print(c.get())
+        return
     print(edits.remote(flights, model, lm_steps, max_clips))
