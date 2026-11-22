@@ -6,6 +6,9 @@ whose roll is known exactly, before it reads any real or generated frame.
 from __future__ import annotations
 
 import numpy as np
+import pytest
+
+cv2 = pytest.importorskip("cv2")
 
 from src.perception.frames import camera_to_body_pitched
 from src.perception.horizon import (estimate_roll, line_family_reading, roll_from_up,
@@ -73,8 +76,6 @@ def test_sky_horizon_recovers_roll_with_mount():
 
 
 def test_line_family_recovers_roll():
-    import cv2
-
     size = 320
     for phi in (0.0, 10.0, -17.0):
         img = np.full((size, size, 3), 40, np.uint8)

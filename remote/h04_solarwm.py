@@ -165,8 +165,10 @@ def _write_config(release: Path, out: Path, count: int, steps: int,
 
 @app.function(gpu="A100-80GB", cpu=8, memory=65536, timeout=6 * 3600,
               volumes={"/w": vol_w, "/r": vol_r}, env={"HF_HOME": "/tmp/hf"})
-def infer(sample_ids: str, tag: str, steps: int = 4, frame_num: int = 81) -> dict:
+def infer(sample_ids: str, tag: str, steps: int = 4, frame_num: int = 81,
+          sub: int = 40) -> dict:
     import os
+    import shutil
     import subprocess
     import time
     import uuid
@@ -178,53 +180,55 @@ def infer(sample_ids: str, tag: str, steps: int = 4, frame_num: int = 81) -> dic
     ids = json.loads(sample_ids)
     out_root = Path("/r/solarwm") / tag
     out_root.mkdir(parents=True, exist_ok=True)
-    work = Path("/tmp") / f"data_{tag}"
-    work.mkdir(parents=True, exist_ok=True)
-    release = _build_data(ids, work)
-    # The Modal Volume rejects the atomic rename that the release's publication
-    # transaction uses, so generate on local disk and copy the finished mp4s to
-    # the volume afterwards.
-    out = Path("/tmp/solar_out") / f"{tag}-{uuid.uuid4().hex[:8]}" / "run"
-    out.parent.mkdir(parents=True, exist_ok=True)
-    cfg = _write_config(release, out, len(ids), steps, frame_num)
-    t0 = time.time()
-    env = dict(os.environ, PYTHONPATH="/solarwm")
-    proc = subprocess.run(["python", "-m", "solar", "infer", "--config", str(cfg)],
-                          cwd="/solarwm", env=env, capture_output=True, text=True)
-    (out_root / "infer.log").write_text(proc.stdout[-200000:] + "\n---STDERR---\n"
-                                       + proc.stderr[-100000:])
-    if proc.returncode != 0:
-        raise RuntimeError(f"solar infer failed: {proc.returncode}; see infer.log")
-    # decode generated mp4s to PNG frames
-    clips = {}
-    for mf in sorted(out.glob("generation/**/slot-*/manifest.json")):
-        doc = json.loads(mf.read_text())
-        case = doc.get("case", {}) if isinstance(doc, dict) else {}
-        sid = str(doc.get("sample_id") or case.get("sample_id") or case.get("key")
-                  or mf.parent.name)
-        mp4 = mf.parent / "video.mp4"
-        if not mp4.exists():
-            continue
-        d = out_root / sid / "frames"
-        d.mkdir(parents=True, exist_ok=True)
-        import shutil
-        shutil.copyfile(mp4, out_root / sid / "clip.mp4")
-        shutil.copyfile(mf, out_root / sid / "manifest.json")
-        reader = imageio.get_reader(mp4)
-        n = 0
-        try:
-            for i, fr in enumerate(reader):
-                Image.fromarray(np.asarray(fr)).save(d / f"{i:03d}.png")
-                n += 1
-        finally:
-            reader.close()
-        clips[sid] = {"frames": n,
-                      "mp4": str((out_root / sid / "clip.mp4").relative_to(out_root))}
-    vol_r.commit()
-    return {"tag": tag, "n_samples": len(ids), "seconds": time.time() - t0,
-            "returncode": proc.returncode, "clips": clips,
+    todo = [sid for sid in ids if not (out_root / sid / "frames").exists()]
+    done_already = len(ids) - len(todo)
+    results = {}
+    t_start = time.time()
+    for k0 in range(0, len(todo), sub):
+        part = todo[k0:k0 + sub]
+        work = Path("/tmp") / f"data_{tag}_{k0}"
+        work.mkdir(parents=True, exist_ok=True)
+        release = _build_data(part, work)
+        # The Modal Volume rejects the atomic rename that the release's publication
+        # transaction uses, so generate on local disk and copy the finished mp4s to the
+        # volume afterwards.
+        out = Path("/tmp/solar_out") / f"{tag}-{uuid.uuid4().hex[:8]}" / "run"
+        out.parent.mkdir(parents=True, exist_ok=True)
+        cfg = _write_config(release, out, len(part), steps, frame_num)
+        env = dict(os.environ, PYTHONPATH="/solarwm")
+        proc = subprocess.run(["python", "-m", "solar", "infer", "--config", str(cfg)],
+                              cwd="/solarwm", env=env, capture_output=True, text=True)
+        (out_root / f"infer_{k0:04d}.log").write_text(
+            proc.stdout[-200000:] + "\n---STDERR---\n" + proc.stderr[-100000:])
+        if proc.returncode != 0:
+            raise RuntimeError(f"solar infer failed on sub-batch {k0}: {proc.returncode}")
+        # decode generated mp4s to PNG frames
+        for mf in sorted(out.glob("generation/**/slot-*/manifest.json")):
+            doc = json.loads(mf.read_text())
+            case = doc.get("case", {}) if isinstance(doc, dict) else {}
+            sid = str(doc.get("sample_id") or case.get("sample_id") or case.get("key")
+                      or mf.parent.name)
+            mp4 = mf.parent / "video.mp4"
+            if not mp4.exists():
+                continue
+            d = out_root / sid / "frames"
+            d.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(mp4, out_root / sid / "clip.mp4")
+            shutil.copyfile(mf, out_root / sid / "manifest.json")
+            reader = imageio.get_reader(mp4)
+            n = 0
+            try:
+                for i, fr in enumerate(reader):
+                    Image.fromarray(np.asarray(fr)).save(d / f"{i:03d}.png")
+                    n += 1
+            finally:
+                reader.close()
+            results[sid] = {"frames": n}
+        vol_r.commit()
+        print("sub-batch", k0, len(part), "generated", len(results), flush=True)
+    return {"tag": tag, "n_samples": len(ids), "already_done": done_already,
+            "generated": len(results), "seconds": time.time() - t_start,
             "output_root": str(out_root)}
-
 
 @app.local_entrypoint()
 def main(mode: str = "download", tag: str = "test", ids: str = "", steps: int = 4,
@@ -232,13 +236,17 @@ def main(mode: str = "download", tag: str = "test", ids: str = "", steps: int = 
     if mode == "download":
         print(json.dumps(download.remote(), indent=1))
         return
-    if mode == "campaign":
+    if mode in ("campaign", "campaign_wait"):
         man = json.loads((INPUTS / "manifest.json").read_text())
         todo = [s for s in man["samples"] if not s.startswith("probe_")]
         parts = [todo[k::chunks] for k in range(chunks)]
         calls = [infer.spawn(json.dumps(p), tag=tag, steps=steps) for p in parts]
         print(json.dumps({"spawned": [c.object_id for c in calls],
-                          "chunks": [len(p) for p in parts]}, indent=1))
+                          "chunks": [len(p) for p in parts]}, indent=1), flush=True)
+        if mode == "campaign_wait":
+            res = [c.get() for c in calls]
+            print(json.dumps([{k: v for k, v in r.items() if k != "clips"} for r in res],
+                             indent=1), flush=True)
         return
     man = json.loads((INPUTS / "manifest.json").read_text())
     if not ids:

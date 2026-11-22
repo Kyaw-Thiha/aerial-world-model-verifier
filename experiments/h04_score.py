@@ -110,6 +110,28 @@ def score_clip(clip: Clip, gain_cfg: dict, coh_cfg: dict, gate_cfg: dict) -> dic
             "accepted": bool(ab.testable and not (flagged_c or flagged_s))}
 
 
+def parse_sid(sid: str):
+    """``main_<path>_<arm>_g<k>`` or ``swap_<path>_<F#>_<arm>_g<k>`` -> parts."""
+    for arm in ARMS:
+        marker = f"_{arm}_g"
+        if marker not in sid:
+            continue
+        head, tail = sid.split(marker)
+        try:
+            draw = int(tail)
+        except ValueError:
+            return None
+        kind = ""
+        for pre in ("main_", "swap_"):
+            if head.startswith(pre):
+                head, kind = head[len(pre):], pre.strip("_")
+        frame_key = ""
+        if kind == "swap":
+            head, frame_key = head.rsplit("_", 1)
+        return head, arm, draw, frame_key
+    return None
+
+
 def rate_block(items: list[dict]) -> dict:
     n = len(items)
     if not n:
@@ -181,24 +203,10 @@ def main() -> int:
 
     scored = []
     for sid in sorted(rows):
-        parts = sid.split("_")
-        if sid.startswith("main_"):
-            # main_<path>_<arm>_g<k>; path names contain underscores
-            rest = sid[len("main_"):]
-            name, arm, draw = rest.rsplit("_", 2)[0], rest.rsplit("_", 2)[1], \
-                rest.rsplit("_", 2)[2]
-        elif sid.startswith("swap_"):
-            rest = sid[len("swap_"):]
-            arm, draw = rest.rsplit("_", 2)[1], rest.rsplit("_", 2)[2]
-            name = rest.rsplit("_", 2)[0]
-        else:
+        parsed = parse_sid(sid)
+        if parsed is None:
             continue
-        try:
-            draw_i = int(draw.lstrip("g"))
-        except ValueError:
-            continue
-        if arm not in ARMS:
-            continue
+        name, arm, draw_i, frame_key = parsed
         clip = make_clip(sid, name, arm, draw_i, "", d, rows, args.window, gain_cfg)
         s = score_clip(clip, gain_cfg, coh_cfg, gate_cfg)
         s["scene"] = summ[name].get("first_frame") if name in summ else ""
@@ -253,9 +261,10 @@ def main() -> int:
     if yaw_rows:
         yaw_scored = []
         for sid in sorted(yaw_rows):
-            if not sid.endswith("_A_flatness_g0"):
+            parsed = parse_sid(sid)
+            if parsed is None or parsed[1] != "A_flatness" or parsed[2] != 0:
                 continue
-            name = sid[len("main_"):-len("_A_flatness_g0")]
+            name = parsed[0]
             clip = make_clip(sid, name, "A_flatness", 0, "", d, yaw_rows, args.window,
                              gain_cfg)
             yaw_scored.append(score_clip(clip, gain_cfg, coh_cfg, gate_cfg))

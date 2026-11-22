@@ -111,3 +111,21 @@ Or, inside the repository, `git checkout archive/track-d-pre-consolidation`.
 
 Results needed by the report scripts are already in git under `results/`; nothing else is required
 to rebuild `report/` (see `docs/REPRODUCE.md`).
+
+## 7. Track H3/H4 (2026-11-22)
+
+| location | contents |
+| --- | --- |
+| git `results/h03/` | 150-frame manifest, per-frame scored CSV, classical rows, reader/PF rows (JSONL), rotation sign probe, analysis JSON, overlay PNGs |
+| git `results/h03_recompute/` | Perspective Fields rows on the full H01/H02 clips and the reader-vs-PF comparison |
+| git `results/h04/paths/` | per-path verification numbers (JSON) and the required side; `paths.npz` is gitignored |
+| git `results/h04/depicted_main/`, `scored_main*.json` | campaign reader rows and scores |
+| R2 `track-h3/clips/solarwm-main/`, `track-h3/reader/`, `track-h3/manifests/` | the 234 campaign mp4s with per-object sha256, the reader rows, and the manifests |
+| Modal `awmv-h3-data` | `/h03_frames` (the 150-frame sample), `/h03_readers` (reader + PF rows), `/h03_recompute` (full-clip PF rows) |
+| Modal `awmv-h3-results` | `/solarwm/main/<clip>/{clip.mp4,frames/*.png,manifest.json}`, `/solarwm/probes`, `/solarwm/main_yaw+20` (yaw control), `/h04/depicted_*` (reader rows), `/h04/yaw_poses.json` |
+| local `data/h03_frames` (42 MB), `data/h04_solarwm_inputs` (61 MB), `data/h03_label` | sample frames, SolarWM inputs, the optional labelling tool; all gitignored |
+
+R2 access status: with the key in `.env`, **reads are forbidden** (403 on HEAD/GET/list for
+every prefix tried) and only `PUT` under `track-h3/` was used; every object is verified by
+re-reading its sha256 from the upload response.  Track I clips and ANWM clips were therefore
+pulled from their Modal volumes, not from R2.
