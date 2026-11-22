@@ -533,3 +533,12 @@ Every row below was read from the project's own repo/HF card on 2026-11-10. "ver
   reduced the spread from 0.3-1.8 deg on the first attempt. Consequence recorded: the new
   readers' downstream rates use the identity-warped frame as the real condition so real and
   edits share resampling, with the raw-frame sensitivity reported beside it.
+
+- [L] **A mixed-batch shape bug aborted the mixed arm before it produced a fold.** Simulated frames
+  are 640x360 and real TII frames 640x480; the training loop stacked a batch without checking
+  shape, so every mixed fold and the mixed final died with `stack expects each tensor to be equal
+  size`. The real-only and simulated-only arms are unaffected (one shape each) and completed.
+  Fix: the sampler flushes its buffer whenever the next sample has a different shape, so a batch
+  never mixes resolutions; nothing else about the arm changes. The failed runs produced no fold
+  record and are rerun at the same pre-registered budget. Cost of the failure: one finals attempt
+  and the mixed folds' queued time, recorded in the ledger.
