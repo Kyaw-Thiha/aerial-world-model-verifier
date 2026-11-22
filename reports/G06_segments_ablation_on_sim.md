@@ -203,12 +203,13 @@ says otherwise. The labels:
   versus stride-2 row mapping is correct (best offset 0, differences inside the envelope).
 - The scale-free coherence tier has a **structural scope limit** that the real-corpus work could
   not see: it needs both axes of both leans to vary inside a window. On the simulated set that
-  is true for the manoeuvres whose lean direction rotates (slalom, lemniscate) and false for
-  steady turns, ellipses at constant speed, straight accelerations and climbs. It also, and more
-  sharply, **abstains on tilt removal**: a level camera has no lean variance for a correlation to
-  work with, so the tier cannot detect the violation at all when the reader is accurate. J03's
-  detection of tilt removal on real clips came from the reader's own 4 deg noise supplying that
-  variance.
+  is true for the manoeuvres whose lean direction rotates (slalom, lemniscate: 17 of 80 feasible
+  clips) and false for steady turns, constant-speed ellipses, straight accelerations and climbs
+  (0 of 80). It also loses most of its power on **tilt removal**: a level camera supplies almost
+  no lean variance, so a window inside the removed interval usually abstains, and detection falls
+  to the windows that straddle the interval boundary or to the reader's own variation clearing
+  the 0.01-unit variance floor. J03's strong removal detection on real clips came from the
+  reader's ~4 deg noise supplying that variance; a low-noise simulated reader does not.
 - The family-wise max-over-windows conformal rule is **not calibratable on 100-window clips**:
   the 95th percentile of the maximum saturates (coherence 1.94 of a maximum 2.0; residual 60-80
   deg, carried by three feasible clips with catastrophic reader windows). This is a property of
