@@ -527,3 +527,11 @@ Every row below was read from the project's own repo/HF card on 2026-11-10. "ver
   0.046 USD per 1,000 frames, against A10 4.8 fps / 0.065 and A100 11.6 fps / 0.060). Projected
   spend 7.39 USD against the 8.00 ceiling. Batching does not change the measurement beyond the
   reader's own stochasticity (batch-1 versus batch-8 median 2.7e-3).
+- [G3] **Four concurrent L40S reader containers ran 3-6x slower than one, which doubled the
+  intended spend.** The per-clip compute recorded inside each score file was normal (15.3 fps,
+  decode 1.6 s on a 3.3 KB `render.npz`), but a single 343-frame probe launched while four apps
+  ran took 5m31s against ~50s alone, and 83 of 170 clips were produced in ~72 minutes of
+  four-container wall time. Cause not pinned further; the practical rule is recorded here:
+  **one GPU container at a time**. The overrun (~9.4 USD of an 8.00 ceiling, estimated from app
+  runtimes, not a billing export) is in `docs/COST_LEDGER.md`; the user raised the ceiling to
+  14.00 on 2026-11-22. Remaining work runs sequentially.
