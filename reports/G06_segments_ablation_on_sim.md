@@ -206,7 +206,7 @@ it was built for. The window scan's advantage has to come from partial coverage,
 does not contain enough partial clips to measure it (section 5).
 
 **Localisation.** For the clips the coherence arm detects, the mirrored-roll segment has a median
-IoU of 0.95 (12-frame, 4/5 detected) and 0.69 (8-frame), because the edit covers the whole clip
+IoU of 0.95 (12-frame, 5/5 detected) and 0.65 (8 frames, 5/5), because the edit covers the whole clip
 and the flagged mask covers it too. Tilt-removal detections have IoU 0.06: the arm fires on a few
 windows rather than the whole clip, so the segment is a fragment. The residual arm's detected
 segments have IoU 0.20-0.68 depending on family.
