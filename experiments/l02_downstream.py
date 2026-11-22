@@ -110,7 +110,11 @@ def main() -> int:
                 store = load_clip(d)
                 idx = list(range(int(c["index"][0]), int(c["index"][1])))
                 rec = data[cid]
-                real_lean = _rebuild(store, rec["real"], idx)
+                # amendment B: the new readers' real condition is the identity-warped frame,
+                # so real and edits share resampling; the raw frame is a sensitivity.
+                real_key = "null_edit" if model != "frozen" else "real"
+                real_lean = _rebuild(store, rec["conditions"][real_key], idx)
+                raw_lean = _rebuild(store, rec["real"], idx)
                 # lag from the real condition, used for every condition (frozen convention)
                 ft = type(store)(t=store.t, pos=store.pos, yaw=store.yaw,
                                  depicted_lean=real_lean, depicted_conf=store.depicted_conf,
@@ -119,20 +123,20 @@ def main() -> int:
                 lag = fit_gain(ft, FitOptions(bootstrap=False)).lag_ms
                 entry = {"flight": flight, "clip_id": cid,
                          "gate_kept": bool(gate_kept_from_conf(store.depicted_conf, GATE)),
-                         "lag_ms": float(lag), "conditions": {}}
+                         "lag_ms": float(lag), "real_key": real_key, "conditions": {}}
+                entry["conditions"]["real"] = _stats(store, raw_lean, lag)
+                entry["conditions"]["real_null"] = _stats(store, real_lean, lag)
                 for cond in CONDS:
-                    if cond == "real":
-                        lean = real_lean
-                    else:
-                        lean = _rebuild(store, rec["conditions"][cond], idx)
+                    lean = _rebuild(store, rec["conditions"][cond], idx)
                     entry["conditions"][cond] = _stats(store, lean, lag)
                 rows_out.append(entry)
         # LOFO threshold on the real, gate-kept coherence score
         kept = [r for r in rows_out if r["gate_kept"]]
         per_flight_tau = {}
         for r in kept:
-            others = [o["conditions"]["real"]["coherence"] for o in kept
-                      if o["flight"] != r["flight"] and np.isfinite(o["conditions"]["real"]["coherence"])]
+            others = [o["conditions"]["real_null"]["coherence"] for o in kept
+                      if o["flight"] != r["flight"]
+                      and np.isfinite(o["conditions"]["real_null"]["coherence"])]
             per_flight_tau[r["flight"]] = float(np.quantile(others, 0.95)) if len(others) >= 8 else float("nan")
         for r in rows_out:
             r["tau_lofo"] = per_flight_tau.get(r["flight"], float("nan"))
@@ -149,14 +153,14 @@ def main() -> int:
                     hit += 1
             return {"k": hit, "n": len(sub), "rate": hit / len(sub)}
         res = {"per_clip": rows_out, "rates": {}}
-        for cond in CONDS:
+        for cond in ("real_null",) + CONDS + ("real",):
             res["rates"][cond] = {"lofo": rate(rows_out, cond, "tau_lofo"),
                                   "abs_1.75": rate(rows_out, cond, "tau_abs")}
         # cluster bootstrap on the LOFO real false-reject and removal detection
         res["intervals"] = {
             "real_false_reject": _bootstrap(
                 [r for r in rows_out if r["gate_kept"]], "coherence",
-                lambda sub: np.mean([r["conditions"]["real"]["coherence"] > r["tau_lofo"]
+                lambda sub: np.mean([r["conditions"]["real_null"]["coherence"] > r["tau_lofo"]
                                      for r in sub if np.isfinite(r["tau_lofo"])])),
             "removal_detection": _bootstrap(
                 [r for r in rows_out if r["gate_kept"]], "coherence",
