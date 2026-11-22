@@ -192,6 +192,15 @@ the real condition's -- which is why the first row's null cell is not applicable
 
 ## What this does not show
 
+* **The ensemble reader inside the verdict was not evaluated.** The mean reader was measured as
+  a stand-alone estimator (error, trimmed RMSE and per-family bias, table above) and it is not
+  spliced into the coherence tier at a matched false-reject. The reason is the result itself:
+  the mean is worse than the frozen reader on the typical clip in every family (median 2.25 deg
+  against 1.27 deg; urban 1.86 against 0.93; industrial 1.87 against 1.22) and only wins on the
+  pooled trimmed RMSE and in the forest (5.44 against 8.24). A reader that is worse on the
+  typical clip cannot improve a per-clip correlation tier at a matched false-reject by
+  construction — the tier would need a *scene-conditional* choice, which is a different
+  experiment. Recorded as not done rather than run for completeness.
 * Nothing about the real held-out flights beyond three gate-kept clips.
 * Two readers can share a bias; disagreement cannot see an error both make. If the forest bias
   is a property of pinhole readers on dense canopy, Gate B will miss it, and that is reported

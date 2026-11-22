@@ -223,6 +223,11 @@ Fifteen of 100 real clips are judged by every gate.
 * Nothing about the simulated held-out scenes: 3 of 100 clips were on R2 when this ran, so no
   held-out number is quoted.
 * Nothing about a *fourth* verdict tier: the handoff's three are used as published.
+* **The ensemble reader is not among the four configurations.** It was measured as a
+  stand-alone estimator in M02 (pooled trimmed RMSE 3.11 deg on the simulated feasible clips
+  against the frozen reader's 4.08, but worse medians in every family) and deliberately not
+  spliced into the verdict, because a reader that is worse on the typical clip cannot improve a
+  per-clip correlation tier at a matched false-reject. Recorded as not done, with that reason.
 * The generator section reports the published verdicts among kept clips; it does not re-score a
   generator.
 * No claim that abstention is useless. It is a coverage decision with a measurable cost, and
