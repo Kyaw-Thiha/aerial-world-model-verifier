@@ -1,7 +1,7 @@
 # K01 — Reconciling the calibration-mode labels of every published floor
 
 Track K, Part 1. Written 2026-11-22. Code `experiments/k01_calibration_modes.py` (commit
-`9ee7ed5`), results `results/k01/20261122T074020Z/` (`k01.json`, `mapping.csv`). CPU
+`16c0776`), results `results/k01/20261122T090804Z/` (`k01.json`, `mapping.csv`). CPU
 only, zero GPU, zero spend. No frozen config or published report was edited; the proposed
 corrections are a note in `docs/decisions.md` and §6 here.
 

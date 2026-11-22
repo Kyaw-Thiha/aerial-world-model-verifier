@@ -3,7 +3,8 @@
 Track K, Part 2. Written 2026-11-22. Pre-registration `configs/k02_model_prereg.yaml`
 (commit `022ebfe`), code `src/airframe/`, `experiments/k02_fit.py`,
 `experiments/k02_downstream.py`, `experiments/k02_diagnostics.py`, `scripts/export_schema_v3.py`.
-Results `results/k02_fit/<run>/`, `results/k02_downstream/<run>/`, `results/k02_diagnostics/`.
+Results `results/k02_fit/20261122T084458Z/`, `results/k02_downstream/20261122T090700Z/`,
+`results/k02_diagnostics/`.
 CPU only, zero GPU, zero spend. No frozen config or published report was edited.
 
 ## Decision
