@@ -9,7 +9,7 @@ the run's own manifest.
 | --- | --- | --- | --- | --- | --- | --- |
 | 2026-11-21 | H02 LingBot full-precision weights download (85 GB: fast 74 + T5/VAE) | CPU 16 | ~0.2 | ~0.16 | done | `awmv-h2-lingbot-full`, volume `awmv-h2-weights` |
 | 2026-11-21 | H02 LingBot full-precision roll probe (5 clips, 49->45 frames) | A100-80GB | 0.15 (5 x ~60 s + 2 min load) | 0.38 | done | 55.2 GB peak, bf16, 51.7-62.9 s/clip |
-| 2026-11-21 | H02 SolarWM 5B weights download (~61 GB) + image | CPU 16 | ~0.4 | ~0.32 | running/committing | `awmv-h2-solarwm`, volume `awmv-h2-weights`; token account accepted 2026-11-21 |
+| 2026-11-21 | H02 SolarWM 5B weights download (~61 GB) + image | CPU 16 | ~0.4 | ~0.32 | done | `awmv-h2-solarwm`, volume `awmv-h2-weights`; token account accepted 2026-11-21 |
 | 2026-11-21 | H02 SolarWM probes (5 clips) + 3 failed setup calls | A100-80GB | 0.3 | 0.75 | done | 264 s for 5 clips including load; failures were publication/decode bugs, not model time |
 | 2026-11-21 | H02 SolarWM grid (75 clips, 81 frames, 4 steps) | A100-80GB | 0.58 (2084 s incl. load/decode) | 1.45 | done | all 75 clips, 81 frames each |
 | 2026-11-21 | H02 SolarWM seed batch (30 clips) | A100-80GB | 0.22 (782 s incl. load/decode) | 0.54 | done | 10 paths x 3 seeds |
