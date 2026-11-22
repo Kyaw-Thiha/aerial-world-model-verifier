@@ -434,3 +434,4 @@ read from Track A2's `awmv-a-data` volume, and the reader scores live on `awmv-m
 Dependencies, read-only: `track-k-calibration` (schema v3, `src/airframe/*` and the K03 tier
 code, copied byte-identically), `track-h3-reader-validity` (H04/H03), `track-l-reader-simreal`
 (L01), `track-i-simset` (the frozen simulated split).
+| M04 | sign sub-tier with a reader-noise-tied dead-band (new pre-registered variant, frozen rule reported beside it) | `experiments/m04_sign_deadband.py` | `configs/m04_sign_deadband_prereg.yaml` | `results/m04/` | M04 |
