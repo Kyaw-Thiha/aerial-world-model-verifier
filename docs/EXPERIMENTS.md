@@ -203,6 +203,11 @@ during consolidation — see `docs/DATA.md` for the current status of listing ac
 * **Outcome**: SolarWM-5B follows a continuously ramping roll (level 1.4 deg; +20 ramp ends
   22.4, -20 18.2, +60 45.8) but not a held path attitude: on the 75-clip grid the roll criterion
   fails (1/5 paths by tilt, 1/5 by mirrored sign) and the verdict leaves 15/25 testable and 5
-  feasible (all slalom-10), rejecting every testable turn-10/20 clip. Full-precision LingBot
-  still shows no coherent roll in the reader; quantisation is not established as the cause.
+  feasible (all slalom-10) under H02's absolute 12-frame rule, rejecting every testable
+  turn-10/20 clip; under H01's 12/16 fraction only the ten turn clips are testable, all
+  infeasible (0/10 feasible). Seed sampling moves the
+  depicted tilt more than ANWM's (median range 2.6 deg), but best-of-3 cuts the residual by
+  1.0 deg median and flips 1/10 paths, below the pre-registered 2 deg / 20 % bar.
+  Full-precision LingBot still shows no coherent roll in the reader; quantisation is not
+  established as the cause.
 * **Stop rule**: pilot only; no scale-up until the user decides.

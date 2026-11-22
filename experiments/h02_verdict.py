@@ -90,7 +90,12 @@ def main() -> int:
                     "frac_required_ge10": float(np.nanmean(req >= 10.0)),
                     "gate_signal": float(val) if np.isfinite(val) else None,
                     "gate_kept": bool(ok),
+                    # H02 pre-registers an absolute minimum of 12 frames.  H01's rule
+                    # was written for 16-frame clips (12/16 = 75 %); applying the same
+                    # fraction to 81 frames gives the stricter sensitivity flag.
                     "testable": bool(ok and int(np.sum(req >= 10.0)) >= 12),
+                    "testable_strict": bool(ok and int(np.sum(req >= 10.0))
+                                            >= int(np.ceil(0.75 * n))),
                     "feasible": bool(resid <= THRESH)})
     o = ROOT / args.out
     o.mkdir(parents=True, exist_ok=True)
@@ -100,6 +105,9 @@ def main() -> int:
                "testable_k": int(df.testable.sum()) if len(df) else 0,
                "feasible_k": int((df.testable & df.feasible).sum()) if len(df) else 0,
                "abstain_gate": int((~df.gate_kept).sum()) if len(df) else 0,
+               "strict_testable_k": int(df.testable_strict.sum()) if len(df) else 0,
+               "strict_feasible_k": int((df.testable_strict & df.feasible).sum())
+               if len(df) else 0,
                "threshold_deg": THRESH}
     (o / "verdict_summary.json").write_text(json.dumps(summary, indent=1))
     print(json.dumps(summary, indent=1))

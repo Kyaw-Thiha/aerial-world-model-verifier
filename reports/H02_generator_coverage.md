@@ -20,7 +20,8 @@ The designed grid is weaker: only cruise shows a flatness tilt at least half the
 magnitude; turn-10 and turn-20 hold a 13-21 deg attitude and the reader sees 3.8-7.1 deg. The
 pre-registered roll criterion fails (1/5 paths by tilt, 1/5 by mirror sign). The frozen verdict
 calls 5 of 15 testable flatness clips feasible — all slalom-10 — and rejects every testable
-turn-10/20 clip. The generator follows the *derivative* of the camera path, not the attitude
+turn-10/20 clip. That 5/15 uses H02's absolute 12-frame rule; scaling H01's 12/16 rule to 81
+frames leaves only the ten turn clips testable, all infeasible. The generator follows the *derivative* of the camera path, not the attitude
 the path requires. Seed sampling moves the depicted tilt much more than ANWM did (median range
 2.6 deg), but best-of-3 cuts the residual by only about 1 deg and flips one of ten paths, so it
 does not meet the pre-registered sampling criterion either.
@@ -152,6 +153,13 @@ cruise and turn-5 are not testable by the 12-frame excitation rule. SolarWM ther
 the verdict on the slalom, whose attitude keeps changing, and fails it on the sustained
 10/20-degree banks.
 
+That split depends on how H01's excitation rule is carried to 81 frames. H02 pre-registered
+an absolute minimum of 12 frames; H01 wrote 12 of 16 frames (75 %), and only 44 % of the
+slalom frames carry a required tilt above 10 deg. Under the stricter 12/16 fraction (61 of
+81), **only the ten turn-10/20 clips are testable and all ten are infeasible**; the five
+"feasible slalom" clips become untestable. The held-bank failure is robust to the choice;
+the slalom pass is not.
+
 ### 2. SolarWM seed variance
 
 Ten designed paths x three seeds on the flatness arm (30 clips). The depicted tilt varies much
@@ -227,7 +235,9 @@ blindness. Cost: 51.7-62.9 s/clip, 55.2 GB peak VRAM, about US$0.04/clip on an A
   measured only for the models actually run; the rest are labelled estimates.
 * **SolarWM follows changing attitude, not held attitude.** The probes ramp continuously and
   pass; the designed arms bank in and hold, and the reader sees only a fraction of the held
-  10-20 deg. The 75-clip grid and 5/15 verdict are about this regime, not about ramps.
+  10-20 deg. The 75-clip grid and verdict are about this regime, not about ramps. The primary
+  5/15 feasible count uses H02's absolute 12-frame rule; scaling H01's 12/16 rule to 81
+  frames leaves 0/10 feasible (only the ten turn clips testable).
 * **The grid reader uses every second frame** (41 of 81); the probes use all 81. This is stated
   in the methods; it changes precision, not the statistic.
 * **No scale-up was run.** Every cost for 200 clips is an extrapolation from a pilot.
