@@ -34,6 +34,11 @@ class G3Clip:
         return len(self.t)
 
     @property
+    def depicted_lean(self) -> np.ndarray:
+        """Alias for the name the frozen window code (src.verdict.segments) expects."""
+        return self.lean_dep
+
+    @property
     def yaw(self) -> np.ndarray:
         """The frozen residual route takes a yaw; with the same yaw on both axes the angle is
         invariant to its value, so zeros are exact rather than an approximation."""
