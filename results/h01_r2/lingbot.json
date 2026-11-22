@@ -1,0 +1,59 @@
+{
+ "prefix": "track-h/clips/lingbot",
+ "src": "data/h01_lingbot_out",
+ "tag": "lingbot",
+ "dry_run": false,
+ "n_files": 6,
+ "bytes": 865182,
+ "files": [
+  {
+   "path": "probe_level/clip.mp4",
+   "key": "track-h/clips/lingbot/probe_level/clip.mp4",
+   "bytes": 297041,
+   "sha256": "7b5a5616feb1994d81840ec866761e4f758b3aaa0c71ef6bd560fe67579eb330",
+   "remote_sha256": "7b5a5616feb1994d81840ec866761e4f758b3aaa0c71ef6bd560fe67579eb330",
+   "match": true
+  },
+  {
+   "path": "probe_level/manifest.json",
+   "key": "track-h/clips/lingbot/probe_level/manifest.json",
+   "bytes": 666,
+   "sha256": "38707742c7ed69b955fe2574b8407f69995f0fc4e082aa6be13b8bb39d2ee628",
+   "remote_sha256": "38707742c7ed69b955fe2574b8407f69995f0fc4e082aa6be13b8bb39d2ee628",
+   "match": true
+  },
+  {
+   "path": "probe_rollramp_m20/clip.mp4",
+   "key": "track-h/clips/lingbot/probe_rollramp_m20/clip.mp4",
+   "bytes": 279059,
+   "sha256": "6471d395924253dbbdd3ea7bf757f1399793ee924549d97e208adf39311ebddb",
+   "remote_sha256": "6471d395924253dbbdd3ea7bf757f1399793ee924549d97e208adf39311ebddb",
+   "match": true
+  },
+  {
+   "path": "probe_rollramp_m20/manifest.json",
+   "key": "track-h/clips/lingbot/probe_rollramp_m20/manifest.json",
+   "bytes": 645,
+   "sha256": "852cd6caac9e309a0cb93b14e645463c1d2d74ffcac072af2679a98518b07f2e",
+   "remote_sha256": "852cd6caac9e309a0cb93b14e645463c1d2d74ffcac072af2679a98518b07f2e",
+   "match": true
+  },
+  {
+   "path": "probe_rollramp_p20/clip.mp4",
+   "key": "track-h/clips/lingbot/probe_rollramp_p20/clip.mp4",
+   "bytes": 287127,
+   "sha256": "b559c219cc35c2f1452c8c981c04b7b3ebc8a0f5e2194099e9872b1383899ba0",
+   "remote_sha256": "b559c219cc35c2f1452c8c981c04b7b3ebc8a0f5e2194099e9872b1383899ba0",
+   "match": true
+  },
+  {
+   "path": "probe_rollramp_p20/manifest.json",
+   "key": "track-h/clips/lingbot/probe_rollramp_p20/manifest.json",
+   "bytes": 644,
+   "sha256": "96cf37082f354fd5805a6635e9bd3d285b13344070d3c9faf9cdad4e42d76451",
+   "remote_sha256": "96cf37082f354fd5805a6635e9bd3d285b13344070d3c9faf9cdad4e42d76451",
+   "match": true
+  }
+ ],
+ "skipped": []
+}

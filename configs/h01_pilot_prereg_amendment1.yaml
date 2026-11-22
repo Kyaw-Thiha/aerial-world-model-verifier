@@ -1,0 +1,57 @@
+# H01 pre-registration — amendment 1 (LingBot grid)
+#
+# Written 2026-11-16, BEFORE any LingBot grid clip (the three convention-probe clips are
+# control material, not grid outcomes). Parent: configs/h01_pilot_prereg.yaml, commit
+# 245f7d9, sha256 3529b9208d8bc8e4c7503a7a807bd4393f173d228c4828a211c243a119bc0c2f.
+# Changing a value after a grid outcome is seen is not permitted; this amendment is
+# committed before the grid runs.
+prereg_amendment: 1
+date: 2026-11-16
+tag: "[H]"
+branch: track-h-generator-pilot
+
+reason:
+  relative_pose_control: >
+    The model consumes framewise relative camera poses (compute_relative_poses(...,
+    framewise=True)). A constant absolute attitude is invisible: the cruise-flatness arm
+    (constant 8.55 deg drag pitch) and the cruise-mirrored arm differ from cruise-level only
+    by an absolute attitude that the conditioning discards. Keeping them would add 10 clips
+    that cannot test anything. The convention probe was changed to a 0 -> +/-20 deg roll
+    ramp for the same reason.
+  measured_cost: >
+    The NF4 build runs 40 sampling steps in 658 s per 49-frame clip at 20.9 GB peak VRAM on
+    an A100-80GB (single probe clip). The original 75-clip grid at 40 steps would need about
+    13 GPU-hours (US$33) and 13 h wall-clock. Twenty steps is pre-registered for the grid;
+    the probe stays at 40 so the convention check is at the higher quality.
+
+population:
+  first_frames: 5                    # unchanged, the five ANWM release frames
+  paths: [turn5, turn10, turn20, slalom10]   # cruise dropped (see reason)
+  arms: [level, flatness, mirrored_roll]
+  n_clips: 60
+  frame_num: 49
+  sampling_steps: 20
+  resolution: "480x832 output, square centre crop for the reader"
+
+statistics_and_criteria:
+  unchanged_from_parent: true
+  per_path_arm: "depicted tilt (clip median), depicted lean vector, injected lean vector"
+  success_criterion: >
+    flatness arm lean direction agrees in sign with the injected lean on >= 4 of 5 frames for
+    at least 2 of the 4 paths, and its depicted tilt exceeds the level arm by >= 50 % of the
+    injected tilt magnitude on at least 2 of the 4 paths; the mirrored arm's horizontal lean
+    x-component has the opposite sign to the flatness arm on >= 4 of 5 frames for at least 2
+    of the 4 paths. The original 5-path criterion is relaxed only by dropping the
+    information-free cruise path; the thresholds are unchanged.
+  report_even_if_negative: true
+
+cost:
+  estimate_usd: 14
+  basis: "60 clips x 5.6 min = 5.6 GPU-hours on A100-80GB at 2.50 USD/h, split over two containers"
+  ceiling_usd: 75
+  post_before_exceed: 20
+
+splits:
+  note: >
+    No held-out split: the grid is a pilot measurement of whether the depicted attitude
+    follows the injected one. The probe clips are not reused as grid outcomes.

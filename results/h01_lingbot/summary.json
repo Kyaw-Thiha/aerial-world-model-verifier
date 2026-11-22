@@ -1,0 +1,19 @@
+{
+ "depicted": "results/h01_lingbot_depicted/depicted.jsonl",
+ "n_clips": 3,
+ "uptilt_deg": 0.0,
+ "by_arm": {
+  "probe_level": {
+   "median_deg": 3.2103840544121476,
+   "n": 1
+  },
+  "probe_roll_-20": {
+   "median_deg": 3.7716802585492837,
+   "n": 1
+  },
+  "probe_roll_20": {
+   "median_deg": 3.297035943987149,
+   "n": 1
+  }
+ }
+}

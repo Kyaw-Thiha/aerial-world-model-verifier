@@ -1,0 +1,91 @@
+{
+ "prefix": "track-h/clips/wan",
+ "src": "data/h01_wan_out",
+ "tag": "wan",
+ "dry_run": false,
+ "n_files": 10,
+ "bytes": 1768454,
+ "files": [
+  {
+   "path": "approach/clip.mp4",
+   "key": "track-h/clips/wan/approach/clip.mp4",
+   "bytes": 600923,
+   "sha256": "08fc91f0f66ac941be9b338a9017998f00c8d609791cf616ce6f6881279935a0",
+   "remote_sha256": "08fc91f0f66ac941be9b338a9017998f00c8d609791cf616ce6f6881279935a0",
+   "match": true
+  },
+  {
+   "path": "approach/manifest.json",
+   "key": "track-h/clips/wan/approach/manifest.json",
+   "bytes": 498,
+   "sha256": "e9be2b6ec9a897e59ae48f895e40af9a75241700725149a826b2ee8bb6a04437",
+   "remote_sha256": "e9be2b6ec9a897e59ae48f895e40af9a75241700725149a826b2ee8bb6a04437",
+   "match": true
+  },
+  {
+   "path": "banked_turn_right/clip.mp4",
+   "key": "track-h/clips/wan/banked_turn_right/clip.mp4",
+   "bytes": 279903,
+   "sha256": "56dbe9e62e9a4430de0543a7db4347af05de55f06526f0b37282babdb5dedb53",
+   "remote_sha256": "56dbe9e62e9a4430de0543a7db4347af05de55f06526f0b37282babdb5dedb53",
+   "match": true
+  },
+  {
+   "path": "banked_turn_right/manifest.json",
+   "key": "track-h/clips/wan/banked_turn_right/manifest.json",
+   "bytes": 530,
+   "sha256": "9cd942ca8d744af47edd432f0e87505ade0d709a411e8bff6d65eabf4870da44",
+   "remote_sha256": "9cd942ca8d744af47edd432f0e87505ade0d709a411e8bff6d65eabf4870da44",
+   "match": true
+  },
+  {
+   "path": "climb_bank_left/clip.mp4",
+   "key": "track-h/clips/wan/climb_bank_left/clip.mp4",
+   "bytes": 217681,
+   "sha256": "4af92cc5c2ec254b8e0b242736764dfb96d9b6bdbff70004ad6968f22ddf6737",
+   "remote_sha256": "4af92cc5c2ec254b8e0b242736764dfb96d9b6bdbff70004ad6968f22ddf6737",
+   "match": true
+  },
+  {
+   "path": "climb_bank_left/manifest.json",
+   "key": "track-h/clips/wan/climb_bank_left/manifest.json",
+   "bytes": 492,
+   "sha256": "d8a656ecc7bd40ecc2a20062a988c73083e536e18ac33b8d03fd573850f4cf61",
+   "remote_sha256": "d8a656ecc7bd40ecc2a20062a988c73083e536e18ac33b8d03fd573850f4cf61",
+   "match": true
+  },
+  {
+   "path": "orbit/clip.mp4",
+   "key": "track-h/clips/wan/orbit/clip.mp4",
+   "bytes": 175341,
+   "sha256": "cef7e27a754c247d3e37f6a7a05017e3868472bb0e7e47b22e454710cf052aaf",
+   "remote_sha256": "cef7e27a754c247d3e37f6a7a05017e3868472bb0e7e47b22e454710cf052aaf",
+   "match": true
+  },
+  {
+   "path": "orbit/manifest.json",
+   "key": "track-h/clips/wan/orbit/manifest.json",
+   "bytes": 511,
+   "sha256": "4c5c8b94f189529d705d52756b1c68053f3638d043d24dd6a4add0f4e77bc799",
+   "remote_sha256": "4c5c8b94f189529d705d52756b1c68053f3638d043d24dd6a4add0f4e77bc799",
+   "match": true
+  },
+  {
+   "path": "slalom/clip.mp4",
+   "key": "track-h/clips/wan/slalom/clip.mp4",
+   "bytes": 492073,
+   "sha256": "52f6d1897b550ced94d09f8f06c1686d19667107358903a3933f65cfbe12276f",
+   "remote_sha256": "52f6d1897b550ced94d09f8f06c1686d19667107358903a3933f65cfbe12276f",
+   "match": true
+  },
+  {
+   "path": "slalom/manifest.json",
+   "key": "track-h/clips/wan/slalom/manifest.json",
+   "bytes": 502,
+   "sha256": "1f28bfa21ba69e6b7b1b66f1146d6b0b608be02ba7ed29a4c19c89405128a97b",
+   "remote_sha256": "1f28bfa21ba69e6b7b1b66f1146d6b0b608be02ba7ed29a4c19c89405128a97b",
+   "match": true
+  }
+ ],
+ "skipped": []
+}

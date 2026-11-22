@@ -1,0 +1,162 @@
+[
+ {
+  "base_path": "C_accel_brake_5_course_0",
+  "maneuver": "accel_brake",
+  "policy": "course",
+  "designed_tilt_deg": 5.0,
+  "start_traj": "3KA7IJSNXE3LKLTL2ARA5RQP4ACBP0_processed",
+  "start_time": 39
+ },
+ {
+  "base_path": "C_accel_brake_10_course_0",
+  "maneuver": "accel_brake",
+  "policy": "course",
+  "designed_tilt_deg": 10.0,
+  "start_traj": "3KA7IJSNXE3LKLTL2ARA5RQP4ACBP0_processed",
+  "start_time": 39
+ },
+ {
+  "base_path": "C_accel_brake_20_course_0",
+  "maneuver": "accel_brake",
+  "policy": "course",
+  "designed_tilt_deg": 20.0,
+  "start_traj": "3KA7IJSNXE3LKLTL2ARA5RQP4ACBP0_processed",
+  "start_time": 39
+ },
+ {
+  "base_path": "C_climb_turn_5_course_0",
+  "maneuver": "climb_turn",
+  "policy": "course",
+  "designed_tilt_deg": 5.0,
+  "start_traj": "3KA7IJSNXE3LKLTL2ARA5RQP4ACBP0_processed",
+  "start_time": 39
+ },
+ {
+  "base_path": "C_climb_turn_5_fixed_0",
+  "maneuver": "climb_turn",
+  "policy": "fixed",
+  "designed_tilt_deg": 5.0,
+  "start_traj": "3KA7IJSNXE3LKLTL2ARA5RQP4ACBP0_processed",
+  "start_time": 39
+ },
+ {
+  "base_path": "C_climb_turn_10_fixed_0",
+  "maneuver": "climb_turn",
+  "policy": "fixed",
+  "designed_tilt_deg": 10.0,
+  "start_traj": "3KA7IJSNXE3LKLTL2ARA5RQP4ACBP0_processed",
+  "start_time": 39
+ },
+ {
+  "base_path": "C_climb_turn_20_fixed_0",
+  "maneuver": "climb_turn",
+  "policy": "fixed",
+  "designed_tilt_deg": 20.0,
+  "start_traj": "3KA7IJSNXE3LKLTL2ARA5RQP4ACBP0_processed",
+  "start_time": 39
+ },
+ {
+  "base_path": "C_cruise_ctl_course_0",
+  "maneuver": "cruise",
+  "policy": "course",
+  "designed_tilt_deg": null,
+  "start_traj": "3KA7IJSNXE3LKLTL2ARA5RQP4ACBP0_processed",
+  "start_time": 39
+ },
+ {
+  "base_path": "C_slalom_5_course_0",
+  "maneuver": "slalom",
+  "policy": "course",
+  "designed_tilt_deg": 5.0,
+  "start_traj": "3KA7IJSNXE3LKLTL2ARA5RQP4ACBP0_processed",
+  "start_time": 39
+ },
+ {
+  "base_path": "C_slalom_5_fixed_0",
+  "maneuver": "slalom",
+  "policy": "fixed",
+  "designed_tilt_deg": 5.0,
+  "start_traj": "3KA7IJSNXE3LKLTL2ARA5RQP4ACBP0_processed",
+  "start_time": 39
+ },
+ {
+  "base_path": "C_slalom_10_fixed_0",
+  "maneuver": "slalom",
+  "policy": "fixed",
+  "designed_tilt_deg": 10.0,
+  "start_traj": "3KA7IJSNXE3LKLTL2ARA5RQP4ACBP0_processed",
+  "start_time": 39
+ },
+ {
+  "base_path": "C_turn_5_course_0",
+  "maneuver": "turn",
+  "policy": "course",
+  "designed_tilt_deg": 5.0,
+  "start_traj": "3KA7IJSNXE3LKLTL2ARA5RQP4ACBP0_processed",
+  "start_time": 39
+ },
+ {
+  "base_path": "C_turn_5_fixed_0",
+  "maneuver": "turn",
+  "policy": "fixed",
+  "designed_tilt_deg": 5.0,
+  "start_traj": "3KA7IJSNXE3LKLTL2ARA5RQP4ACBP0_processed",
+  "start_time": 39
+ },
+ {
+  "base_path": "C_turn_10_fixed_0",
+  "maneuver": "turn",
+  "policy": "fixed",
+  "designed_tilt_deg": 10.0,
+  "start_traj": "3KA7IJSNXE3LKLTL2ARA5RQP4ACBP0_processed",
+  "start_time": 39
+ },
+ {
+  "base_path": "C_turn_20_fixed_0",
+  "maneuver": "turn",
+  "policy": "fixed",
+  "designed_tilt_deg": 20.0,
+  "start_traj": "3KA7IJSNXE3LKLTL2ARA5RQP4ACBP0_processed",
+  "start_time": 39
+ },
+ {
+  "base_path": "C_cruise_ctl_course_1",
+  "maneuver": "cruise",
+  "policy": "course",
+  "designed_tilt_deg": null,
+  "start_traj": "3KA7IJSNXE3LKLTL2ARA5RQP4ACBP0_processed",
+  "start_time": 79
+ },
+ {
+  "base_path": "C_turn_20_fixed_1",
+  "maneuver": "turn",
+  "policy": "fixed",
+  "designed_tilt_deg": 20.0,
+  "start_traj": "3KA7IJSNXE3LKLTL2ARA5RQP4ACBP0_processed",
+  "start_time": 79
+ },
+ {
+  "base_path": "C_slalom_10_fixed_1",
+  "maneuver": "slalom",
+  "policy": "fixed",
+  "designed_tilt_deg": 10.0,
+  "start_traj": "3KA7IJSNXE3LKLTL2ARA5RQP4ACBP0_processed",
+  "start_time": 79
+ },
+ {
+  "base_path": "C_accel_brake_20_course_1",
+  "maneuver": "accel_brake",
+  "policy": "course",
+  "designed_tilt_deg": 20.0,
+  "start_traj": "3KA7IJSNXE3LKLTL2ARA5RQP4ACBP0_processed",
+  "start_time": 79
+ },
+ {
+  "base_path": "C_climb_turn_20_fixed_1",
+  "maneuver": "climb_turn",
+  "policy": "fixed",
+  "designed_tilt_deg": 20.0,
+  "start_traj": "3KA7IJSNXE3LKLTL2ARA5RQP4ACBP0_processed",
+  "start_time": 79
+ }
+]

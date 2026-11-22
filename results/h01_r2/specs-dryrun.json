@@ -1,0 +1,29 @@
+{
+ "prefix": "track-h/specs",
+ "src": "results/h01_seed_specs",
+ "tag": "specs-dryrun",
+ "dry_run": true,
+ "n_files": 3,
+ "bytes": 147436,
+ "files": [
+  {
+   "path": "paths.json",
+   "key": "track-h/specs/paths.json",
+   "bytes": 4028,
+   "sha256": "729799279f80a7cf7f2da2a3680e2df2efec26d6905292e9bc8da6d0e736a6e0"
+  },
+  {
+   "path": "spawn.json",
+   "key": "track-h/specs/spawn.json",
+   "bytes": 180,
+   "sha256": "ba6be97a8e4cdbaab5d72c3b544d0cdfeba243bf3586983fb8407d6094ad4b9f"
+  },
+  {
+   "path": "specs.json",
+   "key": "track-h/specs/specs.json",
+   "bytes": 143228,
+   "sha256": "4402234c48be084cd30ba34e685e221ae372cac85ee6a8a26702b87d8666f97f"
+  }
+ ],
+ "skipped": []
+}
