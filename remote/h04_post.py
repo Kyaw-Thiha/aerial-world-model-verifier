@@ -45,9 +45,16 @@ def warp_yaw(tag: str = "main", yaw_deg: float = 20.0, f_px: float = 240.0,
     out_root = Path("/r/solarwm") / f"{tag}_yaw{yaw_deg:+.0f}"
     done = 0
     for clip in sorted(root.iterdir()):
-        if not (clip.name.startswith("main_") and clip.name.endswith("_A_flatness_g0")):
+        if clip.name.startswith("main_") and clip.name.endswith("_A_flatness_g0"):
+            name = clip.name[len("main_"):-len("_A_flatness_g0")]
+        elif clip.name.startswith("a_"):
+            # the 14B pilot's arm-A clips carry the bare path name after the prefix
+            name = clip.name[2:]
+        else:
             continue
-        name = clip.name[len("main_"):-len("_A_flatness_g0")]
+        if name not in poses:
+            print("skip (no poses)", clip.name, flush=True)
+            continue
         p = poses[name]
         yaw = np.deg2rad(np.asarray(p["yaw"]))
         roll = np.asarray(p["roll"])
