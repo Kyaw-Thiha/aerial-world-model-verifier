@@ -71,7 +71,20 @@ def main() -> int:
                        "feasible_any": bool(g.feasible.any())})
     sp = pd.DataFrame(spread)
     sp.to_csv(out / "seed_per_path.csv", index=False)
-    summary = {"n_paths": len(sp), "n_clips": len(df),
+    # exploratory best-of-N curve (N = 1, 2, 3); the pre-registered test is N = 3
+    paths = []
+    for cid, g in df.groupby("source_clip"):
+        r = g.sort_values("seed").residual_median_deg.to_numpy(float)
+        paths.append(r)
+    r1 = np.array([r[0] for r in paths])
+    curve = []
+    for N in (1, 2, 3):
+        rn = np.array([r[:N].min() for r in paths])
+        curve.append({"N": N,
+                      "reduction_median_deg": float(np.median(r1 - rn)),
+                      "reduction_mean_deg": float(np.mean(r1 - rn)),
+                      "n_flipped": int(((r1 > THRESH) & (rn <= THRESH)).sum())})
+    summary = {"n_paths": len(sp), "n_clips": len(df), "best_of_n": curve,
                "depicted_sd_median_deg": float(sp.depicted_sd_deg.median()),
                "depicted_range_median_deg": float(sp.depicted_range_deg.median()),
                "oracle_reduction_median_deg": float((sp.r1_deg - sp.r3_deg).median()),

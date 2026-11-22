@@ -191,6 +191,11 @@ The seed spread is large enough to matter for individual clips. On `C_slalom_10_
 best seed crosses the 6.46 deg threshold (6.76 -> 5.56), but the median reduction and the flip
 rate stay below the pre-registered 2 deg / 20 % bar; the other nine paths do not change class.
 
+Exploratory best-of-N curve (only N=3 is pre-registered): N=1 gives a 0 deg reduction and 0
+flips; N=2 gives 0.34 deg median (0.56 mean) and 1 flip; N=3 gives 1.02 deg median (0.87 mean)
+and 1 flip. The curve is shallow over the measured range; it does not support more seeds as a
+route to the 2 deg bar.
+
 ### 3. LingBot full precision (bf16) versus H01's NF4
 
 | probe | NF4 median (H01) | bf16 median | bf16 first-10 | bf16 last-10 | bf16 injected max |
