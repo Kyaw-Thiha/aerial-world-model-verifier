@@ -22,9 +22,10 @@ the run's own manifests.  Track H3/H4 ceiling: **US$60**, stop after the campaig
 | 2026-11-22 | H04 yaw-control reader (22 clips) | A10 | 0.23 | 0.25 | actual | 1,782 frames |
 | 2026-11-22 | H04 14B download (183.4 GB, 81 files) | CPU 16 | 0.22 | 0.18 | actual | 799 s; volume `awmv-h3-14b-weights` |
 | 2026-11-22 | H04 14B config-validation attempts (4 failures) | A100-80GB:2 | ~0.05 | 0.13 | actual | each died in 11-20 s on a config contract, not on the model |
-| 2026-11-22 | H04 14B timing test (3 clips, 50 steps) | A100-80GB:2 | 0.67 | 1.67 | actual | measured seconds/clip below |
+| 2026-11-22 | H04 14B timing test (3 clips, 50 steps) | A100-80GB:2 | 0.67 | 1.67 | actual | loaded in ~14.5 min, then failed in the generation pass (dtype contract); no clip |
+| 2026-11-22 | H04 14B single-clip probe, 4 GPUs, sp=2 | A100-80GB:4 | 1.75 | 4.38 | actual | 26.6 min, failed on the release's distributed contract; no clip |
 
-**Track H3/H4 total (actual): about US$25 of the US$60 ceiling** (the 14B attempt adds the
+**Track H3/H4 total (actual): about US$30 of the US$60 ceiling** (the 14B attempt adds the
 183 GB download, the config-contract failures, the two-rank timing attempt and the probe), of
 which about US$8 is
 wasted work: the aborted first campaign (rank-deficient paths) and the failed 40-clip

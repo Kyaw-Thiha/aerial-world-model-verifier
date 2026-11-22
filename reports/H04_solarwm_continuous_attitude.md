@@ -283,12 +283,12 @@ What was measured, in order:
   type (c10::BFloat16) should be the same` on both ranks — a dtype contract in the release's
   stage0.5 camera/i2v conditioning, which the release exercises at its trained topology
   (world size 16, DP 8). The same failure would apply to any DP-1 run;
-* a single-clip probe at four GPUs with the required `sp_size=2` (DP 2) did not get past the
-  release's own distributed contract inside the time this campaign could give it (`solar`
-  still reported the `sequence_parallel_size=2` requirement against a config written with
-  `sp_size=2`), so it was stopped rather than debugged further. The two-rank dtype failure is
-  the decisive measurement: it happens after a full model load, inside the generation pass,
-  and no 14B frame was ever produced.
+* a single-clip probe at four GPUs with the required `sp_size=2` (DP 2) ran 26.6 minutes and
+  failed on the same distributed contract (`solar` reported the `sequence_parallel_size=2`
+  requirement against a config written with `sp_size=2`), i.e. the release's config path, not
+  ours, decides that field; it was stopped there rather than patched further. The two-rank
+  dtype failure is the decisive measurement: it happens after a full model load, inside the
+  generation pass, and no 14B frame was ever produced.
 
 **Cost of the attempt**: download 0.22 CPU-hours (~US$0.18), the four config failures
 (~US$0.13), the two-rank timing attempt (~US$1.67) and the probe. Nothing was scored, because
