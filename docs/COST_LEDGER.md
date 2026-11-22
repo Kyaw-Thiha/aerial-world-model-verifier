@@ -128,3 +128,17 @@ US$0.6, R2/uploads negligible. No 14B or larger SolarWM route was run.
 Round 1 (F/G/H) and round 2 (G2, I) kept their ledgers on their own branches
 (`track-g-segments2`, `track-g2-segments`, `track-i-simset`), because those branches are not
 merged into `main`. This file starts on `main` with the J entry.
+
+## Track M — abstention gates (2026-11-22; ceiling USD 25)
+
+All GPU work is on Modal, A10 (`awmv-m-readers`), list price 1.10 USD/h. Track M's own R2
+prefix is `track-m/`; it has written nothing there yet, and it reads `track-i/`, `track-l/` and
+`track-h3/` objects without writing to them. The TII camera zips and the A2 edit specs are read
+from Track A2's `awmv-a-data` volume, mounted read-only.
+
+| date | job | GPU | hours | USD | note |
+| --- | --- | --- | --- | --- | --- |
+| 2026-11-22 | **estimate posted before the job set**: Gate B readers (Perspective Fields + GeoCalib-224) on ~38k frames (TII 6 conditions + 170 simulated + 234 H04 + 80 H01), 4 shards, plus one probe run and one smoke run, plus image builds | A10 | <= 2.5 | <= 2.75 | 1.10 USD/h; well under the 20 USD pre-approval line and the 25 USD ceiling |
+| 2026-11-22 | `awmv-m-readers` rotation-probe (24 frames x 3 rotations, both readers) | A10 | 0.02 | 0.02 | 28 s wall; the image build is CPU-billed |
+| 2026-11-22 | `awmv-m-readers` smoke: 2 simulated clips | A10 | 0.02 | 0.02 | 27 s of inference after a 7 s model load |
+| 2026-11-22 | `awmv-m-readers` v1: 4 shards x (TII 25 clips x 6 conditions + 42 sim + 58 H04 + 20 H01) | A10 | ~1.6 | ~1.75 | filled in from the four shard summaries in `results/m02/shards/`; see the report for the measured clips/s |

@@ -410,3 +410,27 @@ honestly and no confirmatory evaluation can run.
 * **Regenerate**: `PYTHONPATH=. python experiments/j04_learned_confidence.py` (~25 s, CPU).
 * **Status**: selected by rule 3's literal reading; the premise is weak (88 % of the tail is in
   clips the frozen gate drops). Stage 1b was not selected by any rule and was not run.
+
+---
+
+## Track M — abstention gates (branch `track-m-gates`, 2026-11-22)
+
+Track M designs two abstention gates and evaluates them end to end. Gate A is path-side (the
+required lean's per-axis spread, schema v3 exact); Gate B is video-side (agreement between two
+independent readers on the same 224 px feed: Perspective Fields and GeoCalib-pinhole). Both are
+treated as selective prediction with conformal risk control on the gate-kept real clips.
+
+| M | experiment | code | configs | stored results | report |
+| --- | --- | --- | --- | --- | --- |
+| M01 | Gate A: path-side signal strength, coverage/risk curves, yaw-control mechanism | `experiments/m01_gate_a.py`, `src/verdict/{gate_a,selective}.py` | `configs/m01_gate_a_prereg.yaml`, `configs/m01_gate_a_frozen.yaml` | `results/m01/` | M01 |
+| M02 | Gate B: reader agreement, AUROC against reader error, forest check, ensemble reader | `experiments/m02_gate_b.py`, `remote/m_readers.py`, `src/verdict/gate_b.py` | `configs/m02_gate_b_prereg.yaml`, `configs/m02_gate_b_frozen.yaml` | `results/m02/` | M02 |
+| M03 | end-to-end: G0 / GA / GB / GAB x R / F0 / C2 on real, simulated and generated clips | `experiments/m03_end_to_end.py`, `experiments/m03_generators.py` | `configs/m03_endtoend_prereg.yaml` | `results/m03/` | M03 |
+
+R2: Track M writes nothing outside `track-m/`. It reads `track-i/` (the simulated clips),
+`track-l/l01/per_frame/` (the simulated reader table), `track-h3/` (SolarWM clips) and
+`track-h/` (ANWM frames) without writing to them; the TII camera zips and the A2 edit specs are
+read from Track A2's `awmv-a-data` volume, and the reader scores live on `awmv-m-data`.
+
+Dependencies, read-only: `track-k-calibration` (schema v3, `src/airframe/*` and the K03 tier
+code, copied byte-identically), `track-h3-reader-validity` (H04/H03), `track-l-reader-simreal`
+(L01), `track-i-simset` (the frozen simulated split).

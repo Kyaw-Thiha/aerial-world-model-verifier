@@ -209,13 +209,11 @@ def build_real_table(scores: pd.DataFrame) -> pd.DataFrame:
                      "s3": s3.get(cid, np.nan), "n": n,
                      "dis_med": d_stats.median, "dis_p90": d_stats.p90,
                      "dis_wmax": d_stats.window_max,
-                     "err_frozen": float(np.degrees(np.median(
-                         lean_difference_deg(dep, tru)))),
-                     "err_pf": float(np.degrees(np.median(lean_difference_deg(l_pf, tru)))),
-                     "err_gc224": float(np.degrees(np.median(
-                         lean_difference_deg(l_gc, tru)))),
-                     "err_ens_frozen_pf": float(np.degrees(np.median(
-                         lean_difference_deg(ens, tru)))),
+                     "err_frozen": float(np.nanmedian(lean_difference_deg(dep, tru))),
+                     "err_pf": float(np.nanmedian(lean_difference_deg(l_pf, tru))),
+                     "err_gc224": float(np.nanmedian(lean_difference_deg(l_gc, tru))),
+                     "err_ens_frozen_pf": float(np.nanmedian(
+                         lean_difference_deg(ens, tru))),
                      "coh_frozen": coherence_series(dep, req),
                      "coh_pf": coherence_series(l_pf, req),
                      "coh_ens": coherence_series(ens, req)})
@@ -237,7 +235,7 @@ def build_real_table(scores: pd.DataFrame) -> pd.DataFrame:
         d = lean_difference_deg(l_pf[:n], l_gc[:n])
         for i in range(n):
             frames.append({"clip_id": cid, "flight": m["flight"], "frame": i,
-                           "dis": float(d[i]), "err_frozen": float(np.degrees(e[i]))})
+                           "dis": float(d[i]), "err_frozen": float(e[i])})
     return df, pd.DataFrame(frames)
 
 
@@ -266,7 +264,7 @@ def build_sim_table(scores: pd.DataFrame) -> pd.DataFrame:
             fr = np.asarray(z["frame"], int)
             idx01 = np.clip(idx, 0, len(fr) - 1)
             l_est = np.asarray(z["lean_est"], float)[idx01]
-            err_l01 = float(np.degrees(np.median(lean_difference_deg(l_est, lean_dep))))
+            err_l01 = float(np.nanmedian(lean_difference_deg(l_est, lean_dep)))
             s3v = float(-np.nanmedian(np.asarray(z["latitude_confidence_mean"], float)[idx01]))
         d_stats = disagreement(lean_difference_deg(l_pf, l_gc))
         rows.append({"source": "sim", "clip_id": cid,
@@ -278,12 +276,11 @@ def build_sim_table(scores: pd.DataFrame) -> pd.DataFrame:
                      "dis_wmax": d_stats.window_max,
                      "err_frozen": err_l01,
                      "s3": s3v,
-                     "err_pf": float(np.degrees(np.median(
-                         lean_difference_deg(l_pf, lean_dep)))),
-                     "err_gc224": float(np.degrees(np.median(
-                         lean_difference_deg(l_gc, lean_dep)))),
-                     "err_ens": float(np.degrees(np.median(lean_difference_deg(
-                         ensemble_lean(l_pf, l_gc), lean_dep)))),
+                     "err_pf": float(np.nanmedian(lean_difference_deg(l_pf, lean_dep))),
+                     "err_gc224": float(np.nanmedian(
+                         lean_difference_deg(l_gc, lean_dep))),
+                     "err_ens": float(np.nanmedian(lean_difference_deg(
+                         ensemble_lean(l_pf, l_gc), lean_dep))),
                      "bias_fwd": float(np.degrees(np.median(
                          (lean_dep - l_pf)[:, 0]))),
                      "coh_frozen": np.nan,
@@ -351,6 +348,24 @@ def at_tau(real: pd.DataFrame, tau: float) -> dict:
     return out
 
 
+def _rank_pct(x) -> np.ndarray:
+    x = np.asarray(x, dtype=float)
+    out = np.full(len(x), np.nan)
+    ok = np.isfinite(x)
+    if ok.sum() > 1:
+        order = np.argsort(np.argsort(x[ok]))
+        out[ok] = order / (ok.sum() - 1)
+    return out
+
+
+def combined_score(dis, neg_s3) -> np.ndarray:
+    """Max of the two leave-one-out-invariant rank percentiles (both oriented = risky)."""
+    a = _rank_pct(dis)
+    b = _rank_pct(neg_s3)
+    with np.errstate(invalid="ignore"):
+        return np.fmax(a, b)
+
+
 def auroc_table(real: pd.DataFrame, frames: pd.DataFrame, sim: pd.DataFrame) -> dict:
     out = {}
     r = real[(real.cond == "real") & real.in_dev & real.kept_S3]
@@ -369,14 +384,19 @@ def auroc_table(real: pd.DataFrame, frames: pd.DataFrame, sim: pd.DataFrame) -> 
                              f.flight, draws=2000),
     }
     s = sim[(sim.defect == "feasible") & sim.err_frozen.notna()]
+    lab = (s.err_frozen > LABEL_DEG).astype(int)
     out["sim_clip"] = {
         "n": int(len(s)),
-        "positives": int((s.err_frozen > LABEL_DEG).sum()),
-        "dis": cluster_auroc(s.dis_med, (s.err_frozen > LABEL_DEG).astype(int),
-                             s.family, draws=2000),
-        "s3": cluster_auroc(-s.s3, (s.err_frozen > LABEL_DEG).astype(int),
-                            s.family, draws=2000),
+        "positives": int(lab.sum()),
+        "dis": cluster_auroc(s.dis_med, lab, s.family, draws=2000),
+        "s3": cluster_auroc(-s.s3, lab, s.family, draws=2000),
+        "combined": cluster_auroc(combined_score(s.dis_med.values, -s.s3.values), lab,
+                                  s.family, draws=2000),
     }
+    r0 = real[(real.cond == "real") & real.in_dev & real.kept_S3]
+    lab0 = (r0.err_frozen > LABEL_DEG).astype(int)
+    out["real_clip"]["combined"] = cluster_auroc(
+        combined_score(r0.dis_med.values, -r0.s3.values), lab0, r0.flight, draws=2000)
     for fam in ("urban_checker", "forest_ridge", "industrial"):
         sub = s[s.family == fam]
         out[f"sim_clip_{fam}"] = {
@@ -387,13 +407,29 @@ def auroc_table(real: pd.DataFrame, frames: pd.DataFrame, sim: pd.DataFrame) -> 
     return out
 
 
-def forest_check(sim: pd.DataFrame) -> dict:
-    forest = sim[(sim.family == "forest_ridge") & (sim.defect == "feasible")]
-    # the 12 clips L01 reports as kept: recompute with L01's stored S3 signal
-    out = {"n_forest": int(len(forest))}
-    out["median_error"] = float(forest.err_frozen.median())
-    tau = float(forest.dis_med.median())
-    out["disagreement_median"] = tau
+def forest_check(sim: pd.DataFrame, tau_b: float) -> dict:
+    """The forest clips the frozen S3 gate keeps, and what Gate B would do with them."""
+    g = json.loads("\n".join(l for l in GATE_CONFIG.read_text().splitlines()
+                             if not l.strip().startswith("#")))
+    s3_tau = float(g["tau"])
+    forest = sim[(sim.family == "forest_ridge") & (sim.defect == "feasible")].copy()
+    forest["kept_S3"] = forest.s3 <= s3_tau
+    kept = forest[forest.kept_S3]
+    dropped = forest[~forest.kept_S3]
+    out = {"n_forest": int(len(forest)),
+           "n_kept_S3": int(len(kept)), "n_dropped_S3": int(len(dropped)),
+           "kept_median_error": float(kept.err_frozen.median()) if len(kept) else None,
+           "dropped_median_error": float(dropped.err_frozen.median()) if len(dropped)
+           else None,
+           "kept_median_disagreement": float(kept.dis_med.median()) if len(kept) else None,
+           "forest_median_disagreement": float(forest.dis_med.median()),
+           "open_median_disagreement": float(
+               sim[(sim.family != "forest_ridge") & (sim.defect == "feasible")]
+               .dis_med.median()),
+           "gate_b_abstains_on_kept_forest": int(np.sum(kept.dis_med > tau_b))
+           if np.isfinite(tau_b) else None,
+           "gate_b_abstains_on_all_forest": int(np.sum(forest.dis_med > tau_b))
+           if np.isfinite(tau_b) else None}
     return out
 
 
@@ -445,7 +481,7 @@ def main() -> None:
         (OUT / "gate_b_at_tau.json").write_text(json.dumps(at, indent=1))
         print("at tau:", json.dumps(at, indent=1))
 
-    (OUT / "forest.json").write_text(json.dumps(forest_check(sim), indent=1))
+    (OUT / "forest.json").write_text(json.dumps(forest_check(sim, tau), indent=1))
     ens = ensemble_table(sim)
     (OUT / "ensemble.json").write_text(json.dumps(ens, indent=1))
     print("ensemble:", json.dumps(ens, indent=1))

@@ -181,3 +181,21 @@ bundled outside it:
   check out the branch.
 
 No R2 object and no Modal volume was created, written or deleted in round 2.
+
+## Track M — Gate B reader inputs (2026-11-22)
+
+Track M's Gate B reads two independent estimators on the same 224 px centre crop. Nothing is
+staged in git; the inputs live on the Modal volume `awmv-m-data` under `/m02/inputs` and the
+scores under `/m02/scores/<tag>`. The plan (`plan.json`, sha256 `1e3b12e9…`) fixes the frame
+list, the stride and the focal prior per source.
+
+| source | frames | stride | focal prior (224 crop) | staged from |
+| --- | --- | --- | --- | --- |
+| TII real clips, 6 conditions | 100 clips x 48 | 2 | 112 px | camera zips on `awmv-a-data/tii_video`, edit rotations on `awmv-a-data/edits/p3a_v1` |
+| simulated dev clips | 170 clips | 4 | 199.1 px (320 x 224/360) | R2 `track-i/videos/dev` + `track-i/gt` |
+| H04 SolarWM | 234 clips | 2 | 112 px | R2 `track-h3/clips/solarwm-main` |
+| H01 ANWM | 80 clips x 16 | 1 | 112 px | R2 `track-h/clips/anwm-seeds/C` |
+
+The simulated set's truth is the render's own attitude (`lean_req`, `lean_dep`, `R_cb` in the gt
+npz); the frozen reader on the simulated clips is Track L's stored per-frame table
+(`track-l/l01/per_frame/`, 80 objects, 3.6 MB), not re-run here.
