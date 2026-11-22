@@ -1,0 +1,51 @@
+version: 1
+date: '2026-11-16'
+status: amendment
+amends: configs/g01_segment_prereg.yaml
+track: G
+owner_branch: track-g-segments2
+written_after: >
+  The pre-registered dev-block run (six dev flights, ungated calibration) had been executed and
+  its thresholds inspected. No held-out clip had been scored, and no injected-clip outcome was
+  used to choose anything below: the amendment is forced by a property of the REAL clips that
+  the pre-registered calibration reveals, and it is the frozen gate that resolves it.
+observed_on_dev:
+  tau_residual_deg: 90.7   # leave-one-flight-out 95th percentile of the clip maxima, ungated
+  cause: >
+    Four real clips of flight-13a-trackRATM carry max-window residuals of 89.6, 91.2, 94.2 and
+    96.5 deg and a fifth of flight-07a-lemniscate 88.9 deg, so every fold whose fit set contains
+    those flights gets a threshold near 90 deg. This is the same threshold pathology report 04
+    recorded for the clip-level statistic ("one broken flight moves the threshold from 9.4 to
+    67 deg"), now amplified because a maximum over windows sits on the tail by construction.
+  consequence: >
+    With tau near 90 deg the segment detector cannot detect anything: every family sits at
+    or near its own false-reject rate, and the residual tier's flags for x0.5 / x1.5 / yaw /
+    null are identical, i.e. they come from windows that were already above tau in the real clip.
+amendment:
+  primary_calibration_population: gate_kept
+  rationale: >
+    The frozen S3 confidence gate (configs/gate_frozen.yaml, amendment 2 of the verdict
+    pre-registration) exists to drop exactly these clips: it is a label-free per-clip signal on
+    GeoCalib's own latitude confidence, frozen on 2026-11-09 from 100 clips, and it drops 28 of
+    the 100 real clips here - including every clip whose max-window residual exceeds 80 deg.
+    Calibrating the segment statistic on the gate-kept population therefore does not remove
+    clips because they score badly; it applies the verdict's existing, frozen admissibility
+    rule, the same way the gain tier's frozen abstention already does (0/11 testable on
+    13a-trackRATM). Pair-level application, as in configs/gain_frozen.yaml.
+  unchanged: >
+    Window length and hop, the tier definitions, the max-over-windows statistic, alpha = 0.05,
+    the injections and fractions, the interval metrics, the controls, the dev/held-out split.
+  still_reported: >
+    The ungated block is kept in full as the pre-registered primary, with its failure attributed,
+    beside the amended block. Nothing is dropped from the report.
+  persistence_calibration: >
+    The pre-registration said the persistence variant (N = 2) uses "the same calibration". It is
+    also reported with its own conformal calibration of the persistence statistic
+    max_i min(T_i, T_{i+1}), because the persistence statistic has a different null distribution
+    and a same-tau readout would be a rate at an unstated false-reject. Both are reported.
+  window_sensitivity: >
+    The pre-registered 12-frame sensitivity is reported for every block; no threshold is
+    carried between them (each is recalibrated on its own statistic).
+held_out: unchanged, still unscored, still scored exactly once after this amendment is committed
+cost:
+  gpu_usd: 0

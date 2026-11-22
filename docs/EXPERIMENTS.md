@@ -238,3 +238,24 @@ during consolidation — see `docs/DATA.md` for the current status of listing ac
   detecting 8/8 and 6/8 on the truth path; its joint fit is degenerate (scale collapse); Pi3X
   is the best new extractor (6/10 bake-off, 4.2 deg lean error) and does not change the gate;
   the simulated set is 8/300 rendered.
+
+## Track G — verifier statistics (branch `track-g-segments2`, off `main` `41d1dad`)
+
+Track G does not add a dataset; it adds statistics over the schema-v2 clips every other track
+already produced. Nothing GPU-side except G03.
+
+| ID | experiment | stored results | report | configs |
+| --- | --- | --- | --- | --- |
+| G01 | segment-level detection: 8/12-frame windows, residual/coherence/sign tiers, max-over-windows and persistence scan statistics, conformal LOFO calibration, partial-edit injections at 10/25/50 % | `results/g01_segments/{dev,heldout}_w{8,12}_*/` | `reports/G01_segment_detection.md` | `g01_segment_prereg.yaml`, `g01_segment_amendment_a.yaml` |
+| G02 | combined score: max of standardised tiers, LOFO conformal threshold, ROC, minimum-detectable-violation curve | `results/g02_combined/{dev,heldout_devfit}/` | `reports/G02_combined_score.md` | `g02_combined_prereg.yaml` |
+| G03 | depicted-tilt reader fine-tune on 5,007 mocap-labelled TII frames (8 LOFO folds) and 1,097 UZH forward-rig frames (3 folds), plus the downstream verdict | `results/g03_tilt_reader/`, Modal volume `awmv-g-data` | `reports/G03_tilt_reader.md` | `g03_tilt_reader_prereg.yaml` |
+
+Regenerate G01/G02 with `experiments/g01_segment_detection.py` and
+`experiments/g02_combined_score.py` (both CPU, both read only stored clips and Track D's frozen
+tables). G03 is `experiments/g03_prepare_frames.py` + `experiments/g03_prepare_uzh.py` (CPU,
+builds the labelled frame sets) then `modal run remote/g_tilt_reader.py` (A10G) and
+`experiments/g03_evaluate.py` (CPU, after pulling the fold files).
+
+New code: `src/verdict/segments.py`. New data: `data/g03_frames/` (372 MB),
+`data/g03_uzh/` (144 MB), `data/raw/tii_video_full/` (3.6 GB) — all gitignored and rebuildable
+from the release and from R2 (`track-a/tii_video/`).

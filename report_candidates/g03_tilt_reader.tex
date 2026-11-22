@@ -1,0 +1,64 @@
+% Candidate section for Track G, report G03. Not integrated into the main report.
+% Source: reports/G03_tilt_reader.md, results/g03_tilt_reader/summary.json, commit bc607a2.
+
+\subsection{Fine-tuning the depicted-tilt reader}
+\label{sec:g03-reader}
+
+The detection floor, the abstention rate and the false-reject spread are set by the depicted-tilt
+reader rather than by the physics. We fine-tune GeoCalib on \num{5007} mocap-labelled TII frames
+with leave-one-flight-out folds: each frame's label is the world-up direction in the camera
+frame, built from the truth attitude and the analytic mount, so no pixel estimate enters a label.
+Scored against those labels before any fine-tuning, the frozen reader reproduces its published
+error (median \SI{3.97}{deg}, \SI{90}{\percent}-trimmed RMSE \SI{4.81}{deg}, \SI{12.7}{\percent}
+of frames above \SI{10}{deg}), which validates the label construction. Training runs GeoCalib's
+own LM refinement inside the loop (the signal the authors train on), with a cosine loss on the up
+direction, AdamW at \num{2e-5}, two epochs, 700 frames per fold and no geometric augmentation.
+
+\begin{table}[t]
+\centering
+\caption{Per-frame error on the held-out unit of each fold, frozen reader versus fine-tuned.
+Each frame is scored by the model that never saw its flight.}
+\label{tab:g03-reader}
+\begin{tabular}{lrrrrrr}
+\toprule
+flight & $n$ & \multicolumn{2}{c}{median (deg)} & \multicolumn{2}{c}{trimmed RMSE} & $>10$\,deg \\
+ & & base & fine-tuned & base & fine-tuned & base $\to$ fine-tuned \\
+\midrule
+01a-ellipse & 270 & 4.20 & 3.45 & 4.27 & 3.39 & 11.1 $\to$ 4.8\,\% \\
+01p-ellipse & 1267 & 3.13 & 1.87 & 3.27 & 1.88 & 0.8 $\to$ 0.3\,\% \\
+04a-ellipse & 350 & 3.23 & 2.70 & 3.25 & 2.74 & 5.7 $\to$ 1.1\,\% \\
+07a-lemniscate & 370 & 2.54 & 1.90 & 6.54 & 5.22 & 17.6 $\to$ 16.8\,\% \\
+07p-lemniscate & 1284 & 3.60 & 2.70 & 3.71 & 2.82 & 0.5 $\to$ 0.1\,\% \\
+13a-trackRATM & 557 & 7.43 & 4.42 & 34.66 & 31.53 & 33.6 $\to$ 32.7\,\% \\
+13p-trackRATM & 536 & 7.75 & 6.52 & 18.40 & 9.86 & 35.4 $\to$ 27.8\,\% \\
+16p-trackRATM & 373 & 7.32 & 6.96 & 14.14 & 9.21 & 34.6 $\to$ 33.2\,\% \\
+\midrule
+pooled & 5007 & 3.97 & 2.87 & 4.81 & 3.71 & 12.7 $\to$ 10.8\,\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Result.} The pooled held-out median error falls \SI{28}{\percent} (Table~\ref{tab:g03-reader}),
+which meets the pre-registered bar, and the trimmed RMSE falls \SI{23}{\percent}; the fraction of
+frames above \SI{10}{deg} falls only from \SI{12.7}{\percent} to \SI{10.8}{\percent}, which does
+not meet the second bar. The gains are where the frozen reader is worst in the tail: the piloted
+track flight's trimmed RMSE halves (\SI{18.4}{} to \SI{9.9}{deg}), while the autonomous track
+flight stays at \SI{31.5}{deg} because its worst frames are near-ceiling views that attitude
+supervision does not repair.
+
+\paragraph{Downstream.} Rebuilding each clip's depicted lean from the fine-tuned gravity, with the
+path side, the statistics and the confidence gate frozen, the clip-level median residual falls on
+six of eight flights (e.g.\ \SI{10.2}{} to \SI{7.7}{deg} on \texttt{01p}, \SI{16.3}{} to
+\SI{13.7}{deg} on \texttt{13p}) and rises on two. With a leave-one-flight-out threshold
+calibrated on the gate-kept clips, the new reader false-rejects 5 of 72 clips (\SI{6.9}{\percent})
+and flags 55 of 72 (\SI{76.4}{\percent}) under a full tilt removal; the ungated threshold is
+still \SI{18}{}-\SI{33}{deg}, i.e.\ the per-flight transfer problem of
+Section~\ref{sec:g01-segments} is untouched. Abstention does not move at all: the same 18 of 100
+real clips abstain with either reader under the rules that do not need a bootstrap, so a better
+estimate buys accuracy, not admissibility.
+
+\paragraph{Caveats.} Eight flights are the whole evidence base and each fold is a single flight.
+The UZH-FPV forward rigs (three sequences, 1,097 pinhole frames, leave-one-sequence-out) are a
+separate route with separate folds: the medians halve (1.08-1.48 to 0.61-0.74\,deg) but the tail
+does not improve, so the transfer is a level effect, not a tail effect. The confidence-weighted-loss ablation declared in the pre-registration
+was not run. The mount and drag ablations are a different, untouched axis.

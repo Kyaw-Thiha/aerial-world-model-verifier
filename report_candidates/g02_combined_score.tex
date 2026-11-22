@@ -1,0 +1,64 @@
+% Candidate section for Track G, report G02. Not integrated into the main report.
+% Source: reports/G02_combined_score.md, results/g02_combined/dev/summary.json.
+
+\subsection{One decision from three tiers}
+\label{sec:g02-combined}
+
+The three frozen tiers answer different questions: the coherence tier compares the \emph{shape}
+of the depicted and required lean traces, the axis-gain band compares their \emph{magnitude},
+and the clip median residual compares their \emph{distance} frame by frame. We standardise each
+on the fit flights of its fold, take the maximum of the standardised values, and put one
+leave-one-flight-out conformal 95th percentile on that maximum --- no fitted weights, so there
+is nothing that could be tuned on a held-out flight.
+
+\begin{table}[t]
+\centering
+\caption{Detection at the 5\,\% conformal threshold on the dev block (55 testable clips of 82,
+six flights). The maximum of the three standardised tiers saturates on shape-changing edits and
+inherits the gain band's sensitivity to magnitude edits, but never exceeds the best single tier
+on any family; its yaw-control rate is inherited from the gain tier.}
+\label{tab:g02-detection}
+\begin{tabular}{lrrcrrc}
+\toprule
+method & real & removal & mirror & $x0.5$ & $x1.5$ & yaw control \\
+ & $k/n$ & $k/n$ & $k/n$ & $k/n$ & $k/n$ & $k/n$ \\
+\midrule
+max of three tiers & 4/55 & 55/55 & 55/55 & 48/55 & 46/55 & 9/55 \\
+max, no residual   & 4/55 & 55/55 & 55/55 & 51/55 & 47/55 & 8/55 \\
+residual only      & 3/55 & 33/55 & 51/55 & 10/55 & 33/55 & 3/55 \\
+coherence only     & 5/55 & 55/55 & 55/55 & 10/55 & 12/55 & 7/55 \\
+gain band only     & 3/55 & 55/55 & 55/55 & 54/55 & 54/55 & 16/55 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Result, and the negative half of it.} The combination is the only rule with no family
+at chance (Table~\ref{tab:g02-detection}), which is what a verdict needs when the violation type
+is unknown. It is not a sensitivity gain: it never beats the best single tier (AUC 0.983 vs
+0.999 on removal, 0.966 vs 0.980 on a $0.5\times$ scale) and on a graded lean-scale sweep the
+gain band alone reaches 50\,\% detection at a 30\,\% change while the combination needs 60\,\%,
+because the insensitive residual tier lifts the maximum's null distribution. Where only one tier
+is affordable, this evidence argues for the gain band.
+
+\begin{table}[t]
+\centering
+\caption{Minimum detectable violation: detection at the 5\,\% threshold against a synthetic
+$l_{\mathrm{dep}} \to s\,l_{\mathrm{dep}}$ lean-scale change (violation $=1-s$). The discrete
+points $1-s = 0, 0.5, 1$ are anchored to the measured pixel edits (removal, $x0.5$, zero).}
+\label{tab:g02-mdv}
+\begin{tabular}{lrrrrrrrr}
+\toprule
+method & 0.05 & 0.10 & 0.20 & 0.30 & 0.40 & 0.50 & 0.60 & 1.00 \\
+\midrule
+max of three tiers & 0.07 & 0.11 & 0.15 & 0.15 & 0.22 & 0.47 & 0.60 & 1.00 \\
+gain band only     & 0.07 & 0.11 & 0.18 & 0.53 & 0.91 & 0.98 & 1.00 & 1.00 \\
+residual only      & 0.05 & 0.05 & 0.07 & 0.11 & 0.13 & 0.16 & 0.22 & 0.91 \\
+coherence only     & 0.09 & 0.09 & 0.09 & 0.09 & 0.09 & 0.09 & 0.09 & 1.00 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Caveats.} The sweep is a statistic-level manipulation, not a re-estimation of pixels.
+The yaw control is flagged at 16.4\,\% against a 7.3\,\% false-reject, inherited from the gain
+tier's exposure to the reader's view dependence, so a yaw-heavy clip can be rejected for a
+reason that is not a violation. The held-out block holds two testable clips and confirms nothing.

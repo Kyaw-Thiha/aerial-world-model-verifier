@@ -1,0 +1,6546 @@
+{
+ "population": "heldout",
+ "flights": [
+  "flight-13p-trackRATM",
+  "flight-07a-lemniscate"
+ ],
+ "fit_flights": [
+  "flight-01a-ellipse",
+  "flight-01p-ellipse",
+  "flight-04a-ellipse",
+  "flight-07p-lemniscate",
+  "flight-13a-trackRATM",
+  "flight-16p-trackRATM"
+ ],
+ "n_fit_clips": 82,
+ "n_real_clips": 18,
+ "calibration_population": "gate_kept",
+ "n_calibration_clips": 69,
+ "window_frames": 8,
+ "hop_frames": 4,
+ "alpha": 0.05,
+ "n_boot": 5000,
+ "seed": 1,
+ "n_windows_median": 11.0,
+ "n_abstained_clips": 15,
+ "blocks": {
+  "p1": {
+   "taus": {
+    "residual": {
+     "flight-01a-ellipse": 21.113429124649475,
+     "flight-01p-ellipse": 38.45930180003028,
+     "flight-04a-ellipse": 21.333418797792543,
+     "flight-07p-lemniscate": 38.20076655959458,
+     "flight-13a-trackRATM": 32.87932361805447,
+     "flight-16p-trackRATM": 28.458610816037694,
+     "flight-13p-trackRATM": 32.87932361805447,
+     "flight-07a-lemniscate": 32.87932361805447
+    },
+    "coherence": {
+     "flight-01a-ellipse": 1.7489075348741658,
+     "flight-01p-ellipse": 1.734455621434711,
+     "flight-04a-ellipse": 1.7489075348741658,
+     "flight-07p-lemniscate": 1.8357813179753628,
+     "flight-13a-trackRATM": 1.7482939558084951,
+     "flight-16p-trackRATM": 1.729123356022812,
+     "flight-13p-trackRATM": 1.7482939558084951,
+     "flight-07a-lemniscate": 1.7482939558084951
+    },
+    "sign": {
+     "flight-01a-ellipse": 0.625,
+     "flight-01p-ellipse": 0.6937499999999996,
+     "flight-04a-ellipse": 0.625,
+     "flight-07p-lemniscate": 0.75,
+     "flight-13a-trackRATM": 0.6624999999999996,
+     "flight-16p-trackRATM": 0.6687499999999993,
+     "flight-13p-trackRATM": 0.6624999999999996,
+     "flight-07a-lemniscate": 0.6624999999999996
+    }
+   },
+   "tau_whole": {
+    "flight-01a-ellipse": 12.488415705902574,
+    "flight-01p-ellipse": 14.122886785531666,
+    "flight-04a-ellipse": 12.489659478683391,
+    "flight-07p-lemniscate": 14.046473502028267,
+    "flight-13a-trackRATM": 12.577247243653472,
+    "flight-16p-trackRATM": 12.483440614779305,
+    "flight-13p-trackRATM": 12.548880503850656,
+    "flight-07a-lemniscate": 12.548880503850656
+   },
+   "real_false_reject": {
+    "residual_p1": {
+     "k": 2,
+     "n": 3,
+     "rate": 0.6666666666666666,
+     "wilson": [
+      0.20765495512648788,
+      0.9385096847238393
+     ],
+     "n_clusters": 1,
+     "boot": [
+      NaN,
+      NaN
+     ],
+     "clusters_few_warning": true
+    },
+    "coherence_p1": {
+     "k": 1,
+     "n": 3,
+     "rate": 0.3333333333333333,
+     "wilson": [
+      0.061490315276160515,
+      0.7923450448735121
+     ],
+     "n_clusters": 1,
+     "boot": [
+      NaN,
+      NaN
+     ],
+     "clusters_few_warning": true
+    },
+    "sign_p1": {
+     "k": 0,
+     "n": 3,
+     "rate": 0.0,
+     "wilson": [
+      0.0,
+      0.5615060804490177
+     ],
+     "n_clusters": 1,
+     "boot": [
+      NaN,
+      NaN
+     ],
+     "clusters_few_warning": true
+    },
+    "whole_p1": {
+     "k": 2,
+     "n": 3,
+     "rate": 0.6666666666666666,
+     "wilson": [
+      0.20765495512648788,
+      0.9385096847238393
+     ],
+     "n_clusters": 1,
+     "boot": [
+      NaN,
+      NaN
+     ],
+     "clusters_few_warning": true
+    }
+   },
+   "per_flight_false_reject": {
+    "flight-13p-trackRATM": {
+     "n": 3,
+     "residual": 2
+    },
+    "flight-07a-lemniscate": {
+     "n": 0,
+     "residual": 0
+    }
+   },
+   "false_segments_per_minute": {
+    "residual": 10.23803779132763,
+    "coherence": 5.119018895663815,
+    "sign": 0.0
+   },
+   "rates": {
+    "tilt_removal@0.1": {
+     "residual_p1": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "residual_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p1": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p1_incremental": {
+      "k": 1,
+      "n": 1,
+      "rate": 1.0,
+      "wilson": [
+       0.20654329147389294,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p1": {
+      "k": 0,
+      "n": 3,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.5615060804490177
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p1": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "iou_residual_mean": 0.3125,
+     "f1_residual_mean": 0.41514041514041516,
+     "iou_coherence_mean": 0.09999999999999999,
+     "onset_err_frames_median": -5.0,
+     "onset_err_frames_all": [
+      -9.0,
+      -1.0
+     ]
+    },
+    "tilt_removal@0.25": {
+     "residual_p1": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "residual_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p1": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p1_incremental": {
+      "k": 1,
+      "n": 1,
+      "rate": 1.0,
+      "wilson": [
+       0.20654329147389294,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p1": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p1_incremental": {
+      "k": 1,
+      "n": 1,
+      "rate": 1.0,
+      "wilson": [
+       0.20654329147389294,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p1": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p1_incremental": {
+      "k": 1,
+      "n": 1,
+      "rate": 1.0,
+      "wilson": [
+       0.20654329147389294,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "iou_residual_mean": 0.39999999999999997,
+     "f1_residual_mean": 0.5,
+     "iou_coherence_mean": 0.2962962962962963,
+     "onset_err_frames_median": -1.5,
+     "onset_err_frames_all": [
+      -6.0,
+      3.0
+     ]
+    },
+    "tilt_removal@0.5": {
+     "residual_p1": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "residual_p1_incremental": {
+      "k": 1,
+      "n": 1,
+      "rate": 1.0,
+      "wilson": [
+       0.20654329147389294,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p1": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p1_incremental": {
+      "k": 1,
+      "n": 1,
+      "rate": 1.0,
+      "wilson": [
+       0.20654329147389294,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p1": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p1_incremental": {
+      "k": 1,
+      "n": 1,
+      "rate": 1.0,
+      "wilson": [
+       0.20654329147389294,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p1": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p1_incremental": {
+      "k": 1,
+      "n": 1,
+      "rate": 1.0,
+      "wilson": [
+       0.20654329147389294,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "iou_residual_mean": 0.6825396825396824,
+     "f1_residual_mean": 0.7820512820512819,
+     "iou_coherence_mean": 0.764367816091954,
+     "onset_err_frames_median": 0.0,
+     "onset_err_frames_all": [
+      16.0,
+      0.0,
+      -3.0
+     ]
+    },
+    "tilt_removal@1": {
+     "residual_p1": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "residual_p1_incremental": {
+      "k": 1,
+      "n": 1,
+      "rate": 1.0,
+      "wilson": [
+       0.20654329147389294,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p1": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p1_incremental": {
+      "k": 1,
+      "n": 1,
+      "rate": 1.0,
+      "wilson": [
+       0.20654329147389294,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p1": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p1_incremental": {
+      "k": 1,
+      "n": 1,
+      "rate": 1.0,
+      "wilson": [
+       0.20654329147389294,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p1": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p1_incremental": {
+      "k": 1,
+      "n": 1,
+      "rate": 1.0,
+      "wilson": [
+       0.20654329147389294,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "iou_residual_mean": 0.8055555555555557,
+     "f1_residual_mean": 0.8627450980392157,
+     "iou_coherence_mean": 0.5591016548463358,
+     "onset_err_frames_median": 0.0,
+     "onset_err_frames_all": [
+      28.0,
+      0.0,
+      0.0
+     ]
+    },
+    "mirror_roll@0.1": {
+     "residual_p1": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "residual_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p1": {
+      "k": 1,
+      "n": 3,
+      "rate": 0.3333333333333333,
+      "wilson": [
+       0.061490315276160515,
+       0.7923450448735121
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p1_incremental": {
+      "k": 1,
+      "n": 1,
+      "rate": 1.0,
+      "wilson": [
+       0.20654329147389294,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p1": {
+      "k": 0,
+      "n": 3,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.5615060804490177
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p1": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "iou_residual_mean": 0.3125,
+     "f1_residual_mean": 0.41514041514041516,
+     "iou_coherence_mean": 0.0,
+     "onset_err_frames_median": -5.0,
+     "onset_err_frames_all": [
+      -9.0,
+      -1.0
+     ]
+    },
+    "mirror_roll@0.25": {
+     "residual_p1": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "residual_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p1": {
+      "k": 1,
+      "n": 3,
+      "rate": 0.3333333333333333,
+      "wilson": [
+       0.061490315276160515,
+       0.7923450448735121
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p1_incremental": {
+      "k": 1,
+      "n": 1,
+      "rate": 1.0,
+      "wilson": [
+       0.20654329147389294,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p1": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p1_incremental": {
+      "k": 1,
+      "n": 1,
+      "rate": 1.0,
+      "wilson": [
+       0.20654329147389294,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p1": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "iou_residual_mean": 0.38518518518518513,
+     "f1_residual_mean": 0.48809523809523814,
+     "iou_coherence_mean": 0.2222222222222222,
+     "onset_err_frames_median": -1.5,
+     "onset_err_frames_all": [
+      -6.0,
+      3.0
+     ]
+    },
+    "mirror_roll@0.5": {
+     "residual_p1": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "residual_p1_incremental": {
+      "k": 1,
+      "n": 1,
+      "rate": 1.0,
+      "wilson": [
+       0.20654329147389294,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p1": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p1_incremental": {
+      "k": 1,
+      "n": 1,
+      "rate": 1.0,
+      "wilson": [
+       0.20654329147389294,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p1": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p1_incremental": {
+      "k": 1,
+      "n": 1,
+      "rate": 1.0,
+      "wilson": [
+       0.20654329147389294,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p1": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p1_incremental": {
+      "k": 1,
+      "n": 1,
+      "rate": 1.0,
+      "wilson": [
+       0.20654329147389294,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "iou_residual_mean": 0.6402116402116401,
+     "f1_residual_mean": 0.7475071225071225,
+     "iou_coherence_mean": 0.611111111111111,
+     "onset_err_frames_median": 0.0,
+     "onset_err_frames_all": [
+      16.0,
+      0.0,
+      -3.0
+     ]
+    },
+    "mirror_roll@1": {
+     "residual_p1": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "residual_p1_incremental": {
+      "k": 1,
+      "n": 1,
+      "rate": 1.0,
+      "wilson": [
+       0.20654329147389294,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p1": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p1_incremental": {
+      "k": 1,
+      "n": 1,
+      "rate": 1.0,
+      "wilson": [
+       0.20654329147389294,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p1": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p1_incremental": {
+      "k": 1,
+      "n": 1,
+      "rate": 1.0,
+      "wilson": [
+       0.20654329147389294,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p1": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p1_incremental": {
+      "k": 1,
+      "n": 1,
+      "rate": 1.0,
+      "wilson": [
+       0.20654329147389294,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "iou_residual_mean": 0.8055555555555557,
+     "f1_residual_mean": 0.8627450980392157,
+     "iou_coherence_mean": 0.5851063829787234,
+     "onset_err_frames_median": 0.0,
+     "onset_err_frames_all": [
+      28.0,
+      0.0,
+      0.0
+     ]
+    },
+    "scale_0.5@0.1": {
+     "residual_p1": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "residual_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p1": {
+      "k": 1,
+      "n": 3,
+      "rate": 0.3333333333333333,
+      "wilson": [
+       0.061490315276160515,
+       0.7923450448735121
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p1_incremental": {
+      "k": 1,
+      "n": 1,
+      "rate": 1.0,
+      "wilson": [
+       0.20654329147389294,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p1": {
+      "k": 0,
+      "n": 3,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.5615060804490177
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p1": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "iou_residual_mean": 0.3125,
+     "f1_residual_mean": 0.41514041514041516,
+     "iou_coherence_mean": 0.0,
+     "onset_err_frames_median": -5.0,
+     "onset_err_frames_all": [
+      -9.0,
+      -1.0
+     ]
+    },
+    "scale_0.5@0.25": {
+     "residual_p1": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "residual_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p1": {
+      "k": 1,
+      "n": 3,
+      "rate": 0.3333333333333333,
+      "wilson": [
+       0.061490315276160515,
+       0.7923450448735121
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p1_incremental": {
+      "k": 1,
+      "n": 1,
+      "rate": 1.0,
+      "wilson": [
+       0.20654329147389294,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p1": {
+      "k": 0,
+      "n": 3,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.5615060804490177
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p1": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "iou_residual_mean": 0.38518518518518513,
+     "f1_residual_mean": 0.48809523809523814,
+     "iou_coherence_mean": 0.037037037037037035,
+     "onset_err_frames_median": -1.5,
+     "onset_err_frames_all": [
+      -6.0,
+      3.0
+     ]
+    },
+    "scale_0.5@0.5": {
+     "residual_p1": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "residual_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p1": {
+      "k": 0,
+      "n": 3,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.5615060804490177
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p1": {
+      "k": 0,
+      "n": 3,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.5615060804490177
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p1": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "iou_residual_mean": 0.5,
+     "f1_residual_mean": 0.5555555555555555,
+     "iou_coherence_mean": 0.0,
+     "onset_err_frames_median": 4.5,
+     "onset_err_frames_all": [
+      0.0,
+      9.0
+     ]
+    },
+    "scale_0.5@1": {
+     "residual_p1": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "residual_p1_incremental": {
+      "k": 1,
+      "n": 1,
+      "rate": 1.0,
+      "wilson": [
+       0.20654329147389294,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p1": {
+      "k": 0,
+      "n": 3,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.5615060804490177
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p1": {
+      "k": 0,
+      "n": 3,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.5615060804490177
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p1": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "iou_residual_mean": 0.6377068557919622,
+     "f1_residual_mean": 0.7547065337763011,
+     "iou_coherence_mean": 0.0,
+     "onset_err_frames_median": 12.0,
+     "onset_err_frames_all": [
+      32.0,
+      12.0,
+      0.0
+     ]
+    },
+    "scale_1.5@0.1": {
+     "residual_p1": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "residual_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p1": {
+      "k": 1,
+      "n": 3,
+      "rate": 0.3333333333333333,
+      "wilson": [
+       0.061490315276160515,
+       0.7923450448735121
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p1_incremental": {
+      "k": 1,
+      "n": 1,
+      "rate": 1.0,
+      "wilson": [
+       0.20654329147389294,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p1": {
+      "k": 0,
+      "n": 3,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.5615060804490177
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p1": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "iou_residual_mean": 0.3125,
+     "f1_residual_mean": 0.41514041514041516,
+     "iou_coherence_mean": 0.0,
+     "onset_err_frames_median": -5.0,
+     "onset_err_frames_all": [
+      -9.0,
+      -1.0
+     ]
+    },
+    "scale_1.5@0.25": {
+     "residual_p1": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "residual_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p1": {
+      "k": 0,
+      "n": 3,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.5615060804490177
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p1": {
+      "k": 0,
+      "n": 3,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.5615060804490177
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p1": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "iou_residual_mean": 0.38518518518518513,
+     "f1_residual_mean": 0.48809523809523814,
+     "iou_coherence_mean": 0.0,
+     "onset_err_frames_median": -1.5,
+     "onset_err_frames_all": [
+      -6.0,
+      3.0
+     ]
+    },
+    "scale_1.5@0.5": {
+     "residual_p1": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "residual_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p1": {
+      "k": 0,
+      "n": 3,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.5615060804490177
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p1": {
+      "k": 0,
+      "n": 3,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.5615060804490177
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p1": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "iou_residual_mean": 0.4222222222222222,
+     "f1_residual_mean": 0.5166666666666667,
+     "iou_coherence_mean": 0.0,
+     "onset_err_frames_median": 4.5,
+     "onset_err_frames_all": [
+      0.0,
+      9.0
+     ]
+    },
+    "scale_1.5@1": {
+     "residual_p1": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "residual_p1_incremental": {
+      "k": 1,
+      "n": 1,
+      "rate": 1.0,
+      "wilson": [
+       0.20654329147389294,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p1": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p1_incremental": {
+      "k": 1,
+      "n": 1,
+      "rate": 1.0,
+      "wilson": [
+       0.20654329147389294,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p1": {
+      "k": 0,
+      "n": 3,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.5615060804490177
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p1": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "iou_residual_mean": 0.4196217494089835,
+     "f1_residual_mean": 0.5779523435454307,
+     "iou_coherence_mean": 0.13888888888888887,
+     "onset_err_frames_median": 20.0,
+     "onset_err_frames_all": [
+      32.0,
+      12.0,
+      20.0
+     ]
+    },
+    "yaw_control@0.1": {
+     "residual_p1": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "residual_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p1": {
+      "k": 1,
+      "n": 3,
+      "rate": 0.3333333333333333,
+      "wilson": [
+       0.061490315276160515,
+       0.7923450448735121
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p1_incremental": {
+      "k": 1,
+      "n": 1,
+      "rate": 1.0,
+      "wilson": [
+       0.20654329147389294,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p1": {
+      "k": 0,
+      "n": 3,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.5615060804490177
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p1": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "iou_residual_mean": 0.27976190476190477,
+     "f1_residual_mean": 0.3740573152337858,
+     "iou_coherence_mean": 0.0,
+     "onset_err_frames_median": -5.0,
+     "onset_err_frames_all": [
+      -9.0,
+      -1.0
+     ]
+    },
+    "yaw_control@0.25": {
+     "residual_p1": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "residual_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p1": {
+      "k": 1,
+      "n": 3,
+      "rate": 0.3333333333333333,
+      "wilson": [
+       0.061490315276160515,
+       0.7923450448735121
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p1_incremental": {
+      "k": 1,
+      "n": 1,
+      "rate": 1.0,
+      "wilson": [
+       0.20654329147389294,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p1": {
+      "k": 0,
+      "n": 3,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.5615060804490177
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p1": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "iou_residual_mean": 0.3111111111111111,
+     "f1_residual_mean": 0.4166666666666667,
+     "iou_coherence_mean": 0.037037037037037035,
+     "onset_err_frames_median": -1.5,
+     "onset_err_frames_all": [
+      -6.0,
+      3.0
+     ]
+    },
+    "yaw_control@0.5": {
+     "residual_p1": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "residual_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p1": {
+      "k": 0,
+      "n": 3,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.5615060804490177
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p1": {
+      "k": 0,
+      "n": 3,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.5615060804490177
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p1": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "iou_residual_mean": 0.27777777777777773,
+     "f1_residual_mean": 0.38888888888888884,
+     "iou_coherence_mean": 0.0,
+     "onset_err_frames_median": 6.5,
+     "onset_err_frames_all": [
+      4.0,
+      9.0
+     ]
+    },
+    "yaw_control@1": {
+     "residual_p1": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "residual_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p1": {
+      "k": 0,
+      "n": 3,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.5615060804490177
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p1": {
+      "k": 0,
+      "n": 3,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.5615060804490177
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p1": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "iou_residual_mean": 0.22399527186761228,
+     "f1_residual_mean": 0.33167165171153207,
+     "iou_coherence_mean": 0.0,
+     "onset_err_frames_median": 18.0,
+     "onset_err_frames_all": [
+      16.0,
+      20.0
+     ]
+    },
+    "null_edit@0.1": {
+     "residual_p1": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "residual_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p1": {
+      "k": 1,
+      "n": 3,
+      "rate": 0.3333333333333333,
+      "wilson": [
+       0.061490315276160515,
+       0.7923450448735121
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p1_incremental": {
+      "k": 1,
+      "n": 1,
+      "rate": 1.0,
+      "wilson": [
+       0.20654329147389294,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p1": {
+      "k": 0,
+      "n": 3,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.5615060804490177
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p1": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "iou_residual_mean": 0.27976190476190477,
+     "f1_residual_mean": 0.3740573152337858,
+     "iou_coherence_mean": 0.0,
+     "onset_err_frames_median": -5.0,
+     "onset_err_frames_all": [
+      -9.0,
+      -1.0
+     ]
+    },
+    "null_edit@0.25": {
+     "residual_p1": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "residual_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p1": {
+      "k": 1,
+      "n": 3,
+      "rate": 0.3333333333333333,
+      "wilson": [
+       0.061490315276160515,
+       0.7923450448735121
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p1_incremental": {
+      "k": 1,
+      "n": 1,
+      "rate": 1.0,
+      "wilson": [
+       0.20654329147389294,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p1": {
+      "k": 0,
+      "n": 3,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.5615060804490177
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p1": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "iou_residual_mean": 0.3333333333333333,
+     "f1_residual_mean": 0.43333333333333335,
+     "iou_coherence_mean": 0.037037037037037035,
+     "onset_err_frames_median": -1.5,
+     "onset_err_frames_all": [
+      -6.0,
+      3.0
+     ]
+    },
+    "null_edit@0.5": {
+     "residual_p1": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "residual_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p1": {
+      "k": 1,
+      "n": 3,
+      "rate": 0.3333333333333333,
+      "wilson": [
+       0.061490315276160515,
+       0.7923450448735121
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p1_incremental": {
+      "k": 1,
+      "n": 1,
+      "rate": 1.0,
+      "wilson": [
+       0.20654329147389294,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p1": {
+      "k": 0,
+      "n": 3,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.5615060804490177
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p1": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "iou_residual_mean": 0.27777777777777773,
+     "f1_residual_mean": 0.38888888888888884,
+     "iou_coherence_mean": 0.1111111111111111,
+     "onset_err_frames_median": 4.5,
+     "onset_err_frames_all": [
+      0.0,
+      9.0
+     ]
+    },
+    "null_edit@1": {
+     "residual_p1": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "residual_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p1": {
+      "k": 1,
+      "n": 3,
+      "rate": 0.3333333333333333,
+      "wilson": [
+       0.061490315276160515,
+       0.7923450448735121
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p1_incremental": {
+      "k": 1,
+      "n": 1,
+      "rate": 1.0,
+      "wilson": [
+       0.20654329147389294,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p1": {
+      "k": 0,
+      "n": 3,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.5615060804490177
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p1": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p1_incremental": {
+      "k": 0,
+      "n": 1,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.7934567085261071
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "iou_residual_mean": 0.1400709219858156,
+     "f1_residual_mean": 0.23030303030303031,
+     "iou_coherence_mean": 0.05555555555555555,
+     "onset_err_frames_median": 16.0,
+     "onset_err_frames_all": [
+      12.0,
+      20.0
+     ]
+    }
+   },
+   "incremental": {},
+   "real_minutes": 0.19534993333333336
+  },
+  "p2": {
+   "taus": {
+    "residual": {
+     "flight-01a-ellipse": 16.095835627587604,
+     "flight-01p-ellipse": 23.088460106032258,
+     "flight-04a-ellipse": 17.440311730581456,
+     "flight-07p-lemniscate": 23.075035163899372,
+     "flight-13a-trackRATM": 21.377082764805305,
+     "flight-16p-trackRATM": 17.570820447154553,
+     "flight-13p-trackRATM": 21.377082764805305,
+     "flight-07a-lemniscate": 21.377082764805305
+    },
+    "coherence": {
+     "flight-01a-ellipse": 1.1593592774819483,
+     "flight-01p-ellipse": 1.290383692176483,
+     "flight-04a-ellipse": 1.1596397087278179,
+     "flight-07p-lemniscate": 1.1319469847093984,
+     "flight-13a-trackRATM": 1.1561146035639513,
+     "flight-16p-trackRATM": 1.1578771561458847,
+     "flight-13p-trackRATM": 1.1561146035639513,
+     "flight-07a-lemniscate": 1.1561146035639513
+    },
+    "sign": {
+     "flight-01a-ellipse": 0.48749999999999893,
+     "flight-01p-ellipse": 0.625,
+     "flight-04a-ellipse": 0.48749999999999893,
+     "flight-07p-lemniscate": 0.625,
+     "flight-13a-trackRATM": 0.625,
+     "flight-16p-trackRATM": 0.625,
+     "flight-13p-trackRATM": 0.625,
+     "flight-07a-lemniscate": 0.625
+    }
+   },
+   "tau_whole": {
+    "flight-01a-ellipse": 12.488415705902574,
+    "flight-01p-ellipse": 14.122886785531666,
+    "flight-04a-ellipse": 12.489659478683391,
+    "flight-07p-lemniscate": 14.046473502028267,
+    "flight-13a-trackRATM": 12.577247243653472,
+    "flight-16p-trackRATM": 12.483440614779305,
+    "flight-13p-trackRATM": 12.548880503850656,
+    "flight-07a-lemniscate": 12.548880503850656
+   },
+   "real_false_reject": {
+    "residual_p2": {
+     "k": 3,
+     "n": 3,
+     "rate": 1.0,
+     "wilson": [
+      0.4384939195509822,
+      1.0
+     ],
+     "n_clusters": 1,
+     "boot": [
+      NaN,
+      NaN
+     ],
+     "clusters_few_warning": true
+    },
+    "coherence_p2": {
+     "k": 1,
+     "n": 3,
+     "rate": 0.3333333333333333,
+     "wilson": [
+      0.061490315276160515,
+      0.7923450448735121
+     ],
+     "n_clusters": 1,
+     "boot": [
+      NaN,
+      NaN
+     ],
+     "clusters_few_warning": true
+    },
+    "sign_p2": {
+     "k": 0,
+     "n": 3,
+     "rate": 0.0,
+     "wilson": [
+      0.0,
+      0.5615060804490177
+     ],
+     "n_clusters": 1,
+     "boot": [
+      NaN,
+      NaN
+     ],
+     "clusters_few_warning": true
+    },
+    "whole_p2": {
+     "k": 2,
+     "n": 3,
+     "rate": 0.6666666666666666,
+     "wilson": [
+      0.20765495512648788,
+      0.9385096847238393
+     ],
+     "n_clusters": 1,
+     "boot": [
+      NaN,
+      NaN
+     ],
+     "clusters_few_warning": true
+    }
+   },
+   "per_flight_false_reject": {
+    "flight-13p-trackRATM": {
+     "n": 3,
+     "residual": 3
+    },
+    "flight-07a-lemniscate": {
+     "n": 0,
+     "residual": 0
+    }
+   },
+   "false_segments_per_minute": {
+    "residual": 15.357056686991445,
+    "coherence": 10.23803779132763,
+    "sign": 0.0
+   },
+   "rates": {
+    "tilt_removal@0.1": {
+     "residual_p2": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "residual_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p2": {
+      "k": 1,
+      "n": 3,
+      "rate": 0.3333333333333333,
+      "wilson": [
+       0.061490315276160515,
+       0.7923450448735121
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p2": {
+      "k": 0,
+      "n": 3,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.5615060804490177
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p2": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "iou_residual_mean": 0.24305555555555558,
+     "f1_residual_mean": 0.35480859010270777,
+     "iou_coherence_mean": 0.03333333333333333,
+     "onset_err_frames_median": -1.0,
+     "onset_err_frames_all": [
+      11.0,
+      -9.0,
+      -1.0
+     ]
+    },
+    "tilt_removal@0.25": {
+     "residual_p2": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "residual_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p2": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p2": {
+      "k": 1,
+      "n": 3,
+      "rate": 0.3333333333333333,
+      "wilson": [
+       0.061490315276160515,
+       0.7923450448735121
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p2": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "iou_residual_mean": 0.4935897435897436,
+     "f1_residual_mean": 0.6329365079365079,
+     "iou_coherence_mean": 0.5922364672364672,
+     "onset_err_frames_median": -1.0,
+     "onset_err_frames_all": [
+      6.0,
+      -6.0,
+      -1.0
+     ]
+    },
+    "tilt_removal@0.5": {
+     "residual_p2": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "residual_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p2": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p2": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p2": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "iou_residual_mean": 0.6607142857142857,
+     "f1_residual_mean": 0.7752247752247752,
+     "iou_coherence_mean": 0.6126984126984126,
+     "onset_err_frames_median": 0.0,
+     "onset_err_frames_all": [
+      12.0,
+      0.0,
+      -3.0
+     ]
+    },
+    "tilt_removal@1": {
+     "residual_p2": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "residual_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p2": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p2": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p2": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "iou_residual_mean": 0.8333333333333334,
+     "f1_residual_mean": 0.8888888888888888,
+     "iou_coherence_mean": 0.8043735224586288,
+     "onset_err_frames_median": 0.0,
+     "onset_err_frames_all": [
+      24.0,
+      0.0,
+      0.0
+     ]
+    },
+    "mirror_roll@0.1": {
+     "residual_p2": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "residual_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p2": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p2": {
+      "k": 0,
+      "n": 3,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.5615060804490177
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p2": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "iou_residual_mean": 0.24305555555555558,
+     "f1_residual_mean": 0.35480859010270777,
+     "iou_coherence_mean": 0.13749999999999998,
+     "onset_err_frames_median": -1.0,
+     "onset_err_frames_all": [
+      11.0,
+      -9.0,
+      -1.0
+     ]
+    },
+    "mirror_roll@0.25": {
+     "residual_p2": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "residual_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p2": {
+      "k": 1,
+      "n": 3,
+      "rate": 0.3333333333333333,
+      "wilson": [
+       0.061490315276160515,
+       0.7923450448735121
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p2": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p2": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "iou_residual_mean": 0.4351851851851852,
+     "f1_residual_mean": 0.5238095238095238,
+     "iou_coherence_mean": 0.0,
+     "onset_err_frames_median": -1.0,
+     "onset_err_frames_all": [
+      14.0,
+      -6.0,
+      -1.0
+     ]
+    },
+    "mirror_roll@0.5": {
+     "residual_p2": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "residual_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p2": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p2": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p2": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "iou_residual_mean": 0.6190476190476191,
+     "f1_residual_mean": 0.7267399267399267,
+     "iou_coherence_mean": 0.6388888888888888,
+     "onset_err_frames_median": -3.0,
+     "onset_err_frames_all": [
+      16.0,
+      -4.0,
+      -3.0
+     ]
+    },
+    "mirror_roll@1": {
+     "residual_p2": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "residual_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p2": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p2": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p2": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "iou_residual_mean": 0.8055555555555557,
+     "f1_residual_mean": 0.8627450980392157,
+     "iou_coherence_mean": 0.7819148936170213,
+     "onset_err_frames_median": 0.0,
+     "onset_err_frames_all": [
+      28.0,
+      0.0,
+      0.0
+     ]
+    },
+    "scale_0.5@0.1": {
+     "residual_p2": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "residual_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p2": {
+      "k": 1,
+      "n": 3,
+      "rate": 0.3333333333333333,
+      "wilson": [
+       0.061490315276160515,
+       0.7923450448735121
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p2": {
+      "k": 0,
+      "n": 3,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.5615060804490177
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p2": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "iou_residual_mean": 0.24305555555555558,
+     "f1_residual_mean": 0.35480859010270777,
+     "iou_coherence_mean": 0.0,
+     "onset_err_frames_median": -1.0,
+     "onset_err_frames_all": [
+      11.0,
+      -9.0,
+      -1.0
+     ]
+    },
+    "scale_0.5@0.25": {
+     "residual_p2": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "residual_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p2": {
+      "k": 1,
+      "n": 3,
+      "rate": 0.3333333333333333,
+      "wilson": [
+       0.061490315276160515,
+       0.7923450448735121
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p2": {
+      "k": 0,
+      "n": 3,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.5615060804490177
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p2": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "iou_residual_mean": 0.39999999999999997,
+     "f1_residual_mean": 0.5,
+     "iou_coherence_mean": 0.0,
+     "onset_err_frames_median": 3.0,
+     "onset_err_frames_all": [
+      14.0,
+      -6.0,
+      3.0
+     ]
+    },
+    "scale_0.5@0.5": {
+     "residual_p2": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "residual_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p2": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p2": {
+      "k": 0,
+      "n": 3,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.5615060804490177
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p2": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "iou_residual_mean": 0.5690476190476191,
+     "f1_residual_mean": 0.6910256410256409,
+     "iou_coherence_mean": 0.13227513227513227,
+     "onset_err_frames_median": 9.0,
+     "onset_err_frames_all": [
+      16.0,
+      0.0,
+      9.0
+     ]
+    },
+    "scale_0.5@1": {
+     "residual_p2": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "residual_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p2": {
+      "k": 0,
+      "n": 3,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.5615060804490177
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p2": {
+      "k": 0,
+      "n": 3,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.5615060804490177
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p2": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "iou_residual_mean": 0.6938534278959811,
+     "f1_residual_mean": 0.8003112356053532,
+     "iou_coherence_mean": 0.0,
+     "onset_err_frames_median": 12.0,
+     "onset_err_frames_all": [
+      28.0,
+      12.0,
+      0.0
+     ]
+    },
+    "scale_1.5@0.1": {
+     "residual_p2": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "residual_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p2": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p2": {
+      "k": 0,
+      "n": 3,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.5615060804490177
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p2": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "iou_residual_mean": 0.24305555555555558,
+     "f1_residual_mean": 0.35480859010270777,
+     "iou_coherence_mean": 0.07777777777777778,
+     "onset_err_frames_median": -1.0,
+     "onset_err_frames_all": [
+      11.0,
+      -9.0,
+      -1.0
+     ]
+    },
+    "scale_1.5@0.25": {
+     "residual_p2": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "residual_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p2": {
+      "k": 1,
+      "n": 3,
+      "rate": 0.3333333333333333,
+      "wilson": [
+       0.061490315276160515,
+       0.7923450448735121
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p2": {
+      "k": 0,
+      "n": 3,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.5615060804490177
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p2": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "iou_residual_mean": 0.4166666666666667,
+     "f1_residual_mean": 0.5079365079365079,
+     "iou_coherence_mean": 0.14285714285714285,
+     "onset_err_frames_median": -1.0,
+     "onset_err_frames_all": [
+      14.0,
+      -6.0,
+      -1.0
+     ]
+    },
+    "scale_1.5@0.5": {
+     "residual_p2": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "residual_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p2": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p2": {
+      "k": 0,
+      "n": 3,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.5615060804490177
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p2": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "iou_residual_mean": 0.6334154351395731,
+     "f1_residual_mean": 0.735897435897436,
+     "iou_coherence_mean": 0.353015873015873,
+     "onset_err_frames_median": 1.0,
+     "onset_err_frames_all": [
+      16.0,
+      -4.0,
+      1.0
+     ]
+    },
+    "scale_1.5@1": {
+     "residual_p2": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "residual_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p2": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p2": {
+      "k": 0,
+      "n": 3,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.5615060804490177
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p2": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "iou_residual_mean": 0.6648936170212766,
+     "f1_residual_mean": 0.7700600919052668,
+     "iou_coherence_mean": 0.2777777777777778,
+     "onset_err_frames_median": 12.0,
+     "onset_err_frames_all": [
+      28.0,
+      4.0,
+      12.0
+     ]
+    },
+    "yaw_control@0.1": {
+     "residual_p2": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "residual_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p2": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p2": {
+      "k": 0,
+      "n": 3,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.5615060804490177
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p2": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "iou_residual_mean": 0.24305555555555558,
+     "f1_residual_mean": 0.35480859010270777,
+     "iou_coherence_mean": 0.044444444444444446,
+     "onset_err_frames_median": -1.0,
+     "onset_err_frames_all": [
+      11.0,
+      -9.0,
+      -1.0
+     ]
+    },
+    "yaw_control@0.25": {
+     "residual_p2": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "residual_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p2": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p2": {
+      "k": 0,
+      "n": 3,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.5615060804490177
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p2": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "iou_residual_mean": 0.38518518518518513,
+     "f1_residual_mean": 0.48809523809523814,
+     "iou_coherence_mean": 0.1111111111111111,
+     "onset_err_frames_median": 3.0,
+     "onset_err_frames_all": [
+      14.0,
+      -6.0,
+      3.0
+     ]
+    },
+    "yaw_control@0.5": {
+     "residual_p2": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "residual_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p2": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p2": {
+      "k": 0,
+      "n": 3,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.5615060804490177
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p2": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "iou_residual_mean": 0.38888888888888884,
+     "f1_residual_mean": 0.48888888888888893,
+     "iou_coherence_mean": 0.27777777777777773,
+     "onset_err_frames_median": 4.5,
+     "onset_err_frames_all": [
+      0.0,
+      9.0
+     ]
+    },
+    "yaw_control@1": {
+     "residual_p2": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "residual_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p2": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p2": {
+      "k": 0,
+      "n": 3,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.5615060804490177
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p2": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "iou_residual_mean": 0.2795508274231679,
+     "f1_residual_mean": 0.3812072554267023,
+     "iou_coherence_mean": 0.24468085106382978,
+     "onset_err_frames_median": 16.0,
+     "onset_err_frames_all": [
+      12.0,
+      20.0
+     ]
+    },
+    "null_edit@0.1": {
+     "residual_p2": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "residual_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p2": {
+      "k": 1,
+      "n": 3,
+      "rate": 0.3333333333333333,
+      "wilson": [
+       0.061490315276160515,
+       0.7923450448735121
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p2": {
+      "k": 0,
+      "n": 3,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.5615060804490177
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p2": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "iou_residual_mean": 0.21031746031746032,
+     "f1_residual_mean": 0.3137254901960784,
+     "iou_coherence_mean": 0.0,
+     "onset_err_frames_median": -1.0,
+     "onset_err_frames_all": [
+      11.0,
+      -9.0,
+      -1.0
+     ]
+    },
+    "null_edit@0.25": {
+     "residual_p2": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "residual_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p2": {
+      "k": 1,
+      "n": 3,
+      "rate": 0.3333333333333333,
+      "wilson": [
+       0.061490315276160515,
+       0.7923450448735121
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p2": {
+      "k": 0,
+      "n": 3,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.5615060804490177
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p2": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "iou_residual_mean": 0.3111111111111111,
+     "f1_residual_mean": 0.4166666666666667,
+     "iou_coherence_mean": 0.0196078431372549,
+     "onset_err_frames_median": 3.0,
+     "onset_err_frames_all": [
+      14.0,
+      -6.0,
+      3.0
+     ]
+    },
+    "null_edit@0.5": {
+     "residual_p2": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "residual_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p2": {
+      "k": 1,
+      "n": 3,
+      "rate": 0.3333333333333333,
+      "wilson": [
+       0.061490315276160515,
+       0.7923450448735121
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p2": {
+      "k": 0,
+      "n": 3,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.5615060804490177
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p2": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "iou_residual_mean": 0.375,
+     "f1_residual_mean": 0.5185185185185185,
+     "iou_coherence_mean": 0.06666666666666667,
+     "onset_err_frames_median": 9.0,
+     "onset_err_frames_all": [
+      20.0,
+      0.0,
+      9.0
+     ]
+    },
+    "null_edit@1": {
+     "residual_p2": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "wilson": [
+       0.4384939195509822,
+       1.0
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "residual_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p2": {
+      "k": 1,
+      "n": 3,
+      "rate": 0.3333333333333333,
+      "wilson": [
+       0.061490315276160515,
+       0.7923450448735121
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "coherence_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p2": {
+      "k": 0,
+      "n": 3,
+      "rate": 0.0,
+      "wilson": [
+       0.0,
+       0.5615060804490177
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "sign_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p2": {
+      "k": 2,
+      "n": 3,
+      "rate": 0.6666666666666666,
+      "wilson": [
+       0.20765495512648788,
+       0.9385096847238393
+      ],
+      "n_clusters": 1,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "whole_p2_incremental": {
+      "k": 0,
+      "n": 0,
+      "rate": NaN,
+      "wilson": [
+       NaN,
+       NaN
+      ],
+      "n_clusters": 0,
+      "boot": [
+       NaN,
+       NaN
+      ],
+      "clusters_few_warning": true
+     },
+     "iou_residual_mean": 0.25177304964539005,
+     "f1_residual_mean": 0.40225988700564974,
+     "iou_coherence_mean": 0.16666666666666666,
+     "onset_err_frames_median": 20.0,
+     "onset_err_frames_all": [
+      32.0,
+      12.0,
+      20.0
+     ]
+    }
+   },
+   "incremental": {},
+   "real_minutes": 0.19534993333333336
+  }
+ }
+}

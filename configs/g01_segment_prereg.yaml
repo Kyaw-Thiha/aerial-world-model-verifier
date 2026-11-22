@@ -1,0 +1,173 @@
+version: 1
+date: '2026-11-16'
+status: preregistered
+track: G
+owner_branch: track-g-segments
+written: before any window statistic, threshold or detection rate was computed
+inputs_are_frozen:
+  clips: data/processed/track_d/clips  # schema v2, Track D, unchanged
+  gain: configs/gain_frozen.yaml
+  coherence: configs/coherence_frozen.yaml
+  gate: configs/gate_frozen.yaml
+  window_rule: configs/window_bandwidth_prereg.yaml
+note: >
+  This file fixes the segment-detection experiment (report G01) before any outcome is
+  looked at. Every choice below was made from the handoff text and from already-published
+  results (E3, E8, E10); none was selected on a detection rate.
+
+question: >
+  Can a verifier that slides windows over a clip localise a tilt violation that covers only
+  part of the clip, and reject the clip, at a whole-clip false-reject rate fixed by
+  conformal calibration of the maximum-over-windows statistic?
+
+population:
+  dataset: TII Race Against the Machine
+  clip_source: results/.../verdict_clip.npz under data/processed/track_d/clips/<flight>/<clip>__<condition>/
+  schema: verdict_clip v2 (t, pos, yaw, depicted_lean, depicted_conf, lean_req, vel_req, tilt_req_deg)
+  n_real_clips: 100
+  flights: 8
+  clip_length_frames: 47-49
+  clip_rate_hz: 11.9-12.0
+  dense_path_required: >
+    Segments need a path dense enough to differentiate at the truth rate. TII schema v2
+    clips carry lean_req at 274.73 Hz sampled onto the 12 Hz frames. ANWM clips (1 Hz,
+    16 points) cannot support this and are out of scope; stated in the report, never scored.
+  held_out_flights:  # frozen now; scored exactly once, at the end, with bands fitted on dev
+    - flight-13p-trackRATM
+    - flight-07a-lemniscate
+  dev_flights:
+    - flight-01a-ellipse
+    - flight-01p-ellipse
+    - flight-04a-ellipse
+    - flight-07p-lemniscate
+    - flight-13a-trackRATM
+    - flight-16p-trackRATM
+  development_rule: >
+    All development, debugging and threshold checks run on dev_flights only. The two
+    held-out flights are scored once, after the code and this file are frozen, and their
+    numbers are reported as a confirmatory block whether or not they agree.
+
+window:
+  length_basis: >
+    The label-free rule (configs/window_bandwidth_prereg.yaml, `0.5 / f95`, 8-sample floor
+    at the truth rate, no clamp) returns 0.05-0.22 s per TII clip at 274.73 Hz, which is
+    0.6-2.6 frames at the 12 Hz clip rate. A window statistic cannot be computed from that,
+    and the rule's own abstain clause says a rate that cannot support its window makes the
+    clip not testable (the defect Track E measured on the 15 Hz UZH export, report E05).
+    The floor is therefore applied at the rate the statistic is actually computed on: clip
+    frames. Deviation recorded in docs/decisions.md and in the report.
+  length_frames: 8          # = max(rule window in frames, 8) at 12 Hz; the floor binds on every clip
+  hop_frames: 4             # 50 % overlap; onset resolution is therefore 0.33 s
+  sensitivity_length_frames: [12]   # secondary only, recalibrated, same alpha
+  min_usable_frames: 6      # a window with fewer finite depicted frames abstains
+  min_signal_frames: 2      # frames with required tilt >= 10 deg, the frozen signal floor
+
+per_window_statistics:
+  residual:
+    definition: >
+      Per frame, the angle between the depicted thrust axis and the required thrust axis,
+      both reconstructed from the schema lean vectors with src.depicted.clips.up_body_from_lean
+      (the body z axis is minus the body-frame world-up vector, so the angle is invariant to
+      the path yaw and no yaw is needed). Window statistic = median over usable frames.
+    units: degrees
+    direction: larger is more suspicious
+  coherence:
+    definition: >
+      src.verdict.coherence on the window's frames: per-axis Pearson correlation between
+      depicted and required lean, statistic = 1 - min(r_x, r_y). Lag fixed at 0 ms inside a
+      window (the frozen tier uses the clip-level gain-fit lag; a 0.33-0.66 s window cannot
+      support a lag search, and the clip-level lag is a property of the flight, not the
+      window). A window whose lean has negligible variance on either axis abstains for this
+      tier only.
+    direction: larger is more suspicious
+  sign:
+    definition: 1 - min(s_x, s_y), per-axis sign agreement as in src.verdict.coherence
+    direction: larger is more suspicious
+  gain:
+    definition: not computed per window
+    reason: >
+      The frozen gain tier abstains below 24 frames (configs/gain_frozen.yaml) and a window
+      has 8. Computing a gain on a window would violate the frozen abstention rule, so the
+      segment detector uses the two tiers that 8 frames support and the gain enters only at
+      clip level (report G02).
+
+clip_statistic_and_calibration:
+  statistic: maximum over windows of the tier statistic (a scan statistic)
+  fwer_control: >
+    The family is the set of windows in one clip. Calibrating the conformal threshold on the
+    clip-level MAXIMUM rather than on single windows gives the whole clip one false-reject
+    budget: P(max_w T_w > tau) <= alpha under exchangeability of real clips across flights.
+    No per-window alpha is used for any reported number.
+  threshold_rule: >
+    Leave-one-flight-out empirical 95th percentile of the clip maxima over the real clips of
+    the fit flights (the pooled 8-clip minimum of the existing conformal code is not binding:
+    fit folds carry 70-90 clips). Same rule for every tier. No smoothing, no tail model.
+  alpha: 0.05
+  abstention:
+    clip: no usable window -> not testable, reported and excluded from denominators
+    window: fewer than 6 usable frames or fewer than 2 signal frames -> abstain
+  persistence:
+    primary: the clip is flagged when at least one window exceeds tau (persistence N = 1)
+    secondary: N = 2 consecutive flagged windows (a stricter rule, same calibration)
+
+injections:
+  construction: >
+    Partial edits are composed on the depicted side only: inside the injected interval the
+    depicted lean is taken from the SAME clip's full-clip edit of the same family, outside it
+    from the real clip. This is exact, not approximate, because the depicted reader is
+    per-frame (GeoCalib estimates gravity from one frame; the clip files record no temporal
+    smoothing - see report G01 section on validity), so the edited frames' estimates are
+    identical to what a partial edit re-run through the reader would produce. It uses no GPU
+    and cannot alter the path side (t, pos, yaw, lean_req, vel_req are identical across
+    conditions; asserted in the code before any composition).
+  families: [tilt_removal, mirror_roll, scale_0.5, scale_1.5]
+  controls: [yaw_control, null_edit]
+  fractions: [0.10, 0.25, 0.50]
+  interval_rule: >
+    Contiguous interior interval of m = max(1, round(f * N)) frames starting at
+    (N - m) // 2 (centred). Deterministic; no random placement, so the same clip always
+    yields the same interval.
+  full_clip: the unmodified full-clip edit (fraction 1.0) is reported as the reference point
+
+evaluation:
+  clip_level: >
+    Detection rate (k/n) per family and fraction, at the matched 5 % whole-clip false-reject,
+    against the median baseline: the frozen whole-clip median-residual statistic (clip median,
+    no windows) calibrated by the same leave-one-flight-out conformal rule on the same clips.
+  interval_level:
+    iou: intersection over union of the union of flagged windows with the injected interval
+    f1: frame-level F1 (precision/recall of flagged frames against the injected frames)
+    onset_error_s: detected first flagged frame time minus injected start time, on detections only
+    false_segments_per_minute: merged flagged intervals on real clips, divided by clip minutes
+  intervals: >
+    Flight-clustered bootstrap, 5,000 replicates, numpy.random.default_rng(1), resampling
+    flights with replacement. 8 flights (6 on the dev block) makes these descriptive spreads,
+    not 95 % confidence intervals; said so beside every one.
+  controls_beside_every_rate: [yaw_control, null_edit]
+  gate: >
+    Secondary block only: the frozen S3 confidence gate (configs/gate_frozen.yaml) applied at
+    pair level, reported with the kept clip count. The primary block does not gate, so that
+    the segment statistic is measured without a second selection step.
+
+success_criterion:
+  primary: >
+    At <= 5 % whole-clip false-reject, partial tilt removal at 25 % and 50 % of the clip is
+    detected in at least half of the injected clips, with mean interval IoU above 0.5, and the
+    yaw and null controls stay at or below the false-reject rate. Reported as k/n with the
+    flight-clustered spread; a miss is reported as a miss.
+  secondary: >
+    The 10 % fraction is reported without a success bar: on 4 s clips it is 4-5 frames, smaller
+    than one window, so detection at that fraction is expected to be weak and the number
+    is descriptive.
+  falsification: >
+    If detection is not better than the whole-clip median baseline, the segment machinery adds
+    nothing at this clip rate; that outcome is reported as the finding.
+
+held_out_reporting:
+  once: true
+  content: detection and false-reject on the two held-out flights, bands fitted on the six dev flights
+  no_recalibration_after: true
+
+cost:
+  gpu_usd: 0
+  note: CPU only, reads stored clips
