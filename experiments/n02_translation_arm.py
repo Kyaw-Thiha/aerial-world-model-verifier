@@ -142,7 +142,7 @@ def measure_sim(cid: str, family: str, mounts: str) -> list[dict]:
             delta = (angle_between(g["t_est"], t_true)
                      if g["t_est"] is not None else float("nan"))
             rows.append({"stratum": f"sim_{family}", "kind": "sim", "unit": cid,
-                         "mount_deg": mounts, "gap_s": gap, "i": i, "j": j, "dt_s": dt,
+                         "mount_deg": mounts, "fps": fps, "gap_s": gap, "i": i, "j": j, "dt_s": dt,
                          "speed_mps": speed, "delta_deg": delta,
                          "delta_old_deg": (angle_between(g["t_est"], t_old)
                                            if g["t_est"] is not None else float("nan")),
@@ -191,7 +191,7 @@ def measure_uzh(seq: str) -> list[dict]:
             delta = (angle_between(g["t_est"], t_true)
                      if g["t_est"] is not None else float("nan"))
             rows.append({"stratum": "uzh_outdoor", "kind": "uzh", "unit": seq,
-                         "mount_deg": "", "gap_s": gap, "i": i, "j": j, "dt_s": dt,
+                         "mount_deg": "", "fps": fps, "gap_s": gap, "i": i, "j": j, "dt_s": dt,
                          "speed_mps": speed, "delta_deg": delta,
                          "delta_old_deg": (angle_between(g["t_est"], t_old)
                                            if g["t_est"] is not None else float("nan")),
@@ -235,6 +235,9 @@ def measure_generated(path: str, tag: str) -> list[dict]:
 
 
 # --------------------------------------------------------------------------- drivers
+def _sim_task(a):
+    return measure_sim(*a)
+
 def _write(rows: list[dict], path: Path, fields: list[str]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with open(path, "w", newline="") as f:
@@ -248,12 +251,12 @@ def run_measure() -> None:
     tasks = [(r["clip_id"], r["family"], r["uptilt_deg"]) for r in pop]
     rows = []
     with ProcessPoolExecutor(max_workers=min(8, os.cpu_count() or 1)) as ex:
-        for k, part in enumerate(ex.map(lambda a: measure_sim(*a), tasks)):
+        for k, part in enumerate(ex.map(_sim_task, tasks)):
             rows += part
             if k % 10 == 0:
                 print(f"sim {k + 1}/{len(tasks)} clips, {len(rows)} pairs", flush=True)
     _write(rows, OUT / "pairs_sim.csv",
-           ["stratum", "kind", "unit", "mount_deg", "gap_s", "i", "j", "dt_s", "speed_mps",
+           ["stratum", "kind", "unit", "mount_deg", "fps", "gap_s", "i", "j", "dt_s", "speed_mps",
             "delta_deg", "delta_old_deg", "delta_amb_deg", "n_matches", "n_inliers", "sampson_median_px",
             "status", "t_est", "t_true"])
     print(f"wrote {len(rows)} sim pairs")
@@ -264,7 +267,7 @@ def run_measure() -> None:
         for part in ex.map(measure_uzh, uzh):
             urows += part
     _write(urows, OUT / "pairs_uzh.csv",
-           ["stratum", "kind", "unit", "mount_deg", "gap_s", "i", "j", "dt_s", "speed_mps",
+           ["stratum", "kind", "unit", "mount_deg", "fps", "gap_s", "i", "j", "dt_s", "speed_mps",
             "delta_deg", "delta_old_deg", "delta_amb_deg", "n_matches", "n_inliers", "sampson_median_px",
             "status", "t_est", "t_true"])
     print(f"wrote {len(urows)} UZH pairs")
@@ -289,7 +292,6 @@ def run_generated() -> None:
         rows += measure_generated(path, tag)
         if k % 20 == 0:
             print(f"generated {k + 1}/{len(jobs)}", flush=True)
-    _write(rows, OUT / "generated_csv.tmp", ["x"])
     _write(rows, OUT / "generated_track_noise.csv",
            ["tag", "clip", "i", "gap_s", "n_matches", "n_inliers", "sampson_median_px", "status"])
     print(f"wrote {len(rows)} generated pair rows")
@@ -331,7 +333,8 @@ def run_analyse() -> None:
     # per-second (1 s blocks, circular mean of directions)
     ps = []
     for (unit, gap), g in ok.groupby(["unit", "gap_s"]):
-        for sec, gg in g.groupby((g.i / 30.0).astype(int)):
+        fps_u = float(g.fps.iloc[0]) if "fps" in g else (30.0 if g.kind.iloc[0] == "sim" else 15.07)
+        for sec, gg in g.groupby((g.i / fps_u).astype(int)):
             te = np.mean(np.array(gg.t_est.tolist()), axis=0)
             tt = np.mean(np.array(gg.t_true.tolist()), axis=0)
             ps.append({"unit": unit, "gap_s": gap, "second": int(sec),
