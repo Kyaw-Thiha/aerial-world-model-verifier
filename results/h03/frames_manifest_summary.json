@@ -1,0 +1,13 @@
+{
+ "total": 150,
+ "by_source": {
+  "anwm": 30,
+  "lingbot_nf4": 15,
+  "lingbot_bf16": 15,
+  "solarwm": 30,
+  "sim_control": 30,
+  "real_control": 30
+ },
+ "per_clip": 5,
+ "frame_index_rule": "round(linspace(0, n-1, 5))"
+}
