@@ -512,3 +512,24 @@ Every row below was read from the project's own repo/HF card on 2026-11-10. "ver
   arms therefore state their route and initialisation explicitly in `configs/l02_reader_prereg.yaml`; the
   domain-randomised arm warps simulated frames to a synthetic `simple_divisional` fisheye so that the real
   and simulated batches share a camera model, and the warp parameters are drawn from a pre-registered grid.
+
+- [L] **The L01 re-score reproduces I02 to 0.11 deg at worst, and the prereg's 0.05 deg stop rule
+  fired; the rule was amended rather than ignored** (`configs/l01_amendment_a.yaml`). The two
+  stride-1 clips agree to 0.03 deg, the maximum over the first 36 is 0.109, and the re-score's
+  own even/odd subset medians bracket I02's stored value (e.g. dev_008: stored 6.318, even
+  6.382, odd 6.433, full 6.404). That is the signature of a frame-enumeration offset in I02's
+  stride-2 loader, not of a different estimate, and its size is GeoCalib's own run-to-run
+  difference (Track A measured 0.13-0.16 deg for the identity edit). The amended check is
+  0.25 deg per clip and 0.10 deg on the pooled median, still an order of magnitude below every
+  effect L01 reports.
+- [L] **The regenerated TII edits are validated on the condition-specific change, not on an
+  absolute comparison** (`configs/l02_amendment_b.yaml`). On `flight-01a-ellipse#00`, the frozen
+  reader on our regenerated frames differs from the stored condition leans by 0.56-0.67 deg
+  **on every condition including `real`**, so the offset belongs to the reader invocation (the
+  stored leans came from Track A2's gate extraction on the zip-decoded frames), not to the
+  warps. Relative to `real`, the four conditions move by +0.05 (null), -0.07 (tilt removal),
+  -0.06 (mirror) and +0.04 (yaw) deg. Aligning two policies to Track A2's (per-condition warp
+  with black border and no common mask; the default LM schedule for the frozen reader) is what
+  reduced the spread from 0.3-1.8 deg on the first attempt. Consequence recorded: the new
+  readers' downstream rates use the identity-warped frame as the real condition so real and
+  edits share resampling, with the raw-frame sensitivity reported beside it.

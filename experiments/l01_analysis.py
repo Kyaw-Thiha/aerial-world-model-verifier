@@ -204,7 +204,8 @@ def main() -> int:
         an_rows.append({"family": fam, "pooled": _pool_anatomy(g), "per_clip": _clip_anatomy(g)})
 
     # ---------------- write --------------------------------------------------
-    (out / "per_clip.csv").write_text(_csv(per_clip))
+    (out / "per_clip.csv").write_text(_csv(
+        [{k: v for k, v in r.items() if not isinstance(v, (dict, list))} for r in per_clip]))
     (out / "cells.csv").write_text(_csv(cells))
     (out / "families.csv").write_text(_csv(families + [pooled]))
     (out / "anatomy.json").write_text(json.dumps(an_rows, indent=1))
@@ -213,7 +214,10 @@ def main() -> int:
         "gate_tau": tau,
         "reproduction": {
             "max_abs_delta": float(np.max([abs(r["delta"]) for r in repro])) if repro else None,
-            "n_over_tolerance": int(sum(abs(r["delta"]) > 0.05 for r in repro)),
+            "p90_abs_delta": float(np.percentile([abs(r["delta"]) for r in repro], 90)) if repro else None,
+            "pooled_median_delta": float(np.median([r["delta"] for r in repro])) if repro else None,
+            "n_over_0.05_original": int(sum(abs(r["delta"]) > 0.05 for r in repro)),
+            "n_over_0.25_amended": int(sum(abs(r["delta"]) > 0.25 for r in repro)),
             "rows": repro,
         },
         "gate": gate_rows, "gate_forest_vs_open": {

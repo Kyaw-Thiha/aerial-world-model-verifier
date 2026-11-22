@@ -72,7 +72,8 @@ def edits(flights: str, model: str = "frozen", lm_steps: int = 10,
                            map_location=device, weights_only=True)
         calib.model.load_state_dict(state, strict=False)
     net = calib.model
-    net.optimizer.num_steps = lm_steps
+    if model != "frozen":
+        net.optimizer.num_steps = lm_steps
     net.eval()
 
     specs = Path(VOL) / "l02" / "p3a"
@@ -133,21 +134,21 @@ def edits(flights: str, model: str = "frozen", lm_steps: int = 10,
                     mx, my = remap_arrays(M, w, h, fpx)
                     maps[cond] = (mx, my, (mx >= 0) & (my >= 0))
                     Ms[cond] = M
-                common = np.logical_and.reduce([maps[c][2] for c in CONDS])
                 warped = {}
                 for cond in CONDS:
                     mx, my, _ = maps[cond]
-                    wimg = cv2.remap(img, mx, my, interpolation=cv2.INTER_LINEAR,
-                                     borderMode=cv2.BORDER_CONSTANT, borderValue=0)
-                    wimg = np.where(common[..., None], wimg, 0)
-                    warped[cond] = wimg
+                    warped[cond] = cv2.remap(img, mx, my, interpolation=cv2.INTER_LINEAR,
+                                             borderMode=cv2.BORDER_CONSTANT, borderValue=0)
                 for cond, src in [("real", img)] + [(c, warped[c]) for c in CONDS]:
                     rgb = cv2.cvtColor(src, cv2.COLOR_BGR2RGB)
                     t = torch.from_numpy(rgb).permute(2, 0, 1).float().to(device) / 255.0
                     with torch.no_grad():
-                        net.optimizer.set_camera_model("simple_divisional")
-                        net.optimizer.shared_intrinsics = False
-                        res = net(calib.image_processor(t[None]) | {"camera_R_rig": None})
+                        if model == "frozen":
+                            res = calib.calibrate(t, camera_model="simple_divisional")
+                        else:
+                            net.optimizer.set_camera_model("simple_divisional")
+                            net.optimizer.shared_intrinsics = False
+                            res = net(calib.image_processor(t[None]) | {"camera_R_rig": None})
                     g = np.asarray(res["gravity"].vec3d.detach().cpu()).ravel()
                     g = g / np.linalg.norm(g)
                     row = {"frame": int(i), "name": names[i],
@@ -169,17 +170,20 @@ def edits(flights: str, model: str = "frozen", lm_steps: int = 10,
         if model == "frozen":                      # pipeline check against Track D's store
             import math
 
+            name_map = {"real": "real", "null_edit": "null_edit", "tilt_k0": "tilt_removal",
+                        "mirror_roll": "mirror_roll", "yaw_control": "yaw_control"}
             diffs = {}
             for c in out[flight]:
-                for cond in CONDS:
-                    d = store / flight / f"{c['clip_id']}__{cond.replace('null_edit', 'null_edit')}"
+                for cond in CONDS + ("real",):
+                    d = store / flight / f"{c['clip_id']}__{name_map[cond]}"
                     npz = d / "verdict_clip.npz"
                     if not npz.exists():
                         continue
                     z = np.load(npz)
                     ref = np.asarray(z["depicted_lean"], float)
                     got = np.array([r["lean"] if r else [np.nan, np.nan]
-                                    for r in c["conditions"][cond]], float)
+                                    for r in (c["real"] if cond == "real"
+                                              else c["conditions"][cond])], float)
                     ok = np.isfinite(ref).all(1) & np.isfinite(got).all(1)
                     if ok.sum() < 3:
                         continue
@@ -187,16 +191,77 @@ def edits(flights: str, model: str = "frozen", lm_steps: int = 10,
                         np.linalg.norm(ref[ok], axis=1) * np.linalg.norm(got[ok], axis=1))
                     ang = np.degrees(np.arccos(np.clip(cth, -1, 1)))
                     diffs.setdefault(cond, []).extend(ang.tolist())
+            base = float(np.median(diffs["real"])) if "real" in diffs else float("nan")
             out[flight + "__check"] = {k: {"n": len(v), "median_deg": float(np.median(v)),
-                                           "p90_deg": float(np.percentile(v, 90))}
+                                           "p90_deg": float(np.percentile(v, 90)),
+                                           "relative_to_real": float(np.median(v)) - base}
                                        for k, v in diffs.items()}
             print(f"[{flight}] check {out[flight + '__check']}", flush=True)
     return {k: (v if k.endswith("__check") else len(v)) for k, v in out.items()}
 
 
+@app.function(image=image, gpu="A10G", volumes={VOL: volume}, timeout=1800)
+def probe(flight: str = "flight-01a-ellipse", clip: str = "flight-01a-ellipse#00",
+          cond: str = "real", n: int = 8) -> dict:
+    """Compare the training harness's net() forward with GeoCalib.calibrate on the same frames."""
+    import json
+
+    import cv2
+    import numpy as np
+    import torch
+    from geocalib import GeoCalib
+    from scipy.spatial.transform import Rotation
+
+    from src.perception.frames import camera_to_body_pitched
+    from src.verdict.lean import depicted_lean_from_gravity
+
+    specs = Path(VOL) / "l02" / "p3a"
+    clips = json.loads((specs / "clips.json").read_text())["clips"]
+    c = [x for x in clips if x["clip_id"] == clip][0]
+    spec = np.load(specs / f"{flight}.npz", allow_pickle=False)
+    names = [str(x) for x in spec["names"]]
+    R_cb = camera_to_body_pitched(np.deg2rad(float(spec["uptilt_deg"])))
+    lo, hi = int(c["index"][0]), int(c["index"][1])
+    z = np.load(Path(VOL) / "l02" / "downstream" / "clips" / flight /
+                f"{clip}__{cond.replace('tilt_k0', 'tilt_removal')}" / "verdict_clip.npz")
+    ref = np.asarray(z["depicted_lean"], float)
+    calib = GeoCalib(weights="distorted").to("cuda")
+    out = {"calibrate": [], "net": []}
+    for k, i in enumerate(range(lo, min(lo + n, hi))):
+        img = cv2.imread(str(Path(VOL) / "l02" / "real_frames" / flight / names[i]))
+        rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        t = torch.from_numpy(rgb).permute(2, 0, 1).float().to("cuda") / 255.0
+        f_px = 0.5 * img.shape[1] / np.tan(np.radians(175.0) / 2.0)
+        with torch.no_grad():
+            res = calib.calibrate(t, camera_model="simple_divisional",
+                                  priors={"focal": torch.tensor(f_px, device="cuda")})
+            g = np.asarray(res["gravity"].vec3d.detach().cpu()).ravel()
+            out["calibrate"].append(depicted_lean_from_gravity(g[None], R_cb)[0].tolist())
+            net = calib.model
+            net.optimizer.set_camera_model("simple_divisional")
+            net.optimizer.shared_intrinsics = False
+            r2 = net(calib.image_processor(t[None]) | {"camera_R_rig": None})
+            g2 = np.asarray(r2["gravity"].vec3d.detach().cpu()).ravel()
+            out["net"].append(depicted_lean_from_gravity(g2[None], R_cb)[0].tolist())
+    def ang(a, b):
+        a = np.asarray(a); b = np.asarray(b)
+        return np.degrees(np.arccos(np.clip((a * b).sum(1) /
+                                            (np.linalg.norm(a, axis=1) * np.linalg.norm(b, axis=1)),
+                                            -1, 1)))
+    r = ref[:len(out["net"])]
+    return {"cond": cond, "n": len(r),
+            "calibrate_vs_stored_median": float(np.median(ang(np.array(out["calibrate"]), r))),
+            "net_vs_stored_median": float(np.median(ang(np.array(out["net"]), r))),
+            "calibrate_vs_net_median": float(np.median(ang(np.array(out["calibrate"]),
+                                                           np.array(out["net"]))))}
+
+
 @app.local_entrypoint()
 def main(model: str = "frozen", flights: str = "", all: bool = False, max_clips: int = 0,
          lm_steps: int = 10):
+    if model == "probe":
+        print(probe.remote(flights or "flight-01a-ellipse"))
+        return
     if all:
         flights = ",".join(["flight-01a-ellipse", "flight-01p-ellipse", "flight-04a-ellipse",
                             "flight-07a-lemniscate", "flight-07p-lemniscate",
