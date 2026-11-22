@@ -239,11 +239,12 @@ def main() -> int:
         with open(rows_csv, newline="") as fh:
             all_rows = list(_csv.DictReader(fh))
         per_clip = {}
-        for path_name in sorted({r["path"] for r in all_rows}):
+        for path_name in sorted({r["extractor"] for r in all_rows}):
             real = {}
             for r in all_rows:
-                if (r["path"] == path_name and r["cond"] == "real"
-                        and r["arm"] == "estimated_attitude" and r["testable"] == "True"):
+                if (r["extractor"] == path_name and r["path"] == "pixel"
+                        and r["cond"] == "real" and r["arm"] == "estimated_attitude"
+                        and r["testable"] == "True"):
                     try:
                         r["rho"] = float(r["rho"])
                     except (TypeError, ValueError):

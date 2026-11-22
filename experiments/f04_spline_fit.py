@@ -414,6 +414,7 @@ def main() -> int:
                             v = blob.get("rows", {}).get(cond, {}).get(key)
                             return v if v is not None and np.isfinite(v) else float("nan")
                         all_rows.append({
+                            "extractor": path_name,
                             "seq": seq, "clip": cc["clip"], "idx": idx, "cond": cond,
                             "arm": arm, "path": path_kind,
                             "rho": val(headline), "rho_model": val(headline, "rho_model"),
@@ -461,7 +462,7 @@ def main() -> int:
 
     out_root.mkdir(parents=True, exist_ok=True)
     (out_root / "summary.json").write_text(json.dumps(_py(summary), indent=1))
-    fields = ["seq", "clip", "idx", "cond", "arm", "path", "rho", "rho_model",
+    fields = ["extractor", "seq", "clip", "idx", "cond", "arm", "path", "rho", "rho_model",
               "rho_demeaned", "rho_psi_refit", "rho_nov0", "rho_coarse", "rho_fine", "rho_kd0",
               "psi_deg", "scale", "v0_x", "v0_y", "knots", "n_frames", "dt", "window_s",
               "full_path", "testable", "tau", "flag", "real_reasons"]
