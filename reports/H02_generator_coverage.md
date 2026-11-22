@@ -203,20 +203,23 @@ blindness. Cost: 51.7-62.9 s/clip, 55.2 GB peak VRAM, about US$0.04/clip on an A
   weights and camera-pose control (SolarWM-5B); Aero-World has no public artefacts, CT-1 does
   not generate video, and the older controllers are not world models. Any claim about
   "aerial world models in general" must say which single model it rests on.
-* **Full precision did not reproduce H01's roll failure in the reader.** The bf16 LingBot
-  probes stay at 4-5 deg for every ramp, like NF4, so quantisation is not established as the
-  cause; the visible oblique horizons in the bf16 clips remain an unresolved discrepancy.
-* **Path conditioning can work.** SolarWM-5B follows a roll ramp: 1.4 deg level baseline,
-  22.4 deg at the end of a +20 ramp, 18.2 deg for -20 with opposite lean, 45.8 deg for +60.
-  The generator layer is not the obstacle in principle; the action interface is.
+* **Full precision did not overturn H01's failure in the reader.** The bf16 LingBot probes
+  stay at 4-5 deg for every ramp, like NF4, so a strong quantisation effect is not established;
+  the visible oblique horizons in the bf16 clips remain an unresolved discrepancy and do not
+  let us rule one out either.
+* **Path conditioning can work for time-varying commands.** SolarWM-5B follows a roll ramp:
+  1.4 deg level baseline, 22.4 deg at the end of a +20 ramp, 18.2 deg for -20 with opposite
+  lean, 45.8 deg for +60. The generator layer is not the obstacle in principle; the action
+  interface and the relative-pose representation are.
 * **Path-conditioned sampling is measurable end to end with the existing verifier**: the same
   reader, required-tilt expression and verdict threshold carry over to SolarWM's 480x864
   output and a different pose convention.
 
 ## What this does not show
 
-* **SolarWM's result is one checkpoint, one resolution, one seed.** It does not establish how
-  the 14B, LTX-22B or H3-33B routes behave; those are only estimated if the 5B follows roll.
+* **SolarWM's result is one checkpoint and one resolution.** Five first frames and three seeds
+  per path are covered, but the 14B, LTX-22B and H3-33B routes are not run; a scaling estimate
+  is only meaningful if their control path behaves like the 5B's.
 * **The full-precision LingBot result is five probe clips, one first frame, one seed.** It can
   rule out a strong quantisation effect on this frame; it cannot rule out one on other scenes.
 * **The inventory is not a benchmark.** Licences, VRAM and cost are read from cards and
