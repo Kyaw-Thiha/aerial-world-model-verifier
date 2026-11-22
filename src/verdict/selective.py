@@ -250,3 +250,39 @@ def crc_from_counts(lam, n_accept, k_risk, alpha: float = 0.05) -> CRCResult:
                      False,
                      f"no threshold reaches alpha={alpha:g}; the full-coverage bound is "
                      f"{(k[i] + 1.0) / (n[i] + 1.0):.3f}")
+
+
+def pooled_rate_interval(hits, ns, clusters, alpha: float = 0.05,
+                         draws: int = BOOT_DRAWS, seed: int = BOOT_SEED) -> dict:
+    """A pooled rate ``sum(hits)/sum(ns)`` with a cluster-resampled interval.
+
+    The point estimate is the pooled rate (not the mean of per-cluster rates, which weights a
+    one-clip flight like a twenty-six-clip flight).  The interval resamples clusters and pools
+    the resampled hits and denominators.
+    """
+    h = np.asarray(hits, dtype=np.float64).ravel()
+    n = np.asarray(ns, dtype=np.float64).ravel()
+    c = np.asarray(clusters).astype(str).ravel()
+    if not (len(h) == len(n) == len(c)):
+        raise ValueError("hits, ns and clusters must have the same length")
+    ok = np.isfinite(n) & (n > 0)
+    h, n, c = h[ok], n[ok], c[ok]
+    if len(h) == 0 or n.sum() == 0:
+        return {"point": float("nan"), "lo": float("nan"), "hi": float("nan"),
+                "n_clusters": 0, "note": "no data"}
+    point = float(h.sum() / n.sum())
+    groups = _cluster_indices(c)
+    rng = np.random.default_rng(seed)
+    out = []
+    for _ in range(draws):
+        idx = np.concatenate([groups[i] for i in rng.integers(0, len(groups), len(groups))])
+        tot = n[idx].sum()
+        if tot > 0:
+            out.append(h[idx].sum() / tot)
+    out = np.asarray(out)
+    lo = float(np.quantile(out, alpha / 2.0)) if len(out) > 100 else float("nan")
+    hi = float(np.quantile(out, 1.0 - alpha / 2.0)) if len(out) > 100 else float("nan")
+    return {"point": point, "lo": lo, "hi": hi, "n_clusters": len(groups),
+            "draws": int(draws), "seed": int(seed),
+            "note": ("descriptive only: fewer than 10 clusters"
+                     if len(groups) < 10 else "clustered bootstrap")}

@@ -70,7 +70,13 @@ def h04() -> pd.DataFrame:
 def h01() -> pd.DataFrame:
     table = pd.read_csv(INP / "h01_t1_seed_variance.csv")
     specs = json.loads((INP / "h01_specs.json").read_text())
-    spec_by_id = {s["id"]: s for s in specs}
+    spec_by_id = {}
+    for s in specs:
+        base = s["id"]
+        for suffix in (f"_s{s.get('seed', 1)}",):
+            if base.endswith(suffix):
+                base = base[: -len(suffix)]
+        spec_by_id.setdefault(base, s)
     rows = []
     for _, r in table.iterrows():
         sid = r["path"]

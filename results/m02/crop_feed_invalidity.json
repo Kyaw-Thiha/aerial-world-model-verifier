@@ -1,0 +1,23 @@
+{
+ "n_rows": 5542,
+ "n_clips": 40,
+ "feed": "crop224 f=112",
+ "median_lean_error_deg_real_condition": {
+  "frozen": 3.7062318518444224,
+  "gc224": 23.753791177664258,
+  "pf": 13.50115051746339
+ },
+ "median_disagreement_deg": 21.208787596632554,
+ "roll_disagreement_by_uptilt": {
+  "30.0": 13.546540170494467,
+  "40.0": 1.8878597582884566,
+  "50.0": 4.807024725321455
+ },
+ "roll_disagreement_by_flight": {
+  "flight-01a-ellipse": 3.072700529605882,
+  "flight-01p-ellipse": 13.546540170494467,
+  "flight-04a-ellipse": 3.1166673960010343,
+  "flight-07a-lemniscate": 1.8878597582884566,
+  "flight-13a-trackRATM": 7.1097868456249245
+ }
+}

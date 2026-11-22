@@ -168,6 +168,7 @@ def read(sources: str = "sim,tii,h04,h01", tag: str = "v1", shard: int = 0,
     out_dir = Path(VOL, "m02/scores", tag)
     out_dir.mkdir(parents=True, exist_ok=True)
     want = [s.strip() for s in sources.split(",") if s.strip()]
+    feed_mode = feed
     t0 = time.time()
     stats = {}
 
@@ -214,9 +215,9 @@ def read(sources: str = "sim,tii,h04,h01", tag: str = "v1", shard: int = 0,
                             mx, my = remap_arrays(spec[f"M_{cond}"][lo + k].astype(np.float64),
                                                   size[0], size[1], fpx)
                         warped, _ = warp_with_remap(img, mx, my)
-                        if feed == "pinhole100":
-                            feed, fpx_use = _pinhole(flight, warped)
-                            row = _read_pair(gc, pf, feed, device, fpx_use)
+                        if feed_mode == "pinhole100":
+                            pimg, fpx_use = _pinhole(flight, warped)
+                            row = _read_pair(gc, pf, pimg, device, fpx_use)
                             row["feed"] = "pinhole100"
                         else:
                             row = _read_pair(gc, pf, _prep(warped), device,

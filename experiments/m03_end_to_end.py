@@ -25,7 +25,8 @@ from scipy.spatial.transform import Rotation
 
 from src.verdict.abstain import gate_kept_from_conf
 from src.verdict.lean import depicted_lean_from_gravity
-from src.verdict.selective import cluster_interval, conformal_quantile, rate_interval
+from src.verdict.selective import (cluster_interval, conformal_quantile,
+                                   pooled_rate_interval, rate_interval)
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "results/m03"
@@ -260,10 +261,16 @@ def gate_masks(real: pd.DataFrame, fr: dict) -> dict:
     out = {}
     weak = (real.sigma_min >= fr["lam_a"]) & (real.tilt_max <= fr["near_vertical"])
     dis = real.dis_med <= fr["tau_b"]
-    out["G0_S3_only"] = real.kept_S3_cond
-    out["GA"] = real.kept_S3_cond & weak
-    out["GB"] = real.kept_S3_cond & dis
-    out["GAB"] = real.kept_S3_cond & weak & dis
+    # The S3 decision is taken ONCE per clip, on the clip's real video: in operation the gate
+    # sees one video, and the edited conditions are counterfactual probes.  A2's published
+    # convention gates each condition on its own pixels; that is kept as a separate row
+    # (G0_S3_per_condition) because it changes the denominators by condition.
+    s3 = real.kept_S3_clip.fillna(False)
+    out["G0_S3_only"] = s3
+    out["GA"] = s3 & weak
+    out["GB"] = s3 & dis
+    out["GAB"] = s3 & weak & dis
+    out["G0_S3_per_condition"] = real.kept_S3_cond.fillna(False)
     return out
 
 
@@ -304,6 +311,39 @@ def evaluate(real: pd.DataFrame, masks: dict, tier: str, dev: bool = True) -> di
                 tot += 1
                 hit += int(np.isfinite(r[tier]) and r[tier] > tau)
             ent[cond] = f"{hit}/{tot}"
+        out[cfg] = ent
+    return out
+
+
+def clustered_rates(real: pd.DataFrame, masks: dict, tier: str) -> dict:
+    """Per-condition hit rates with flight-clustered (descriptive) intervals."""
+    base = real[real.in_dev]
+    out = {}
+    for cfg, mask in masks.items():
+        sub = base.copy()
+        sub["acc"] = mask.reindex(base.index).fillna(False)
+        acc = sub[sub.acc]
+        taus = {f: _tau_lofo(acc, tier, f) for f in DEV}
+        ent = {}
+        for cond in CONDS:
+            hits, dens, flags = [], [], []
+            for f in DEV:
+                rows = acc[(acc.cond == cond) & (acc.flight == f)]
+                tau = taus[f]
+                if not np.isfinite(tau):
+                    continue
+                h = int(np.sum(rows[tier].values > tau))
+                hits.append(h)
+                dens.append(int(len(rows)))
+                flags.append(h / max(len(rows), 1) if len(rows) else np.nan)
+            ok = np.isfinite(flags)
+            if ok.sum() >= 2:
+                ci = pooled_rate_interval(np.array(hits)[ok], np.array(dens)[ok],
+                                          np.array(DEV)[ok])
+            else:
+                ci = {"point": float("nan"), "lo": float("nan"), "hi": float("nan"),
+                      "n_clusters": int(ok.sum()), "note": "no computable interval"}
+            ent[cond] = {"hit": int(np.sum(hits)), "n": int(np.sum(dens)), **ci}
         out[cfg] = ent
     return out
 

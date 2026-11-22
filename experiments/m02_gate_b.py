@@ -59,14 +59,24 @@ LABEL_DEG = 5.0
 
 # --------------------------------------------------------------------------- loading
 def load_scores(tag: str) -> pd.DataFrame:
+    """Load one or more comma-separated score tags (latest tag wins per source/row key)."""
     frames = []
-    for p in sorted((SCORES / tag).glob("*.jsonl")):
-        rows = [json.loads(l) for l in p.read_text().splitlines() if l.strip()]
-        frames += rows
+    for t in [x.strip() for x in tag.split(",") if x.strip()]:
+        for p in sorted((SCORES / t).glob("*.jsonl")):
+            rows = [json.loads(l) for l in p.read_text().splitlines() if l.strip()]
+            frames += rows
     if not frames:
         raise SystemExit(f"no score rows under {SCORES / tag}")
     df = pd.DataFrame(frames)
     df["cond"] = df.get("cond", pd.Series(["real"] * len(df))).replace(COND_MAP)
+    if "feed" in df:
+        # one feed per source: keep the pinhole TII rows if any exist for that clip
+        tii = df[df.source == "tii"]
+        if (tii.feed == "pinhole100").any():
+            keep = ~((df.source == "tii") & (df.feed != "pinhole100"))
+            df = df[keep]
+    df = df.drop_duplicates(subset=["source", "clip_id", "cond", "frame_index"],
+                            keep="last")
     return df
 
 
