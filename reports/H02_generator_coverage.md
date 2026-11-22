@@ -92,7 +92,9 @@ transformer and VAE back to the GPU before each clip.
 
 **Population and statistics.** The reader, required-tilt expression, 6.46 deg threshold and
 testability rule are exactly H01's. The five probes are read on all 81 frames; the grid and
-seed clips are read every second frame (41) to bound the reader cost. The SolarWM grid is 5 frames x 5 paths x 3 arms = 75
+seed clips are read every second frame (41) to bound the reader cost. No 95 % interval is
+claimed: the clusters are five paths/first frames (ten for the seed set), below the ~10-cluster
+rule, so every rate is descriptive with its denominator. The SolarWM grid is 5 frames x 5 paths x 3 arms = 75
 clips; the seed set is 10 designed paths x 3 seeds (flatness arm). Intervals are
 path-clustered (5,000 draws, `numpy.random.default_rng(1)`); with fewer than 10 clusters they
 are descriptive. No threshold or success criterion changed after any outcome.
@@ -197,8 +199,8 @@ rate stay below the pre-registered 2 deg / 20 % bar; the other nine paths do not
 | 0->60 ramp | 4.05 | 4.06 | 3.27 | 4.73 | 55.0 |
 
 The pre-registered reader does **not** show a coherent roll response in bf16 either: no ramp
-raises the clip median above the level control, and the largest last-10 value (5.9 deg on the
-level clip) is not tied to an injected ramp. The bf16 images look different from NF4 — the
+raises the clip median by more than 0.35 deg above the 4.56 deg level control, and the largest
+last-10 value (5.9 deg) is on the level clip, not tied to an injected ramp. The bf16 images look different from NF4 — the
 +20 and -20 clips have a visibly oblique skyline while H01's NF4 probe frames were level —
 but the independent vertical-edge check has no usable long verticals on this painterly imagery,
 so the eye and the gravity reader disagree. The disagreement is recorded, not resolved; on the
@@ -229,11 +231,12 @@ blindness. Cost: 51.7-62.9 s/clip, 55.2 GB peak VRAM, about US$0.04/clip on an A
 * **SolarWM's result is one checkpoint and one resolution.** Five first frames and three
   generations per path are covered, but the 14B, LTX-22B and H3-33B routes are not run; a
   scaling estimate is only meaningful if their control path behaves like the 5B's. The
-  three "seeds" are independent validation draws: the release fixes `noise_seed: 42` and
-  derives the per-sample noise from the sample index, so no per-sample seed argument was
-  exposed. This measures sampling variance, not a controlled seed knob.
-* **The full-precision LingBot result is five probe clips, one first frame, one seed.** It can
-  rule out a strong quantisation effect on this frame; it cannot rule out one on other scenes.
+  three "seeds" are independent validation draws: the release exposes a single
+  `noise_seed: 42`, the three generations differ in their pixel output, and no per-sample
+  seed argument was exposed. This measures sampling variance, not a controlled seed knob.
+* **The full-precision LingBot result is five probe clips, one first frame, one seed.** It does
+  not establish a strong quantisation effect on this frame; it cannot rule one out on other
+  scenes either.
 * **The inventory is not a benchmark.** Licences, VRAM and cost are read from cards and
   measured only for the models actually run; the rest are labelled estimates.
 * **SolarWM follows changing attitude, not held attitude.** The probes ramp continuously and
@@ -278,9 +281,10 @@ load. At 200 clips SolarWM is the cheapest path-controlled option measured in th
 **SolarWM-5B: conditional no-go for sustained commanded paths.** It is cheap, released and
 does follow continuously changing camera attitude, but on the designed paths it does not hold
 the required 10-20 deg bank: the roll criterion fails (1/5 paths by tilt, 1/5 by mirrored
-sign), and the frozen verdict rejects every testable turn-10 and turn-20 clip while passing
-slalom-10. Generating 200 more clips of the same designed manoeuvres would buy more evidence
-of the same failure. A useful follow-up would use **time-varying** commanded attitudes (a
+sign), and the frozen verdict rejects every testable turn-10 and turn-20 clip; it passes
+slalom-10 only under H02's absolute 12-frame rule, and none of the ten clips testable under
+the 12/16 fraction is feasible. Generating 200 more clips of the same designed manoeuvres
+would buy more evidence of the same failure. A useful follow-up would use **time-varying** commanded attitudes (a
 continuously rolling probe or a path whose bank changes throughout), which is exactly the
 regime where the model works.
 
