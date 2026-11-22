@@ -1,0 +1,294 @@
+{
+ "clip": {
+  "tilt_removal/partial_25": {
+   "F0": [
+    7,
+    69
+   ],
+   "C2": [
+    4,
+    69
+   ],
+   "absorption_hits": 3,
+   "absorption_pp": 4.347826086956522
+  },
+  "tilt_removal/partial_50": {
+   "F0": [
+    30,
+    69
+   ],
+   "C2": [
+    34,
+    69
+   ],
+   "absorption_hits": -4,
+   "absorption_pp": -5.79710144927536
+  },
+  "tilt_removal/full": {
+   "F0": [
+    56,
+    69
+   ],
+   "C2": [
+    35,
+    69
+   ],
+   "absorption_hits": 21,
+   "absorption_pp": 30.434782608695656
+  },
+  "mirror_roll/partial_25": {
+   "F0": [
+    6,
+    69
+   ],
+   "C2": [
+    4,
+    69
+   ],
+   "absorption_hits": 2,
+   "absorption_pp": 2.8985507246376807
+  },
+  "mirror_roll/partial_50": {
+   "F0": [
+    17,
+    69
+   ],
+   "C2": [
+    17,
+    69
+   ],
+   "absorption_hits": 0,
+   "absorption_pp": 0.0
+  },
+  "mirror_roll/full": {
+   "F0": [
+    55,
+    69
+   ],
+   "C2": [
+    47,
+    69
+   ],
+   "absorption_hits": 8,
+   "absorption_pp": 11.594202898550733
+  },
+  "scale_0.5/partial_25": {
+   "F0": [
+    7,
+    69
+   ],
+   "C2": [
+    4,
+    69
+   ],
+   "absorption_hits": 3,
+   "absorption_pp": 4.347826086956522
+  },
+  "scale_0.5/partial_50": {
+   "F0": [
+    8,
+    69
+   ],
+   "C2": [
+    12,
+    69
+   ],
+   "absorption_hits": -4,
+   "absorption_pp": -5.797101449275361
+  },
+  "scale_0.5/full": {
+   "F0": [
+    37,
+    69
+   ],
+   "C2": [
+    7,
+    69
+   ],
+   "absorption_hits": 30,
+   "absorption_pp": 43.47826086956522
+  },
+  "scale_1.5/partial_25": {
+   "F0": [
+    6,
+    69
+   ],
+   "C2": [
+    4,
+    69
+   ],
+   "absorption_hits": 2,
+   "absorption_pp": 2.8985507246376807
+  },
+  "scale_1.5/partial_50": {
+   "F0": [
+    10,
+    69
+   ],
+   "C2": [
+    4,
+    69
+   ],
+   "absorption_hits": 6,
+   "absorption_pp": 8.695652173913043
+  },
+  "scale_1.5/full": {
+   "F0": [
+    52,
+    69
+   ],
+   "C2": [
+    4,
+    69
+   ],
+   "absorption_hits": 48,
+   "absorption_pp": 69.56521739130434
+  }
+ },
+ "window": {
+  "tilt_removal/partial_25": {
+   "F0": [
+    30,
+    69
+   ],
+   "C2": [
+    31,
+    69
+   ],
+   "absorption_hits": -1,
+   "absorption_pp": -1.4492753623188364
+  },
+  "tilt_removal/partial_50": {
+   "F0": [
+    39,
+    69
+   ],
+   "C2": [
+    32,
+    69
+   ],
+   "absorption_hits": 7,
+   "absorption_pp": 10.144927536231883
+  },
+  "tilt_removal/full": {
+   "F0": [
+    53,
+    69
+   ],
+   "C2": [
+    27,
+    69
+   ],
+   "absorption_hits": 26,
+   "absorption_pp": 37.68115942028985
+  },
+  "mirror_roll/partial_25": {
+   "F0": [
+    33,
+    69
+   ],
+   "C2": [
+    30,
+    69
+   ],
+   "absorption_hits": 3,
+   "absorption_pp": 4.347826086956523
+  },
+  "mirror_roll/partial_50": {
+   "F0": [
+    47,
+    69
+   ],
+   "C2": [
+    42,
+    69
+   ],
+   "absorption_hits": 5,
+   "absorption_pp": 7.246376811594196
+  },
+  "mirror_roll/full": {
+   "F0": [
+    55,
+    69
+   ],
+   "C2": [
+    51,
+    69
+   ],
+   "absorption_hits": 4,
+   "absorption_pp": 5.79710144927536
+  },
+  "scale_0.5/partial_25": {
+   "F0": [
+    10,
+    69
+   ],
+   "C2": [
+    7,
+    69
+   ],
+   "absorption_hits": 3,
+   "absorption_pp": 4.3478260869565215
+  },
+  "scale_0.5/partial_50": {
+   "F0": [
+    14,
+    69
+   ],
+   "C2": [
+    7,
+    69
+   ],
+   "absorption_hits": 7,
+   "absorption_pp": 10.144927536231885
+  },
+  "scale_0.5/full": {
+   "F0": [
+    23,
+    69
+   ],
+   "C2": [
+    11,
+    69
+   ],
+   "absorption_hits": 12,
+   "absorption_pp": 17.39130434782609
+  },
+  "scale_1.5/partial_25": {
+   "F0": [
+    6,
+    69
+   ],
+   "C2": [
+    6,
+    69
+   ],
+   "absorption_hits": 0,
+   "absorption_pp": 0.0
+  },
+  "scale_1.5/partial_50": {
+   "F0": [
+    6,
+    69
+   ],
+   "C2": [
+    5,
+    69
+   ],
+   "absorption_hits": 1,
+   "absorption_pp": 1.44927536231884
+  },
+  "scale_1.5/full": {
+   "F0": [
+    9,
+    69
+   ],
+   "C2": [
+    6,
+    69
+   ],
+   "absorption_hits": 3,
+   "absorption_pp": 4.3478260869565215
+  }
+ }
+}

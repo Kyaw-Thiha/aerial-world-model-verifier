@@ -77,6 +77,7 @@ Files live in `reports/` at the repository root. Numbering restarts per track: T
 | --- | --- | --- |
 | `K01_calibration_mode_reconciliation.md` | Every published floor mapped to its construction, mode, nuisance and population; the schema-v2 semantics and the J02/J03 label errors | current; Part 1 of the track |
 | `K02_physics_model_refinement.md` | M0-M5 airframe models, LOFO and cross-domain, schema v3, thresholds and edit detection | current; Part 2 of the track |
+| `K03_exact_semantics_absorption.md` | J03's absorption and J02's floor re-derived under exact drag semantics, with the pre-registered survival rules | current; Part 3 of the track |
 
 ## Notes
 
