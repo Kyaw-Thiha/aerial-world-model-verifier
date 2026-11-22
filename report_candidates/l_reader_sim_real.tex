@@ -1,0 +1,94 @@
+% Track L candidate section: the depicted-tilt reader on simulated scenes, and fine-tuning it.
+% Self-contained section for the main report (the LaTeX sources are not on main).
+% Numbers: L01 from reports/L01_scene_stratified_reader_error.md (commit 1177c6b);
+% L02 from reports/L02_reader_finetune_sim_real.md (fill the L02 macros from that report).
+
+\section{Reader error on simulated scenes, and what fine-tuning on them transfers}
+\label{sec:l-reader-sim}
+
+The verifier's decision layer is physics, but its input is a reader: GeoCalib on the raw fisheye.
+Two properties of that reader set the operating point. Its error is scene-dependent --- the
+simulated forest reads 7--10.7$^\circ$ at every camera mount while the open families read
+0.5--2.8$^\circ$ (Table~\ref{tab:l-grid}) --- and its real bias is a forward pitch offset of
++2.2 to +2.7$^\circ$ that no single rig rotation removes (Track J). This section asks whether
+training the reader on simulated scenes with exact attitude fixes either property on real,
+held-out flights, and where the transfer fails.
+
+\paragraph{The simulated set.} Track I renders flights from closed-form dynamics, so the camera
+attitude is exact: 80 feasible development clips over three scene families and four mounts
+(0/15/30/45$^\circ$), 37{,}401 frames, labels built from the render pose and verified against the
+published truth to $6\times10^{-12}$$^\circ$. Every clip's video and truth were re-hashed against
+the manifest before scoring (160 objects, no mismatch). The four held-out scenes are not scored:
+the Track I render was incomplete when this track started, so no held-out-scene number is quoted.
+
+\begin{table}[t]
+\centering
+\caption{Frozen reader on the feasible simulated development clips: median up-vector error
+(degrees) by scene family and camera mount, with the clip range and the frozen S3 gate's keep
+count. Three family clusters; descriptive.}
+\label{tab:l-grid}
+\begin{tabular}{lcccccc}
+\toprule
+family & 0$^\circ$ & 15$^\circ$ & 30$^\circ$ & 45$^\circ$ & bias fwd & gate kept \\
+\midrule
+urban\_checker & 0.87 & 0.51 & 0.95 & 1.57 & +0.14 & 24/27 \\
+industrial     & 1.18 & 1.31 & 1.27 & 2.78 & $-0.08$ & 27/27 \\
+forest\_ridge  & 6.95 & 7.66 & 9.38 & 10.66 & $-2.27$ & 12/26 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{The gate does not remove scene bias.} The frozen S3 confidence gate drops 14 of 26
+forest clips but keeps 12 whose median error is 9.96$^\circ$, against 7.59$^\circ$ for the ones
+it drops; on the open families it keeps 51 of 54. A verdict that relies on the gate to protect
+itself from a scene it has not seen will not be protected.
+
+\paragraph{The error's composition moves with the scene.} With Track J's exact decomposition the
+simulated reader splits 23.6\,\% constant / 41.1\,\% slow / 35.3\,\% fast, close to the real TII
+totals (29.6/40.4/30.0). But the forest is bias-dominated (40.5/37.4/22.1, almost exactly J's
+\emph{gate-kept} real anatomy) while the open scenes are fast-noise-dominated (urban
+4.8/44.0/51.2). A per-clip constant is the right correction in one scene and useless in another,
+which is why the fine-tune is judged per family and not pooled.
+
+\paragraph{The fine-tune.} Three arms with G03's architecture and a budget matched by 600 gradient
+steps per epoch (two epochs): real-only (the G03 recipe), simulated-only, and mixed with domain
+randomisation on the simulated side (photometric jitter, camera roll, and a synthetic
+simple-divisional warp whose label is exact because a change of camera model leaves the gravity
+direction invariant). Folds are leave-one-flight-out over the six \emph{development} real flights
+and leave-one-family-out on the simulated side; the two real held-out flights (13p, 07a) are in no
+training pool, normalisation or gate fit, and are scored once by the final models. The simulated
+held-out scenes are deferred with the data, so the simulated criterion is the out-of-family bias
+spread on the development scenes.
+
+%% L02 macros --- fill from reports/L02_reader_finetune_sim_real.md before building.
+\newcommand{\LTwoRealA}{7.51}
+\newcommand{\LTwoRealB}{19.87}
+\newcommand{\LTwoRealC}{20.44}
+\newcommand{\LTwoSpreadA}{1.05}
+\newcommand{\LTwoSpreadB}{0.63}
+\newcommand{\LTwoSpreadC}{0.63}
+\newcommand{\LTwoDownA}{7/72}
+\newcommand{\LTwoDownB}{6/72}
+\newcommand{\LTwoDownC}{6/72}
+
+\paragraph{What transfers.} On the two held-out real flights the pooled 90\,\%-trimmed per-frame
+RMSE is \LTwoRealA{} for the real-only arm, \LTwoRealB{} for the simulated-only arm and
+\LTwoRealC{} for the mixed arm, against 8.29$^\circ$ for the G03 fine-tune and 14.75$^\circ$ for
+the frozen reader on the same 906 frames. The scene-family bias spread on the out-of-family
+simulated predictions is not applicable to the real-only arm and \LTwoSpreadB{} and \LTwoSpreadC{}
+for the simulated-only and mixed arms, against 2.26$^\circ$ for the frozen reader --- met by both,
+but by levelling the open families from 0.9-1.3$^\circ$ to 2-3.3$^\circ$. Downstream, on the gate-kept real clips the coherence tier's false-reject is
+\LTwoDownA{}, \LTwoDownB{} and \LTwoDownC{} against 5/72 for the frozen reader: no arm meets the
+pre-registered "does not rise" criterion, and the simulated-only reader collapses full-removal
+detection from 70/72 to 43/72 while the mixed arm keeps it at 71/72.
+
+\paragraph{Where it fails.} The failure is concentrated on the ceiling-view racing flight. On
+13p the frozen reader's trimmed RMSE is 18.4$^\circ$, G03 brings it to 9.9, real-only to 8.9, and
+both simulated arms are worse than the frozen reader (25.7 and 27.1); on 07a the mixed arm is the
+best reader measured (median 1.02$^\circ$) but its tail is slightly worse than G03's. The
+sim-to-real gap is therefore not a uniform offset: a reader trained only on simulated scenes reads
+the easy flight at 6.5$^\circ$ (frozen 6.5) and the hard flight at 25.7 (18.4). The simulated
+scene spread is reduced by making every family mediocre, not by improving the hard one, and the
+mixed arm's objective did not converge (training loss rose in its second epoch). Under this data,
+budget and DR recipe, simulated supervision does not buy real robustness; it buys a flatter
+simulated error profile at the cost of the real tail.

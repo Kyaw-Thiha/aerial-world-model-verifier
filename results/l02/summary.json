@@ -120,6 +120,70 @@
     }
    }
   },
+  "mixed__flight-13a-trackRATM": {
+   "arm": "mixed",
+   "holdout": "flight-13a-trackRATM",
+   "n_train_pool": 6744,
+   "frames_per_epoch": 600,
+   "history": [
+    {
+     "epoch": 0,
+     "loss": 0.03007114162047704,
+     "steps": 300,
+     "skipped_no_grad": 0,
+     "seconds": 483.67014050483704
+    },
+    {
+     "epoch": 1,
+     "loss": 0.02248673588037491,
+     "steps": 300,
+     "skipped_no_grad": 0,
+     "seconds": 958.5537276268005
+    }
+   ],
+   "real": {
+    "flight-13a-trackRATM": {
+     "n": 557,
+     "median": 6.052002845345192,
+     "trimmed_rmse": 30.990239291028264,
+     "p90": 87.20124501805049,
+     "frac_gt10": 0.3267504488330341,
+     "frac_gt20": 0.2764811490125673
+    }
+   }
+  },
+  "mixed__flight-16p-trackRATM": {
+   "arm": "mixed",
+   "holdout": "flight-16p-trackRATM",
+   "n_train_pool": 6928,
+   "frames_per_epoch": 600,
+   "history": [
+    {
+     "epoch": 0,
+     "loss": 0.04866705894470215,
+     "steps": 300,
+     "skipped_no_grad": 0,
+     "seconds": 503.67833638191223
+    },
+    {
+     "epoch": 1,
+     "loss": 0.038518693844477335,
+     "steps": 300,
+     "skipped_no_grad": 0,
+     "seconds": 976.4686172008514
+    }
+   ],
+   "real": {
+    "flight-16p-trackRATM": {
+     "n": 373,
+     "median": 8.070503886223433,
+     "trimmed_rmse": 13.72905216313763,
+     "p90": 59.79941968016433,
+     "frac_gt10": 0.40482573726541554,
+     "frac_gt20": 0.16890080428954424
+    }
+   }
+  },
   "mixed__forest_ridge": {
    "arm": "mixed",
    "holdout": "forest_ridge",

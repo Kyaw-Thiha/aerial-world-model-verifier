@@ -1,0 +1,168 @@
+{
+ "prefix": "track-l/l02/downstream",
+ "n": 32,
+ "commit": "00408a65d370e1ebe32a756b0d5e0e64ab148842",
+ "note": "per-flight, per-frame edit-reader outputs behind results/l02/downstream.json",
+ "files": [
+  {
+   "key": "track-l/l02/downstream/frozen__flight-01a-ellipse.json",
+   "bytes": 219111,
+   "sha256": "88c3c60ad67217a2585eb854435f7b42ccf7c328f3581c40688f616e5bdff149"
+  },
+  {
+   "key": "track-l/l02/downstream/frozen__flight-01p-ellipse.json",
+   "bytes": 1136483,
+   "sha256": "1a7e98ba46c785b20efca0c6b33f51f16c5ed1e7f17fb2a23f6157f6d449eef8"
+  },
+  {
+   "key": "track-l/l02/downstream/frozen__flight-04a-ellipse.json",
+   "bytes": 306338,
+   "sha256": "87f6b1b8acd9e4e31d52260b65f7eea4955e9580896605f42b8085dec529cce9"
+  },
+  {
+   "key": "track-l/l02/downstream/frozen__flight-07a-lemniscate.json",
+   "bytes": 306427,
+   "sha256": "8c42efc06092d78413b664c7ea7ce8d08b4ae82d7a1b13df8d1362d954db0c2b"
+  },
+  {
+   "key": "track-l/l02/downstream/frozen__flight-07p-lemniscate.json",
+   "bytes": 1134958,
+   "sha256": "59b6282e58dd41137f79f8931740c4c5440cdc53c1e961b9f5269c4036e3fa81"
+  },
+  {
+   "key": "track-l/l02/downstream/frozen__flight-13a-trackRATM.json",
+   "bytes": 481145,
+   "sha256": "6255793cdd501c41069bae3a5eadefe0b704018acb93b1df7e146069b0dcef5b"
+  },
+  {
+   "key": "track-l/l02/downstream/frozen__flight-13p-trackRATM.json",
+   "bytes": 475218,
+   "sha256": "eacef46520dfcf909ea482ace14f5297b7414211492a4fbdc6dbc93e6525ce47"
+  },
+  {
+   "key": "track-l/l02/downstream/frozen__flight-16p-trackRATM.json",
+   "bytes": 302184,
+   "sha256": "e5bb7b96abc3e636a9ba1eb64ce29f6c615f02d01b931a5ea70804aad2810a84"
+  },
+  {
+   "key": "track-l/l02/downstream/mixed__flight-01a-ellipse.json",
+   "bytes": 219147,
+   "sha256": "4641a0651e8a8ce0e26282f0b43fb5d41d0dbbe6a63dff9ffa839abdbb2c0e0d"
+  },
+  {
+   "key": "track-l/l02/downstream/mixed__flight-01p-ellipse.json",
+   "bytes": 1136245,
+   "sha256": "f8171572d08f5827b13cdd513670da5d2979e0924c2d8a5b26f1326880256ed7"
+  },
+  {
+   "key": "track-l/l02/downstream/mixed__flight-04a-ellipse.json",
+   "bytes": 306764,
+   "sha256": "3de42fba33b0e57545f478bbca085fc4b753ea35f93b3699cd0af906caf804d3"
+  },
+  {
+   "key": "track-l/l02/downstream/mixed__flight-07a-lemniscate.json",
+   "bytes": 306518,
+   "sha256": "b1490b693e4dc7065d517b9f2b1bd0bf7171fc1bb0c636ba5b79b63bdcb81134"
+  },
+  {
+   "key": "track-l/l02/downstream/mixed__flight-07p-lemniscate.json",
+   "bytes": 1135035,
+   "sha256": "840e2d944f4df9cd728a89eca38d5e4fb1e6f34219af3dfebb89d9956ffb1300"
+  },
+  {
+   "key": "track-l/l02/downstream/mixed__flight-13a-trackRATM.json",
+   "bytes": 481489,
+   "sha256": "3fb76eb3680b859e041ed6c934879d7a4dffa7d9423cd053bc1f3e5654397195"
+  },
+  {
+   "key": "track-l/l02/downstream/mixed__flight-13p-trackRATM.json",
+   "bytes": 474963,
+   "sha256": "b468366b1af335ec781d4c82a978d7457813da30f8b90c51ab1f8b8846cc9adc"
+  },
+  {
+   "key": "track-l/l02/downstream/mixed__flight-16p-trackRATM.json",
+   "bytes": 301952,
+   "sha256": "4d0517a04f9ec5984101fc1ffd8f4c371901a21a309127a2162f0e1f44d0e2a0"
+  },
+  {
+   "key": "track-l/l02/downstream/real__flight-01a-ellipse.json",
+   "bytes": 220181,
+   "sha256": "bb541c7fdceb7e93609c57c944d9f9d56dc92de58b540ad40dfdf0166851248f"
+  },
+  {
+   "key": "track-l/l02/downstream/real__flight-01p-ellipse.json",
+   "bytes": 1136091,
+   "sha256": "bf8f1729ab53b3868c053390495f6b07ee4dee151d605cbf129b19a28635f340"
+  },
+  {
+   "key": "track-l/l02/downstream/real__flight-04a-ellipse.json",
+   "bytes": 307894,
+   "sha256": "18265b9821bc41aed888e32f4895eccc1e7459a4bce389ed07da4a88c28a66bb"
+  },
+  {
+   "key": "track-l/l02/downstream/real__flight-07a-lemniscate.json",
+   "bytes": 305630,
+   "sha256": "c3cfe0a2feb25347dea254c693753021df593b0c8ea9f73f43a163a783c23cde"
+  },
+  {
+   "key": "track-l/l02/downstream/real__flight-07p-lemniscate.json",
+   "bytes": 1134142,
+   "sha256": "370213d0000223e944ef807adc302cef70a0561180fe74f7652da2cbedc6c776"
+  },
+  {
+   "key": "track-l/l02/downstream/real__flight-13a-trackRATM.json",
+   "bytes": 483818,
+   "sha256": "bee13be6a2b068c51d7d92da0c2f8ad6b98ae858669e9aaf87248d6e2cbd6ac7"
+  },
+  {
+   "key": "track-l/l02/downstream/real__flight-13p-trackRATM.json",
+   "bytes": 475711,
+   "sha256": "6859f3b8a4c6fa7c7928c33974aa3819113d193c3339b401ce6814bed1e3c1e0"
+  },
+  {
+   "key": "track-l/l02/downstream/real__flight-16p-trackRATM.json",
+   "bytes": 302559,
+   "sha256": "67f86cca6e649fec5b55818213f723573bfe898c58b5e03362e5266843a22809"
+  },
+  {
+   "key": "track-l/l02/downstream/sim__flight-01a-ellipse.json",
+   "bytes": 218849,
+   "sha256": "cdb195a7ffd006065a31041fa6058a55836b656572bb79583ab97ad19795d4ee"
+  },
+  {
+   "key": "track-l/l02/downstream/sim__flight-01p-ellipse.json",
+   "bytes": 1133089,
+   "sha256": "95aeea53bbcd1261c0732b0967285c96d915b4f0c40364b86b48c783f8655a57"
+  },
+  {
+   "key": "track-l/l02/downstream/sim__flight-04a-ellipse.json",
+   "bytes": 305881,
+   "sha256": "0833e06b5e802d4a3c2eeb3d320af2a0af6ad237807d9552b35a12f28cd60608"
+  },
+  {
+   "key": "track-l/l02/downstream/sim__flight-07a-lemniscate.json",
+   "bytes": 305393,
+   "sha256": "cea5549016662b872ea27ab8b861ea25135ef9763a9d8a59ca1fb046eb3fcad9"
+  },
+  {
+   "key": "track-l/l02/downstream/sim__flight-07p-lemniscate.json",
+   "bytes": 1133275,
+   "sha256": "3d25a554071772c097d083b1d9b42f1b1f27867d689647ac9da529bfe58c7f95"
+  },
+  {
+   "key": "track-l/l02/downstream/sim__flight-13a-trackRATM.json",
+   "bytes": 479393,
+   "sha256": "84c232559624bf1f37b58986ee02fc8df81174f29954085b817270b87950713f"
+  },
+  {
+   "key": "track-l/l02/downstream/sim__flight-13p-trackRATM.json",
+   "bytes": 474656,
+   "sha256": "c3f4406145a234c9e093037e7a91fb8234269f3b3feec74377e7056f29cc82ec"
+  },
+  {
+   "key": "track-l/l02/downstream/sim__flight-16p-trackRATM.json",
+   "bytes": 301936,
+   "sha256": "6a4f0af04921e3c0f42ce9ad87f76e8fe178d29734708d3a27291413e836e2fd"
+  }
+ ]
+}

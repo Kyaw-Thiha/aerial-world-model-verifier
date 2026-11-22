@@ -27,15 +27,16 @@ that the anatomy split wants the full 30 Hz; recorded rather than overwritten.
 | 2026-11-22 | smoke: 32 frames, batch 1, mixed route | A10 | 0.01 | 0.01 | 0.67 s/frame measured |
 | 2026-11-22 | first finals attempt (mixed arm aborted on a frame-shape bug) | A10G | 1.3 | 1.4 | real and sim finals completed; mixed rerun after the fix |
 | 2026-11-22 | first sim fold attempt (stopped: volume-read JPEGs dominated) | A10G | 1.0 | 1.1 | measured about 2 s/frame once the LM was in the loop on forest frames; no fold record |
-| — | arms (a) 6 folds, (b) 3 folds, (c) 9 folds | A10G | 9.0 (est.) | 9.9 | 18 models x 600 frames x 2 epochs at about 2 s/frame plus eval |
-| — | 3 final models + all-real evaluation (5,007 frames each) | A10G | 2.4 (est.) | 2.6 | final models also write the checkpoint the edit pass reads |
-| — | downstream edit pass, 4 readers x 72 gate-kept clips x 5 conditions | A10G | 4.0 (est.) | 4.4 | about 17k frames per reader at 4-5 fps |
+| 2026-11-22 | arms: 18 folds (a 6, b 3, c 9) | A10G | 6.0 (actual, ~20 min each) | 6.6 | 600 frames x 2 epochs, plus held-out eval; two mixed folds rerun |
+| 2026-11-22 | 3 final models + held-out evaluation | A10G | 1.1 (actual) | 1.2 | checkpoints written for the edit pass |
+| 2026-11-22 | failed attempts: frame-shape stack, detached-LM abort | A10G | 1.5 (actual) | 1.7 | recorded as bugs, fixed, rerun |
+| 2026-11-22 | downstream edit pass: 4 readers x 8 flights x ~5 clips x 5 conditions | A10G | 14.4 (actual, 4 shards x ~0.9 h per reader) | 15.8 | 24.5k frames per reader at 4-5 fps; frozen, real, sim, mixed |
 
 ## Running total
 
 | item | USD |
 | --- | --- |
-| booked | 5.51 |
-| committed (L01 scoring, all 80 clips, actual) | 4.10 |
-| committed (L02, estimate above) | 18.00 |
-| remaining against the 50.00 ceiling | 28.99 |
+| L01 scoring (all 80 clips, actual) | 4.10 |
+| L02 training, finals, failed attempts and edit passes (actual, above) | 25.30 |
+| **booked total** | **29.40** |
+| remaining against the 50.00 ceiling | 20.60 |
