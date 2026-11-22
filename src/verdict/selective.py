@@ -220,3 +220,33 @@ def rate_interval(flags, clusters, alpha: float = 0.05,
     f = np.asarray(flags, dtype=np.float64).ravel()
     f = np.where(np.isfinite(f), f, 0.0)
     return cluster_interval(f, clusters, alpha=alpha, draws=draws, seed=seed)
+
+
+# ------------------------------------------------------------------ CRC from counts
+def crc_from_counts(lam, n_accept, k_risk, alpha: float = 0.05) -> CRCResult:
+    """Conformal risk control from precomputed (threshold, accepted, failures) counts.
+
+    The gate is ``accept iff score >= lam``.  Candidate thresholds are scanned in
+    increasing order (decreasing coverage); the first whose exact-conservative bound
+    ``(k + 1) / (n + 1) <= alpha`` is returned.  ``k_risk`` may be fractional when the risk
+    is a mean of continuous per-clip errors.
+    """
+    lam = np.asarray(lam, dtype=np.float64)
+    n = np.asarray(n_accept, dtype=np.int64)
+    k = np.asarray(k_risk, dtype=np.float64)
+    order = np.argsort(lam)
+    n_total = int(n[order][-1]) if len(order) else 0
+    for i in order:
+        if n[i] < 1:
+            continue
+        bound = (k[i] + 1.0) / (n[i] + 1.0)
+        if bound <= alpha:
+            return CRCResult(float(lam[i]), n[i] / max(n_total, 1), int(n[i]), n_total,
+                             float(bound), alpha, True)
+    if not len(order):
+        return CRCResult(float("nan"), 0.0, 0, 0, float("nan"), alpha, False, "empty grid")
+    i = order[0]
+    return CRCResult(float("nan"), 0.0, 0, int(n[i]), float((k[i] + 1) / (n[i] + 1)), alpha,
+                     False,
+                     f"no threshold reaches alpha={alpha:g}; the full-coverage bound is "
+                     f"{(k[i] + 1.0) / (n[i] + 1.0):.3f}")

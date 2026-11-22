@@ -1,0 +1,20 @@
+{
+ "per_axis_robust_deg": [
+  1.065774400482416,
+  1.910587818373582
+ ],
+ "per_axis_rms_deg": [
+  8.149611752494055,
+  14.197171161898632
+ ],
+ "norm_median_deg": 1.934247509833433,
+ "sigma_n_deg": 1.910587818373582,
+ "n_frames": 3921,
+ "note": "robust (MAD) per-axis std of depicted - required on the six development flights' real clips; the larger axis is sigma_n",
+ "sigma_n_x_k": {
+  "k=1.5": 2.865881727560373,
+  "k=2.0": 3.821175636747164,
+  "k=3.0": 5.731763455120746
+ },
+ "lam_over_sigma_n": NaN
+}

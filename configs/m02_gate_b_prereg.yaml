@@ -1,0 +1,140 @@
+# Track M, Stage 2 -- Gate B (reader agreement, video-side): pre-registration.
+#
+# Written and committed BEFORE any second-reader output exists for this track.  H03's
+# 150-frame reader-validity sample is an input, not an outcome of this design: it fixed the
+# feed and showed Perspective Fields is a competent second estimator (median roll agreement
+# with the frozen reader 0.7-2.2 deg on generated frames, 1.3 deg reader error on real TII
+# fisheye controls).
+#
+# IMMUTABLE after this commit.  Thresholds are frozen later in m02_gate_b_frozen.yaml, in a
+# separate commit written before any evaluation set is scored.
+prereg_version: 1
+date: '2026-11-22'
+track: M
+stage: 2
+tag: '[M]'
+question: >
+  Do two independent tilt readers, run on the same pixels, disagree more when the frozen
+  reader is wrong -- and can that disagreement be turned into an abstention gate that catches
+  the scene bias the frozen S3 confidence gate misses?
+
+# ------------------------------------------------------------------ populations
+splits:
+  development:
+    real_flights: [flight-01a-ellipse, flight-01p-ellipse, flight-04a-ellipse,
+                   flight-07p-lemniscate, flight-13a-trackRATM, flight-16p-trackRATM]
+    sim_clips: the feasible development clips of configs/sim_splits_frozen.json that are on
+      R2 as i02_dev_* (80 when last verified, sha256 cdf66e28...); scenes urban_checker,
+      forest_ridge, industrial; mounts 0/15/30/45 deg
+  evaluation:
+    real_heldout_flights: [flight-13p-trackRATM, flight-07a-lemniscate]
+    sim_heldout: scored only if rendered; otherwise reported as not available
+    generators: H04 SolarWM-5B clips (234, track-h3/) and H01 ANWM clips (82, track-h/)
+  frame_subsampling:
+    real_tii: every clip frame (about 48)
+    sim: every second frame (30 Hz -> 15 Hz), the L01/H2 convention; stated in every table
+    generators: every frame H01 (16 per clip); every second frame H04
+
+# ------------------------------------------------------------------ the readers
+readers:
+  feed:
+    construction: square centre crop, resized to 224 x 224, exactly H03's generated-frame feed
+    focal_prior_px: 112.0
+    why: >
+      H03 validated this feed: the frozen reader's roll error is 0.92 deg on 60 truth controls
+      (0.61 simulated, 1.30 real fisheye) and its agreement with Perspective Fields is
+      0.7-2.2 deg. The gate is a *relative* statistic between two estimators on identical
+      pixels, so a common feed is the requirement; absolute validity is H03's result.
+  primary_verdict_reader:
+    name: R_frozen
+    what: GeoCalib at 1dedb29, simple_divisional on the raw fisheye, distorted weights
+    source: stored in the schema clips (depicted_lean) -- not re-run here
+  second_reader:
+    name: R_pf
+    what: Perspective Fields Paramnet-360Cities-edina-centered, commit d54be73
+    licence: Adobe Research License, noncommercial research use only; weights downloaded at
+      run time, never committed or re-hosted
+  third_reader:
+    name: R_gc224
+    what: GeoCalib 1dedb29, pinhole camera model with a scalar focal prior of 112 px
+    role: the matched-feed partner for the disagreement statistic, and the second member of
+      the ensemble. A different camera model from the verdict reader (pinhole vs
+      simple_divisional) and a different feed (224 crop vs raw fisheye).
+  disagreement_statistic:
+    definition: >
+      Per frame, the lean difference in degrees: 180/pi * asin(min(1, |l_pf - l_gc224|)),
+      with each lean computed in the yaw-aligned frame from its own gravity estimate through
+      the clip's mount. Per clip: the median and the p90 over frames. Window version:
+      per 8-frame window median, then the maximum over windows (the published window scheme).
+    primary: clip median disagreement
+  ensemble_reader:
+    definition: the per-frame mean of l_pf and l_gc224 (matched feed), used as a replacement
+      depicted lean. Reported separately from the gate: the mean reader and the gated reader
+      are never conflated.
+
+# ------------------------------------------------------------------ gate B
+gate_b:
+  rule: abstain when the clip's median disagreement exceeds tau_B
+  reason_code: readers_disagree
+  threshold_selection:
+    rule: >
+      Conformal risk control on the accept-below rule (accept iff disagreement <= tau), with
+      the accepted risk bounded by (k + 1) / (n + 1). Two risks, both on the six development
+      flights' gate-kept real clips: the coherence tier's false-reject rate and its
+      yaw-control flag rate, each at most 0.05. tau_B is the LARGEST threshold satisfying
+      both (maximum coverage). If no threshold reaches a target, that is reported as the
+      result and no hand-set value is substituted.
+    coherence_tier: >
+      the window-max scale-free coherence of Track J/G/K (8 frames, hop 4, 1 - min(r_x,r_y)),
+      on the schema-v3 exact required lean, threshold recalibrated leave-one-flight-out on
+      the accepted real clips.
+    grid: 0.0 to 30.0 deg step 0.25
+    guard: a clip with fewer than 6 usable frames in either reader disagrees is not testable
+
+# ------------------------------------------------------------------ what the gate must predict
+prediction:
+  label_frame: per-frame lean error of R_frozen against truth above 5.0 deg
+  label_clip: median per-frame lean error of R_frozen above 5.0 deg
+  truth:
+    sim: the render's own attitude (`lean_*` in the gt npz)
+    real: mocap attitude through the recorded mount
+  auroc:
+    reported_for: [disagreement, S3_latitude_confidence, combined]
+    combined: >
+      the larger of the two quantities' leave-one-flight-out rank percentile (a max of
+      standardised ranks, calibrated on dev only)
+    stratify_by: [scene family, mount, dataset]
+  specific_question: >
+    the 12 forest_ridge clips that the frozen S3 gate keeps (L01: median reader error
+    9.96 deg). Report how many the disagreement gate abstains on.
+  reference: J04's S3 per-frame AUROC 0.851 on the comparison frames
+
+# ------------------------------------------------------------------ success criteria
+success_criteria:
+  primary: >
+    At the selected tau_B, the accepted real dev clips have coherence false-reject <= 0.05
+    and yaw-control flag rate <= 0.05, with coverage reported. Gate A could not reach the
+    yaw target on this population, so this is the criterion that matters.
+  secondary: >
+    Clip-level AUROC of the disagreement statistic for reader error > 5 deg is at least the
+    frozen S3 gate's clip-level AUROC on the same population, and the combined statistic is
+    not below either.
+  forest: >
+    at least half of the 12 kept forest clips are abstained on, OR the AUROC bound above is
+    met and the forest shortfall is reported with its mechanism.
+  ensemble: >
+    the mean reader's trimmed RMSE on the simulated dev clips is reported against each single
+    reader and against the frozen reader; no success bar is set (it is a question, not a
+    test), and the per-family bias table decides whether averaging helps the forest.
+
+# ------------------------------------------------------------------ limits
+limits:
+  - >
+    Disagreement between two pinhole readers on a 224 crop cannot see a bias both readers
+    share. If the forest bias is a shared pinhole/crop artefact, Gate B will not catch it.
+  - >
+    R_pf and R_gc224 see a centre crop; the verdict reader sees the whole fisheye. A
+    disagreement measured on the crop is a proxy for the fisheye reader's reliability.
+  - >
+    Real TII has two held-out flights and three gate-kept clips; any held-out number is
+    descriptive and is never quoted as a 95 % interval.

@@ -1,0 +1,78 @@
+{
+ "lam": 3.82,
+ "n_clips_total": 69,
+ "n_accepted": 22,
+ "coverage": 0.3188405797101449,
+ "reasons": {
+  "weak_signal": 43,
+  "near_vertical": 4,
+  "both": 0,
+  "none": 22
+ },
+ "rates": {
+  "real": {
+   "hit": 0,
+   "n": 22,
+   "abstain": 0
+  },
+  "tilt_removal": {
+   "hit": 7,
+   "n": 22,
+   "abstain": 0
+  },
+  "mirror_roll": {
+   "hit": 7,
+   "n": 22,
+   "abstain": 0
+  },
+  "scale_0.5": {
+   "hit": 5,
+   "n": 22,
+   "abstain": 0
+  },
+  "scale_1.5": {
+   "hit": 0,
+   "n": 22,
+   "abstain": 0
+  },
+  "yaw_control": {
+   "hit": 4,
+   "n": 22,
+   "abstain": 0
+  },
+  "null_edit": {
+   "hit": 0,
+   "n": 22,
+   "abstain": 0
+  },
+  "delay_ms_100": {
+   "hit": 2,
+   "n": 22,
+   "abstain": 0
+  },
+  "delay_ms_200": {
+   "hit": 6,
+   "n": 22,
+   "abstain": 0
+  },
+  "delay_ms_300": {
+   "hit": 7,
+   "n": 22,
+   "abstain": 0
+  }
+ },
+ "real_rate_interval": {
+  "per_flight": {
+   "flight-01p-ellipse": 0.0,
+   "flight-07p-lemniscate": 0.0
+  },
+  "point": 0.0,
+  "lo": 0.0,
+  "hi": 0.0,
+  "n_clusters": 2,
+  "draws": 5000,
+  "seed": 1,
+  "note": "descriptive only: fewer than 10 clusters"
+ },
+ "lam_rule": "2 x sigma_n (the middle pre-registered SNR candidate)"
+}

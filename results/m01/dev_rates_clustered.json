@@ -1,0 +1,57 @@
+{
+ "real": {
+  "hits": 4,
+  "n": 51,
+  "point": 0.08,
+  "lo": 0.0,
+  "hi": 0.16,
+  "n_clusters": 2,
+  "draws": 5000,
+  "seed": 1,
+  "note": "descriptive only: fewer than 10 clusters"
+ },
+ "yaw_control": {
+  "hits": 20,
+  "n": 51,
+  "point": 0.3946153846153846,
+  "lo": 0.2692307692307692,
+  "hi": 0.52,
+  "n_clusters": 2,
+  "draws": 5000,
+  "seed": 1,
+  "note": "descriptive only: fewer than 10 clusters"
+ },
+ "null_edit": {
+  "hits": 4,
+  "n": 51,
+  "point": 0.08,
+  "lo": 0.0,
+  "hi": 0.16,
+  "n_clusters": 2,
+  "draws": 5000,
+  "seed": 1,
+  "note": "descriptive only: fewer than 10 clusters"
+ },
+ "tilt_removal": {
+  "hits": 49,
+  "n": 51,
+  "point": 0.9607692307692308,
+  "lo": 0.96,
+  "hi": 0.9615384615384616,
+  "n_clusters": 2,
+  "draws": 5000,
+  "seed": 1,
+  "note": "descriptive only: fewer than 10 clusters"
+ },
+ "mirror_roll": {
+  "hits": 50,
+  "n": 51,
+  "point": 0.9807692307692308,
+  "lo": 0.9615384615384616,
+  "hi": 1.0,
+  "n_clusters": 2,
+  "draws": 5000,
+  "seed": 1,
+  "note": "descriptive only: fewer than 10 clusters"
+ }
+}
