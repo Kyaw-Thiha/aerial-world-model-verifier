@@ -153,6 +153,14 @@ speed-proportional, per-axis, quadratic or body-frame drag does not move it.
 The anchor (J02 arm c with the schema read correctly, 120 draws): v2 exact 6.56 deg H0 /
 13.81 deg LOFO threshold; v3 6.56 deg H0 / 13.81 deg LOFO threshold.
 
+**Exploratory sensitivity, not the selected result.** Running the same downstream with the
+best-RMS model (M2, 3.604) instead of the selected M0 *raises* the F0 threshold to 9.01 deg
+and the false-reject to 7/69 (median residual 3.57), with the yaw control at 28/69; M1
+gives 9.18 deg and 13/69 yaw control. So no candidate, selected or best-RMS, lowers the
+threshold, and both worsen the yaw-control artefact. These two rows are labelled
+exploratory because M2/M1 are not the pre-registered selection; runs
+`results/k02_downstream/20261122T091219Z_M2` and `..._M1`.
+
 ### Detection at the matched false-reject (gate-kept dev clips)
 
 | edit / coverage | median tier 25 / 50 / full | coherence tier 25 / 50 / full |

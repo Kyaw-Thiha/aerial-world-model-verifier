@@ -312,12 +312,16 @@ def cluster_ci(rows: list[dict], tier: str, thr: float,
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--fit", default=None)
+    ap.add_argument("--model", default=None,
+                    help="override the pre-registered selected model (exploratory only)")
     args = ap.parse_args()
     fit_path = Path(args.fit) if args.fit else sorted(OUT.parent.glob("k02_fit/*/fit.json"))[-1]
     fit = json.loads(Path(fit_path).read_text())
-    model = fit["selection"]["selected"]
+    model = args.model or fit["selection"]["selected"]
     print("selected model", model, fit["selection"], flush=True)
     run = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    if args.model:
+        run += f"_{model}"
     out = OUT / run
     out.mkdir(parents=True, exist_ok=True)
 
@@ -397,7 +401,7 @@ def main() -> int:
                 rows[key], tier, det[key][name]["matched"].get("threshold", np.nan))
 
     doc = {"run": run, "fit_file": str(fit_path), "model": model,
-           "selection": fit["selection"],
+           "model_override": bool(args.model), "selection": fit["selection"],
            "lofo_rms": {m: fit["lofo"][m]["pooled_rms_frame_weighted"] for m in fit["lofo"]},
            "f0": f0, "anchor": anchor_out, "detection": det,
            "population": {"gate_kept_dev_real": sum(
