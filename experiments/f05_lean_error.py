@@ -242,14 +242,16 @@ def main() -> int:
         for path_name in sorted({r["extractor"] for r in all_rows}):
             real = {}
             for r in all_rows:
+                # every real clip with a finite statistic, as the pre-registration says
+                # (primary and exploratory); testability is not a filter here
                 if (r["extractor"] == path_name and r["path"] == "pixel"
-                        and r["cond"] == "real" and r["arm"] == "estimated_attitude"
-                        and r["testable"] == "True"):
+                        and r["cond"] == "real" and r["arm"] == "estimated_attitude"):
                     try:
                         r["rho"] = float(r["rho"])
                     except (TypeError, ValueError):
                         r["rho"] = float("nan")
-                    real[(r["seq"], r["idx"])] = r
+                    if np.isfinite(r["rho"]):
+                        real[(r["seq"], r["idx"])] = r
             per_clip[path_name] = real
         link = {}
         for path_name, reals in per_clip.items():
