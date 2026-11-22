@@ -13,7 +13,10 @@ a copy of H02's (`track-h2-generator-coverage`, `97fda68`), read read-only.
    flags 39 % (20/51) of the testable clips. The median depicted/required tilt ratio
    on the testable clips is 0.95, and
    35/51 testable clips have a ratio in
-   [0.5, 1.5].
+   [0.5, 1.5]. Of the 20 rejected testable clips, **9 are weak-signal** (the required tilt
+   exceeds 10° on under 30 % of frames), **0 are attributable to yaw sensitivity alone**, and
+   **11 are genuine failures** — 4 roll-shape, 3 pitch-axis (the reader's least certain axis)
+   and 4 sign-tier marginal (§1b).
 2. **Arm B (level camera)**: 64 testable, 0 accepted, coherence
    flag 100 % (64/64). **Arm C (mirrored roll)**: 42 testable,
    0 accepted, coherence flag 100 % (42/42). S2
@@ -124,6 +127,59 @@ of the testable clips and 40 % (31/78) of all arm-A clips. The R2 band
 flags 65 % (33/51) and the median-residual tier is not applied as a decision
 (median 3.95 deg); the median axis gains are gx 0.91, gy 0.66. S1 passes.
 
+
+### 1b. Why the 20 rejected arm-A clips were rejected
+
+Of the 51 testable arm-A clips, 31 are accepted and **20 rejected**.  Each rejection is
+assigned one explanation by the rule below, fixed before the table was read (post hoc and
+labelled exploratory; it changes no acceptance decision):
+
+1. **weak signal** — the frozen signal rules barely passed: the required tilt exceeds 10° on
+   fewer than 30 % of frames (`signal_fraction < 0.30`) or the excitation is under 4°;
+2. **yaw sensitivity** — not weak, and the same path's yaw-warped draw-0 clip is *not*
+   flagged while this clip is, i.e. a tilt-preserving +20° view change alone clears it;
+3. **genuine failure** — otherwise, sub-classified by the per-axis correlations:
+   `roll_shape` (r_y ≤ 0.30), `pitch_axis` (r_y > 0.30, r_x ≤ 0.50 — the axis the reader's
+   fixed 90° focal prior makes uncertain), `sign_tier` (flagged by the sign sub-tier only
+   with r_min ≥ 0.6).
+
+**Result: weak signal 9/20, yaw sensitivity 0/20,
+genuine failure 11/20** (roll shape 4,
+pitch axis 3, sign tier 4).
+
+The yaw column is the measured control on the same path: the +20° warp flags every one of
+these paths, so it widens the uncertainty band but does **not** explain any single rejection;
+no threshold was changed on its account.
+
+| clip | family/peak | excitation | signal frac. | r_x | r_y | flagged by | yaw counterpart | class |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `swap_arc_10_F5_A_flatness_g0` | arc/10° | 7.33° | 0.32 | 0.81 | -0.22 | corr | flagged | genuine_failure (roll_shape) |
+| `main_arc_20_A_flatness_g0` | arc/20° | 9.08° | 0.52 | 0.32 | 0.79 | corrsign | flagged | genuine_failure (pitch_axis) |
+| `main_arc_20_A_flatness_g1` | arc/20° | 9.08° | 0.52 | 0.32 | 0.78 | corrsign | flagged | genuine_failure (pitch_axis) |
+| `main_arc_20_A_flatness_g2` | arc/20° | 9.15° | 0.52 | 0.45 | 0.66 | sign | flagged | genuine_failure (pitch_axis) |
+| `main_climb_turn_10_A_flatness_g0` | climb_turn/10° | 7.37° | 0.32 | 0.83 | -0.11 | corr | flagged | genuine_failure (roll_shape) |
+| `main_climb_turn_10_A_flatness_g1` | climb_turn/10° | 7.37° | 0.32 | 0.83 | -0.08 | corr | flagged | genuine_failure (roll_shape) |
+| `main_climb_turn_10_A_flatness_g2` | climb_turn/10° | 7.37° | 0.32 | 0.81 | -0.04 | corr | flagged | genuine_failure (roll_shape) |
+| `main_fig8_5_A_flatness_g0` | fig8/5° | 6.88° | 0.22 | 0.96 | 0.45 | sign | flagged | weak_signal |
+| `main_fig8_5_A_flatness_g1` | fig8/5° | 6.88° | 0.22 | 0.96 | 0.46 | sign | flagged | weak_signal |
+| `main_fig8_5_A_flatness_g2` | fig8/5° | 6.88° | 0.22 | 0.96 | 0.45 | sign | flagged | weak_signal |
+| `main_fig8_8_A_flatness_g0` | fig8/8° | 6.88° | 0.25 | 0.97 | 0.91 | sign | flagged | weak_signal |
+| `swap_s_10_F4_A_flatness_g0` | s/10° | 6.87° | 0.47 | 0.83 | 0.85 | sign | flagged | genuine_failure (sign_tier) |
+| `main_s_5_A_flatness_g0` | s/5° | 6.88° | 0.25 | 0.94 | 0.78 | sign | flagged | weak_signal |
+| `swap_slalom_10_F4_A_flatness_g0` | slalom/10° | 8.06° | 0.30 | 0.90 | 0.81 | sign | flagged | weak_signal |
+| `main_slalom_12_A_flatness_g0` | slalom/12° | 8.63° | 0.35 | 0.76 | 0.75 | sign | flagged | genuine_failure (sign_tier) |
+| `main_slalom_12_A_flatness_g1` | slalom/12° | 8.63° | 0.35 | 0.74 | 0.78 | sign | flagged | genuine_failure (sign_tier) |
+| `main_slalom_12_A_flatness_g2` | slalom/12° | 8.63° | 0.35 | 0.76 | 0.75 | sign | flagged | genuine_failure (sign_tier) |
+| `main_slalom_5_A_flatness_g0` | slalom/5° | 7.22° | 0.25 | 0.79 | 0.26 | corr | flagged | weak_signal |
+| `main_slalom_5_A_flatness_g1` | slalom/5° | 7.27° | 0.25 | 0.76 | 0.16 | corrsign | flagged | weak_signal |
+| `main_slalom_5_A_flatness_g2` | slalom/5° | 7.24° | 0.25 | 0.94 | -0.30 | corrsign | flagged | weak_signal |
+
+Two mechanisms deserve a note.  The four `sign_tier` clips have r_min 0.74–0.91 — the shape
+is right — but the sign sub-tier flags them because its 1e-4 dead-band admits almost every
+frame, so a small lag or offset pushes the agreement to chance (0.49–0.53).  And the three
+`pitch_axis` clips (`arc_20`) follow the roll axis (r_y 0.66–0.79) and fail only on the
+forward axis, which is the one the reader's assumed focal length makes least certain.  Both
+are reported as mechanisms, not as generator failures.
 
 ### 2. Arms B and C
 
