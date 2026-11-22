@@ -140,10 +140,15 @@ def main() -> int:
                 up_t, lean_t, R_cb = t[int(r["frame"])]
                 lean_est = depicted_lean_from_gravity(np.asarray([r["up_cam_ft"]]), R_cb)[0]
                 per_fam.setdefault(fam, []).append(lean_est - lean_t)
+            def _deg(x):
+                return float(np.degrees(np.arcsin(max(-1.0, min(1.0, x)))))
             entry["sim"] = {f: {"n": len(v),
-                                "bias": np.mean(np.asarray(v), axis=0).tolist(),
-                                "bias_magnitude": float(np.linalg.norm(np.mean(np.asarray(v), axis=0))),
-                                "median_error": None}
+                                "bias_lean": np.mean(np.asarray(v), axis=0).tolist(),
+                                "bias_fwd_deg": _deg(np.mean(np.asarray(v), axis=0)[0]),
+                                "bias_left_deg": _deg(np.mean(np.asarray(v), axis=0)[1]),
+                                "bias_magnitude_deg": float(np.hypot(
+                                    _deg(np.mean(np.asarray(v), axis=0)[0]),
+                                    _deg(np.mean(np.asarray(v), axis=0)[1])))}
                             for f, v in per_fam.items()}
             e = np.asarray([angle(np.asarray([r["up_cam"]]), np.asarray([r["up_cam_ft"]]))[0]
                             for r in rec["held_out_sim"] if r["up_cam_ft"]])
@@ -199,10 +204,9 @@ def main() -> int:
         frozen = {}
         for fam in FAMILIES:
             rows = [r for r in csv.DictReader(L01.open()) if r["family"] == fam]
-            b = np.array([float(r["bias_forward"]) for r in rows] +
-                         [0.0])  # keep shape
-            bl = np.mean([float(r["bias_left"]) for r in rows])
-            frozen[fam] = float(np.hypot(np.mean([float(r["bias_forward"]) for r in rows]), bl))
+            bf = np.degrees(np.arcsin(np.clip(np.mean([float(r["bias_forward"]) for r in rows]), -1, 1)))
+            bl = np.degrees(np.arcsin(np.clip(np.mean([float(r["bias_left"]) for r in rows]), -1, 1)))
+            frozen[fam] = float(np.hypot(bf, bl))
         out["criteria"]["s2_frozen"] = frozen
         out["criteria"]["s2_frozen_spread"] = float(max(frozen.values()) - min(frozen.values()))
         for arm in ("sim", "mixed"):
@@ -211,7 +215,7 @@ def main() -> int:
                 rec = folds.get(f"{arm}__{fam}")
                 if not rec or "sim" not in out["folds"].get(f"{arm}__{fam}", {}):
                     continue
-                per[fam] = out["folds"][f"{arm}__{fam}"]["sim"][fam]["bias_magnitude"]
+                per[fam] = out["folds"][f"{arm}__{fam}"]["sim"][fam]["bias_magnitude_deg"]
             if len(per) == 3:
                 spread = float(max(per.values()) - min(per.values()))
                 out["criteria"][f"s2_{arm}"] = {
