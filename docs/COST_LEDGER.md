@@ -139,3 +139,8 @@ set is expected to be about **1.5 USD** (rental), so no 20 USD pre-approval is n
 | 2026-11-22 | N | `awmv-n-rotation` Part 0 (estimate, before the run) | A10 | 0.75 | 1.50 est. | ~53k frames (11 UZH sequences x 450; 80 sim clips x 300-900) at a conservative 20 frames/s, plus container start and a cached image build; A10 at 1.10 USD/h |
 
 Actuals are added below when the run finishes. Cached Modal image builds are not billed as GPU.
+
+The Part 1 translation-direction addendum is pre-registered in
+`configs/n02_initial_gravity_prereg.yaml` with an estimate of **0.00 USD**: SIFT +
+`findEssentialMat` run on local CPU on already-local frames (a Modal CPU container is used only
+if local runtime exceeds 3 h; it did not).
