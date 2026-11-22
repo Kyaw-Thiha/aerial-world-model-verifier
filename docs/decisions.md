@@ -581,3 +581,17 @@ Every row below was read from the project's own repo/HF card on 2026-11-10. "ver
   three. This is the plain answer to the track's question: on this data, simulated training does
   not improve the reader on real held-out flights, and mixing it with real under this DR recipe is
   worse than training on real alone.
+
+- [L] **The full frozen edit pass makes the pipeline check fail on the two racing flights, not on the
+  open ones** (amendment C covered the first three flights; the numbers below are the full eight).
+  Absolute offset on the unedited real frames: 0.04 deg (01p, 07p), 0.06-0.07 (16p, 13p), 0.30 (01a),
+  0.31 (13a), 0.90 (04a), 1.00 (07a). Condition-relative offsets: null <=0.07 everywhere; tilt
+  removal +0.14..+0.20 on the six non-racing flights but **+0.81 on 13p and 16p**; mirror -0.41 on
+  04a, +0.29 on 07a, <=0.21 elsewhere; yaw +0.26/+0.30/+0.37 on 04a/07a/16p, <=0.20 elsewhere. The
+  two 0.81 tilt values are the extreme ceiling-view flights, where the tilt edit blanked most of the
+  frame; the reader's horizon estimate there is unstable to resampling, and Track A's own null-edit
+  check on these flights was never published per flight. The maps are not the cause (identity is
+  exact everywhere). Consequence recorded: detection rates are measured on the regenerated pixels
+  and are unaffected in practice (the edits move the lean by 16-27 deg), while the *controls* on
+  13p/16p/04a/07a carry up to 0.8 deg of pipeline uncertainty and are reported with it; a
+  sensitivity table excludes those flights from the control rates.

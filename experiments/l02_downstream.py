@@ -159,6 +159,12 @@ def main() -> int:
         for cond in ("real_null",) + tuple(c for c in CONDS if c != "real") + ("real",):
             res["rates"][cond] = {"lofo": rate(rows_out, cond, "tau_lofo"),
                                   "abs_1.75": rate(rows_out, cond, "tau_abs")}
+        sens = [r for r in rows_out if r["flight"] not in ("flight-13p-trackRATM",
+                                                            "flight-16p-trackRATM")]
+        res["rates_excluding_racing"] = {
+            cond: {"lofo": rate(sens, cond, "tau_lofo"),
+                   "abs_1.75": rate(sens, cond, "tau_abs")}
+            for cond in ("real_null", "null_edit", "tilt_k0", "mirror_roll", "yaw_control")}
         # cluster bootstrap on the LOFO real false-reject and removal detection
         res["intervals"] = {
             "real_false_reject": _bootstrap(
