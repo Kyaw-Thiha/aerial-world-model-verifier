@@ -135,7 +135,14 @@ part of the noise floor quoted in section 6.
 
 ## Confirmatory and exploratory
 
-<!-- FILL: table marking every cell -->
+Every table above is **confirmatory** against `configs/g06_segments_prereg.yaml` unless the row
+says otherwise. The labels:
+
+| item | status |
+| --- | --- |
+| A1 arms, A2 q-grid and corpus variant, A3 refinement, A4 lag grid, A5 lengths, the synthetic minimum-detectable-step curve, the yaw slice, the stratum tables | confirmatory (pre-registered) |
+| any arm added after seeing a dev result, including the BH-scored step curve in `results/g06/ablation/mdv_fdr_exploratory.csv` | **exploratory**, labelled in the file name and in every table |
+| everything on the held-out blocks | confirmatory, once, in G07 |
 
 ## What this supports
 
