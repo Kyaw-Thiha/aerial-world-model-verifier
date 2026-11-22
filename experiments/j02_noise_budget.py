@@ -100,7 +100,9 @@ def make_error(n: int, dt: float, sigma: float, bias: float, tau_s: float,
     fast = scale(fast, fast_share * sigma ** 2)
     ang = rng.uniform(0.0, 2.0 * np.pi)
     b = bias * np.array([np.cos(ang), np.sin(ang)])
-    return b, b[None, :] + slow + fast
+    # the model is in degrees; the lean vector is dimensionless (sin of the tilt), so a small
+    # angle error is added as its radian value
+    return b, np.deg2rad(b[None, :] + slow + fast)
 
 
 def realised_params(err: np.ndarray, dt: float) -> dict:
@@ -119,8 +121,19 @@ def realised_params(err: np.ndarray, dt: float) -> dict:
 
 
 # --------------------------------------------------------------------------- statistics
+def windows_of(resid: np.ndarray, length: int, hop: int) -> np.ndarray:
+    """(n_clips, n_windows) window medians; windows not fully inside a clip are NaN."""
+    n_clip, n = resid.shape
+    starts = list(range(0, n - length + 1, hop))
+    if not starts:
+        return np.full((n_clip, 1), np.nan)
+    view = np.stack([resid[:, s:s + length] for s in starts], axis=1)   # (clips, w, length)
+    med = np.nanmedian(view, axis=2)
+    return med
+
+
 def window_max(resid: np.ndarray, length: int, hop: int) -> float:
-    """Maximum over complete windows of the window-median residual."""
+    """Maximum over complete windows of the window-median residual (one clip)."""
     n = len(resid)
     if n <= length:
         return float(np.median(resid))
@@ -153,42 +166,50 @@ def mdv_of(curve: dict, threshold: float = 0.5) -> float:
 def run_cell(units: list[dict], flights: np.ndarray, *, sigma: float, bias: float,
              tau_s: float, fast_share: float, draws: int, lengths, rng: np.random.Generator,
              error_fn=None) -> dict:
-    """One parameter cell: (draws, delta, clip) statistics per window length."""
+    """One parameter cell: (draws, delta, clip) statistics per window length.
+
+    Vectorised over clips: every clip is padded to ``MAXN`` frames with NaN and the windows are
+    taken from the padded array, with windows not fully inside a clip masked out. That is the
+    same statistic as ``segments.window_max`` (complete windows only), checked below on a real
+    clip; it is 100x faster because the per-clip Python loop disappears.
+    """
     n_clip = len(units)
     T = {L: np.full((draws, len(DELTAS), n_clip), np.nan) for L in lengths}
+    req = np.full((n_clip, MAXN, 2), np.nan)
+    for j, u in enumerate(units):
+        req[j, :u["n"]] = u["lean_req"]
     for d in range(draws):
         err = np.zeros((n_clip, MAXN, 2))
         for f in np.unique(flights):
             ii = np.flatnonzero(flights == f)
             dt = float(np.median(np.diff(units[ii[0]]["t"])))
-            if error_fn is None:
-                _, e = make_error(MAXN, dt, sigma, bias, tau_s, fast_share, rng)
-            else:
-                e = error_fn(units, ii, dt, rng)
-            err[ii] = e[None]
-        for j, u in enumerate(units):
-            n = u["n"]
-            req = u["lean_req"]
-            e = err[j, :n]
+            if error_fn is not None:
+                err[ii] = error_fn(units, ii, dt, rng)
+                continue
+            # one bias per flight, one independent stochastic realisation per clip
+            ang = rng.uniform(0.0, 2.0 * np.pi)
+            b = np.deg2rad(bias * np.array([np.cos(ang), np.sin(ang)]))
+            for j in ii:
+                _, e = make_error(MAXN, dt, sigma, 0.0, tau_s, fast_share, rng)
+                err[j] = e + b[None, :]
+        for di, delta in enumerate(DELTAS):
+            dep = apply_violation(req, delta) + err
+            resid = axis_angle_deg(dep, req)                       # (clips, MAXN)
             for L in lengths:
-                hop = 1 if L is None else max(1, L // 2)
-                for di, delta in enumerate(DELTAS):
-                    dep = apply_violation(req, delta) + e
-                    r = axis_angle_deg(dep, req)
-                    T[L][d, di, j] = (float(np.median(r)) if L is None
-                                      else window_max(r, L, hop))
+                if L is None:
+                    T[L][d, di, :] = np.nanmedian(resid, axis=1)
+                else:
+                    w = windows_of(resid, L, max(1, L // 2))
+                    T[L][d, di, :] = np.nanmax(w, axis=1)
     return T
 
 
 def analyse(T: dict, flights: np.ndarray) -> dict:
     out = {}
     for L, arr in T.items():
-        det = {float(delta): float(np.mean(arr[:, i, :] > tau[None, :]))
-               for i, delta in enumerate(DELTAS)
-               for tau in [np.array([lofo_tau(arr[dr, 0, :], flights) for dr in range(arr.shape[0])])]}
-        # the comprehension above re-derives tau for every delta; compute once instead
         taus = np.stack([lofo_tau(arr[dr, 0, :], flights) for dr in range(arr.shape[0])])
-        det = {float(delta): float(np.mean(arr[:, i, :] > taus)) for i, delta in enumerate(DELTAS)}
+        det = {float(delta): float(np.mean(arr[:, i, :] > taus))
+               for i, delta in enumerate(DELTAS)}
         h0 = arr[:, 0, :]
         out[str(L)] = {
             "h0_median_deg": float(np.nanmedian(h0)),
@@ -223,7 +244,7 @@ def main() -> None:
     dt = float(np.median(np.diff(units[0]["t"])))
     rng = np.random.default_rng(1)
     _, e = make_error(MAXN, dt, 4.8, 2.0, 0.5, 0.5, rng)
-    realised = realised_params(e, dt)
+    realised = realised_params(np.degrees(e), dt)
 
     draws = 120
     results = {"clips": len(units), "flights": int(len(np.unique(flights))),
@@ -245,7 +266,9 @@ def main() -> None:
                 Tc = run_cell(units, flights, draws=draws // 2, lengths=[None], rng=rng,
                               sigma=sigma, bias=bias, tau_s=tau_s, fast_share=0.5)
                 a = analyse(Tc, flights)["None"]
+                _, e_cell = make_error(MAXN, dt, sigma, bias, tau_s, 0.5, rng)
                 grid.append({"sigma": sigma, "bias": bias, "tau_s": tau_s,
+                             "realised_tau_int_s": realised_params(np.degrees(e_cell), dt)["tau_int_s"],
                              "mdv_deg": a["mdv_deg"],
                              "h0_median_deg": a["h0_median_deg"],
                              "tau_lofo_median_deg": a["tau_lofo_median_deg"],
@@ -265,6 +288,22 @@ def main() -> None:
                        "detection": a["detection"]})
     results["by_share"] = shares
 
+    # (3b) EXPLORATORY anchors: the pre-registered share grid stops at 0.2/0.8, and the
+    # realised correlation time saturates because half the variance is white. These two cells
+    # are the mechanism check (pure white vs pure slow) and are labelled exploratory.
+    anchors = []
+    for fs in (0.0, 1.0):
+        Tc = run_cell(units, flights, draws=draws // 2, lengths=[None], rng=rng,
+                      sigma=4.8, bias=2.0, tau_s=0.5, fast_share=fs)
+        a = analyse(Tc, flights)["None"]
+        _, e_cell = make_error(MAXN, dt, 4.8, 2.0, 0.5, fs, rng)
+        anchors.append({"fast_share": fs, "label": "exploratory",
+                        "realised_tau_int_s": realised_params(np.degrees(e_cell), dt)["tau_int_s"],
+                        "mdv_deg": a["mdv_deg"], "h0_median_deg": a["h0_median_deg"],
+                        "tau_lofo_median_deg": a["tau_lofo_median_deg"],
+                        "detection": a["detection"]})
+    results["exploratory_anchors"] = anchors
+
     # (4) replay of the MEASURED reader error (validation of the generator)
     from src.depicted.anatomy import load_flight, axis_errors
 
@@ -272,12 +311,15 @@ def main() -> None:
     per_flight_err = {}
     for f, tab in tables.items():
         err = axis_errors(tab, "frozen")
-        per_flight_err[f] = (np.asarray(tab.t), np.column_stack([err["pitch"], err["roll"]]))
+        # the anatomy returns degrees; the lean vector is dimensionless, so store radians
+        per_flight_err[f] = (np.asarray(tab.t),
+                             np.deg2rad(np.column_stack([err["pitch"], err["roll"]])))
 
     def replay(units_, ii, dt_, rng_):
+        """One flight's slice: the measured frozen-reader error, aligned to each clip's clock."""
         f = units_[ii[0]]["flight"]
         t_ref, e_ref = per_flight_err[f]
-        out = np.zeros((len(units_), MAXN, 2))
+        out = np.zeros((len(ii), MAXN, 2))
         for k, j in enumerate(ii):
             t_clip = units_[j]["t"]
             idx = np.searchsorted(t_ref, t_clip).clip(0, len(t_ref) - 1)
@@ -299,6 +341,48 @@ def main() -> None:
         }
     results["replay_measured_error"] = replay_out
 
+    # (5) anchor with the MOCAP attitude as the perfect depiction (the handoff's literal
+    # construction): adds the real actual-vs-required mismatch, so the H0 threshold becomes
+    # comparable with the frozen verdict's 14.73 deg
+    from src.verdict.lean import depicted_lean_from_gravity
+
+    mocap_lean = {}
+    for f, tab in tables.items():
+        mocap_lean[f] = (np.asarray(tab.t),
+                         depicted_lean_from_gravity(tab.up_true, tab.R_cb))
+    base = np.full((len(units), MAXN, 2), np.nan)
+    for j, u in enumerate(units):
+        t_ref, l_ref = mocap_lean[u["flight"]]
+        idx = np.searchsorted(t_ref, u["t"]).clip(0, len(t_ref) - 1)
+        base[j, : u["n"]] = l_ref[idx]
+    arm_b = {"h0_median": [], "tau": []}
+    h0_vals = np.full((draws, len(units)), np.nan)
+    for d in range(draws):
+        err = np.zeros((len(units), MAXN, 2))
+        for f in np.unique(flights):
+            ii = np.flatnonzero(flights == f)
+            dt = float(np.median(np.diff(units[ii[0]]["t"])))
+            ang = rng.uniform(0.0, 2.0 * np.pi)
+            b = np.deg2rad(2.0 * np.array([np.cos(ang), np.sin(ang)]))
+            for j in ii:
+                _, e = make_error(MAXN, dt, 4.8, 0.0, 0.5, 0.5, rng)
+                err[j] = e + b[None, :]
+        dep = base + err
+        req = np.stack([np.pad(u["lean_req"], ((0, MAXN - u["n"]), (0, 0)),
+                               constant_values=np.nan) for u in units])
+        h0_vals[d] = np.nanmedian(axis_angle_deg(dep, req), axis=1)
+    taus = np.stack([lofo_tau(h0_vals[d], flights) for d in range(draws)])
+    results["arm_b_mocap_truth"] = {
+        "construction": "depicted = mocap attitude lean + synthetic error (centre params); "
+                        "required = the clip's path lean",
+        "h0_median_deg": float(np.nanmedian(h0_vals)),
+        "tau_lofo_median_deg": float(np.nanmedian(taus)),
+        "tau_lofo_p10_p90_deg": [float(np.nanpercentile(taus, 10)),
+                                 float(np.nanpercentile(taus, 90))],
+        "note": "this is the construction the handoff names; it carries the real "
+                "actual-vs-required mismatch, which arm (a) deliberately removes",
+    }
+
     (OUT / "summary.json").write_text(json.dumps(results, indent=1))
     print(json.dumps({k: v for k, v in results.items()
                       if k in ("formula_check_max_abs_deg", "generator_realised")}, indent=1))
@@ -308,6 +392,7 @@ def main() -> None:
     print("replay h0 median / tau:", {k: (round(v["h0_median_deg"], 2),
                                           round(v["tau_lofo_median_deg"], 2))
                                       for k, v in replay_out.items()})
+    print("arm b (mocap truth):", json.dumps(results["arm_b_mocap_truth"], indent=1))
 
 
 if __name__ == "__main__":
