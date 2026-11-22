@@ -59,7 +59,7 @@ image = (
     .pip_install("torch==2.3.0", "torchvision==0.18.0",
                  index_url="https://download.pytorch.org/whl/cu121")
     .run_commands("pip install torch-scatter -f https://data.pyg.org/whl/torch-2.3.0+cu121.html")
-    .pip_install("numpy==1.26.4", "pandas", "pyyaml", "opencv-python-headless", "einops",
+    .pip_install("numpy==1.26.4", "pandas", "pyyaml", "einops",
                  "pypose", "kornia", "plyfile", "yacs", "evo", "tqdm", "numba", "matplotlib",
                  "scipy")
     .env({"TORCH_CUDA_ARCH_LIST": "8.6"})
@@ -69,6 +69,8 @@ image = (
         f"cd {DPVO_ROOT} && wget -q {EIGEN_ZIP} -O eigen.zip && unzip -q eigen.zip -d thirdparty",
         f"cd {DPVO_ROOT} && pip install --no-build-isolation .",
     )
+    # installed after DPVO's own setup so its resolver cannot drop it
+    .pip_install("opencv-python-headless==4.10.0.84")
 )
 
 
@@ -99,9 +101,13 @@ def _run_dpvo(frames, intr: tuple[float, float, float, float], fps: float, unit:
     t0 = time.time()
     with torch.no_grad():
         for t, f in enumerate(frames):
-            im = torch.from_numpy(np.ascontiguousarray(f[:h, :w])).permute(2, 0, 1)
-            if im.shape[0] == 1:
-                im = im.repeat(3, 1, 1)
+            arr = np.ascontiguousarray(f[:h, :w])
+            if arr.ndim == 2:
+                im = torch.from_numpy(arr)[None].repeat(3, 1, 1)
+            else:
+                im = torch.from_numpy(arr).permute(2, 0, 1)
+                if im.shape[0] == 1:
+                    im = im.repeat(3, 1, 1)
             slam(t, im.cuda(), torch.from_numpy(K).cuda())
     wall = time.time() - t0
     poses, _ = slam.terminate()
@@ -120,7 +126,7 @@ def _run_dpvo(frames, intr: tuple[float, float, float, float], fps: float, unit:
             "peak_gpu_gb": float(torch.cuda.max_memory_allocated() / 1e9)}
 
 
-@app.function(volumes={E_DATA: e_vol, N_DATA: n_vol, A_DATA: a_vol},
+@app.function(image=image, volumes={E_DATA: e_vol, N_DATA: n_vol, A_DATA: a_vol},
               gpu="A10", timeout=3600, max_containers=4)
 def uzh(seq: str, max_frames: int = 450, force: bool = False) -> dict:
     """DPVO on one prepared UZH pinhole sequence (read-only from awmv-e-data)."""
@@ -151,7 +157,7 @@ def uzh(seq: str, max_frames: int = 450, force: bool = False) -> dict:
     return rec
 
 
-@app.function(volumes={N_DATA: n_vol, A_DATA: a_vol},
+@app.function(image=image, volumes={N_DATA: n_vol, A_DATA: a_vol},
               gpu="A10", timeout=3600, max_containers=4)
 def sim(clip_id: str, force: bool = False) -> dict:
     """DPVO on one simulated clip's mp4 (uploaded to awmv-n-data/sim/videos)."""

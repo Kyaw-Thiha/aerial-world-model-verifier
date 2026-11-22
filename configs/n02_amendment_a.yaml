@@ -1,0 +1,56 @@
+# Track N, Part 1 addendum -- Amendment A: what the turn test measures.
+#
+# Written BEFORE any addendum number was computed. It does not change the pre-registered
+# direction-error statistic or the <= 3 deg decision rule; it makes the turn-observability test
+# precise, because the original wording ("roll about v_i") can be read two ways and one of them
+# is not observable in principle.
+prereg_version: 1
+date: '2026-11-22'
+track: N
+amends: configs/n02_initial_gravity_prereg.yaml  (no field of that file is edited)
+status: frozen
+
+why_an_amendment: >
+  A single translation direction fixes ONE degree of freedom of the tilt: the component that
+  moves the camera's velocity direction up or down. The other tilt component leaves the velocity
+  direction unchanged and is not observable from that pair. A rotation about the travel axis
+  (yaw-like roll about v) is never observable from velocity directions at all -- it would rotate
+  every velocity direction about itself, and it is the same freedom the whole project leaves
+  unconstrained (yaw). The useful question is therefore not "does a turn make the roll about v
+  observable" but "do two non-parallel velocity directions span the 2-DOF LEAN, so that a turn
+  replaces a reader reading with two direction readings".
+
+definition:
+  window_pair: two windows i and j with 2.0 <= t_j - t_i <= 5.0 s, each a 0.2 s direction
+    estimate at a pair gap of 0.2 s (the gap with the smallest median error in the pre-test, if
+    that table exists at run time; otherwise 0.2 s is used as fixed here).
+  theta_deg: angle between the mean world velocities of the two windows.
+  lean_2dof_reconstruction:
+    step_1: at window i the direction constraint gives the tilt component orthogonal to v_i,
+      c_i = atan2(t_est_i . e_up_i, t_est_i . e_v_i), with e_v = t_true_i and e_up the world-up
+      component orthogonal to e_v.
+    step_2: at window j the same construction gives c_j orthogonal to v_j.
+    step_3: transport c_j back to time i with the integrated video rotation R_ij (rotation of the
+      direction frame from i to j), so both components act at time i.
+    step_4: the two components span the lean when theta > 0. The reconstructed lean error is the
+      norm of the 2-vector of the measured components minus the truth components.
+  baseline: the lean error at the same windows from the integrated video rotation alone (one
+    direction constraint, no second window), i.e. exactly the Part 0 propagation.
+  residual_unobservable: the design matrix of the two constraints has rank 2 as soon as
+    sin(theta) > 0; report the condition number beside the result so a small theta cannot be
+    read as a win. With theta = 0 the second constraint adds nothing and the reconstruction is
+    reported as not evaluable.
+
+reporting:
+  - median and p90 lean error (degrees) by theta bin (< 10, 10-30, >= 30 deg), by stratum.
+  - the ratio to the video-only baseline in the same bin.
+  - n window pairs and the median condition number beside every bin.
+  reading: >
+    "turns make the tilt observable" is supported if, at theta >= 30 deg, the median lean error
+    is <= 5.0 deg and at least 30 % below the video-only baseline in the same bin; otherwise the
+    claim is reported as not supported. No threshold is fitted here.
+
+unchanged: >
+  The addendum's confirmatory rule remains: proceed if the median pair-direction error at
+  baseline speed >= 8 m/s is <= 3.0 deg in both forest_sim and real_outdoor_uzh, with the 1 s
+  reading also <= 3.0 deg and the evaluability counts met. This amendment does not touch it.
