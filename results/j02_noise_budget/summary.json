@@ -1128,12 +1128,59 @@
  },
  "arm_b_mocap_truth": {
   "construction": "depicted = mocap attitude lean + synthetic error (centre params); required = the clip's path lean",
-  "h0_median_deg": 9.215833468478262,
-  "tau_lofo_median_deg": 14.459150448954329,
+  "h0_median_deg": 16.378253143436737,
+  "tau_lofo_median_deg": 31.114525345194536,
   "tau_lofo_p10_p90_deg": [
-   13.212826800476742,
-   15.512537078012212
+   28.64444380230975,
+   33.087881261677126
   ],
   "note": "this is the construction the handoff names; it carries the real actual-vs-required mismatch, which arm (a) deliberately removes"
+ },
+ "calibration_mode": {
+  "0.0": {
+   "None": {
+    "h0_median_deg": 6.173093348380891,
+    "tau_lofo_median_deg": 7.190608307148841,
+    "mdv_deg": 4.900369003690037
+   },
+   "8": {
+    "h0_median_deg": 10.272715828705064,
+    "tau_lofo_median_deg": 15.278951550628655,
+    "mdv_deg": 8.351931330472103
+   },
+   "12": {
+    "h0_median_deg": 8.967133450107616,
+    "tau_lofo_median_deg": 12.5212904522054,
+    "mdv_deg": 7.013029315960912
+   },
+   "24": {
+    "h0_median_deg": 7.20620775846203,
+    "tau_lofo_median_deg": 9.033746829074905,
+    "mdv_deg": 5.4843408594319
+   }
+  },
+  "0.295": {
+   "None": {
+    "h0_median_deg": 6.444917499208538,
+    "tau_lofo_median_deg": 9.051308212843777,
+    "mdv_deg": 6.875912408759124
+   },
+   "8": {
+    "h0_median_deg": 10.47711076119208,
+    "tau_lofo_median_deg": 17.649561389228047,
+    "mdv_deg": 10.67564534231201
+   },
+   "12": {
+    "h0_median_deg": 9.227474615738743,
+    "tau_lofo_median_deg": 14.932970511426502,
+    "mdv_deg": 9.023300970873786
+   },
+   "24": {
+    "h0_median_deg": 7.499330473200645,
+    "tau_lofo_median_deg": 11.114498783986537,
+    "mdv_deg": 7.332173913043478
+   }
+  },
+  "note": "both arms share the same synthetic error; only the REQUIRED lean differs (the schema's k_d=0.295 vs drag-free). The published 14.73 deg threshold is the drag-free, lag-only value."
  }
 }

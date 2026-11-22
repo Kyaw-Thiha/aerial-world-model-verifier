@@ -28,6 +28,7 @@ results; none of them runs an experiment.
 | E10 | window rule and prototype | D (+ E independent test) | `track-d-verdict-stat`, `track-e-depicted-uzh` | `results/d_window_rates/`, `d_bandwidth/`, `d_uzh_v2/`, `e_verdict_v3/rule/` | D03, D04, E05 |
 | J01 | reader error anatomy | J | `track-j-reader` | `results/j01_anatomy/` | J01 |
 | J02 | synthetic noise budget | J | `track-j-reader` | `results/j02_noise_budget/` | J02 |
+| J03 | per-clip calibration (1a) | J | `track-j-reader` | `results/j03_perclip/` | J03 |
 | J04 | learned reader confidence (1c) | J | `track-j-reader` | `results/j04_confidence/` | J04 |
 
 R2 prefixes are `track-a/`, `track-a/a2/`, `track-b/`, `track-c/`, `track-d/`, `track-e/`
@@ -232,3 +233,20 @@ during consolidation — see `docs/DATA.md` for the current status of listing ac
 * **Regenerate**: `PYTHONPATH=. python experiments/j04_learned_confidence.py` (~25 s, CPU).
 * **Status**: selected by rule 3's literal reading; the premise is weak (88 % of the tail is in
   clips the frozen gate drops). Stage 1b was not selected by any rule and was not run.
+
+## J03 — per-clip calibration and its absorption (Stage 1a)
+
+* **Owning track / branch**: J, `track-j-reader`.
+* **What it is**: a per-clip Huber offset (and k_d on a fixed grid in [0, 0.40]) fitted on the clip
+  under test, on the gate-kept population; the same two tiers refitted; the absorption of every edit
+  type against the frozen fixed-calibration statistic; the fit-free coherence tier as the reference;
+  the minimum detectable local tilt step per statistic.
+* **Configs**: `configs/j03_perclip_prereg.yaml`.
+* **Results**: `results/j03_perclip/{table.json, absorption.json, mdv.json, diagnostics.json,
+  rows.csv, mdv_rows.csv}`.
+* **Report**: `reports/J03_per_clip_calibration.md`.
+* **Regenerate**: `PYTHONPATH=. python experiments/j03_per_clip_calibration.py` (~30 s, CPU).
+* **Headline**: the clip-median tier loses 31 of 42 full-clip removal detections and 44 of 48 x1.5
+  detections to the fit; the coherence tier detects 33/45/54 at 25/50/100 % coverage at a 3/69
+  false-reject and has a 14-17 deg minimum detectable local step against > 25 deg for every fitted
+  statistic.

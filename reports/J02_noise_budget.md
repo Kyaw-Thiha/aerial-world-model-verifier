@@ -7,46 +7,53 @@ Results `results/j02_noise_budget/summary.json`. CPU only, **zero GPU spend**.
 
 ## Decision
 
-**The floor is 6.9 deg of tilt reduction at the measured reader accuracy on a perfect path, 10.7
-deg with the reader's actual measured error, and the published 14.7 deg threshold is reproduced
-(14.46, [13.21, 15.51]) as soon as the real actual-vs-required mismatch is included.** Reader
-accuracy dominates (MDV 4.7 / 6.7 / 9.6 deg at σ = 3 / 4.8 / 8), the per-flight bias adds about
-1.5 deg, and **the 8-frame window the G-round segment detector uses costs 3.6 deg of sensitivity
-against the whole-clip median** (10.5 vs 6.9), recovering to within 0.5 deg only at 24 frames.
+**At the schema's calibration (k_d = 0.295) the floor is 6.9 deg of tilt reduction on a perfect
+path, 10.65 deg with the reader's actual measured error, and 14.46 deg once the real
+actual-vs-required mismatch is included — but the same constructions drag-free give 4.9, and 31.1
+deg for the anchor, so the mode is not a detail and the published 14.73 deg cannot be assigned to a
+mode without re-running A2's own path.** Reader accuracy dominates (MDV 4.7 / 6.7 / 9.6 deg at
+σ = 3 / 4.8 / 8), the per-flight bias adds about 1.5 deg, and the 8-frame window the G-round
+segment detector uses costs 3.6 deg of sensitivity against the whole-clip median (10.5 vs 6.9).
 
 ## Plain-language summary
 
-1. **Every construction in this report reproduces a published number before it adds one.** The
-   analytic cross-check agrees with the exact frozen residual construction to 9e-13 deg; the
-   replay of the measured reader error gives a median clip residual of 3.97 deg, matching the
-   published per-frame median of 3.96-3.97 deg (a different statistic that agrees because the
-   error is stationary within a flight); and the handoff's own construction (mocap attitude as the perfect depiction) gives a
-   leave-one-flight-out 95th percentile of **14.46 deg against the frozen verdict's 14.73**.
-2. **A uniform tilt reduction of 6.9 deg is found half the time** at σ = 4.8 deg, a 2 deg bias
+1. **Two cross-checks land and one does not.** The analytic cross-check agrees with the exact frozen
+   residual construction to 9e-13 deg, and the replay of the measured reader error gives a median
+   clip residual of 3.97 deg, matching the published per-frame median of 3.96-3.97 deg (a
+   different statistic that agrees because the error is stationary within a flight). The third —
+   the handoff's own construction, the mocap attitude as the perfect depiction — gives **14.46 deg
+   against the frozen verdict's 14.73 at k_d = 0.295 but 31.1 deg drag-free**, and the record
+   labels 14.73 drag-free. The number matches one mode and the label names the other; that is
+   reported as a conflict, not resolved (§Calibration mode).
+2. **Calibration mode changes the floors, and by more than a nuisance.** The schema's required lean
+   is built at k_d = 0.295; rebuilt drag-free, the whole-clip floor falls from 6.9 to 4.9 deg and
+   the 8-frame floor from 10.5 to 8.4, while the mocap-truth anchor rises from 14.5 to 31.1. Every
+   number in this report is labelled with the mode it used.
+3. **A uniform tilt reduction of 6.9 deg is found half the time** at σ = 4.8 deg, a 2 deg bias
    and a 0.5 s correlation time, with the clip-level median residual calibrated
    leave-one-flight-out (H0 median 6.45 deg, threshold 9.04). With the reader's *measured* error
    instead of the parametric model the same construction gives **10.65 deg**, because the real
    error is much heavier-tailed than a Gaussian with the same σ.
-3. **Window length is a real cost and the G-round 8-frame window is on the wrong side of it.**
+4. **Window length is a real cost and the G-round 8-frame window is on the wrong side of it.**
    MDV against window length: 6.92 deg at the whole clip, 7.42 at 24 frames, 8.17 at 16, 9.01 at
    12 and **10.52 at 8 frames**. That is the same mechanism G01 and G04 measured from the other
    side (the max-over-windows threshold inflates as the window shortens); here it is quantified
    in degrees of violation, at a fixed 5 % false-reject.
-4. **Accuracy is the lever, bias is a smaller one, correlation time is nearly none.** At zero
+5. **Accuracy is the lever, bias is a smaller one, correlation time is nearly none.** At zero
    bias, MDV goes 4.66 (σ=3) → 6.70 (σ=4.8) → 9.63 (σ=8). At σ=4.8 it goes 6.70 (bias 0) → 7.10
    (bias 2) → 8.23 (bias 5). Across the requested correlation-time grid the measured MDV is flat
    (6.6-6.8) — but the generator's *realised* correlation time only spans 0.30-0.73 s because
    half the variance is white (printed per cell), so this is a statement about that range.
-5. **What makes a slow error expensive is its spectrum, not its τ.** Pure white error (fast share
+6. **What makes a slow error expensive is its spectrum, not its τ.** Pure white error (fast share
    1.0, realised τ 0.22 s) gives MDV 6.64; pure slow (fast share 0, realised τ 1.04 s) gives
    7.77; the pre-registered intermediate shares give 6.80-7.28. A low-frequency error is not
    averaged away by a clip-level median, so it is worth about 1.1 deg.
-6. **The analytic formula is not a usable guide at these parameters.** It overestimates the
+7. **The analytic formula is not a usable guide at these parameters.** It overestimates the
    correlation-time dependence badly (3.53 → 11.17 deg across the τ grid where the measurement
    is flat) and is off by up to 2.5× in either direction on the rest of the grid. The reason is
    that the threshold is calibrated on the *same* clip statistic, so what sets MDV is the width
    of the H0 clip-statistic distribution, not σ/√n_eff.
-7. **The number the reader has to hit**: to put the whole-clip floor at 5 deg with a 2 deg bias,
+8. **The number the reader has to hit**: to put the whole-clip floor at 5 deg with a 2 deg bias,
    σ has to come down to about 3 deg — i.e. the trimmed RMSE would have to fall from 4.8 to ~3,
    a further 40 % on top of what G03's fine-tune achieved (3.71). To put the 8-frame segment
    floor at 5 deg, σ would have to fall below 1.5 deg, which nothing in this project is close to.
@@ -63,7 +70,8 @@ the reader need for a given target?
 
 **Construction.** Every real clip's path side is kept (`lean_req`, `vel_req`, `tilt_req_deg`,
 `t`, `pos`, `yaw`), and the depicted side is replaced by a perfect depiction plus a controlled
-error. The violation is a **uniform reduction of the required tilt by Δ degrees along its own
+error. **The required side is the schema's `lean_req`, built at k_d = 0.295, unless a row is
+labelled drag-free**, where it is `lean_req − 0.295·vel_req`. The violation is a **uniform reduction of the required tilt by Δ degrees along its own
 direction, saturating at zero** — the small-violation limit of the tilt-removal edit — swept over
 Δ ∈ {0, 2, 4, 6, 8, 10, 12, 15, 20, 30} deg.
 
@@ -154,21 +162,46 @@ worth 7.6 deg over the same span. The formula is answering a different question.
 
 ### Anchor: the handoff's construction
 
-| construction | H0 median | LOFO threshold | published |
+| construction | mode | H0 median | LOFO threshold |
 | --- | --- | --- | --- |
-| mocap attitude + synthetic centre-point error | 9.22 | **14.46** [13.21, 15.51] | frozen verdict **14.73** deg (drag-free, lag-only) |
-| perfect path + the frozen reader's measured error | 3.97 | 7.66 | per-frame median 3.96-3.97 deg (report 02, G03) |
+| mocap attitude + synthetic centre-point error | k_d = 0.295 | 9.22 | **14.46** [13.21, 15.51] |
+| mocap attitude + synthetic centre-point error | drag-free | 16.38 | **31.11** [28.64, 33.09] |
+| perfect path + the frozen reader's measured error | k_d = 0.295 | 3.97 | 7.66 |
+| frozen verdict (report 07, report A2) | labelled drag-free, lag-only | — | **14.73** |
 
-The 14.73 deg threshold is not a property of the reader alone: about half of it is the natural
-mismatch between the attitude a real quadrotor flies and the attitude the drag-free path model
-demands. That is worth knowing before anyone reads the floor as "the reader's accuracy".
+The 14.73 deg threshold is not a property of the reader alone. About half of it is the natural
+mismatch between the attitude a real quadrotor flies and the attitude the path model demands, and
+that mismatch is what the drag term in the required lean is for: making the required side agree with
+the flown side. Under this construction the mismatch is worth 7 deg of H0 median (9.22 → 16.38) and
+17 deg of threshold (14.46 → 31.11) when the drag term is removed. **So the published number matches
+the k_d = 0.295 construction while its label says drag-free.** Two independent routes land near
+14.7 with the drag term in: this anchor (14.46) and J03's fixed-calibration threshold on the real
+gate-kept clips (14.05, also at k_d = 0.295). Resolving the label would need A2's own implied-axis
+path, which this track does not re-run; it is logged in `docs/decisions.md`.
+
+### Calibration mode
+
+Same synthetic error, same draws; only the required side differs.
+
+| mode | whole clip | 24 frames | 12 frames | 8 frames |
+| --- | --- | --- | --- | --- |
+| k_d = 0.295 (the schema) | 6.88 | 7.33 | 9.02 | 10.68 |
+| drag-free (k_d = 0) | **4.90** | 5.48 | 7.01 | **8.35** |
+
+Removing the drag term *lowers* every perfect-path floor by 2-2.3 deg, i.e. by about 25-30 %, while
+it *raises* the mocap-truth anchor by a factor of two. The mechanism is the same in both directions:
+the threshold is a 95th percentile of the clip statistic, and how a given lean displacement projects
+onto the angle between thrust axes depends on the required lean's magnitude, which the drag term
+changes (k_d·|v|/g reaches 0.3 lean units ≈ 17 deg on the fast clips). **A floor quoted without its
+mode is not comparable with another floor**, which is why every row above carries one.
 
 ### The floor in one table
 
-| construction | whole clip | 24 frames | 12 frames | 8 frames |
-| --- | --- | --- | --- | --- |
-| perfect path, synthetic centre error | 6.92 | 7.42 | 9.01 | 10.52 |
-| perfect path, measured error | 10.65 | 13.25 | 23.96 | > 30 (never reaches 50 %) |
+| construction | mode | whole clip | 24 frames | 12 frames | 8 frames |
+| --- | --- | --- | --- | --- | --- |
+| perfect path, synthetic centre error | k_d 0.295 | 6.92 | 7.42 | 9.01 | 10.52 |
+| perfect path, synthetic centre error | drag-free | 4.90 | 5.48 | 7.01 | 8.35 |
+| perfect path, measured error | k_d 0.295 | 10.65 | 13.25 | 23.96 | > 30 |
 
 ## What this supports
 
@@ -179,8 +212,9 @@ demands. That is worth knowing before anyone reads the floor as "the reader's ac
 * **A quantified price for the segment detector's short window**: 3.6 deg of minimum detectable
   violation at 8 frames against the whole-clip median, at the same false-reject. Any future
   segment work should either use ≥24-frame windows or report its floor beside this table.
-* **The published 14.7 deg threshold is reproduced from the measured error statistics**, which
-  validates both the noise budget and the frozen calibration.
+* **The noise budget reproduces the *scale* of the frozen threshold** (14.46 against 14.73) when the
+  drag term is in the required side, and 31.1 when it is removed — so the budget validates the
+  construction at k_d = 0.295 and exposes that the published label says otherwise.
 * The analytic formula in the handoff is not usable for design; the measured table is.
 
 ## What this does not show
@@ -191,6 +225,9 @@ demands. That is worth knowing before anyone reads the floor as "the reader's ac
   reference for real edits.
 * **Not a bias-removal experiment.** The bias enters as an unremoved per-flight offset. What a
   per-clip calibration would recover is Stage 1a, which the rules did not select (J01 §rules).
+* **Not a resolution of the 14.73 label.** The published threshold matches this report's
+  k_d = 0.295 anchor and not its drag-free one, while report 07 labels it drag-free. The conflict is
+  recorded; settling it needs A2's implied-axis construction, not this one.
 * **Not a claim about τ beyond 0.3-0.7 s.** The generator's realised τ saturates because half the
   variance is white; the exploratory pure-slow anchor (τ 1.04 s, MDV 7.77) is the only point
   above that range, and it is labelled exploratory.

@@ -9,11 +9,12 @@ committed before the numbers they govern were computed. Code `src/depicted/anato
 
 **The reader's bias is a real, almost purely pitch offset of +2.15 to +2.69 deg (SE 0.03-0.18)
 on the five non-racing flights, and how much of the squared error it explains depends on the
-population: 30 % over all frames, 43 % on the clips the frozen gate actually keeps.** The
-pre-registered rule that would have opened the per-clip-calibration branch (bias share ≥ 40 % of
-the *trimmed* variance) does not fire as written — 35.2 %, and the trimmed split is not even
-identified — but it does fire on the gate-kept stratum (42.8 %); that conflict is reported, not
-resolved.
+population: rule R1 gives 35.2 % on the E2-trimmed frames, 29.6 % over all frames and 42.8 % on
+the gate-kept clips.** R1 is therefore read on both strata and the per-clip-calibration branch
+runs on the gate-kept population — the one the verdict actually scores and the one that says a
+per-flight constant dominates — while the trimmed statistic itself is not identified (trimming
+selects on the sum of the components; closure −89 %, amendment B). The branch and its
+absorption numbers are report J03.
 
 ## Plain-language summary
 
@@ -294,16 +295,17 @@ Applied as written, frozen reader, in `results/j01_anatomy/rules.json`:
 
 | rule | statistic | threshold | outcome |
 | --- | --- | --- | --- |
-| R1 bias | trimmed pooled bias share 35.2 % (all-frame 29.6 %, gate-kept 42.8 %) | ≥ 40 % | **does not fire as written**; fires on the gate-kept stratum |
+| R1 bias | 35.2 % trimmed, 29.6 % all frames, **42.8 % gate-kept** | ≥ 40 % | **fires on the gate-kept stratum, not on the trimmed one** — 1a runs there (J03) |
 | R2 fast | fast-of-centred 32.0 % trimmed / 39.8 % all-frame; DPVO 2.80 deg/step and 7.76 deg/1 s | ≥ 40 % and ≤ 0.3 and ≤ 1.5 | **does not fire** (both clauses fail on TII) |
 | R3 tail | 21.6 % of tail frames in runs ≤ 3 frames; 12 long runs, 9 identifiable | > 50 % (1b) / any (1c) | **1c fires** on the literal reading; 1b does not |
 
 So, in the end: **1b was not run** (no rule selects it, and the rotation source it needs does not
-exist on TII); **1a was not run** (its rule is silent on the pre-registered stratum, and a branch
-is not started on a stratum the pre-registration did not name); **1c was run**, CPU-only and at
-zero cost, because its rule fires on the literal reading — report J04 — and is reported as
-selected-but-marginal, since 88 % of the tail is already excluded by the gate. Nothing was run
-silently; the 1a conflict is in `docs/decisions.md` [J].
+exist on TII); **1a was run on the gate-kept population** on the user's decision, because that is
+where R1 fires and where the verdict operates — report J03; **1c was run**, CPU-only and at zero
+cost, because its rule fires on the literal reading — report J04 — and is reported as
+selected-but-marginal, since 88 % of the tail is already excluded by the gate. Both strata of R1
+are stated above rather than one being chosen silently; the reasoning is in `docs/decisions.md`
+[J].
 
 ## What limits the verifier
 
@@ -344,10 +346,12 @@ headroom is in the tail's admission decision, not in the fast component.**
   input, and on TII it would not.
 * **Not UZH verdict evidence.** The UZH rotation numbers are per-frame only; no UZH clip
   statistic is computed (E05's population is too small to calibrate).
-* **Not Stage 2.** Stage 2 (re-running the selected pipeline on Track I's simulated scenes) needs
-  a selected detection pipeline and a labelled simulated development set; no pipeline was
-  selected here, and report G05 already recorded that `track-i-simset` carries only the I01 spike
-  (one flight, three renders, full-clip violations). Nothing was re-run on it.
+* **Not Stage 2, which is deferred.** Stage 2 waits until Track I's full labelled set exists;
+  report G05 already recorded that `track-i-simset` carries only the I01 spike. When it is run,
+  the reader's sim-to-real error must be **stratified by scene family and mount**, because the
+  expected bias is not uniform across them: the operating figures to test against are
+  6-10 deg for forest scenes and 0.3-2 deg for urban ones. Running Stage 2
+  on an unstratified pool would average those two regimes into a number that describes neither.
 * **The "slow" band is not drift over the whole flight in the sense of a fixed budget.** The
   flight mean is the bias, so slow covers 0.005-0.5 Hz around it; a drift with a period longer
   than the flight would be absorbed into the bias and is not measurable here.

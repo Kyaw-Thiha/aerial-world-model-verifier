@@ -144,12 +144,66 @@ weighting the window median by \num{1-p}, masking high-$p$ frames, or both leave
 cell at or below the unweighted statistic at the same false-reject. A robust median over a window
 is already doing the job a monotone reweighting of the same information would do.
 
+
+\paragraph{Per-clip calibration absorbs the violations it is meant to catch.} The bias is real, so
+the obvious fix is to fit it out: a free two-vector offset per clip, with the drag coefficient
+bounded to $[0,0.40]$ (the handoff's allowance), no gain fitted in any arm and nothing fitted inside
+a window, calibrated leave-one-flight-out at \SI{5}{\percent} on the gate-kept population. Table
+\ref{tab:j-absorption} is the price. On the clip-median tier the fit removes
+\SI{44.9}{} percentage points of full-clip tilt-removal detection and \SI{63.8}{} of the $x1.5$
+edit, because a uniform tilt change moves the depicted lean in exactly the direction an offset can
+follow and a magnitude change in exactly the direction a drag term can follow; only the mirror
+survives in part (\SI{27.5}{} lost), because a sign flip is not a translation. The bounded drag
+pins to its upper bound on 65 of the 72 real clips, so it is a second magnitude absorber rather
+than a drag estimate. On the window tier the relative residual is break-even for partial edits
+(\num{14}/69 against \num{10}/69 at 25\,\% removal) and still loses \num{14} clips on full removal.
+
+\begin{table}[t]
+\centering
+\caption{Stage 1a: detection at a matched \SI{5}{\percent} leave-one-flight-out false-reject, 69
+gate-kept dev clips. F0 is the frozen fixed-calibration statistic, C2 the per-clip offset with the
+bounded drag, R the coherence tier, which is invariant to an offset and to a gain by construction
+and therefore cannot be absorbed. Controls beside every family: the fitted arms sit at exactly
+their false-reject on every control, F0's yaw control is \num{9}/69 on the clip tier.}
+\label{tab:j-absorption}
+\begin{tabular}{lrrrr}
+\toprule
+ & F0 fixed & C2 offset $+$ drag & R coherence & absorption (F0$-$C2) \\
+\midrule
+removal, 25 / 50 / 100\,\% (clip) & 6 / 17 / 42 & 4 / 9 / 11 & --- & $+2$ / $+8$ / $\mathbf{+31}$ \\
+mirror, 25 / 50 / 100\,\% (clip) & 7 / 19 / 52 & 4 / 12 / 33 & --- & $+3$ / $+7$ / $\mathbf{+19}$ \\
+$x0.5$, full (clip) & 14 & 5 & --- & $+9$ \\
+$x1.5$, full (clip) & 48 & 4 & --- & $\mathbf{+44}$ \\
+\midrule
+removal, 25 / 50 / 100\,\% (window) & 10 / 18 / 34 & 14 / 16 / 20 & \textbf{33 / 45 / 54} & $-4$ / $+2$ / $+14$ \\
+mirror, 25 / 50 / 100\,\% (window) & 20 / 32 / 49 & 21 / 30 / 45 & \textbf{40 / 54 / 55} & $-1$ / $+2$ / $+4$ \\
+$x1.5$, full (window) & 5 & 5 & \textbf{11} & $0$ \\
+\midrule
+false reject & 3/69 (clip), 5/69 (window) & 4/69, 5/69 & \textbf{3/69} & \\
+minimum detectable local step, 25\,\% / 50\,\% & $>30$ / \num{22.3} & \num{25.1} / \num{27.2} & \textbf{\num{16.8} / \num{14.4}} & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The fit-free tier is the one to keep. Per-axis correlation is invariant to a translation and to a
+scaling, so neither an offset nor a gain can hide a violation from it; at a \num{3}/69 false-reject
+it detects \num{33}/\num{45}/\num{54} of partial-25, partial-50 and full tilt removal and
+\num{40}/\num{54}/\num{55} of mirrored roll, and its minimum detectable local step is
+\SIrange{14}{17}{deg} against more than \SI{25}{deg} for every fitted statistic. It is not free: its
+yaw control is \num{7}-\num{9}/69 against the same \num{3}/69, the view dependence measured above and
+already recorded for the gain tier in G02. The design consequence is that a per-clip offset may be
+used to \emph{localise}, never to \emph{adjudicate}, and that the coherence tier rather than the
+absolute residual is the statistic that survives a nuisance fit.
+
 \paragraph{Consequence for the design.} The measurable headroom is in the tail's admission
 decision, not in the fast component: on the flights where the reader works the error is a
 \SI{2.4}{deg} pitch offset plus a \SI{1.5}{deg} wobble correlated over half a second, and the
 verdict's per-clip mount fit already removes the first part; on the racing flights the error is
 \SIrange{17}{32}{deg} RMS with a five-second correlation time and \SI{88}{\percent} of the tail is
 already excluded by the gate. A per-clip calibration is worth \SIrange{1}{1.5}{deg} of median error
-on the non-racing flights and nothing on the racing ones; a complementary filter needs a rotation
-source TII does not have; and a learned confidence, however well it ranks, does not move a robust
-window statistic.
+on the non-racing flights and nothing on the racing ones --- and it must not be the only tier,
+because fitting it out costs \SIrange{28}{64}{\percent} of the detection of the edits that matter;
+a complementary filter needs a rotation source TII does not have; and a learned confidence, however
+well it ranks, does not move a robust window statistic. Of everything tried here, the fit-free
+coherence tier on a window is the only statistic that cannot be absorbed and that resolves a local
+violation at a usable size.

@@ -44,6 +44,7 @@ def load_population() -> list[dict]:
             units.append({"flight": flight, "clip": d.name,
                           "t": np.asarray(c.t, float),
                           "lean_req": np.asarray(c.lean_req, float),
+                          "vel_req": np.asarray(c.vel_req, float),
                           "yaw": np.asarray(c.yaw, float),
                           "tilt_req_deg": np.asarray(c.tilt_req_deg, float),
                           "n": len(c.t)})
@@ -163,9 +164,14 @@ def mdv_of(curve: dict, threshold: float = 0.5) -> float:
     return float("nan")
 
 
+def required_at(u: dict, kd: float) -> np.ndarray:
+    """Required lean at drag coefficient ``kd``: the schema's own linear drag parameterisation."""
+    return u["lean_req"] + (kd - 0.295) * u["vel_req"]
+
+
 def run_cell(units: list[dict], flights: np.ndarray, *, sigma: float, bias: float,
              tau_s: float, fast_share: float, draws: int, lengths, rng: np.random.Generator,
-             error_fn=None) -> dict:
+             error_fn=None, kd: float = 0.295) -> dict:
     """One parameter cell: (draws, delta, clip) statistics per window length.
 
     Vectorised over clips: every clip is padded to ``MAXN`` frames with NaN and the windows are
@@ -177,7 +183,7 @@ def run_cell(units: list[dict], flights: np.ndarray, *, sigma: float, bias: floa
     T = {L: np.full((draws, len(DELTAS), n_clip), np.nan) for L in lengths}
     req = np.full((n_clip, MAXN, 2), np.nan)
     for j, u in enumerate(units):
-        req[j, :u["n"]] = u["lean_req"]
+        req[j, :u["n"]] = required_at(u, kd)
     for d in range(draws):
         err = np.zeros((n_clip, MAXN, 2))
         for f in np.unique(flights):
@@ -341,6 +347,7 @@ def main() -> None:
         }
     results["replay_measured_error"] = replay_out
 
+    ARM_B_KD = 0.0   # the published 14.73 deg threshold is the drag-free, lag-only mode
     # (5) anchor with the MOCAP attitude as the perfect depiction (the handoff's literal
     # construction): adds the real actual-vs-required mismatch, so the H0 threshold becomes
     # comparable with the frozen verdict's 14.73 deg
@@ -368,7 +375,7 @@ def main() -> None:
                 _, e = make_error(MAXN, dt, 4.8, 0.0, 0.5, 0.5, rng)
                 err[j] = e + b[None, :]
         dep = base + err
-        req = np.stack([np.pad(u["lean_req"], ((0, MAXN - u["n"]), (0, 0)),
+        req = np.stack([np.pad(required_at(u, ARM_B_KD), ((0, MAXN - u["n"]), (0, 0)),
                                constant_values=np.nan) for u in units])
         h0_vals[d] = np.nanmedian(axis_angle_deg(dep, req), axis=1)
     taus = np.stack([lofo_tau(h0_vals[d], flights) for d in range(draws)])
@@ -383,6 +390,21 @@ def main() -> None:
                 "actual-vs-required mismatch, which arm (a) deliberately removes",
     }
 
+    # (6) calibration-mode check: the same cells at k_d = 0 (drag-free). The schema's required
+    # lean is built at k_d = 0.295, so this isolates how much the mode moves each floor.
+    mode = {}
+    for kd in (0.0, 0.295):
+        Tk = run_cell(units, flights, draws=draws // 2, lengths=[None, 8, 12, 24], rng=rng,
+                      sigma=4.8, bias=2.0, tau_s=0.5, fast_share=0.5, kd=kd)
+        a = analyse(Tk, flights)
+        mode[str(kd)] = {k: {"h0_median_deg": v["h0_median_deg"],
+                             "tau_lofo_median_deg": v["tau_lofo_median_deg"],
+                             "mdv_deg": v["mdv_deg"]} for k, v in a.items()}
+    mode["note"] = ("both arms share the same synthetic error; only the REQUIRED lean differs "
+                    "(the schema's k_d=0.295 vs drag-free). The published 14.73 deg threshold "
+                    "is the drag-free, lag-only value.")
+    results["calibration_mode"] = mode
+
     (OUT / "summary.json").write_text(json.dumps(results, indent=1))
     print(json.dumps({k: v for k, v in results.items()
                       if k in ("formula_check_max_abs_deg", "generator_realised")}, indent=1))
@@ -393,6 +415,7 @@ def main() -> None:
                                           round(v["tau_lofo_median_deg"], 2))
                                       for k, v in replay_out.items()})
     print("arm b (mocap truth):", json.dumps(results["arm_b_mocap_truth"], indent=1))
+    print("calibration mode:", json.dumps(mode, indent=1))
 
 
 if __name__ == "__main__":
