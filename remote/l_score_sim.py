@@ -88,7 +88,12 @@ def score(clip_ids: str = "", stride: int = 2) -> dict:
     out_dir = Path(VOL) / "l01" / "scores"
     out_dir.mkdir(parents=True, exist_ok=True)
     result = {}
-    for cid in ids:
+    for n_done, cid in enumerate(ids, 1):
+        done_npz = out_dir / f"{cid}.npz"
+        done_json = out_dir / f"{cid}.json"
+        if done_npz.exists() and done_json.exists():
+            result[cid] = json.loads(done_json.read_text())
+            continue
         t0 = time.time()
         mp4 = Path(VOL) / "l01" / "inputs" / "videos" / f"{cid}.mp4"
         gt_path = Path(VOL) / "l01" / "inputs" / "gt" / f"{cid}.npz"
@@ -168,9 +173,11 @@ def score(clip_ids: str = "", stride: int = 2) -> dict:
                                                             for r in rows])).max()),
         }
         (out_dir / f"{cid}.json").write_text(json.dumps(summary, indent=1))
-        volume.commit()
+        if n_done % 10 == 0:
+            volume.commit()          # batch the commits: concurrent commits were the bottleneck
         result[cid] = summary
         print(f"[{cid}] {len(rows)} frames {summary['fps']} fps", flush=True)
+    volume.commit()
     return {k: {kk: vv for kk, vv in v.items()} for k, v in result.items()}
 
 

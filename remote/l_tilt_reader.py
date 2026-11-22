@@ -218,6 +218,7 @@ def _train_and_eval(arm: str, holdout: str, seed: int, epochs: int, lr: float, b
                 tag, fr = item
             else:
                 tag = "real" if arm == "real" else "sim"
+                fr = item
             got = load(fr, tag)
             if got is None:
                 continue
