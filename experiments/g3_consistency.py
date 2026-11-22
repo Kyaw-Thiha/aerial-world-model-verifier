@@ -37,7 +37,7 @@ def main() -> int:
     new_dir, old_dir = Path(args.new), Path(args.old)
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
-    rows, table = [], []
+    rows, table, all_dl = [], [], []
     for nf in sorted(new_dir.glob("*_score.json")):
         cid = nf.name.replace("_score.json", "")
         of = old_dir / f"{cid}_score.json"
@@ -49,6 +49,7 @@ def main() -> int:
             continue
         dl = np.array([[new[i]["lean_est_x"] - old[i]["lean_est_x"],
                         new[i]["lean_est_y"] - old[i]["lean_est_y"]] for i in common])
+        all_dl.append(np.abs(dl).ravel())
         dt = np.array([new[i]["tilt_est_deg"] - old[i]["tilt_est_deg"] for i in common])
         du = np.array([new[i]["up_error_deg"] - old[i]["up_error_deg"] for i in common])
         old_stride = 1 if len(old) > 0.75 * len(new) else 2
@@ -100,14 +101,24 @@ def main() -> int:
         # the same statistic on the new-vs-old pairing, for a like-for-like comparison
         repeat["new_vs_old_median_of_component_abs"] = float(
             np.median(np.concatenate([np.array([r["median_abs_d_lean"]]) for r in rows])))
+    v = np.concatenate(all_dl) if all_dl else np.array([])
     summary = {
         "repeat_run_envelope": repeat,
+        "component_abs_d_lean": {
+            "n": int(v.size), "median": float(np.median(v)) if v.size else None,
+            "p90": float(np.percentile(v, 90)) if v.size else None,
+            "p99": float(np.percentile(v, 99)) if v.size else None,
+            "max": float(v.max()) if v.size else None,
+            "frac_above_0_05": float(np.mean(v > 0.05)) if v.size else None,
+        },
         "clips_compared": len(rows),
         "frames_compared": int(sum(r["n_common"] for r in rows)),
         "max_abs_d_lean": float(arr.max()) if len(arr) else None,
         "median_of_clip_max_abs_d_lean": float(np.median(arr)) if len(arr) else None,
         "clips_outside_1e9": int(sum(not r["all_exact_1e9"] for r in rows)),
         "by_old_stride": by_stride,
+        "median_of_per_clip_medians": float(np.median([r["median_abs_d_lean"] for r in rows]))
+        if rows else None,
         "rows": rows,
     }
     (out / "consistency.json").write_text(json.dumps(summary, indent=1))

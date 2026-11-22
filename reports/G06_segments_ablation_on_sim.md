@@ -72,7 +72,26 @@ step added to feasible clips (labelled synthetic in every table).
 
 ### 0. Reader consistency and the noise floor
 
-<!-- FILL: consistency table, stride-1 vs stride-2 distributions, repeat-run envelope -->
+Every clip was re-scored at stride 1 (30 fps) because Track I's published score files mixed
+stride 1 (8 clips, 4,242 frames) and stride 2 (78 clips, 18,366 frames). The new rows were
+compared with the old ones at every shared frame index (`results/g06/consistency/`):
+
+| comparison | clips | shared frames | component median \|d lean\| | p99 | max | frames > 0.05 |
+| --- | --- | --- | --- | --- | --- | --- |
+| new stride 1 vs Track I stride 1 | 3 | 1,252 | 1.3e-3 | 6.7e-2 | 0.41 | 1.4 % |
+| new stride 1 vs Track I stride 2 | 53 | 12,249 | 2.2e-3 | 4.6e-2 | 1.01 | 0.87 % |
+| two identical L40S runs (one clip) | 1 | 1,202 | 2.2e-3 | 2.2e-2 | 5.6e-2 | 0.7 % |
+
+Best frame offset is 0 (checked on `i02_dev_002`), so the stride-2 row mapping is correct. The
+new stride-1 rows differ from the old stride-2 rows by no more than two identical runs of the
+same clip differ from each other; **no decode-path difference is detectable**. The reader is
+stochastic even with `cudnn.deterministic` and `torch.use_deterministic_algorithms` set: per
+frame the typical disagreement is ~0.002 lean units (0.1°), and about one frame in a hundred
+jumps much further (up to ~1 lean unit, tens of degrees) where GeoCalib lands on a different
+local optimum. This is the reader's own multimodality, not the labels: both runs read the same
+pixel rows. The window statistic is a median (residual) or a correlation (coherence) over 12
+frames, so a single such frame cannot move a window to the threshold; the tails are nevertheless
+part of the noise floor quoted in section 6.
 
 ### 1. A1 — the window statistic
 

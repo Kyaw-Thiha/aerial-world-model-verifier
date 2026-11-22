@@ -104,6 +104,14 @@ def main() -> int:
             "all_dev": quantile([values[a["name"]][c] for c in feasible]),
             "spread": [min(per_fold.values()), max(per_fold.values())]}
 
+    def dump(rows, name):
+        if not rows:
+            return
+        with open(out / name, "w", newline="") as fh:
+            w = csv.DictWriter(fh, fieldnames=list(rows[0]))
+            w.writeheader()
+            w.writerows(rows)
+
     def tau_for(arm_name, clip_id):
         return thresholds[arm_name]["per_fold"][int(man[clip_id]["scene_seed"])]
 
@@ -175,13 +183,36 @@ def main() -> int:
                              "false_segments": fseg, "minutes": mins,
                              "false_segments_per_min": fseg / mins if mins else None})
 
-    def dump(rows, name):
-        if not rows:
-            return
-        with open(out / name, "w", newline="") as fh:
-            w = csv.DictWriter(fh, fieldnames=list(rows[0]))
-            w.writeheader()
-            w.writerows(rows)
+    # ---- matched-false-reject table: each arm calibrated to the baseline's empirical FRR
+    matched_rows = []
+    base_tau = thresholds[BASE["name"]]
+    for a in ARMS:
+        for fam in ("urban_checker", "forest_ridge", "industrial"):
+            for tgt in ("tilt_removed", "mirrored_roll", "tilt_scaled", "partial"):
+                for frac in ("0.1", "0.25", "0.5", "1.0"):
+                    ids = [c for c in dev if man[c]["family"] == fam
+                           and man[c]["defect_family"] == tgt
+                           and (not x_frac(man[c]) or abs(x_frac(man[c]) - float(frac)) < 1e-6)]
+                    if not ids:
+                        continue
+                    k = n = 0
+                    for c in ids:
+                        seed = int(man[c]["scene_seed"])
+                        fit = [cc for cc in feasible if int(man[cc]["scene_seed"]) != seed]
+                        frr_b = float(np.mean([values[BASE["name"]][cc] > base_tau["per_fold"][seed]
+                                               for cc in fit if np.isfinite(values[BASE["name"]][cc])]
+                                              or [np.nan]))
+                        tau_m = quantile([values[a["name"]][cc] for cc in fit], alpha=frr_b) \
+                            if np.isfinite(frr_b) and frr_b > 0 else float("nan")
+                        stat = values[a["name"]][c]
+                        if not (np.isfinite(stat) and np.isfinite(tau_m)):
+                            continue
+                        n += 1
+                        k += int(stat > tau_m)
+                    matched_rows.append({"arm": a["name"], "family": fam, "defect": tgt,
+                                         "fraction": frac, "n_testable": n, "k": k,
+                                         "rate": k / n if n else None})
+    dump(matched_rows, "detection_matched.csv")
 
     dump(det_rows, "detection.csv")
     dump(frr_rows, "false_reject.csv")
