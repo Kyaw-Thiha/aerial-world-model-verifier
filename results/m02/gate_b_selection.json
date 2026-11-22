@@ -1,0 +1,24 @@
+{
+ "false_reject": {
+  "lam": 20.25,
+  "achieved_coverage": 0.6551724137931034,
+  "n_accept": 19,
+  "n_total": 29,
+  "bound": 0.05,
+  "alpha": 0.05,
+  "reached": true,
+  "reason": ""
+ },
+ "yaw_control": {
+  "lam": 20.25,
+  "achieved_coverage": 0.6551724137931034,
+  "n_accept": 19,
+  "n_total": 29,
+  "bound": 0.05,
+  "alpha": 0.05,
+  "reached": true,
+  "reason": ""
+ },
+ "tau_joint": 20.25,
+ "n_clips": 30
+}

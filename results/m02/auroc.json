@@ -1,0 +1,59 @@
+{
+ "real_clip": {
+  "n": 30,
+  "positives": 4,
+  "dis": {
+   "point": 0.7692307692307693,
+   "lo": 0.6666666666666666,
+   "hi": 0.875,
+   "n_clusters": 4,
+   "draws": 2000,
+   "seed": 1,
+   "note": "descriptive only: fewer than 10 clusters"
+  },
+  "s3": {
+   "point": 0.36538461538461536,
+   "lo": 0.21568627450980393,
+   "hi": 0.8888888888888888,
+   "n_clusters": 4,
+   "draws": 2000,
+   "seed": 1,
+   "note": "descriptive only: fewer than 10 clusters"
+  }
+ },
+ "real_frame": {
+  "n": 781,
+  "positives": 255,
+  "dis": {
+   "point": 0.7636770297472601,
+   "lo": 0.5399365079365079,
+   "hi": 0.9233870917126181,
+   "n_clusters": 4,
+   "draws": 2000,
+   "seed": 1,
+   "note": "descriptive only: fewer than 10 clusters"
+  },
+  "s3": {
+   "point": 0.7140013419816595,
+   "lo": 0.4711111111111111,
+   "hi": 0.7564685953432756,
+   "n_clusters": 4,
+   "draws": 2000,
+   "seed": 1,
+   "note": "descriptive only: fewer than 10 clusters"
+  },
+  "combined": {
+   "point": 0.7776522776410945,
+   "lo": 0.561968253968254,
+   "hi": 0.9021068660022148,
+   "n_clusters": 4,
+   "draws": 2000,
+   "seed": 1,
+   "note": "descriptive only: fewer than 10 clusters"
+  }
+ },
+ "sim_clip": {
+  "n": 0,
+  "note": "no simulated rows loaded"
+ }
+}

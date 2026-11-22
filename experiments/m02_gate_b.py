@@ -170,7 +170,7 @@ def _fit_pitch_sign(df: pd.DataFrame) -> dict:
 
 
 def probe_check() -> dict:
-    p = SCORES.parent / "m02_probe.json"
+    p = SCORES / "m02_probe.json"
     if not p.exists():
         return {"available": False}
     rows = json.loads(p.read_text())
@@ -395,12 +395,17 @@ def auroc_table(real: pd.DataFrame, frames: pd.DataFrame, sim: pd.DataFrame) -> 
         "combined": cluster_auroc(combined_score(f.dis.values, f.s3_frame.values), labf,
                                   f.flight, draws=2000),
     }
-    for mount, g in sim[(sim.defect == "feasible") & sim.err_frozen.notna()].groupby("mount"):
+    mount_src = (sim[(sim.defect == "feasible") & sim.err_frozen.notna()]
+                 if {"defect", "mount"} <= set(sim.columns) else None)
+    for mount, g in (mount_src.groupby("mount") if mount_src is not None else []):
         lb = (g.err_frozen > LABEL_DEG).astype(int)
         out[f"sim_mount_{int(mount)}"] = {
             "n": int(len(g)), "positives": int(lb.sum()),
             "auroc_dis": float(auroc(g.dis_med, lb)),
             "auroc_s3": float(auroc(-g.s3, lb))}
+    if "defect" not in sim or not len(sim):
+        out["sim_clip"] = {"n": 0, "note": "no simulated rows loaded"}
+        return out
     s = sim[(sim.defect == "feasible") & sim.err_frozen.notna()]
     lab = (s.err_frozen > LABEL_DEG).astype(int)
     out["sim_clip"] = {
@@ -426,6 +431,8 @@ def auroc_table(real: pd.DataFrame, frames: pd.DataFrame, sim: pd.DataFrame) -> 
 
 
 def forest_check(sim: pd.DataFrame, tau_b: float) -> dict:
+    if "defect" not in sim or not len(sim):
+        return {"available": False}
     """The forest clips the frozen S3 gate keeps, and what Gate B would do with them."""
     g = json.loads("\n".join(l for l in GATE_CONFIG.read_text().splitlines()
                              if not l.strip().startswith("#")))
@@ -452,6 +459,8 @@ def forest_check(sim: pd.DataFrame, tau_b: float) -> dict:
 
 
 def ensemble_table(sim: pd.DataFrame) -> dict:
+    if "defect" not in sim or not len(sim):
+        return {"available": False}
     s = sim[sim.defect == "feasible"]
     rows = {}
     for fam, g in s.groupby("family"):
