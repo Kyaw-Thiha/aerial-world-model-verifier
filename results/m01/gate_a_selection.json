@@ -1,0 +1,24 @@
+{
+ "false_reject": {
+  "lam": 0.0,
+  "achieved_coverage": 1.0,
+  "n_accept": 65,
+  "n_total": 65,
+  "bound": 0.042357280466384206,
+  "alpha": 0.05,
+  "reached": true,
+  "reason": ""
+ },
+ "yaw_control": {
+  "lam": 4.25,
+  "achieved_coverage": 0.7384615384615385,
+  "n_accept": 48,
+  "n_total": 65,
+  "bound": 0.03622596224637041,
+  "alpha": 0.05,
+  "reached": true,
+  "reason": ""
+ },
+ "lam_joint": 4.25,
+ "grid_used": "in-sample accept counts differ per lam; CRC uses the LOFO curve"
+}

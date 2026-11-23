@@ -1,0 +1,34 @@
+{
+ "available": true,
+ "table": [
+  {
+   "rotation_deg": -10.0,
+   "gc_roll_median": 18.991533794756805,
+   "pf_roll_median": -16.613755226135254
+  },
+  {
+   "rotation_deg": 0.0,
+   "gc_roll_median": 9.184716421375727,
+   "pf_roll_median": -8.591613754630089
+  },
+  {
+   "rotation_deg": 10.0,
+   "gc_roll_median": -0.32917147247506406,
+   "pf_roll_median": 2.1085805892944336
+  }
+ ],
+ "gc_roll_span_deg": -19.32070526723187,
+ "pf_roll_span_deg": 18.722335815429688,
+ "expected_span_deg": 20.0,
+ "gc_follows_rotation": false,
+ "pf_follows_rotation": true,
+ "same_sign": false,
+ "pitch_sign_fit": {
+  "median_deg_by_sign": {
+   "1.0": 5.765904149558721,
+   "-1.0": 4.188820120539772
+  },
+  "chosen": -1.0,
+  "spread_deg": 1.5770840290189492
+ }
+}

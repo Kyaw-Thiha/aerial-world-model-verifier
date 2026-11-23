@@ -1,0 +1,25 @@
+{
+ "false_reject": {
+  "lam": NaN,
+  "achieved_coverage": 0.0,
+  "n_accept": 68,
+  "n_total": 68,
+  "bound": 0.10144927536231885,
+  "alpha": 0.05,
+  "reached": false,
+  "reason": "no threshold reaches alpha=0.05; the best bound any candidate achieves is 0.101 at 68 accepted"
+ },
+ "yaw_control": {
+  "lam": 4.5,
+  "achieved_coverage": 0.5882352941176471,
+  "n_accept": 40,
+  "n_total": 68,
+  "bound": 0.04878048780487805,
+  "alpha": 0.05,
+  "reached": true,
+  "reason": ""
+ },
+ "tau_joint": 4.5,
+ "note": "only one risk reached; tau is that risk's threshold and the other risk's achieved rate is reported beside it",
+ "n_clips": 69
+}

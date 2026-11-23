@@ -1,0 +1,94 @@
+% Track M — candidate section for the report: abstention gates.
+% Numbers from results/m01 (commit 0fc78fe and the M01 read-out), results/m02 (tag v2/v3) and
+% results/m03.  Built by hand from the stored JSON/CSV; no main LaTeX file is edited here.
+% Status: M01 final; M02 and M03 tables are filled from results/m02 and results/m03.
+
+\section{Knowing when not to give a verdict}
+\label{sec:abstention-gates}
+
+\paragraph{Question.}
+A verdict is only useful if the verifier also knows when to withhold one. Two failures were
+measured before this track. On clips whose required lean barely varies, the scale-free
+coherence tier flips under a tilt-preserving yaw warp that perturbs the reader by a few degrees
+(Track~J: 9 of 69 gate-kept real clips; Track~K's exact re-derivation: 16 of 69 at its own
+threshold and 23 of 69 at a matched false-reject). And in dense simulated forest the reader is
+biased by 7--11$^\circ$ at every mount while the frozen S3 confidence gate keeps the clips that
+are just as bad as the ones it drops (Track~L: 12 of 26 kept, median error 9.96$^\circ$). This
+section asks whether two abstentions --- one that reads only the path (\emph{Gate A}: is there
+enough required lean?) and one that reads only the pixels through a second reader
+(\emph{Gate B}: do two estimators agree?) --- can be calibrated to a stated risk, and what they
+cost.
+
+\paragraph{Gate A: the path cannot supply the guarantee.}
+The coherence statistic is $1-\min(r_x,r_y)$, so the governing path-side quantity is the
+smaller of the two per-axis standard deviations of the required lean,
+$\sigma_{\min}=\min(\mathrm{sd}\,l_x,\mathrm{sd}\,l_y)$ on the exact schema-v3 required side
+($\mathrm{unit}(a+g e_3+k_d v)$, $k_d=0.295$; the clip-median residual on this side reproduces
+Track~K's published 8.87$^\circ$ to 8.8707$^\circ$). On the 69 gate-kept development clips
+$\sigma_{\min}$ runs from 0.14$^\circ$ (the autonomous 04a ellipse) to 24.4$^\circ$ (the single
+surviving racing clip), with the piloted ellipse and lemniscate at 3.2$^\circ$ and
+4.0$^\circ$.
+
+The pre-registered SNR reading ($\sigma_{\min}\ge k\,\sigma_n$, with $k\in\{1.5,2,3\}$ and
+$\sigma_n=1.91^\circ$ the robust per-axis reader noise) cannot be given a distribution-free
+guarantee. Conformal risk control on the two pre-registered risks reaches \emph{no} threshold:
+the yaw-control bound is 0.333 at full coverage and never falls to 0.05 above 6\,\% coverage.
+The reason is mechanical rather than statistical. The yaw warp adds a \emph{systematic} amount
+to the coherence score --- a median $+0.20$ under the drag-free required side and $+0.61$ under
+the exact one, positive on 45 of 51 clips, exactly zero for the null edit --- and its rank
+correlation with $\sigma_{\min}$ is $-0.01$. Nothing about the path predicts it. At the middle
+SNR candidate ($\lambda=3.82^\circ$) plus an 80$^\circ$ near-vertical representation rule the
+gate accepts 22 of 69 clips (31.9\,\%): 43 are \texttt{weak\_signal}, 4 \texttt{near\_vertical}.
+Among the accepted clips the false-reject is 1/22, the null edit 1/22, tilt-removal detection
+21/22, mirrored roll 22/22 --- and the yaw control \textbf{16/22}. The gate buys honesty about
+what can be scored (14 of 69 clips have no computable coherence value at all) and buys nothing
+on specificity.
+
+\paragraph{The published yaw-control counts are three different statistics.}
+Track~J's 9/69 is the natural 95th-percentile threshold on schema-v2's \emph{drag-free} required
+lean. Track~K's 16/69 is the same threshold on the exact required lean and is reproduced here
+row for row on false-reject, yaw control, removal, mirror and null (the two scale families
+differ by one clip because K03 masks required tilt above 85$^\circ$ and this track uses an
+explicit 80$^\circ$ abstention). K03's headline 23/69 is the exact tier with its threshold
+lowered to match F0's 5/69 false-reject. All three are correct; none of them is the same
+quantity, and the exact required side roughly triples the damage a tilt-preserving warp does to
+a per-axis correlation.
+
+\paragraph{Gate B: what the video side can do.}
+Two readers are run on the same pixels: Perspective Fields
+(Paramnet-360Cities-edina-centered, median agreement with the frozen reader 0.7--2.2$^\circ$ on
+generated frames, Track~H3) and GeoCalib with a pinhole model. On the simulated renders, whose
+camera is a genuine pinhole, both read the same 224\,px centre crop at the correct focal. On
+the real TII fisheye the same crop is \emph{not} a pinhole image: measured on the first pass,
+the second reader's lean sits a median 23.8$^\circ$ from truth against the frozen fisheye
+reader's 3.7$^\circ$, so the real arm uses the project's 100$^\circ$ virtual pinhole view
+instead. Gate B abstains when the clip-median lean difference between the readers exceeds a
+threshold calibrated by the same conformal risk control.
+
+On the simulated renders, whose camera is a genuine pinhole, disagreement separates the clips
+the frozen gate mis-orders: AUROC 0.835 [0.806, 0.865] against S3's 0.058 for a clip-median
+reader error above 5$^\circ$, and on the real clips 0.880 against 0.226. The mechanism is
+scene bias. The frozen gate keeps 11 of 26 dense-forest clips whose median reader error is
+9.08$^\circ$ against 7.72$^\circ$ for the ones it drops, and their median reader disagreement
+is 5.69$^\circ$ against 3.57$^\circ$ in the open families; the disagreement gate abstains on
+9 of those 11. Conformal risk control reaches the 5\,\% yaw-control bound at
+$\tau_B=4.5^\circ$ (0.049, 40 of 68 clips, 58.8\,\% coverage). It cannot reach the
+false-reject bound (best 0.101, at full coverage), so Gate B protects the yaw control --- the
+failure Gate A could not fix --- and does nothing for false rejects.
+
+Averaging the two readers is worth reporting as its own instrument and is not proposed as a
+replacement. Pooled trimmed RMSE over the 80 feasible simulated clips: frozen reader
+4.08$^\circ$, GeoCalib-224 3.93$^\circ$, Perspective Fields 3.34$^\circ$, their mean
+3.11$^\circ$; medians run the other way (1.27, 1.42, 3.36, 2.25). In the forest the mean is a
+large win (5.44 against 8.24) and in the open scenes a loss (1.69 against 0.87).
+
+\paragraph{What abstention costs and buys.}
+The end-to-end comparison is G0 (the frozen S3 gate), G0$+$A, G0$+$B and G0$+$A$+$B across the
+three published tiers --- the ungated rows of which reproduce Track~K's exact re-derivation
+digit for digit, so the comparison rests on verified machinery --- --- the scale-free coherence $R$, the fixed-calibration median residual
+$F0$, and the per-clip offset-plus-drag fit $C2$ --- on the real development clips, the
+simulated development clips and, one-shot, the SolarWM and ANWM generator clips. Every
+abstention carries a reason code (\texttt{weak\_signal}, \texttt{near\_vertical},
+\texttt{readers\_disagree}, \texttt{low\_confidence\_S3}) so the paper can say why a clip was
+not judged. Coverage is reported honestly: a gate that abstains on most clips is a finding
+about how much of realistic footage the verifier can judge, not a failure of the reporting.

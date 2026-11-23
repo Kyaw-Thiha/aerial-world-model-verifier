@@ -1,0 +1,89 @@
+{
+ "real": {
+  "hits": 2,
+  "n": 3,
+  "abstained": 0
+ },
+ "tilt_removal": {
+  "hits": 3,
+  "n": 3,
+  "abstained": 0
+ },
+ "mirror_roll": {
+  "hits": 3,
+  "n": 3,
+  "abstained": 0
+ },
+ "scale_0.5": {
+  "hits": 3,
+  "n": 3,
+  "abstained": 0
+ },
+ "scale_1.5": {
+  "hits": 0,
+  "n": 3,
+  "abstained": 0
+ },
+ "yaw_control": {
+  "hits": 3,
+  "n": 3,
+  "abstained": 0
+ },
+ "null_edit": {
+  "hits": 2,
+  "n": 3,
+  "abstained": 0
+ },
+ "delay_ms_100": {
+  "hits": 2,
+  "n": 3,
+  "abstained": 0
+ },
+ "delay_ms_200": {
+  "hits": 3,
+  "n": 3,
+  "abstained": 0
+ },
+ "delay_ms_300": {
+  "hits": 3,
+  "n": 3,
+  "abstained": 0
+ },
+ "_ungated": {
+  "real": {
+   "hits": 3,
+   "n": 69,
+   "abstained": 14
+  },
+  "tilt_removal": {
+   "hits": 54,
+   "n": 69,
+   "abstained": 14
+  },
+  "mirror_roll": {
+   "hits": 55,
+   "n": 69,
+   "abstained": 14
+  },
+  "scale_0.5": {
+   "hits": 13,
+   "n": 69,
+   "abstained": 14
+  },
+  "scale_1.5": {
+   "hits": 9,
+   "n": 69,
+   "abstained": 14
+  },
+  "yaw_control": {
+   "hits": 16,
+   "n": 69,
+   "abstained": 13
+  },
+  "null_edit": {
+   "hits": 3,
+   "n": 69,
+   "abstained": 14
+  }
+ }
+}

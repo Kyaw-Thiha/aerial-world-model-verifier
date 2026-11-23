@@ -1,0 +1,41 @@
+{
+ "cx_wmax": {
+  "real": "5/69",
+  "tilt_removal": "5/69",
+  "mirror_roll": "6/69",
+  "scale_0.5": "7/69",
+  "scale_1.5": "5/69",
+  "yaw_control": "6/69",
+  "null_edit": "5/69"
+ },
+ "mag_wmax": {
+  "real": "7/69",
+  "tilt_removal": "6/69",
+  "mirror_roll": "6/69",
+  "scale_0.5": "5/69",
+  "scale_1.5": "4/69",
+  "yaw_control": "6/69",
+  "null_edit": "7/69"
+ },
+ "median_by_cond": {
+  "cx_wmax": {
+   "mirror_roll": 0.2,
+   "null_edit": 0.007,
+   "real": 0.007,
+   "scale_0.5": 0.034,
+   "scale_1.5": 0.004,
+   "tilt_removal": 0.232,
+   "yaw_control": 0.015
+  },
+  "mag_wmax": {
+   "mirror_roll": 0.01,
+   "null_edit": 0.009,
+   "real": 0.009,
+   "scale_0.5": 0.041,
+   "scale_1.5": 0.006,
+   "tilt_removal": 0.14,
+   "yaw_control": 0.024
+  }
+ },
+ "label": "exploratory, not pre-registered"
+}

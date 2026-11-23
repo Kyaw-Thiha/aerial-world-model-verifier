@@ -1,0 +1,12 @@
+{
+ "n_forest": 26,
+ "n_kept_S3": 11,
+ "n_dropped_S3": 15,
+ "kept_median_error": 9.075743344396036,
+ "dropped_median_error": 7.721683074924288,
+ "kept_median_disagreement": 5.685408270292346,
+ "forest_median_disagreement": 5.7095287923475775,
+ "open_median_disagreement": 3.5660065764619118,
+ "gate_b_abstains_on_kept_forest": 9,
+ "gate_b_abstains_on_all_forest": 22
+}

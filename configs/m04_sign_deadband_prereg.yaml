@@ -1,0 +1,76 @@
+# Track M, follow-up -- the sign sub-tier with a reader-noise-tied dead-band.
+#
+# NEW pre-registration, written before the variant is computed.  It does not touch any frozen
+# config: the frozen sign tier (configs/coherence_frozen.yaml, tau_sign = 0.292) stays as
+# published and is reported beside this variant.
+prereg_version: 1
+date: '2026-11-22'
+track: M
+followup: sign_subtier_deadband
+tag: '[M]'
+
+question: >
+  The published sign sub-tier scores a frame's sign agreement unless the lean component is
+  below 1e-4, which is a numerical floor, not a noise floor: on a clip whose required lean is
+  a few hundredths of the reader's own noise the sign of that component is a coin flip, and
+  the sign tier counts it as evidence.  Does tying the dead-band to the measured reader noise
+  make the sign sub-tier's false-reject, yaw-control and detection rates better than the
+  frozen version at its own threshold?
+
+statistic:
+  name: sign score with a noise dead-band
+  definition: >
+    Per axis j in {x, y}: s_j = the fraction of frames where sign(l_dep,j) == sign(l_req,j),
+    counted only over frames satisfying |l_dep,j| > eps AND |l_req,j| > eps.  The clip statistic
+    is 1 - min(s_x, s_y), maximised over the published 8-frame windows (hop 4); a window
+    abstains with fewer than 6 usable frames or fewer than 2 frames passing the dead-band.
+  dead_band:
+    eps: sin(sigma_n) with sigma_n = 1.9106 deg (M01's measured robust per-axis reader noise)
+    eps_value: 0.033345
+    variants_reported: [0.5 x sigma_n, 1.0 x sigma_n, 2.0 x sigma_n]
+    primary: 1.0 x sigma_n
+    why: >
+      A lean component smaller than the reader's own noise cannot have its sign read.  The
+      dead-band is the same measured quantity Gate A's threshold is expressed in, so the two
+      gates share one noise scale rather than introducing a second free parameter.
+  frozen_comparator:
+    definition: the published rule -- the same window statistic with eps = 1e-4
+    source: src/verdict/coherence.py::_sign_agreement (EPS = 1e-4)
+    note: reported beside the variant, never replaced
+
+required_side:
+  construction: schema v3 exact, unit(a + g e3 + 0.295 v) at frame times
+  provenance: as in M01 (src/airframe/*, byte-identical from track-k-calibration 3110976)
+
+populations:
+  real_dev: the six development flights, gate-kept by S3 (69 clips), all edit families and both
+    controls
+  real_heldout: 13p and 07a, gate-kept (3 clips) -- descriptive only
+  sim_dev: the 170 development clips on R2 (80 feasible, 90 with a defect), the depicted side
+    being the GeoCalib-224 reader on the 224 px centre crop
+  h04_arm_a: the 78 arm-A (flatness) SolarWM clips -- POST-HOC ILLUSTRATION ONLY, labelled as
+    such in every table: they were not used to choose the dead-band, and no threshold is fitted
+    on them
+
+thresholds:
+  rule: leave-one-flight-out 95th percentile on the real dev gate-kept clips, per variant
+  alpha: 0.05
+  comparison: each variant at its own threshold and, separately, at the frozen threshold
+    rescaled to the variant's own false-reject count
+
+readings:
+  primary: >
+    false-reject, yaw-control and null-edit rates plus detection by edit type for the frozen
+    and the dead-band variant, on the real dev clips, with flight-clustered descriptive
+    intervals and denominators.
+  secondary: >
+    the same two statistics on the simulated dev clips at the real-dev thresholds (transferred,
+    not refitted), and their distribution on the H04 arm-A clips.
+  success_criterion: >
+    The dead-band variant is worth preferring if, at a matched false-reject, it lowers the
+    yaw-control rate by at least 5 percentage points with no more than 5 points of lost
+    detection on tilt removal or mirror.  Otherwise the frozen rule stands and that is the
+    reported outcome.
+  labelling: >
+    Every simulated and H04 number is a transfer or an illustration; only the real dev clips
+    carry a fitted threshold.

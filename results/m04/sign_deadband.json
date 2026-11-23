@@ -1,0 +1,257 @@
+{
+ "label": "new pre-registered variant: configs/m04_sign_deadband_prereg.yaml",
+ "sigma_n_deg": 1.910587818373582,
+ "dead_bands": {
+  "frozen": 0.0001,
+  "db0.5": 0.016672251562050756,
+  "db1.0": 0.033339868516746814,
+  "db2.0": 0.06664266790435837
+ },
+ "primary": "db1.0",
+ "real_dev": {
+  "frozen": {
+   "false_reject": "7/69",
+   "tilt_removal": "10/69",
+   "mirror_roll": "10/69",
+   "scale_0.5": "8/69",
+   "scale_1.5": "7/69",
+   "yaw_control": "8/69",
+   "null_edit": "7/69",
+   "per_flight_false_reject": {
+    "flight-01a-ellipse": [
+     1,
+     5
+    ],
+    "flight-01p-ellipse": [
+     0,
+     26
+    ],
+    "flight-04a-ellipse": [
+     0,
+     6
+    ],
+    "flight-07p-lemniscate": [
+     0,
+     25
+    ],
+    "flight-13a-trackRATM": [
+     6,
+     6
+    ],
+    "flight-16p-trackRATM": [
+     0,
+     1
+    ]
+   }
+  },
+  "db0.5": {
+   "false_reject": "4/56",
+   "tilt_removal": "56/69",
+   "mirror_roll": "57/69",
+   "scale_0.5": "5/69",
+   "scale_1.5": "5/69",
+   "yaw_control": "6/69",
+   "null_edit": "4/69",
+   "per_flight_false_reject": {
+    "flight-01a-ellipse": [
+     1,
+     3
+    ],
+    "flight-01p-ellipse": [
+     0,
+     25
+    ],
+    "flight-04a-ellipse": [
+     2,
+     2
+    ],
+    "flight-07p-lemniscate": [
+     0,
+     25
+    ],
+    "flight-13a-trackRATM": [
+     0,
+     0
+    ],
+    "flight-16p-trackRATM": [
+     1,
+     1
+    ]
+   }
+  },
+  "db1.0": {
+   "false_reject": "4/55",
+   "tilt_removal": "55/69",
+   "mirror_roll": "55/69",
+   "scale_0.5": "5/69",
+   "scale_1.5": "5/69",
+   "yaw_control": "5/69",
+   "null_edit": "4/69",
+   "per_flight_false_reject": {
+    "flight-01a-ellipse": [
+     1,
+     2
+    ],
+    "flight-01p-ellipse": [
+     0,
+     25
+    ],
+    "flight-04a-ellipse": [
+     2,
+     2
+    ],
+    "flight-07p-lemniscate": [
+     0,
+     25
+    ],
+    "flight-13a-trackRATM": [
+     0,
+     0
+    ],
+    "flight-16p-trackRATM": [
+     1,
+     1
+    ]
+   }
+  },
+  "db2.0": {
+   "false_reject": "4/55",
+   "tilt_removal": "46/69",
+   "mirror_roll": "55/69",
+   "scale_0.5": "5/69",
+   "scale_1.5": "5/69",
+   "yaw_control": "5/69",
+   "null_edit": "4/69",
+   "per_flight_false_reject": {
+    "flight-01a-ellipse": [
+     1,
+     2
+    ],
+    "flight-01p-ellipse": [
+     0,
+     25
+    ],
+    "flight-04a-ellipse": [
+     2,
+     2
+    ],
+    "flight-07p-lemniscate": [
+     0,
+     25
+    ],
+    "flight-13a-trackRATM": [
+     0,
+     0
+    ],
+    "flight-16p-trackRATM": [
+     1,
+     1
+    ]
+   }
+  }
+ },
+ "lofo_tau_median": {
+  "frozen": 1.0,
+  "db0.5": 0.48749999999999966,
+  "db1.0": 0.44553571428571387,
+  "db2.0": 0.3474999999999995
+ },
+ "sim_dev": {
+  "frozen": {
+   "tau_transferred": 1.0,
+   "false_reject": "0/80",
+   "detected": "0/90"
+  },
+  "db0.5": {
+   "tau_transferred": 0.48749999999999966,
+   "false_reject": "20/80",
+   "detected": "62/90"
+  },
+  "db1.0": {
+   "tau_transferred": 0.44553571428571387,
+   "false_reject": "19/80",
+   "detected": "55/90"
+  },
+  "db2.0": {
+   "tau_transferred": 0.3474999999999995,
+   "false_reject": "15/80",
+   "detected": "47/90"
+  }
+ },
+ "h04_arm_a_posthoc": {
+  "A_flatness": {
+   "frozen": {
+    "median": 1.0,
+    "n": 60
+   },
+   "db0.5": {
+    "median": 1.0,
+    "n": 51
+   },
+   "db1.0": {
+    "median": 1.0,
+    "n": 32
+   },
+   "db2.0": {
+    "median": 1.0,
+    "n": 12
+   }
+  },
+  "B_level": {
+   "frozen": {
+    "median": 1.0,
+    "n": 56
+   },
+   "db0.5": {
+    "median": 1.0,
+    "n": 19
+   },
+   "db1.0": {
+    "median": 1.0,
+    "n": 14
+   },
+   "db2.0": {
+    "median": 0.33333333333333337,
+    "n": 3
+   }
+  },
+  "C_mirrored": {
+   "frozen": {
+    "median": 1.0,
+    "n": 60
+   },
+   "db0.5": {
+    "median": 1.0,
+    "n": 44
+   },
+   "db1.0": {
+    "median": 1.0,
+    "n": 24
+   },
+   "db2.0": {
+    "median": 1.0,
+    "n": 14
+   }
+  }
+ },
+ "sim_by_family": {
+  "forest_ridge": {
+   "frozen": 0.6875,
+   "db0.5": 0.625,
+   "db1.0": 0.5,
+   "db2.0": 0.25
+  },
+  "industrial": {
+   "frozen": 0.125,
+   "db0.5": 0.0,
+   "db1.0": 0.0,
+   "db2.0": 0.0
+  },
+  "urban_checker": {
+   "frozen": 0.125,
+   "db0.5": 0.0,
+   "db1.0": 0.0,
+   "db2.0": 0.0
+  }
+ }
+}

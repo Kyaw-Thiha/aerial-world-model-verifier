@@ -1,0 +1,43 @@
+{
+ "tau": 4.5,
+ "n_total": 69,
+ "n_accepted": 40,
+ "coverage": 0.5797101449275363,
+ "rates": {
+  "real": {
+   "hit": 5,
+   "n": 40,
+   "skipped": 0
+  },
+  "tilt_removal": {
+   "hit": 40,
+   "n": 40,
+   "skipped": 0
+  },
+  "mirror_roll": {
+   "hit": 40,
+   "n": 40,
+   "skipped": 0
+  },
+  "scale_0.5": {
+   "hit": 1,
+   "n": 40,
+   "skipped": 0
+  },
+  "scale_1.5": {
+   "hit": 6,
+   "n": 40,
+   "skipped": 0
+  },
+  "yaw_control": {
+   "hit": 1,
+   "n": 40,
+   "skipped": 0
+  },
+  "null_edit": {
+   "hit": 0,
+   "n": 0,
+   "skipped": 0
+  }
+ }
+}

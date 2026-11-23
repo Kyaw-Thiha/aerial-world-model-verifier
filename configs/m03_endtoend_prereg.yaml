@@ -1,0 +1,110 @@
+# Track M, Stage 3 -- end-to-end abstention: pre-registration.
+#
+# Written and committed BEFORE any evaluation set is scored and before the Gate B threshold is
+# frozen.  It fixes the comparison, the populations, the metrics and the reading rules; the
+# thresholds themselves live in configs/m01_gate_a_frozen.yaml and
+# configs/m02_gate_b_frozen.yaml, each committed before the evaluation sets are read.
+prereg_version: 1
+date: '2026-11-22'
+track: M
+stage: 3
+tag: '[M]'
+question: >
+  What does the verifier gain and lose by abstaining -- with a path-side signal gate, a
+  video-side reader-agreement gate, or both -- on the real flights, the simulated set and the
+  generators, for all three verdict tiers?
+
+# ------------------------------------------------------------------ the four configurations
+configurations:
+  G0_S3_only: the frozen S3 confidence gate only (the published baseline)
+  GA: S3 + Gate A (weak_signal, near_vertical)
+  GB: S3 + Gate B (readers_disagree)
+  GAB: S3 + Gate A + Gate B
+reason_codes: [low_confidence_S3, weak_signal, near_vertical, readers_disagree]
+
+# ------------------------------------------------------------------ the three tiers
+tiers:
+  R_coherence:
+    statistic: max over 8-frame windows (hop 4) of 1 - min(r_x, r_y)
+    required_side: schema v3 exact (k_d = 0.295)
+    threshold: leave-one-flight-out 95th percentile of the real clips ACCEPTED by that gate
+      configuration; the recalibration is part of the comparison and its effect on the
+      threshold is reported
+  F0_fixed:
+    statistic: clip median of the depicted-vs-required thrust-axis angle, no nuisance
+    required_side: schema v3 exact
+    threshold: leave-one-flight-out 95th percentile on the accepted real clips
+  C2_fitted:
+    statistic: clip median of the same angle after a per-clip Huber offset (delta = sin 3 deg)
+      plus a k_d on the physical grid [0, 0.40] refitted per clip
+    required_side: exact at every grid point
+    threshold: leave-one-flight-out 95th percentile on the accepted real clips
+  provenance: >
+    F0, C1 and C2 are computed with the code copied byte-identically from
+    track-k-calibration's experiments/k03_exact_semantics.py at 3110976, whose per-clip rows
+    this track reproduces exactly for a spot-checked clip. R is Track J/G's window tier on the
+    schema-v3 side, verified against K03's R/window row earlier in this track.
+
+# ------------------------------------------------------------------ populations
+populations:
+  real_dev:
+    what: the six development flights, gate-kept by S3 (69 clips) with their edits and controls
+    unit: clip x condition
+  real_heldout:
+    what: flights 13p and 07a, gate-kept (3 clips, one flight)
+    status: scored once at the end, descriptive only, never an interval
+  sim_dev:
+    what: the 170 development clips on R2 (80 feasible + 90 defect), scenes urban_checker,
+      forest_ridge, industrial; mounts 0/15/30/45 deg
+    verdict_reader: >
+      GeoCalib pinhole on the 224 px centre crop of the render (f = 199.1 px), the same reader
+      Gate B uses. Its error against the render's truth is compared with L01's native-resolution
+      frozen-reader error on the 80 feasible clips; if the two differ by more than 1 deg in the
+      trimmed RMSE the substitution is reported and the sim detection numbers are labelled as
+      "crop reader" rather than "frozen reader".
+  sim_heldout: scored only if rendered; otherwise reported as not available (3 of 100 present)
+  generated:
+    h04: SolarWM-5B, 234 clips (arm A flatness / B level / C mirrored), one-shot
+    h01: ANWM, 80 clips, one-shot
+    reading: >
+      arm A acceptance and arm B/C rejection among KEPT clips, with per-clip reason codes. The
+      required side for H04/H01 comes from the injected/designed path published with the clips;
+      no threshold is refitted on them.
+
+# ------------------------------------------------------------------ metrics
+metrics:
+  coverage: fraction of clips the configuration judges, with k/n
+  error_among_kept: trimmed RMSE (90 %) and median reader error against truth, by scene family
+    and mount where truth exists
+  false_reject: real clips flagged by the tier among accepted clips, k/n
+  yaw_control: same, beside every detection rate
+  null_edit: same
+  detection: by edit type and coverage, k/n, per tier
+  reason_codes: counts per configuration and population
+  intervals: flight-clustered bootstrap (5,000 draws, rng(1)); descriptive when < 10 clusters
+
+# ------------------------------------------------------------------ reading rules (fixed now)
+reading_rules:
+  worth_using: >
+    A gate configuration is worth using for a tier if it lowers the yaw-control rate or the
+    false-reject rate by at least 10 percentage points among accepted clips without lowering
+    full-coverage tilt-removal detection by more than 10 points.
+  not_reaching: >
+    Where a configuration cannot reach its target, that is reported as the result; no threshold
+    is refitted on an evaluation set.
+  no_silent_aggregation: >
+    Simulated scene families are never pooled without the per-family row; forest, urban and
+    industrial are reported separately because their reader biases differ by 6-9 deg (L01).
+  generator_claims: >
+    A generator arm is read only through the acceptance/rejection counts and the reason codes;
+    no claim is made about a generator's physics beyond what those counts support at the frozen
+    thresholds.
+
+# ------------------------------------------------------------------ what would refute the gates
+invalidation:
+  - 'Gate B abstains on more than half of the feasible simulated clips or of the real dev clips:
+     the gate is not usable and that is the reported outcome'
+  - 'a gate configuration raises the yaw-control rate or the false-reject rate on any population
+     after recalibration: the configuration is reported as harmful for that population'
+  - 'Gate B abstains on almost exactly the clips Gate A already removes (overlap > 80 %): the
+     two gates are not independent and only one is reported'

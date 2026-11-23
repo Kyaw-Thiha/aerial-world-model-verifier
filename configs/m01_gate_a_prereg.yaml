@@ -1,0 +1,142 @@
+# Track M, Stage 1 -- Gate A (path-side signal strength): pre-registration.
+#
+# Written and committed BEFORE the selection threshold is fitted and before any detection
+# table is computed.  Only development data (six TII flights) was inspected while designing
+# this: the descriptive distribution of the path-side sigma, the reader-noise estimate, and
+# the v2-vs-v3 coherence comparison.  No held-out flight (13p, 07a), no generated clip and no
+# simulated clip had been scored when this file was written.
+#
+# IMMUTABLE after this commit.  Thresholds are frozen later in m01_gate_a_frozen.yaml, in a
+# separate commit written before any evaluation set is scored.
+prereg_version: 1
+date: '2026-11-22'
+track: M
+stage: 1
+tag: '[M]'
+question: >
+  Does the path's required lean carry enough signal for the scale-free coherence tier to be
+  meaningful, and can a path-side abstention gate make the tier's false-reject and yaw-control
+  rates acceptable without throwing away the population it can judge?
+
+# ------------------------------------------------------------------ populations
+splits:
+  development_flights: [flight-01a-ellipse, flight-01p-ellipse, flight-04a-ellipse,
+                        flight-07p-lemniscate, flight-13a-trackRATM, flight-16p-trackRATM]
+  heldout_flights: [flight-13p-trackRATM, flight-07a-lemniscate]
+  heldout_rule: >
+    Scored once, at the end, with the frozen threshold and the frozen coherence tau. Two
+    flights and three gate-kept clips; reported as descriptive, never as a 95 % interval.
+  gate_kept_stratum: >
+    The frozen S3 gate (configs/gate_frozen.yaml, sha256 dc0cc4ff...) decides which real
+    clips enter the analysis: 72 of 100 overall, 69 of 82 on development. The gate is
+    applied unchanged and is never refitted here.
+  conditions: [real, tilt_removal, mirror_roll, scale_0.5, scale_1.5, yaw_control,
+               null_edit]
+  delay_conditions: [delay_ms_100, delay_ms_200, delay_ms_300]
+  delay_role: reported separately, never in a detection table (they are analysis-only)
+
+# ------------------------------------------------------------------ required side
+required_lean:
+  source: schema v3 exact, computed in this track
+  construction: >
+    unit(a + g e3 + k_d v) at the native 274.73 Hz mocap rate (Savitzky-Golay, 0.37 s,
+    polyorder 3), sampled at each clip's frame times, expressed in the clip's path-yaw
+    frame. k_d = 0.295, the schema's own model (airframe model M0, imported byte-identically
+    from track-k-calibration at 3110976). Never lean_req + (k_d - 0.295) * vel_req.
+  verification: >
+    The clip-median residual built on this side reproduces Track K's published exact
+    k_d = 0.295 threshold, 8.87 deg, to 8.8707 on the gate-kept development clips. If the
+    reproduction is not 8.87 +- 0.01 the run aborts and nothing is reported.
+  v2_comparison: >
+    The same coherence tier on schema v2's drag-free lean_req is recomputed as a
+    compatibility row. Track J's R arm (results/j03_perclip/rows.csv) is reproduced exactly
+    before the v3 side is used.
+
+# ------------------------------------------------------------------ Gate A statistic
+statistic:
+  name: sigma_min
+  definition: >
+    min(std(l_x), std(l_y)) over the clip's finite required-lean frames, in degrees, where
+    l is the required lean vector. The coherence statistic is 1 - min(r_x, r_y), so the
+    weaker axis governs; sigma_min is the path-side predictor of the tier's fragility.
+  reported_alongside:
+    - sigma_x, sigma_y (per-axis standard deviations, degrees)
+    - sigma_p (principal-axis spread, the published excitation statistic)
+    - tilt_med, tilt_max, tilt_range (degrees)
+    - frac_above_80 (near-vertical fraction)
+  window_version:
+    scheme: 8 frames, hop 4, tail covered (the published G/J window rule)
+    statistic: per-window sigma_min; a window below the threshold abstains
+    role: secondary -- the local std of 8 samples is noisy, so this is not the primary gate
+  reason_codes: [weak_signal, near_vertical]
+
+# ------------------------------------------------------------------ the SNR argument
+snr:
+  expected_correlation: sqrt(sigma_x^2 / (sigma_x^2 + sigma_n^2))
+  sigma_n_estimation: >
+    Per-axis robust standard deviation (median absolute deviation x 1.4826) of
+    (depicted - required) over the real condition of the six development flights, per clip,
+    then pooled; the LARGER axis is sigma_n. Measured in this run before any threshold is
+    chosen; the value is written to results/m01/noise.json and quoted in the frozen config.
+  sigma_n_not_used_for_selection: true
+  candidate_k: [1.5, 2.0, 3.0]
+  candidate_k_role: >
+    Reported as the SNR reading of the selected threshold: the pre-registered candidate
+    values are sigma_x >= k * sigma_n for k in {1.5, 2, 3}. The operational threshold is
+    the conformal-risk-control value; the nearest k is reported beside it.
+
+# ------------------------------------------------------------------ near-vertical rule
+near_vertical:
+  limit_deg: 80.0
+  rule: abstain when the clip's maximum required tilt exceeds 80 deg
+  justification: >
+    A lean vector is the horizontal part of the unit thrust axis. At 90 deg it saturates and
+    the two axes degenerate; Track K records 4,507 TII native frames with the axis below the
+    horizon. 80 deg leaves a 10 deg margin. This is a representation limit, not a fitted
+    threshold, and it is fixed here before any outcome is read.
+
+# ------------------------------------------------------------------ selection rule
+selection:
+  target_risk: 0.05
+  risks: [coherence_false_reject, yaw_control_flag_rate]
+  rule: >
+    Conformal risk control on the accept-above rule (accept iff sigma_min >= lam). For a
+    candidate lam the accepted set's risk is bounded by (k + 1) / (n + 1); choose the
+    SMALLEST lam whose bound is at most 0.05 for BOTH risks, with at least 10 accepted
+    clips. Evaluated on the leave-one-flight-out-within-development curve (lam never sees
+    the clip it judges), and separately in-sample. If no lam reaches the target for a risk,
+    that is reported as the result: the gate cannot deliver that guarantee on this
+    population, and no hand-set threshold is substituted.
+  coherence_tau_after_gating: >
+    The coherence tau is recalibrated on the ACCEPTED real clips only (conformal 95th
+    percentile, leave-one-flight-out), because the gate changes the calibration population.
+    The ungated tau is reported alongside so the effect of the gate on the threshold is
+    visible.
+  grid: [0.0, 16.0] step 0.25 deg
+  min_accept: 10
+
+# ------------------------------------------------------------------ success criteria
+success_criteria:
+  primary: >
+    At the selected lam on the development flights, the accepted population has coherence
+    false-reject <= 0.05 and yaw-control flag rate <= 0.05, with coverage and both rates
+    reported with flight-clustered intervals and denominators.
+  secondary: >
+    Detection of tilt_removal and mirror_roll among accepted clips is retained at >= 0.90
+    of its ungated value (the gate must not buy its control rate by discarding the clips
+    that carry the detections).
+  reporting: >
+    Coverage, false-reject, yaw-control and null-edit rates are reported at every lam on the
+    risk-coverage curve, with k/n, the gate reason codes, and flight-clustered intervals.
+    Fewer than 10 clusters makes every interval descriptive.
+
+# ------------------------------------------------------------------ what this cannot show
+limits:
+  - >
+    Gate A reads only the path. It cannot detect a reader that is noisy on a strong-signal
+    clip (the racing flights carry both the largest tilt and the largest reader error), so a
+    path-side gate alone cannot reach a 5 % yaw-control rate if that failure is present.
+  - >
+    sigma_min is a per-axis statistic; a single-axis manoeuvre (a pure ellipse) can have a
+    large principal spread with a tiny sigma_min. That is deliberate: the coherence tier
+    takes the minimum over axes, so this is the axis the tier will fail on.

@@ -1,0 +1,39 @@
+# Track M, Stage 2 -- amendment 2: Gate B decides once per clip, and the threshold is
+# re-selected under that rule.
+#
+# Written BEFORE the H04 SolarWM clips and the H01 ANWM clips were read by this track (neither
+# had been analysed at this commit).  The simulated development clips had been read: they are a
+# development population and their AUROC is a development measurement, not an evaluation.
+amendment: 2
+date: '2026-11-22'
+track: M
+stage: 2
+supersedes: configs/m02_gate_b_frozen.yaml (version 1, tau = 3.0 deg)
+concerns: m02_gate_b_prereg.yaml#gate_b/threshold_selection
+
+what_changed:
+  selection_unit: >
+    Version 1 selected the threshold on a row-level acceptance: a clip counted as accepted if
+    ANY of its conditions passed (`dis_med <= tau` over the clip-condition rows).  Gate B in
+    operation sees one video per clip, so the selection must use the clip's REAL-condition
+    disagreement.  Version 1's rule was therefore optimistic relative to the gate that is
+    actually applied, and the operational gate (real-condition value) accepted 20 of 82 clips
+    against the 35 that version 1's rule implied.
+  tau_deg: 3.0 -> 4.5
+  reason: >
+    Re-running the same conformal risk control with the operational unit gives tau = 4.5 deg,
+    40 of 68 gate-kept development clips accepted (58.8 %), the yaw-control risk bound 0.049
+    (reached) and the coherence false-reject risk still unreachable (best 0.101 at full
+    coverage -- Gate B does not reduce false-rejects at all on this population).
+
+what_does_not_change:
+  - the statistic (clip-median lean difference between R_pf and R_gc224)
+  - the two risks and the risk-control rule
+  - the labels, the AUROC questions, the forest check and the ensemble arm
+  - the feeds, the splits and the populations
+
+consequence_reported: >
+  Every Gate B number in M02 and M03 is computed with tau = 4.5 deg and a per-clip decision on
+  the clip's real video.  The per-condition variant (A2's convention) is reported beside it
+  and drops 68 of the 69 development tilt-removal clips, which is why it is not the operational
+  rule.

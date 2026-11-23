@@ -1,0 +1,104 @@
+{
+ "R": {
+  "GA": {
+   "accepted": 31,
+   "total": 170,
+   "coverage": 0.18235294117647058,
+   "false_reject": "5/14",
+   "detected": "12/17",
+   "tau": 1.5758979396031236
+  },
+  "GB": {
+   "accepted": 78,
+   "total": 170,
+   "coverage": 0.4588235294117647,
+   "false_reject": "1/42",
+   "detected": "10/36",
+   "tau": 1.5758979396031236
+  },
+  "GAB": {
+   "accepted": 17,
+   "total": 170,
+   "coverage": 0.1,
+   "false_reject": "1/7",
+   "detected": "7/10",
+   "tau": 1.5758979396031236
+  },
+  "G0_S3_only": {
+   "accepted": 170,
+   "total": 170,
+   "coverage": 1.0,
+   "false_reject": "7/80",
+   "detected": "22/90",
+   "tau": 1.5758979396031236
+  }
+ },
+ "F0": {
+  "GA": {
+   "accepted": 31,
+   "total": 170,
+   "coverage": 0.18235294117647058,
+   "false_reject": "4/14",
+   "detected": "16/17",
+   "tau": 7.5952474105141965
+  },
+  "GB": {
+   "accepted": 78,
+   "total": 170,
+   "coverage": 0.4588235294117647,
+   "false_reject": "2/42",
+   "detected": "22/36",
+   "tau": 7.5952474105141965
+  },
+  "GAB": {
+   "accepted": 17,
+   "total": 170,
+   "coverage": 0.1,
+   "false_reject": "0/7",
+   "detected": "10/10",
+   "tau": 7.5952474105141965
+  },
+  "G0_S3_only": {
+   "accepted": 170,
+   "total": 170,
+   "coverage": 1.0,
+   "false_reject": "20/80",
+   "detected": "63/90",
+   "tau": 7.5952474105141965
+  }
+ },
+ "C2": {
+  "GA": {
+   "accepted": 31,
+   "total": 170,
+   "coverage": 0.18235294117647058,
+   "false_reject": "4/14",
+   "detected": "17/17",
+   "tau": 4.244151838262193
+  },
+  "GB": {
+   "accepted": 78,
+   "total": 170,
+   "coverage": 0.4588235294117647,
+   "false_reject": "2/42",
+   "detected": "12/36",
+   "tau": 4.244151838262193
+  },
+  "GAB": {
+   "accepted": 17,
+   "total": 170,
+   "coverage": 0.1,
+   "false_reject": "0/7",
+   "detected": "10/10",
+   "tau": 4.244151838262193
+  },
+  "G0_S3_only": {
+   "accepted": 170,
+   "total": 170,
+   "coverage": 1.0,
+   "false_reject": "20/80",
+   "detected": "52/90",
+   "tau": 4.244151838262193
+  }
+ }
+}

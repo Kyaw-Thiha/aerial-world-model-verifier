@@ -1,0 +1,63 @@
+{
+ "n_dev": 69,
+ "n_finite": 55,
+ "real": [
+  3,
+  69
+ ],
+ "tilt_removal": [
+  54,
+  69
+ ],
+ "mirror_roll": [
+  55,
+  69
+ ],
+ "scale_0.5": [
+  6,
+  69
+ ],
+ "scale_1.5": [
+  11,
+  69
+ ],
+ "yaw_control": [
+  9,
+  69
+ ],
+ "null_edit": [
+  3,
+  69
+ ],
+ "expected": {
+  "real": [
+   3,
+   69
+  ],
+  "tilt_removal": [
+   54,
+   69
+  ],
+  "mirror_roll": [
+   55,
+   69
+  ],
+  "scale_0.5": [
+   6,
+   69
+  ],
+  "scale_1.5": [
+   11,
+   69
+  ],
+  "yaw_control": [
+   9,
+   69
+  ],
+  "null_edit": [
+   3,
+   69
+  ]
+ },
+ "reproduces": true
+}

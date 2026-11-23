@@ -1,0 +1,49 @@
+{
+ "v2": {
+  "n": 51,
+  "median_dcoh_yaw": 0.1967673252426061,
+  "mean": 0.32181589139685995,
+  "positive": 39,
+  "null_max_abs": 0.0,
+  "spearman_sigma_min_vs_dcoh": 0.04914027149321267,
+  "real_median": 0.8703582666482103,
+  "yaw_median": 1.2917950323300527
+ },
+ "v3": {
+  "n": 51,
+  "median_dcoh_yaw": 0.6081282658235865,
+  "mean": 0.6252497814465874,
+  "positive": 45,
+  "null_max_abs": 0.0,
+  "spearman_sigma_min_vs_dcoh": -0.008506787330316743,
+  "real_median": 0.4850473527431488,
+  "yaw_median": 1.2260423747173865
+ },
+ "yaw_perturbation": {
+  "n_clips": 100,
+  "median_deg": 2.550645127655502,
+  "p90_of_clip_medians": 6.88212097500389,
+  "by_flight": {
+   "d_med": {
+    "flight-01a-ellipse": 1.223,
+    "flight-01p-ellipse": 2.439,
+    "flight-04a-ellipse": 0.844,
+    "flight-07a-lemniscate": 1.299,
+    "flight-07p-lemniscate": 2.311,
+    "flight-13a-trackRATM": 1.76,
+    "flight-13p-trackRATM": 10.447,
+    "flight-16p-trackRATM": 12.617
+   },
+   "d_p90": {
+    "flight-01a-ellipse": 5.216,
+    "flight-01p-ellipse": 6.432,
+    "flight-04a-ellipse": 1.457,
+    "flight-07a-lemniscate": 2.378,
+    "flight-07p-lemniscate": 6.235,
+    "flight-13a-trackRATM": 5.049,
+    "flight-13p-trackRATM": 71.62,
+    "flight-16p-trackRATM": 83.354
+   }
+  }
+ }
+}

@@ -316,3 +316,18 @@ Cumulative for the track across both passes: **8.02 USD** against the raised 14.
 (`configs/g06_segments_prereg.yaml` states 8.00; the user raised it to 14.00 on 2026-11-22).
 No CPU or storage cost. All apps were stopped by `modal run` returning; `modal app list` shows no
 running `awmv-g3-*` app after the pass.
+
+## Track M — abstention gates (2026-11-22; ceiling USD 25)
+
+All GPU work is on Modal, A10 (`awmv-m-readers`), list price 1.10 USD/h. Track M's own R2
+prefix is `track-m/`; it has written nothing there yet, and it reads `track-i/`, `track-l/` and
+`track-h3/` objects without writing to them. The TII camera zips and the A2 edit specs are read
+from Track A2's `awmv-a-data` volume, mounted read-only.
+
+| date | job | GPU | hours | USD | note |
+| --- | --- | --- | --- | --- | --- |
+| 2026-11-22 | **estimate posted before the job set**: Gate B readers (Perspective Fields + GeoCalib-224) on ~38k frames (TII 6 conditions + 170 simulated + 234 H04 + 80 H01), 4 shards, plus one probe run and one smoke run, plus image builds | A10 | <= 2.5 | <= 2.75 | 1.10 USD/h; well under the 20 USD pre-approval line and the 25 USD ceiling |
+| 2026-11-22 | `awmv-m-readers` rotation-probe (24 frames x 3 rotations, both readers) | A10 | 0.02 | 0.02 | 28 s wall; the image build is CPU-billed |
+| 2026-11-22 | `awmv-m-readers` smoke: 2 simulated clips | A10 | 0.02 | 0.02 | 27 s of inference after a 7 s model load |
+| 2026-11-22 | `awmv-m-readers` v1 (crop feed) and v2/v3 (corrected feeds): 4 shards x (TII 25 clips x 6 conditions + 42 sim + 58 H04 + 20 H01), plus one killed first pass and its relaunch | A10 | ~2.6 | ~2.85 | wall times from the shard logs in `data/m02_logs/` (generators 15:22-15:44, pinhole TII 15:22-15:36, an earlier killed pass ~0.4 h); the throughput is ~15 s per simulated clip at stride 4 and ~38 s per TII clip at six conditions |
+| 2026-11-22 | **Track M total** | A10 | ~2.7 | ~2.95 | against a 25 USD ceiling; nothing outside `awmv-m-data` was written, and every app is stopped |

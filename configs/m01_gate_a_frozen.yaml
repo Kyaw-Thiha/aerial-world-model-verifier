@@ -1,0 +1,80 @@
+# Track M, Stage 1 -- Gate A thresholds, FROZEN after the development analysis.
+#
+# Fitted on the six development flights only (results/m01, commit 0fc78fe and the read-out
+# committed with this file).  Written BEFORE any evaluation set is scored: the held-out real
+# flights 13p and 07a, the simulated held-out clips and the H04/H01 generated clips have not
+# been read by this track.
+#
+# IMMUTABLE after this commit.
+version: 1
+date: '2026-11-22'
+status: frozen
+track: M
+stage: 1
+prereg: configs/m01_gate_a_prereg.yaml
+
+# ------------------------------------------------------------------ measured inputs
+reader_noise:
+  sigma_n_deg: 1.910587818373582
+  estimator: 'median absolute deviation x 1.4826, per lean axis, of (depicted - required)
+    on the real condition of the six development flights; the larger axis is taken'
+  per_axis_robust_deg: [1.065774400482416, 1.910587818373582]
+  per_axis_rms_deg: [8.149611752494055, 14.197171161898632]
+  n_frames: 3921
+  warning: >
+    The RMS is 4-7x the robust MAD because the racing flights carry 30-45 deg tails. The SNR
+    reading below uses the robust value, which is the honest scale for a median-type
+    statistic; with the RMS the same k would demand 16-28 deg of sigma_min and no clip would
+    survive. Both readings are in the report.
+
+# ------------------------------------------------------------------ the gate
+gate_a:
+  statistic: sigma_min
+  definition: 'min(std(l_x), std(l_y)) of the required lean over the clip, degrees'
+  lam_deg: 3.82
+  lam_rule: 'k x sigma_n with k = 2.0, the middle pre-registered SNR candidate'
+  candidate_k: [1.5, 2.0, 3.0]
+  candidate_lam_deg: [2.87, 3.82, 5.73]
+  near_vertical_deg: 80.0
+  reason_codes: [weak_signal, near_vertical]
+  selection_outcome: failed
+  selection_note: >
+    Conformal risk control reached no threshold: the yaw-control bound is 0.333 at full
+    coverage and never falls to 0.05 at any coverage above 6 %, and the false-reject bound at
+    full coverage is 0.076. The pre-registered selection rule therefore could not select, and
+    the middle pre-registered SNR candidate is used instead of a tuned value. This is the
+    plain statement the pre-registration asked for.
+
+# ------------------------------------------------------------------ coherence tier
+coherence_tier:
+  statistic: 'max over 8-frame windows (hop 4) of 1 - min(r_x, r_y)'
+  required_side: schema v3 exact, model M0, k_d = 0.295
+  tau_lofo_median_accepted_dev: 0.9310524773439087
+  tau_lofo_per_flight_accepted_dev:
+    flight-01a-ellipse: 0.9310524773439087
+    flight-01p-ellipse: 0.940805092073633
+    flight-04a-ellipse: 0.9310524773439087
+    flight-07p-lemniscate: 0.9290714545958555
+    flight-13a-trackRATM: 0.9310524773439087
+    flight-16p-trackRATM: 0.9310524773439087
+  tau_lofo_median_ungated_dev: 1.5779501889981415
+  tau_lofo_median_near_vertical_only_dev: 1.3637334502556056
+  note: >
+    The threshold is recalibrated on the ACCEPTED real clips, as the pre-registration
+    requires, and it falls from 1.58 (ungated) to 0.93 because the gate removes the clips
+    whose real coherence occupies the tail.
+
+# ------------------------------------------------------------------ dev read-out (for the record)
+dev_outcome:
+  clips_total: 69
+  clips_accepted: 22
+  coverage: 0.3188405797101449
+  reason_counts: {weak_signal: 43, near_vertical: 4, both: 0, none: 22}
+  accepted_rates:
+    false_reject: '1/22'
+    yaw_control: '16/22'
+    null_edit: '1/22'
+    tilt_removal: '21/22'
+    mirror_roll: '22/22'
+    scale_0.5: '15/22'
+    scale_1.5: '4/22'

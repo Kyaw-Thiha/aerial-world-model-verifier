@@ -1,0 +1,1316 @@
+{
+ "R": {
+  "evaluate": {
+   "G0_S3_only": {
+    "accepted_clips": 69,
+    "total_clips": 82,
+    "coverage": 0.8414634146341463,
+    "tau_median": 1.5779501889981415,
+    "real": "3/69",
+    "tilt_removal": "54/69",
+    "mirror_roll": "55/69",
+    "scale_0.5": "13/69",
+    "scale_1.5": "9/69",
+    "yaw_control": "16/69",
+    "null_edit": "3/69"
+   },
+   "GA": {
+    "accepted_clips": 22,
+    "total_clips": 82,
+    "coverage": 0.2682926829268293,
+    "tau_median": 0.9310524773439087,
+    "real": "1/22",
+    "tilt_removal": "21/22",
+    "mirror_roll": "22/22",
+    "scale_0.5": "15/22",
+    "scale_1.5": "4/22",
+    "yaw_control": "16/22",
+    "null_edit": "1/22"
+   },
+   "GB": {
+    "accepted_clips": 0,
+    "total_clips": 82,
+    "coverage": 0.0,
+    "tau_median": NaN,
+    "real": "0/0",
+    "tilt_removal": "0/0",
+    "mirror_roll": "0/0",
+    "scale_0.5": "0/0",
+    "scale_1.5": "0/0",
+    "yaw_control": "0/0",
+    "null_edit": "0/0"
+   },
+   "GAB": {
+    "accepted_clips": 0,
+    "total_clips": 82,
+    "coverage": 0.0,
+    "tau_median": NaN,
+    "real": "0/0",
+    "tilt_removal": "0/0",
+    "mirror_roll": "0/0",
+    "scale_0.5": "0/0",
+    "scale_1.5": "0/0",
+    "yaw_control": "0/0",
+    "null_edit": "0/0"
+   },
+   "G0_S3_per_condition": {
+    "accepted_clips": 70,
+    "total_clips": 82,
+    "coverage": 0.8536585365853658,
+    "tau_median": 1.5779501889981415,
+    "real": "3/69",
+    "tilt_removal": "7/20",
+    "mirror_roll": "52/65",
+    "scale_0.5": "4/48",
+    "scale_1.5": "8/68",
+    "yaw_control": "13/65",
+    "null_edit": "3/69"
+   }
+  },
+  "clustered": {
+   "G0_S3_only": {
+    "real": {
+     "hit": 3,
+     "n": 69,
+     "point": 0.043478260869565216,
+     "lo": 0.010416666666666666,
+     "hi": 0.13793103448275862,
+     "n_clusters": 6,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    },
+    "tilt_removal": {
+     "hit": 54,
+     "n": 69,
+     "point": 0.782608695652174,
+     "lo": 0.23333333333333334,
+     "hi": 0.9351851851851852,
+     "n_clusters": 6,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    },
+    "mirror_roll": {
+     "hit": 55,
+     "n": 69,
+     "point": 0.7971014492753623,
+     "lo": 0.23333333333333334,
+     "hi": 0.9548872180451128,
+     "n_clusters": 6,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    },
+    "scale_0.5": {
+     "hit": 13,
+     "n": 69,
+     "point": 0.18840579710144928,
+     "lo": 0.08,
+     "hi": 0.3125,
+     "n_clusters": 6,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    },
+    "scale_1.5": {
+     "hit": 9,
+     "n": 69,
+     "point": 0.13043478260869565,
+     "lo": 0.056338028169014086,
+     "hi": 0.2894736842105263,
+     "n_clusters": 6,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    },
+    "yaw_control": {
+     "hit": 16,
+     "n": 69,
+     "point": 0.2318840579710145,
+     "lo": 0.12903225806451613,
+     "hi": 0.3333333333333333,
+     "n_clusters": 6,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    },
+    "null_edit": {
+     "hit": 3,
+     "n": 69,
+     "point": 0.043478260869565216,
+     "lo": 0.010416666666666666,
+     "hi": 0.13793103448275862,
+     "n_clusters": 6,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    }
+   },
+   "GA": {
+    "real": {
+     "hit": 1,
+     "n": 22,
+     "point": 0.045454545454545456,
+     "lo": 0.0,
+     "hi": 0.06666666666666667,
+     "n_clusters": 2,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    },
+    "tilt_removal": {
+     "hit": 21,
+     "n": 22,
+     "point": 0.9545454545454546,
+     "lo": 0.9333333333333333,
+     "hi": 1.0,
+     "n_clusters": 2,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    },
+    "mirror_roll": {
+     "hit": 22,
+     "n": 22,
+     "point": 1.0,
+     "lo": 1.0,
+     "hi": 1.0,
+     "n_clusters": 2,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    },
+    "scale_0.5": {
+     "hit": 15,
+     "n": 22,
+     "point": 0.6818181818181818,
+     "lo": 0.6666666666666666,
+     "hi": 0.7142857142857143,
+     "n_clusters": 2,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    },
+    "scale_1.5": {
+     "hit": 4,
+     "n": 22,
+     "point": 0.18181818181818182,
+     "lo": 0.0,
+     "hi": 0.26666666666666666,
+     "n_clusters": 2,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    },
+    "yaw_control": {
+     "hit": 16,
+     "n": 22,
+     "point": 0.7272727272727273,
+     "lo": 0.7142857142857143,
+     "hi": 0.7333333333333333,
+     "n_clusters": 2,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    },
+    "null_edit": {
+     "hit": 1,
+     "n": 22,
+     "point": 0.045454545454545456,
+     "lo": 0.0,
+     "hi": 0.06666666666666667,
+     "n_clusters": 2,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    }
+   },
+   "GB": {
+    "real": {
+     "hit": 0,
+     "n": 0,
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n_clusters": 0,
+     "note": "no computable interval"
+    },
+    "tilt_removal": {
+     "hit": 0,
+     "n": 0,
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n_clusters": 0,
+     "note": "no computable interval"
+    },
+    "mirror_roll": {
+     "hit": 0,
+     "n": 0,
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n_clusters": 0,
+     "note": "no computable interval"
+    },
+    "scale_0.5": {
+     "hit": 0,
+     "n": 0,
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n_clusters": 0,
+     "note": "no computable interval"
+    },
+    "scale_1.5": {
+     "hit": 0,
+     "n": 0,
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n_clusters": 0,
+     "note": "no computable interval"
+    },
+    "yaw_control": {
+     "hit": 0,
+     "n": 0,
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n_clusters": 0,
+     "note": "no computable interval"
+    },
+    "null_edit": {
+     "hit": 0,
+     "n": 0,
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n_clusters": 0,
+     "note": "no computable interval"
+    }
+   },
+   "GAB": {
+    "real": {
+     "hit": 0,
+     "n": 0,
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n_clusters": 0,
+     "note": "no computable interval"
+    },
+    "tilt_removal": {
+     "hit": 0,
+     "n": 0,
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n_clusters": 0,
+     "note": "no computable interval"
+    },
+    "mirror_roll": {
+     "hit": 0,
+     "n": 0,
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n_clusters": 0,
+     "note": "no computable interval"
+    },
+    "scale_0.5": {
+     "hit": 0,
+     "n": 0,
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n_clusters": 0,
+     "note": "no computable interval"
+    },
+    "scale_1.5": {
+     "hit": 0,
+     "n": 0,
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n_clusters": 0,
+     "note": "no computable interval"
+    },
+    "yaw_control": {
+     "hit": 0,
+     "n": 0,
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n_clusters": 0,
+     "note": "no computable interval"
+    },
+    "null_edit": {
+     "hit": 0,
+     "n": 0,
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n_clusters": 0,
+     "note": "no computable interval"
+    }
+   },
+   "G0_S3_per_condition": {
+    "real": {
+     "hit": 3,
+     "n": 69,
+     "point": 0.043478260869565216,
+     "lo": 0.010416666666666666,
+     "hi": 0.13793103448275862,
+     "n_clusters": 6,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    },
+    "tilt_removal": {
+     "hit": 7,
+     "n": 20,
+     "point": 0.35,
+     "lo": 0.043478260869565216,
+     "hi": 0.8095238095238095,
+     "n_clusters": 5,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    },
+    "mirror_roll": {
+     "hit": 52,
+     "n": 65,
+     "point": 0.8,
+     "lo": 0.20689655172413793,
+     "hi": 0.9702970297029703,
+     "n_clusters": 5,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    },
+    "scale_0.5": {
+     "hit": 4,
+     "n": 48,
+     "point": 0.08333333333333333,
+     "lo": 0.02631578947368421,
+     "hi": 0.14634146341463414,
+     "n_clusters": 5,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    },
+    "scale_1.5": {
+     "hit": 8,
+     "n": 68,
+     "point": 0.11764705882352941,
+     "lo": 0.04285714285714286,
+     "hi": 0.2391304347826087,
+     "n_clusters": 5,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    },
+    "yaw_control": {
+     "hit": 13,
+     "n": 65,
+     "point": 0.2,
+     "lo": 0.0851063829787234,
+     "hi": 0.30158730158730157,
+     "n_clusters": 5,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    },
+    "null_edit": {
+     "hit": 3,
+     "n": 69,
+     "point": 0.043478260869565216,
+     "lo": 0.010416666666666666,
+     "hi": 0.13793103448275862,
+     "n_clusters": 6,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    }
+   }
+  }
+ },
+ "F0": {
+  "evaluate": {
+   "G0_S3_only": {
+    "accepted_clips": 69,
+    "total_clips": 82,
+    "coverage": 0.8414634146341463,
+    "tau_median": 7.084052445797846,
+    "real": "5/69",
+    "tilt_removal": "56/69",
+    "mirror_roll": "55/69",
+    "scale_0.5": "37/69",
+    "scale_1.5": "52/69",
+    "yaw_control": "8/69",
+    "null_edit": "5/69"
+   },
+   "GA": {
+    "accepted_clips": 22,
+    "total_clips": 82,
+    "coverage": 0.2682926829268293,
+    "tau_median": 5.320001351032156,
+    "real": "9/22",
+    "tilt_removal": "22/22",
+    "mirror_roll": "21/22",
+    "scale_0.5": "21/22",
+    "scale_1.5": "20/22",
+    "yaw_control": "13/22",
+    "null_edit": "9/22"
+   },
+   "GB": {
+    "accepted_clips": 0,
+    "total_clips": 82,
+    "coverage": 0.0,
+    "tau_median": NaN,
+    "real": "0/0",
+    "tilt_removal": "0/0",
+    "mirror_roll": "0/0",
+    "scale_0.5": "0/0",
+    "scale_1.5": "0/0",
+    "yaw_control": "0/0",
+    "null_edit": "0/0"
+   },
+   "GAB": {
+    "accepted_clips": 0,
+    "total_clips": 82,
+    "coverage": 0.0,
+    "tau_median": NaN,
+    "real": "0/0",
+    "tilt_removal": "0/0",
+    "mirror_roll": "0/0",
+    "scale_0.5": "0/0",
+    "scale_1.5": "0/0",
+    "yaw_control": "0/0",
+    "null_edit": "0/0"
+   },
+   "G0_S3_per_condition": {
+    "accepted_clips": 70,
+    "total_clips": 82,
+    "coverage": 0.8536585365853658,
+    "tau_median": 7.084052445797846,
+    "real": "5/69",
+    "tilt_removal": "9/20",
+    "mirror_roll": "52/65",
+    "scale_0.5": "19/48",
+    "scale_1.5": "51/68",
+    "yaw_control": "5/65",
+    "null_edit": "5/69"
+   }
+  },
+  "clustered": {
+   "G0_S3_only": {
+    "real": {
+     "hit": 5,
+     "n": 69,
+     "point": 0.07246376811594203,
+     "lo": 0.017543859649122806,
+     "hi": 0.3103448275862069,
+     "n_clusters": 6,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    },
+    "tilt_removal": {
+     "hit": 56,
+     "n": 69,
+     "point": 0.8115942028985508,
+     "lo": 0.3448275862068966,
+     "hi": 0.9363636363636364,
+     "n_clusters": 6,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    },
+    "mirror_roll": {
+     "hit": 55,
+     "n": 69,
+     "point": 0.7971014492753623,
+     "lo": 0.3448275862068966,
+     "hi": 0.924812030075188,
+     "n_clusters": 6,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    },
+    "scale_0.5": {
+     "hit": 37,
+     "n": 69,
+     "point": 0.5362318840579711,
+     "lo": 0.34,
+     "hi": 0.7117117117117117,
+     "n_clusters": 6,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    },
+    "scale_1.5": {
+     "hit": 52,
+     "n": 69,
+     "point": 0.7536231884057971,
+     "lo": 0.3,
+     "hi": 0.8837209302325582,
+     "n_clusters": 6,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    },
+    "yaw_control": {
+     "hit": 8,
+     "n": 69,
+     "point": 0.11594202898550725,
+     "lo": 0.018518518518518517,
+     "hi": 0.52,
+     "n_clusters": 6,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    },
+    "null_edit": {
+     "hit": 5,
+     "n": 69,
+     "point": 0.07246376811594203,
+     "lo": 0.017543859649122806,
+     "hi": 0.3103448275862069,
+     "n_clusters": 6,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    }
+   },
+   "GA": {
+    "real": {
+     "hit": 9,
+     "n": 22,
+     "point": 0.4090909090909091,
+     "lo": 0.0,
+     "hi": 0.6,
+     "n_clusters": 2,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    },
+    "tilt_removal": {
+     "hit": 22,
+     "n": 22,
+     "point": 1.0,
+     "lo": 1.0,
+     "hi": 1.0,
+     "n_clusters": 2,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    },
+    "mirror_roll": {
+     "hit": 21,
+     "n": 22,
+     "point": 0.9545454545454546,
+     "lo": 0.9333333333333333,
+     "hi": 1.0,
+     "n_clusters": 2,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    },
+    "scale_0.5": {
+     "hit": 21,
+     "n": 22,
+     "point": 0.9545454545454546,
+     "lo": 0.9333333333333333,
+     "hi": 1.0,
+     "n_clusters": 2,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    },
+    "scale_1.5": {
+     "hit": 20,
+     "n": 22,
+     "point": 0.9090909090909091,
+     "lo": 0.8571428571428571,
+     "hi": 0.9333333333333333,
+     "n_clusters": 2,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    },
+    "yaw_control": {
+     "hit": 13,
+     "n": 22,
+     "point": 0.5909090909090909,
+     "lo": 0.5714285714285714,
+     "hi": 0.6,
+     "n_clusters": 2,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    },
+    "null_edit": {
+     "hit": 9,
+     "n": 22,
+     "point": 0.4090909090909091,
+     "lo": 0.0,
+     "hi": 0.6,
+     "n_clusters": 2,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    }
+   },
+   "GB": {
+    "real": {
+     "hit": 0,
+     "n": 0,
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n_clusters": 0,
+     "note": "no computable interval"
+    },
+    "tilt_removal": {
+     "hit": 0,
+     "n": 0,
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n_clusters": 0,
+     "note": "no computable interval"
+    },
+    "mirror_roll": {
+     "hit": 0,
+     "n": 0,
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n_clusters": 0,
+     "note": "no computable interval"
+    },
+    "scale_0.5": {
+     "hit": 0,
+     "n": 0,
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n_clusters": 0,
+     "note": "no computable interval"
+    },
+    "scale_1.5": {
+     "hit": 0,
+     "n": 0,
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n_clusters": 0,
+     "note": "no computable interval"
+    },
+    "yaw_control": {
+     "hit": 0,
+     "n": 0,
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n_clusters": 0,
+     "note": "no computable interval"
+    },
+    "null_edit": {
+     "hit": 0,
+     "n": 0,
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n_clusters": 0,
+     "note": "no computable interval"
+    }
+   },
+   "GAB": {
+    "real": {
+     "hit": 0,
+     "n": 0,
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n_clusters": 0,
+     "note": "no computable interval"
+    },
+    "tilt_removal": {
+     "hit": 0,
+     "n": 0,
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n_clusters": 0,
+     "note": "no computable interval"
+    },
+    "mirror_roll": {
+     "hit": 0,
+     "n": 0,
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n_clusters": 0,
+     "note": "no computable interval"
+    },
+    "scale_0.5": {
+     "hit": 0,
+     "n": 0,
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n_clusters": 0,
+     "note": "no computable interval"
+    },
+    "scale_1.5": {
+     "hit": 0,
+     "n": 0,
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n_clusters": 0,
+     "note": "no computable interval"
+    },
+    "yaw_control": {
+     "hit": 0,
+     "n": 0,
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n_clusters": 0,
+     "note": "no computable interval"
+    },
+    "null_edit": {
+     "hit": 0,
+     "n": 0,
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n_clusters": 0,
+     "note": "no computable interval"
+    }
+   },
+   "G0_S3_per_condition": {
+    "real": {
+     "hit": 5,
+     "n": 69,
+     "point": 0.07246376811594203,
+     "lo": 0.017543859649122806,
+     "hi": 0.3103448275862069,
+     "n_clusters": 6,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    },
+    "tilt_removal": {
+     "hit": 9,
+     "n": 20,
+     "point": 0.45,
+     "lo": 0.058823529411764705,
+     "hi": 0.8421052631578947,
+     "n_clusters": 5,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    },
+    "mirror_roll": {
+     "hit": 52,
+     "n": 65,
+     "point": 0.8,
+     "lo": 0.2962962962962963,
+     "hi": 0.9320388349514563,
+     "n_clusters": 5,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    },
+    "scale_0.5": {
+     "hit": 19,
+     "n": 48,
+     "point": 0.3958333333333333,
+     "lo": 0.13636363636363635,
+     "hi": 0.6226415094339622,
+     "n_clusters": 5,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    },
+    "scale_1.5": {
+     "hit": 51,
+     "n": 68,
+     "point": 0.75,
+     "lo": 0.27586206896551724,
+     "hi": 0.8807339449541285,
+     "n_clusters": 5,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    },
+    "yaw_control": {
+     "hit": 5,
+     "n": 65,
+     "point": 0.07692307692307693,
+     "lo": 0.0,
+     "hi": 0.4,
+     "n_clusters": 5,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    },
+    "null_edit": {
+     "hit": 5,
+     "n": 69,
+     "point": 0.07246376811594203,
+     "lo": 0.017543859649122806,
+     "hi": 0.3103448275862069,
+     "n_clusters": 6,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    }
+   }
+  }
+ },
+ "C2": {
+  "evaluate": {
+   "G0_S3_only": {
+    "accepted_clips": 69,
+    "total_clips": 82,
+    "coverage": 0.8414634146341463,
+    "tau_median": 4.077913863885357,
+    "real": "4/69",
+    "tilt_removal": "35/69",
+    "mirror_roll": "47/69",
+    "scale_0.5": "7/69",
+    "scale_1.5": "4/69",
+    "yaw_control": "4/69",
+    "null_edit": "4/69"
+   },
+   "GA": {
+    "accepted_clips": 22,
+    "total_clips": 82,
+    "coverage": 0.2682926829268293,
+    "tau_median": 2.9273525932332194,
+    "real": "4/22",
+    "tilt_removal": "22/22",
+    "mirror_roll": "21/22",
+    "scale_0.5": "19/22",
+    "scale_1.5": "7/22",
+    "yaw_control": "10/22",
+    "null_edit": "4/22"
+   },
+   "GB": {
+    "accepted_clips": 0,
+    "total_clips": 82,
+    "coverage": 0.0,
+    "tau_median": NaN,
+    "real": "0/0",
+    "tilt_removal": "0/0",
+    "mirror_roll": "0/0",
+    "scale_0.5": "0/0",
+    "scale_1.5": "0/0",
+    "yaw_control": "0/0",
+    "null_edit": "0/0"
+   },
+   "GAB": {
+    "accepted_clips": 0,
+    "total_clips": 82,
+    "coverage": 0.0,
+    "tau_median": NaN,
+    "real": "0/0",
+    "tilt_removal": "0/0",
+    "mirror_roll": "0/0",
+    "scale_0.5": "0/0",
+    "scale_1.5": "0/0",
+    "yaw_control": "0/0",
+    "null_edit": "0/0"
+   },
+   "G0_S3_per_condition": {
+    "accepted_clips": 70,
+    "total_clips": 82,
+    "coverage": 0.8536585365853658,
+    "tau_median": 4.077913863885357,
+    "real": "4/69",
+    "tilt_removal": "3/20",
+    "mirror_roll": "44/65",
+    "scale_0.5": "1/48",
+    "scale_1.5": "3/68",
+    "yaw_control": "1/65",
+    "null_edit": "4/69"
+   }
+  },
+  "clustered": {
+   "G0_S3_only": {
+    "real": {
+     "hit": 4,
+     "n": 69,
+     "point": 0.057971014492753624,
+     "lo": 0.008603585112205808,
+     "hi": 0.2857142857142857,
+     "n_clusters": 6,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    },
+    "tilt_removal": {
+     "hit": 35,
+     "n": 69,
+     "point": 0.5072463768115942,
+     "lo": 0.1724137931034483,
+     "hi": 0.6071428571428571,
+     "n_clusters": 6,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    },
+    "mirror_roll": {
+     "hit": 47,
+     "n": 69,
+     "point": 0.6811594202898551,
+     "lo": 0.1724137931034483,
+     "hi": 0.8240740740740741,
+     "n_clusters": 6,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    },
+    "scale_0.5": {
+     "hit": 7,
+     "n": 69,
+     "point": 0.10144927536231885,
+     "lo": 0.028169014084507043,
+     "hi": 0.2857142857142857,
+     "n_clusters": 6,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    },
+    "scale_1.5": {
+     "hit": 4,
+     "n": 69,
+     "point": 0.057971014492753624,
+     "lo": 0.008603585112205808,
+     "hi": 0.2857142857142857,
+     "n_clusters": 6,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    },
+    "yaw_control": {
+     "hit": 4,
+     "n": 69,
+     "point": 0.057971014492753624,
+     "lo": 0.008603585112205808,
+     "hi": 0.2857142857142857,
+     "n_clusters": 6,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    },
+    "null_edit": {
+     "hit": 4,
+     "n": 69,
+     "point": 0.057971014492753624,
+     "lo": 0.008603585112205808,
+     "hi": 0.2857142857142857,
+     "n_clusters": 6,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    }
+   },
+   "GA": {
+    "real": {
+     "hit": 4,
+     "n": 22,
+     "point": 0.18181818181818182,
+     "lo": 0.0,
+     "hi": 0.26666666666666666,
+     "n_clusters": 2,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    },
+    "tilt_removal": {
+     "hit": 22,
+     "n": 22,
+     "point": 1.0,
+     "lo": 1.0,
+     "hi": 1.0,
+     "n_clusters": 2,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    },
+    "mirror_roll": {
+     "hit": 21,
+     "n": 22,
+     "point": 0.9545454545454546,
+     "lo": 0.9333333333333333,
+     "hi": 1.0,
+     "n_clusters": 2,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    },
+    "scale_0.5": {
+     "hit": 19,
+     "n": 22,
+     "point": 0.8636363636363636,
+     "lo": 0.8571428571428571,
+     "hi": 0.8666666666666667,
+     "n_clusters": 2,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    },
+    "scale_1.5": {
+     "hit": 7,
+     "n": 22,
+     "point": 0.3181818181818182,
+     "lo": 0.2857142857142857,
+     "hi": 0.3333333333333333,
+     "n_clusters": 2,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    },
+    "yaw_control": {
+     "hit": 10,
+     "n": 22,
+     "point": 0.45454545454545453,
+     "lo": 0.2857142857142857,
+     "hi": 0.5333333333333333,
+     "n_clusters": 2,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    },
+    "null_edit": {
+     "hit": 4,
+     "n": 22,
+     "point": 0.18181818181818182,
+     "lo": 0.0,
+     "hi": 0.26666666666666666,
+     "n_clusters": 2,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    }
+   },
+   "GB": {
+    "real": {
+     "hit": 0,
+     "n": 0,
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n_clusters": 0,
+     "note": "no computable interval"
+    },
+    "tilt_removal": {
+     "hit": 0,
+     "n": 0,
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n_clusters": 0,
+     "note": "no computable interval"
+    },
+    "mirror_roll": {
+     "hit": 0,
+     "n": 0,
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n_clusters": 0,
+     "note": "no computable interval"
+    },
+    "scale_0.5": {
+     "hit": 0,
+     "n": 0,
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n_clusters": 0,
+     "note": "no computable interval"
+    },
+    "scale_1.5": {
+     "hit": 0,
+     "n": 0,
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n_clusters": 0,
+     "note": "no computable interval"
+    },
+    "yaw_control": {
+     "hit": 0,
+     "n": 0,
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n_clusters": 0,
+     "note": "no computable interval"
+    },
+    "null_edit": {
+     "hit": 0,
+     "n": 0,
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n_clusters": 0,
+     "note": "no computable interval"
+    }
+   },
+   "GAB": {
+    "real": {
+     "hit": 0,
+     "n": 0,
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n_clusters": 0,
+     "note": "no computable interval"
+    },
+    "tilt_removal": {
+     "hit": 0,
+     "n": 0,
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n_clusters": 0,
+     "note": "no computable interval"
+    },
+    "mirror_roll": {
+     "hit": 0,
+     "n": 0,
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n_clusters": 0,
+     "note": "no computable interval"
+    },
+    "scale_0.5": {
+     "hit": 0,
+     "n": 0,
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n_clusters": 0,
+     "note": "no computable interval"
+    },
+    "scale_1.5": {
+     "hit": 0,
+     "n": 0,
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n_clusters": 0,
+     "note": "no computable interval"
+    },
+    "yaw_control": {
+     "hit": 0,
+     "n": 0,
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n_clusters": 0,
+     "note": "no computable interval"
+    },
+    "null_edit": {
+     "hit": 0,
+     "n": 0,
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n_clusters": 0,
+     "note": "no computable interval"
+    }
+   },
+   "G0_S3_per_condition": {
+    "real": {
+     "hit": 4,
+     "n": 69,
+     "point": 0.057971014492753624,
+     "lo": 0.008603585112205808,
+     "hi": 0.2857142857142857,
+     "n_clusters": 6,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    },
+    "tilt_removal": {
+     "hit": 3,
+     "n": 20,
+     "point": 0.15,
+     "lo": 0.0,
+     "hi": 0.4,
+     "n_clusters": 5,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    },
+    "mirror_roll": {
+     "hit": 44,
+     "n": 65,
+     "point": 0.676923076923077,
+     "lo": 0.13793103448275862,
+     "hi": 0.8316831683168316,
+     "n_clusters": 5,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    },
+    "scale_0.5": {
+     "hit": 1,
+     "n": 48,
+     "point": 0.020833333333333332,
+     "lo": 0.0,
+     "hi": 0.057692307692307696,
+     "n_clusters": 5,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    },
+    "scale_1.5": {
+     "hit": 3,
+     "n": 68,
+     "point": 0.04411764705882353,
+     "lo": 0.0,
+     "hi": 0.21428571428571427,
+     "n_clusters": 5,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    },
+    "yaw_control": {
+     "hit": 1,
+     "n": 65,
+     "point": 0.015384615384615385,
+     "lo": 0.0,
+     "hi": 0.08342391304347693,
+     "n_clusters": 5,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    },
+    "null_edit": {
+     "hit": 4,
+     "n": 69,
+     "point": 0.057971014492753624,
+     "lo": 0.008603585112205808,
+     "hi": 0.2857142857142857,
+     "n_clusters": 6,
+     "draws": 5000,
+     "seed": 1,
+     "note": "descriptive only: fewer than 10 clusters"
+    }
+   }
+  }
+ }
+}
