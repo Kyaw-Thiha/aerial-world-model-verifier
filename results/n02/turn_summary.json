@@ -1,0 +1,45 @@
+{
+ "sim": {
+  "0-10": {
+   "n": 30010,
+   "baseline_median_deg": 1.3042927508891322,
+   "one_constraint_median_deg": 5.5777965309430515,
+   "two_constraint_median_deg": 8.188926398568437
+  },
+  "10-30": {
+   "n": 14967,
+   "baseline_median_deg": 1.6946873964095803,
+   "one_constraint_median_deg": 6.7971826275470155,
+   "two_constraint_median_deg": 7.312408271963004
+  },
+  "30-180": {
+   "n": 193037,
+   "baseline_median_deg": 4.086583121718805,
+   "one_constraint_median_deg": 8.428083474479855,
+   "two_constraint_median_deg": 10.119224432563888
+  }
+ },
+ "uzh": {
+  "0-10": {
+   "n": 237,
+   "baseline_median_deg": 8.109315875939409,
+   "one_constraint_median_deg": 8.383086998026819,
+   "two_constraint_median_deg": 8.695449503445602
+  },
+  "10-30": {
+   "n": 1000,
+   "baseline_median_deg": 7.981384359806628,
+   "one_constraint_median_deg": 8.319067378345048,
+   "two_constraint_median_deg": 12.054901142912096
+  },
+  "30-180": {
+   "n": 8652,
+   "baseline_median_deg": 8.282461873208295,
+   "one_constraint_median_deg": 7.2103292397452865,
+   "two_constraint_median_deg": 6.129772164656464
+  }
+ },
+ "reading": {
+  "supported_if": "theta >= 30: two-constraint median <= 5.0 deg and >= 30 % below baseline"
+ }
+}

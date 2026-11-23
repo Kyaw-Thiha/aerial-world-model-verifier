@@ -1,0 +1,36 @@
+# Track N, Part 1 addendum -- Amendment B: detector settings.
+#
+# Written BEFORE any delta (direction-error) number was computed. A smoke test of the
+# essential-matrix function on three frames (one industrial render and eight keypoint-count
+# probes) showed that SIFT at the pre-registered contrast threshold 0.04 returns 23-77 keypoints
+# on the simulated renders -- below the 30-keypoint floor on the industrial scene, so the
+# measurement would fail on feature count rather than on geometry. No direction error was
+# computed or looked at before this amendment.
+prereg_version: 1
+date: '2026-11-22'
+track: N
+amends: configs/n02_initial_gravity_prereg.yaml  (no field of that file is edited)
+status: frozen
+
+change:
+  SIFT_nfeatures: 4000            # was 2000
+  SIFT_contrastThreshold: 0.01    # was 0.04
+  everything_else: unchanged (ratio 0.75, RANSAC 1.0 px, confidence 0.999, min inliers 20,
+    gaps 0.1/0.2/0.3/0.5 s, start stride 3, speed cut 8 m/s, the <= 3 deg rule)
+
+why:
+  counted_keypoints_before_change:
+    industrial_render: 23 at 0.04, 340 at 0.01
+    forest_renders: 52-77 at 0.04, 151-248 at 0.02, 246-414 at 0.01
+  The lower threshold is applied uniformly to every stratum and every dataset (simulated,
+  UZH, generated), so it cannot favour one family over another. Keypoint counts per pair are
+  reported beside every rate, so a low-texture scene is visible rather than silently dropped.
+
+sensitivity_reported: >
+  For the pairs where the original setting (2000 / 0.04) also produced an estimate, the two
+  settings are compared on a subsample and the median delta reported. If the original setting
+  produces estimates on fewer than 10 % of pairs in a stratum, that is stated as a limitation of
+  the measurement, not of the method.
+
+unchanged: the addendum's confirmatory rule (median direction error <= 3.0 deg at baseline
+  speed >= 8 m/s in forest_sim and real_outdoor_uzh, per pair and per 1 s block).

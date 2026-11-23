@@ -886,3 +886,160 @@ Every row below was read from the project's own repo/HF card on 2026-11-10. "ver
 - [M] **The ensemble-in-verdict arm is recorded as NOT DONE, with the reason.** The mean reader was measured as a stand-alone estimator (M02: pooled trimmed RMSE 3.11 deg on the simulated feasible clips against the frozen reader's 4.08 and PF's 3.34, and 5.44 against 8.24 in the forest, but a worse median in every family — 2.25 against 1.27 pooled, 1.86/1.87 against 0.93/1.22 in urban/industrial). It was deliberately not spliced into the coherence tier at a matched false-reject: a reader that is worse on the typical clip cannot improve a per-clip correlation tier by construction, and improving the forest alone would need a scene-conditional reader, which is a different experiment. Stated in M02 ("What this does not show") and M03.
 - [M] **The sign sub-tier review is a new pre-registration (`configs/m04_sign_deadband_prereg.yaml`, `e945f19`), not an edit of a frozen config.** `configs/coherence_frozen.yaml` (tau_sign 0.292) stands as published and is reported beside the variant. Result: the frozen rule at its own 95th-percentile cut flags 7/69 real clips and 10/69 tilt removals — no separation — because the statistic is one bit per frame and the cut lands on its ceiling (1.0) for most folds. A dead-band at sin(1.0 sigma_n) with M01's measured reader noise gives 4/55 false-reject, 55/69 removal, 55/69 mirror and 5/55 yaw, at the cost of 14 clips that have no sign-bearing frame above the noise (reported as a denominator of 55, never as non-detections). It does not transfer to a transferred cut (19/80 on the simulated set) and does not separate the H04 arms.
 - [M] **Dynamic-clip coverage is a separate pre-registration (`configs/m05_dynamic_coverage_prereg.yaml`, `c6df271`), and it qualifies the headline coverage numbers.** Among clips whose peak required tilt is at least 15 deg (85 of 100 real, 107 of 170 simulated), Gate A judges 23/85, Gate B 40/85 and both 15/85 on real flights; on the simulated set 29/107, 57/107 and 16/107. The reason composition is the point: on the real clips `near_vertical` rises to 25 of the 85 dynamic clips (the dynamic real population is dominated by the racing flights, whose tilt passes 80 deg), and on the simulated set the forest abstention is driven by `readers_disagree` (36 of 38 dynamic forest clips) against `weak_signal` in the open scenes. No threshold was refitted and no gate was redesigned.
+
+## Track N — attitude from video rotation — all entries tagged [N]
+
+- [N] Worktree `~/Documents/Projects/awmv-n`, branch `track-n-rotation`, off `main` at `6bc7b5d`
+  (consolidation wave 1). `data/`, `third_party/` and `.env` are symlinks to the shared checkout,
+  so no large copy and no second copy of the credentials. Read-only dependencies (nothing
+  merged): `track-j-reader` (J01 rotation numbers reused as a validation target),
+  `track-e-depicted-uzh` (UZH prepared pinhole frames and reader JSONL on the Modal volume
+  `awmv-e-data`), `track-i-simset` (the frozen simulated split and the 186 clips on R2),
+  `track-l-reader-simreal` (L01 per-frame frozen-reader scores on the 80 feasible dev clips) and
+  `track-m-gates` (the simulated-clip reader convention). G3's branch was not read.
+- [N] Part 0's pre-registration is `configs/n01_pretest_prereg.yaml`, committed at `ebacc7c`
+  before any 1/5/10/20 s number was computed and before the new DPVO runs existed. The only
+  propagation numbers in hand when it was written are J01's published per-step/0.5 s/1.0 s
+  values. The decision rule, the strata, the failure definitions and the reader references are
+  fixed there; nothing was tuned after the runs.
+- [N] The horizon statistic reproduces J01 exactly before it extends the horizon. On the eight
+  TII DPVO stride-8 pose sets the 0.5 s and 1.0 s medians match `results/j01_anatomy/rotation.json`
+  to 0.01 deg on all eight flights, and on the 150-frame UZH poses the DPVO/ViPE 1 s medians match
+  to 0.005 deg (0.235/0.190/0.185 DPVO; 0.289/0.214/0.240 ViPE). The extension is only the
+  horizon, the longer UZH sequences and the simulated clips.
+- [N] **Simulated-clip convention (recorded because the field name misleads).** Track I's gt
+  `R_bw_cam` is the *body* attitude the camera is rendered on (`src/sim/labels.py::camera_attitude`
+  returns `flight.R_bw`, and for a defect the defected body attitude); the camera-to-world the
+  renderer uses is `R_wc = R_bw_cam @ R_cb` (`src/sim/dataset.py`). Reading `R_bw_cam` as
+  camera-to-world gives a lean that disagrees with the clip's own `lean_dep` by up to 1.7 on the
+  lean vector (up to 130 deg of tilt); with `R_bw_cam @ R_cb` the agreement is 3.9e-16 on all 80
+  clips. The propagation uses `R_bw_cam @ R_cb`.
+- [N] UZH poses for long horizons come from a fresh DPVO run on the **450-frame** prepared pinhole
+  sequences on `awmv-e-data` (`remote/n_rotation.py`), because Track C's stored poses stop at 150
+  frames (10.0 s) and a 10 s horizon needs index 151. DPVO settings are Track A/C's, unchanged
+  (48 patches, removal 12, optimisation 8, lifetime 5, commit `0ac95b6`). The volume is mounted
+  read-only; the new poses go to a new volume `awmv-n-data`. No R2 object is written.
+- [N] Simulated clips: Track L's verified copy of the 80 feasible dev videos (all 80 sha256 match
+  Track I's R2 manifest) was uploaded byte-identically to `awmv-n-data/sim/videos`; the per-file
+  sha256 is in `results/n01_pretest/sim_population.csv`. Nothing was read from the held-out
+  split (only 3 of 100 held-out clips exist on R2).
+- [N] The reader reference for the same units is the frozen GeoCalib-224 reader on the simulated
+  clips (L01 per-frame `up_error_deg`) and UZH variant a (pinhole, Kalibr focal prior) recomputed
+  from E's stored JSONL. The recomputation reproduces E01's published per-sequence medians to
+  0.07 deg (8.36/7.83/9.59 against 8.36/7.90/9.59 outdoors), which is the pipeline check.
+- [N] Compute: one Modal app `awmv-n-rotation` (A10) and one volume `awmv-n-data`; estimated
+  1.50 USD in `docs/COST_LEDGER.md` before the run. Every app is stopped at the end.
+- [N] **Part 0 passes its pre-registered rule.** Forest (22 evaluable clips): 10 s propagated
+  lean error 1.80° against a reader of 8.51°, ratio 0.21, 0/26 failures. Real outdoor UZH
+  (3 sequences): 0.43° against 8.36°, ratio 0.05, 0/3 failures. The pass is mount-dependent in
+  forest (0°/15°: 0.89°/0.88°; 30°/45°: 8.62°/14.83°), which is reported as a caveat and not
+  re-specified into a new rule. TII racing fails as expected (42.31° at 10 s, two frozen
+  estimates), and so do the 45°-down UZH rigs (12.67° against a 12.18° reader).
+- [N] No second extractor was run: the pre-registered trigger (primary ratio within 0.20 of the
+  0.50 boundary) did not fire at 0.21/0.05, so the ViPE arm stays unexecuted rather than being
+  added after seeing the result.
+- [N] **Translation-direction addendum (Part 1).** Pre-registered in
+  `configs/n02_initial_gravity_prereg.yaml` (`8fbd8d6`) with amendments A (what the turn test
+  measures), B (SIFT 4000 / contrast 0.01: the default threshold returned 23-77 keypoints on the
+  renders, below the 30-keypoint floor; applied uniformly to every stratum) and C (the reference
+  direction convention). Amendment C fixes a real bug: `cv2.recoverPose` returns
+  `t = -R_cw(j)^T (pos_j - pos_i)`, not `R_cw(i)^T d`; the pre-amendment formula produced a
+  systematic ~180 deg offset on 98 % of `outdoor_forward_1` pairs while the sign-ambiguous error
+  was 6.5 deg, and a synthetic pair with a 15 deg rotation matches the corrected formula to
+  0.002 deg. The pre-amendment per-pair table stays in the pairs CSVs as `delta_old_deg`, labelled.
+- [N] **Turn-observability operationalisation.** The frozen amendment A defines the test as
+  whether two non-parallel velocity directions span the two lean axes. Implementation: start at
+  window 1 with the *first-frame reader* (not the oracle, else the first constraint is vacuous),
+  propagate to window 2 with DPVO, and fit one constant body-frame lean correction (roll, pitch)
+  to (i) the window-2 direction constraint alone and (ii) both constraints. Residual lean error
+  at window 2 is compared with the video-only error by the angle between the velocity directions.
+  Rotation about the velocity axis is not observable from directions and is stated as a limit,
+  not measured. The script is `experiments/n02_turn_test.py`.
+- [N] **Part 1 start arms are descriptive** (the pre-registration says so). The Huber arm fits a
+  constant up vector to the reader readings carried into the start frame with the estimated
+  rotations; the constant in the two lean axes *is* the initial gravity plus the reader's
+  constant offset, so the pre-registration's "offset" is not a separate free parameter. Two
+  windows are reported: the first 3 s (causal-ish) and all frames up to the 10 s horizon
+  (non-causal, the handoff's "all frames" reading).
+- [N] **Part 1 start arms: the start dominates.** First-frame reader 8.85°/8.22° (forest/outdoor
+  UZH) against oracle 2.25°/0.42° at 10 s; the 1 s average and the Huber fit are worse in the open
+  scenes because carrying each reading into the start frame injects the rotation drift, so a
+  single frame is the best implementable start. On TII the Huber start improves the propagated
+  result only by cancellation (44.2° -> 26.2°); no arm is usable there.
+- [N] **Translation-direction addendum fails its pre-registered rule.** At >= 8 m/s: forest
+  18.36° (2,410 pairs, 8 clips) against the 3° bar; real outdoor UZH 1.78° per pair / 2.67° per
+  1 s block (209 pairs, 3 sequences). The UZH accuracy passes, but the pre-registered evaluability
+  floor (>= 5 clips) cannot be met by a 3-sequence stratum; the floor was copied from the
+  simulated strata and is recorded as a design flaw, not repaired after the result. Because forest
+  fails, the two uses (a) initial gravity and (b) periodic anchor were **not run**, per the
+  pre-registration.
+- [N] The forest direction failure is geometric: no 0° or 15° forest clip reaches 8 m/s, so the
+  high-speed population is 30°/45° mounts (10.43°/25.92°), where forward flight is closest to the
+  optical axis. The error falls with pair gap (27.1° at 0.1 s to 10.0° at 0.5 s) as a
+  baseline/depth effect.
+- [N] **Turn test not supported.** UZH at theta >= 30°: video-only 8.28°, one direction
+  constraint 7.21°, two 6.13° (26 % below baseline, above the 5° bar). With the measured
+  directions replaced by truth in the same solver the baseline falls to 4.03°, so the mechanism
+  has headroom and the essential-matrix noise is binding. On simulated clips the corrections make
+  the error worse.
+- [N] **Generated-clip tracking noise: 0.23 px median Sampson residual** (p90 0.30) on 13,664
+  usable H04 pairs (77 %), similar across arms and draws; 33/234 clips have fewer than half their
+  pairs usable. Feature tracking is not the bottleneck for a geometry route on generated video,
+  but a low residual at 0.2-0.5 s baselines does not certify multi-view consistency (Part 4).
+- [N] **Part 4: generated SolarWM video supports rotation extraction.** All 234 H04 clips returned
+  81/81 poses and no frozen estimate; with an oracle start the propagated tilt is 3.54/4.40/6.69°
+  at 1/2/5 s against the commanded attitude for the flatness arm (reader 9.07° on the same clips),
+  0.36/0.77/1.04° for the level arm (reader 2.21°) and 4.00/4.70/6.16° for the mirrored arm
+  (reader 8.14°). Generated video drifts far more than real UZH (6.7° in 5 s against 0.4° in 10 s)
+  but not enough to stop the route.
+- [N] Generated-video intrinsics are unknown. 90° horizontal is assumed and a 12-clip sensitivity
+  arm at 70/90/110° moves the 5 s error 1.48/1.80/2.36°; the conclusion survives, the absolute
+  numbers carry that uncertainty. H01 ANWM is much weaker: 20/80 clip directories give a usable
+  two-frame essential-matrix fit (>= 20 inliers). LingBot ramps were not in the local mirrors.
+- [N] **Parts 2 and 3 were not run, and why.** Part 2 (verdict tiers on the propagated lean) needs
+  rotation estimates on *edited* video, because an edit changes the relative rotations; the
+  project's clean lean-series edit convention is exact only for a constant world rotation, which
+  no real edit is. The confirmatory real population is the six TII dev flights, whose rotation
+  source is dead (Part 0: 42° at 10 s, two frozen estimates), so a TII Part 2 would only measure
+  the known failure. Track I's simulated defect clips are not on R2 (only the 80 feasible dev
+  clips are), so the simulated edits are not available either. Part 3's risk-coverage curves need
+  Part 2's verdict outcomes. Unblocking: (i) render or publish Track I's defect clips, or
+  (ii) run the extractor on Track E's UZH edit frames (3 sequences x 6 conditions, ~5 GPU-minutes)
+  for a descriptive Part 2. The analytic invariance (correlation and intercept are exactly
+  invariant to a constant) is stated in N02; it is not a measured detection rate.
+- [N] **Part 2 (descriptive, UZH v3 edits).** The per-clip fit on the propagated lean absorbs the
+  start as predicted (real median residual 3.63° against the reader's 8.57°), but no tier detects
+  the edits better on the propagated lean: at the leave-one-sequence-out threshold C2 flags 0/6
+  real and 0/3 removals, F0 2/6 and 2/3, coherence 1/6 and 1/3 (reader coherence 1/6 and 2/3).
+  The extractor is the binding constraint: DPVO on the 320x240 fixed crop of 60 frames fails the
+  oracle-start check (2 s error > 10°) on 3/9 real clips and up to 6/9 on warped conditions,
+  against 0.4° at 10 s on the full 640x480 sequences of N01. The yaw-control prediction fails:
+  propagated F0 is 3/9 there against 2/9 for the reader, because the warp changes the estimated
+  rotation itself.
+- [N] **Part 3 (descriptive, UZH).** The reader-vs-propagation disagreement gate collapses to
+  5/35 dynamic valid clips at both the 10 % and 20 % conformal targets (all from one sequence),
+  detecting nothing; ungated F0 flags 4/12 no-violation clips and detects 2/3 removals. Gate B
+  was never computed on UZH, so no like-for-like comparison is made. A 5 % target is not
+  certifiable at this n and was not attempted.
+- [N] **N05: the level-body start is not absorbed by the offset-free tiers.** With no oracle and
+  no reader (`u_cam(0)=R_cb^T e3`), at matched 7/80 feasible false-reject C2 detects 0/27 tilt
+  removals (second draw 1/27) against the reader's 16/27, and 7/27 mirrors against 10/27. A start
+  error is a fixed BODY rotation, not a yaw-frame lean offset; with true rotations and a level
+  start C2 still leaves 8.54° on feasible clips, the matched threshold rises to 29.5°, and
+  sensitivity collapses. With an oracle start the same tier detects 6/27 removals, 7/27 mirrors,
+  so the propagation is sound and the missing ingredient is an absolute anchor.
+- [N] **Coherence saturates on constant-lean clips.** 60 % of feasible simulated clips hold a
+  constant required lean (zero variance; coordinated constant-bank turns), where a scale-free
+  correlation is undefined. The pre-registered all-clip coherence table is therefore
+  uninformative; the varying-lean subset (87 clips) is reported as a post-hoc diagnostic:
+  reader 10/14 removals and 10/14 mirrors, propagated 6/14 and 9/14.
+- [N] **Constant-bank violations are unobservable to C2 on a level-start propagated lean**: the
+  video is level and the start is level, so the depicted lean is constant and the offset fit
+  explains the constant required lean (true-rotation residual exactly 0.00° on tilt-removed
+  clips). This is a tier property on constant-lean manoeuvres.
+- [N] **N06: DPVO is not reproducible on these clips.** Two full draws on the forest 30/45° clips
+  give 10 s drifts of 4.58/5.87° (30°, median |diff| 2.83°, max 8.38°) and 12.17/10.37° (45°,
+  median |diff| 8.78°, max 42.95°). The 45° drift is dominated by run-to-run variance, not a
+  deterministic view bias. Resolution: full 640×480 gives 63/63 valid UZH edited-clip
+  extractions against 12/63 at the 320×240 crop; half resolution worsens the simulated 30° drift
+  (8.71 vs 4.58). A two-view relative-pose chain is unusable (70-85° at 10 s).

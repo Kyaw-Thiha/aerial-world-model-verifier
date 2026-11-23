@@ -1,0 +1,35 @@
+# Track N, Part 1 addendum -- Amendment C: the reference direction's convention (bug fix).
+#
+# Written BEFORE the corrected delta was computed anywhere. The first implementation compared
+# the recovered baseline with `unit(R_cw_true(i)^T (pos_j - pos_i))`. That is not the quantity
+# `cv2.recoverPose` returns. The error is a convention bug and is corrected here, not tuned.
+prereg_version: 1
+date: '2026-11-22'
+track: N
+amends: configs/n02_initial_gravity_prereg.yaml  (the t_true formula only)
+status: frozen
+
+derivation:
+  opencv_definition: >
+    findEssentialMat/recoverPose use E = [t]_x R with x2 ~ R x1 + t (normalised image
+    coordinates). For cameras X1 = R_w1 (Xw - C1) and X2 = R_w2 (Xw - C2),
+    X2 = R_w2 R_w1^T X1 + R_w2 (C1 - C2), hence t = -R_w2 (C2 - C1) = -R_cw(j)^T d, where
+    R_cw = camera-to-world and d = pos_j - pos_i.
+  corrected_reference: t_true = unit( -R_cw_true(j)^T (pos_j - pos_i) )
+  what_was_wrong: the first version used unit( R_cw_true(i)^T (pos_j - pos_i) ): wrong camera
+    frame and missing the minus sign.
+  validation:
+    - synthetic pair with a 15 deg rotation and a known translation: the recovered t matches
+      the supplied translation to 2.15 deg and the corrected formula to 2.146 deg (they agree),
+      while the pre-amendment formula is 163-178 deg away.
+    - on `outdoor_forward_1` the pre-amendment statistic had a systematic ~180 deg offset
+      (173.5 deg median, 98 % of pairs beyond 90 deg) while the sign-ambiguous error was
+      6.5 deg -- the signature of a sign convention, not of a noisy estimator.
+  kept_as_diagnostic: the pre-amendment per-pair delta table (UZH outdoor_forward_1) is kept as
+    `results/n02/diagnostic_pre_amendment.csv` and labelled; it is not used in any rate or rule.
+
+unchanged:
+  - delta = angle(t_est, t_true) with t_true as corrected above; everything else (pairs, gaps,
+    speed cut, evaluability, the <= 3.0 deg rule per pair and per 1 s block) is unchanged.
+  - an extra diagnostic column `delta_amb_deg = min(delta, 180 - delta)` is added so a residual
+    sign ambiguity is visible; the rule uses `delta`.

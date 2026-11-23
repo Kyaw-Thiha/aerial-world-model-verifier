@@ -1,0 +1,610 @@
+{
+ "units": 102,
+ "strata": {
+  "industrial_sim": {
+   "n_attempted": 27,
+   "n_failed": 0,
+   "n_short": 4,
+   "failure_rate": 0.0,
+   "failure_reasons": {
+    "crash": 0,
+    "partial_poses": 0,
+    "frozen_estimate": 0,
+    "no_horizon_pair": 0
+   },
+   "horizons": {
+    "1": {
+     "n_units": 23,
+     "median_of_unit_medians_deg": 0.2769037701821094,
+     "pooled_median_deg": 0.28388123755468897,
+     "pooled_p90_deg": 3.9166157729871944,
+     "n_starts": 11204
+    },
+    "5": {
+     "n_units": 23,
+     "median_of_unit_medians_deg": 0.7284987830342108,
+     "pooled_median_deg": 0.9561778129771403,
+     "pooled_p90_deg": 9.691352455187873,
+     "n_starts": 8444
+    },
+    "10": {
+     "n_units": 23,
+     "median_of_unit_medians_deg": 2.0110736020558075,
+     "pooled_median_deg": 1.672302990505473,
+     "pooled_p90_deg": 13.704938150353204,
+     "n_starts": 4992
+    },
+    "20": {
+     "n_units": 10,
+     "median_of_unit_medians_deg": 1.8513768741999965,
+     "pooled_median_deg": 1.6446615113560243,
+     "pooled_p90_deg": 12.444877286311067,
+     "n_starts": 364
+    }
+   },
+   "reader_median_of_unit_medians_deg": 1.2744413503462773,
+   "ratio_at_10s": 1.5780040419352217,
+   "ratio_at_10s_pooled": 1.3121851311957926,
+   "pass_10s": false,
+   "pass_failures": true,
+   "per_unit_10s": {
+    "i02_dev_000": 0.0,
+    "i02_dev_003": 47.67930774089436,
+    "i02_dev_006": 0.5077149618879636,
+    "i02_dev_009": 1.1297089104339644,
+    "i02_dev_012": 1.0016737554519544,
+    "i02_dev_015": 40.69199845628519,
+    "i02_dev_018": 5.246626292427353,
+    "i02_dev_024": 5.376565218310868,
+    "i02_dev_030": 0.0,
+    "i02_dev_033": 0.24100213227431114,
+    "i02_dev_036": 5.473247890275966,
+    "i02_dev_042": 5.397324979778263,
+    "i02_dev_045": 2.0110736020558075,
+    "i02_dev_048": 2.3260046775809027,
+    "i02_dev_054": 2.6806318963675393,
+    "i02_dev_057": 0.9728098105689827,
+    "i02_dev_060": 0.0,
+    "i02_dev_063": 29.144479685353893,
+    "i02_dev_066": 0.3152412574079178,
+    "i02_dev_069": 0.638982713433885,
+    "i02_dev_072": 1.066641632786016,
+    "i02_dev_075": 18.7189077018464,
+    "i02_dev_078": 3.641475142817862
+   },
+   "per_mount_10s": {
+    "0.0": {
+     "n": 7,
+     "median_deg": 1.066641632786016
+    },
+    "45.0": {
+     "n": 4,
+     "median_deg": 34.91823907081954
+    },
+    "30.0": {
+     "n": 7,
+     "median_deg": 2.6806318963675393
+    },
+    "15.0": {
+     "n": 5,
+     "median_deg": 0.9728098105689827
+    }
+   }
+  },
+  "urban_sim": {
+   "n_attempted": 27,
+   "n_failed": 0,
+   "n_short": 4,
+   "failure_rate": 0.0,
+   "failure_reasons": {
+    "crash": 0,
+    "partial_poses": 0,
+    "frozen_estimate": 0,
+    "no_horizon_pair": 0
+   },
+   "horizons": {
+    "1": {
+     "n_units": 23,
+     "median_of_unit_medians_deg": 0.3906351324511546,
+     "pooled_median_deg": 0.4146785257353273,
+     "pooled_p90_deg": 4.458342753112292,
+     "n_starts": 10436
+    },
+    "5": {
+     "n_units": 23,
+     "median_of_unit_medians_deg": 1.9308861565985844,
+     "pooled_median_deg": 2.1963664881558387,
+     "pooled_p90_deg": 14.880086399386464,
+     "n_starts": 7676
+    },
+    "10": {
+     "n_units": 23,
+     "median_of_unit_medians_deg": 3.6923636858215,
+     "pooled_median_deg": 3.485311694899273,
+     "pooled_p90_deg": 24.60044491152491,
+     "n_starts": 4226
+    },
+    "20": {
+     "n_units": 6,
+     "median_of_unit_medians_deg": 7.321852157119635,
+     "pooled_median_deg": 3.4024196467029784,
+     "pooled_p90_deg": 34.08000110927523,
+     "n_starts": 464
+    }
+   },
+   "reader_median_of_unit_medians_deg": 0.9067994465605717,
+   "ratio_at_10s": 4.071863629633193,
+   "ratio_at_10s_pooled": 3.843530902140294,
+   "pass_10s": false,
+   "pass_failures": true,
+   "per_unit_10s": {
+    "i02_dev_001": 21.65722911350694,
+    "i02_dev_004": 12.223847318308792,
+    "i02_dev_010": 0.0,
+    "i02_dev_013": 7.380584668633472,
+    "i02_dev_016": 0.1418109284932485,
+    "i02_dev_019": 35.99676168993717,
+    "i02_dev_022": 3.6923636858215,
+    "i02_dev_025": 1.3920221437696636,
+    "i02_dev_028": 25.67372674677799,
+    "i02_dev_034": 5.3936531463825155,
+    "i02_dev_037": 4.01540988130162,
+    "i02_dev_040": 0.0,
+    "i02_dev_043": 18.109630661875936,
+    "i02_dev_046": 1.0803905005692231,
+    "i02_dev_049": 2.328659715449097,
+    "i02_dev_052": 0.9825607482740563,
+    "i02_dev_055": 30.709132167448285,
+    "i02_dev_058": 19.928915483018883,
+    "i02_dev_061": 1.6769332823645458,
+    "i02_dev_064": 3.2870901068786837,
+    "i02_dev_070": 0.0,
+    "i02_dev_073": 8.019746417864313,
+    "i02_dev_076": 0.06119550986428565
+   },
+   "per_mount_10s": {
+    "15.0": {
+     "n": 7,
+     "median_deg": 4.01540988130162
+    },
+    "0.0": {
+     "n": 7,
+     "median_deg": 0.9825607482740563
+    },
+    "30.0": {
+     "n": 6,
+     "median_deg": 2.3863770931953616
+    },
+    "45.0": {
+     "n": 3,
+     "median_deg": 30.709132167448285
+    }
+   }
+  },
+  "forest_sim": {
+   "n_attempted": 26,
+   "n_failed": 0,
+   "n_short": 4,
+   "failure_rate": 0.0,
+   "failure_reasons": {
+    "crash": 0,
+    "partial_poses": 0,
+    "frozen_estimate": 0,
+    "no_horizon_pair": 0
+   },
+   "horizons": {
+    "1": {
+     "n_units": 22,
+     "median_of_unit_medians_deg": 0.3195404299089138,
+     "pooled_median_deg": 0.37550130201331555,
+     "pooled_p90_deg": 2.7922013219555235,
+     "n_starts": 10101
+    },
+    "5": {
+     "n_units": 22,
+     "median_of_unit_medians_deg": 1.1682378701013545,
+     "pooled_median_deg": 1.3438761558819379,
+     "pooled_p90_deg": 9.54344723036377,
+     "n_starts": 7461
+    },
+    "10": {
+     "n_units": 22,
+     "median_of_unit_medians_deg": 1.8040336317492367,
+     "pooled_median_deg": 2.197828315169023,
+     "pooled_p90_deg": 13.293514064853493,
+     "n_starts": 4160
+    },
+    "20": {
+     "n_units": 7,
+     "median_of_unit_medians_deg": 6.210041629665953,
+     "pooled_median_deg": 5.501437013318969,
+     "pooled_p90_deg": 12.726290819974404,
+     "n_starts": 330
+    }
+   },
+   "reader_median_of_unit_medians_deg": 8.51414723265611,
+   "ratio_at_10s": 0.2118865909236153,
+   "ratio_at_10s_pooled": 0.25813839661348903,
+   "pass_10s": true,
+   "pass_failures": true,
+   "per_unit_10s": {
+    "i02_dev_002": 13.527339611176433,
+    "i02_dev_005": 0.4539681118679891,
+    "i02_dev_008": 0.890952827134446,
+    "i02_dev_014": 8.61841123705673,
+    "i02_dev_017": 1.175148737202443,
+    "i02_dev_020": 0.0,
+    "i02_dev_023": 14.825370408933333,
+    "i02_dev_026": 2.558222472961449,
+    "i02_dev_029": 2.4992013694564053,
+    "i02_dev_032": 0.3474576789284577,
+    "i02_dev_035": 10.376249490799792,
+    "i02_dev_038": 9.470804456076538,
+    "i02_dev_041": 0.8181510831736407,
+    "i02_dev_044": 1.694716489604872,
+    "i02_dev_050": 0.0,
+    "i02_dev_053": 0.8846370197868068,
+    "i02_dev_059": 51.144297933073645,
+    "i02_dev_062": 9.709156187406188,
+    "i02_dev_065": 1.9133507738936013,
+    "i02_dev_068": 1.2600916755878986,
+    "i02_dev_074": 5.540999821276095,
+    "i02_dev_077": 0.7801701816256467
+   },
+   "per_mount_10s": {
+    "30.0": {
+     "n": 7,
+     "median_deg": 8.61841123705673
+    },
+    "15.0": {
+     "n": 7,
+     "median_deg": 0.8846370197868068
+    },
+    "0.0": {
+     "n": 5,
+     "median_deg": 0.890952827134446
+    },
+    "45.0": {
+     "n": 3,
+     "median_deg": 14.825370408933333
+    }
+   }
+  },
+  "real_outdoor_uzh": {
+   "n_attempted": 3,
+   "n_failed": 0,
+   "n_short": 0,
+   "failure_rate": 0.0,
+   "failure_reasons": {
+    "crash": 0,
+    "partial_poses": 0,
+    "frozen_estimate": 0,
+    "no_horizon_pair": 0
+   },
+   "horizons": {
+    "1": {
+     "n_units": 3,
+     "median_of_unit_medians_deg": 0.17973029722164036,
+     "pooled_median_deg": 0.1624557755474801,
+     "pooled_p90_deg": 0.3779652195371666,
+     "n_starts": 1075
+    },
+    "5": {
+     "n_units": 3,
+     "median_of_unit_medians_deg": 0.524739065082261,
+     "pooled_median_deg": 0.3798876669952856,
+     "pooled_p90_deg": 0.6875187214090381,
+     "n_starts": 895
+    },
+    "10": {
+     "n_units": 3,
+     "median_of_unit_medians_deg": 0.42687807518121207,
+     "pooled_median_deg": 0.3585099461432233,
+     "pooled_p90_deg": 0.638567779316452,
+     "n_starts": 670
+    },
+    "20": {
+     "n_units": 2,
+     "median_of_unit_medians_deg": 0.45205648242661395,
+     "pooled_median_deg": 0.4568285143171057,
+     "pooled_p90_deg": 0.6544472099947789,
+     "n_starts": 296
+    }
+   },
+   "reader_median_of_unit_medians_deg": 8.362432011517907,
+   "ratio_at_10s": 0.05104712057368671,
+   "ratio_at_10s_pooled": 0.04287149308352324,
+   "pass_10s": true,
+   "pass_failures": true,
+   "per_unit_10s": {
+    "outdoor_forward_1": 0.42687807518121207,
+    "outdoor_forward_3": 0.22107634200680437,
+    "outdoor_forward_5": 0.43516538496659346
+   }
+  },
+  "real_indoor_uzh": {
+   "n_attempted": 6,
+   "n_failed": 0,
+   "n_short": 0,
+   "failure_rate": 0.0,
+   "failure_reasons": {
+    "crash": 0,
+    "partial_poses": 0,
+    "frozen_estimate": 0,
+    "no_horizon_pair": 0
+   },
+   "horizons": {
+    "1": {
+     "n_units": 6,
+     "median_of_unit_medians_deg": 0.2511337885995185,
+     "pooled_median_deg": 0.2777056429309808,
+     "pooled_p90_deg": 0.6264984308582134,
+     "n_starts": 2269
+    },
+    "5": {
+     "n_units": 6,
+     "median_of_unit_medians_deg": 0.5357358167227007,
+     "pooled_median_deg": 0.5366087204411485,
+     "pooled_p90_deg": 1.2464807254504346,
+     "n_starts": 1909
+    },
+    "10": {
+     "n_units": 6,
+     "median_of_unit_medians_deg": 0.711961052688153,
+     "pooled_median_deg": 0.6928083034873096,
+     "pooled_p90_deg": 1.9084768457963055,
+     "n_starts": 1459
+    },
+    "20": {
+     "n_units": 5,
+     "median_of_unit_medians_deg": 1.2788388764002168,
+     "pooled_median_deg": 1.3374495973357479,
+     "pooled_p90_deg": 1.9989466354129595,
+     "n_starts": 591
+    }
+   },
+   "reader_median_of_unit_medians_deg": 0.9646240534410673,
+   "ratio_at_10s": 0.7380710134154348,
+   "ratio_at_10s_pooled": 0.7182158697120193,
+   "pass_10s": false,
+   "pass_failures": true,
+   "per_unit_10s": {
+    "indoor_forward_3": 0.9555282933758977,
+    "indoor_forward_5": 0.5205578965222633,
+    "indoor_forward_6": 0.8202024578479606,
+    "indoor_forward_7": 1.518461712640845,
+    "indoor_forward_9": 0.6037196475283454,
+    "indoor_forward_10": 0.4721390968994383
+   }
+  },
+  "real_45down_uzh": {
+   "n_attempted": 5,
+   "n_failed": 0,
+   "n_short": 0,
+   "failure_rate": 0.0,
+   "failure_reasons": {
+    "crash": 0,
+    "partial_poses": 0,
+    "frozen_estimate": 0,
+    "no_horizon_pair": 0
+   },
+   "horizons": {
+    "1": {
+     "n_units": 5,
+     "median_of_unit_medians_deg": 0.8359198976820367,
+     "pooled_median_deg": 0.9276973183546856,
+     "pooled_p90_deg": 21.141130852105505,
+     "n_starts": 1813
+    },
+    "5": {
+     "n_units": 5,
+     "median_of_unit_medians_deg": 2.98448794272176,
+     "pooled_median_deg": 3.2158800636726856,
+     "pooled_p90_deg": 55.54315184316215,
+     "n_starts": 1513
+    },
+    "10": {
+     "n_units": 5,
+     "median_of_unit_medians_deg": 12.672482981067297,
+     "pooled_median_deg": 8.891022080335027,
+     "pooled_p90_deg": 93.31843553619693,
+     "n_starts": 1138
+    },
+    "20": {
+     "n_units": 3,
+     "median_of_unit_medians_deg": 15.405412502750254,
+     "pooled_median_deg": 14.874392690649813,
+     "pooled_p90_deg": 26.970240471123986,
+     "n_starts": 444
+    }
+   },
+   "reader_median_of_unit_medians_deg": 12.175792343590965,
+   "ratio_at_10s": 1.0407932907740314,
+   "ratio_at_10s_pooled": 0.7302212315582929,
+   "pass_10s": false,
+   "pass_failures": true,
+   "per_unit_10s": {
+    "indoor_45_2": 3.790682045281169,
+    "indoor_45_4": 12.672482981067297,
+    "indoor_45_9": 106.02297800350988,
+    "indoor_45_13": 1.5868449656755836,
+    "outdoor_45_1": 36.754032432321814
+   }
+  },
+  "tii": {
+   "n_attempted": 8,
+   "n_failed": 2,
+   "n_short": 0,
+   "failure_rate": 0.25,
+   "failure_reasons": {
+    "crash": 0,
+    "partial_poses": 0,
+    "frozen_estimate": 2,
+    "no_horizon_pair": 0
+   },
+   "horizons": {
+    "1": {
+     "n_units": 6,
+     "median_of_unit_medians_deg": 3.727445518821519,
+     "pooled_median_deg": 9.503509315310621,
+     "pooled_p90_deg": 31.922701082704382,
+     "n_starts": 5028
+    },
+    "5": {
+     "n_units": 6,
+     "median_of_unit_medians_deg": 21.20722667823238,
+     "pooled_median_deg": 19.47257773733349,
+     "pooled_p90_deg": 58.939863012358046,
+     "n_starts": 4669
+    },
+    "10": {
+     "n_units": 6,
+     "median_of_unit_medians_deg": 42.30691145138611,
+     "pooled_median_deg": 20.989234651244722,
+     "pooled_p90_deg": 65.0427380064627,
+     "n_starts": 4220
+    },
+    "20": {
+     "n_units": 6,
+     "median_of_unit_medians_deg": 10.968955256235873,
+     "pooled_median_deg": 20.84755594126726,
+     "pooled_p90_deg": 53.250991789211525,
+     "n_starts": 3320
+    }
+   },
+   "reader_median_of_unit_medians_deg": 3.41799886746963,
+   "ratio_at_10s": 12.377684455672808,
+   "ratio_at_10s_pooled": 6.140796256841129,
+   "pass_10s": false,
+   "pass_failures": false,
+   "per_unit_10s": {
+    "flight-01a-ellipse": 49.475620944381006,
+    "flight-01p-ellipse": 13.626865971500681,
+    "flight-04a-ellipse": 38.40586695342475,
+    "flight-07a-lemniscate": 46.207955949347465,
+    "flight-07p-lemniscate": 21.064395393104476,
+    "flight-13a-trackRATM": 54.306195400535415
+   }
+  }
+ },
+ "readers": {
+  "a": {
+   "outdoor_forward_1": 8.362432011517907,
+   "outdoor_forward_3": 7.830870388985652,
+   "outdoor_forward_5": 9.590056746336096,
+   "indoor_forward_3": 0.9904289719959462,
+   "indoor_forward_5": 0.7051429408155518,
+   "indoor_forward_6": 1.1937337019959062,
+   "indoor_forward_7": 1.81506353846256,
+   "indoor_forward_9": 0.9388191348861885,
+   "indoor_forward_10": 0.887888436227575,
+   "indoor_45_2": 11.073969221650287,
+   "indoor_45_4": 12.175792343590965,
+   "indoor_45_9": 63.62470503835819,
+   "indoor_45_13": 8.69668669097986,
+   "outdoor_45_1": 69.72183027724137
+  },
+  "b": {
+   "outdoor_forward_1": 9.065710415232413,
+   "outdoor_forward_3": 9.82722962212858,
+   "outdoor_forward_5": 9.861070971121686,
+   "indoor_forward_3": 3.7386547121199447,
+   "indoor_forward_5": 1.2811282962238324,
+   "indoor_forward_6": 5.5007870180044325,
+   "indoor_forward_7": 3.9557253759784747,
+   "indoor_forward_9": 3.000542312790781,
+   "indoor_forward_10": 3.039417533276802,
+   "indoor_45_2": 9.91459034355423,
+   "indoor_45_4": 9.236007759663458,
+   "indoor_45_9": 35.41527430760662,
+   "indoor_45_13": 9.759759228915362,
+   "outdoor_45_1": 31.861736952513933
+  },
+  "c": {
+   "outdoor_forward_1": 8.618064756011655,
+   "outdoor_forward_3": 8.06503949371081,
+   "outdoor_forward_5": 9.173265948968389,
+   "indoor_forward_3": 1.2745796952089692,
+   "indoor_forward_5": 1.073754551249703,
+   "indoor_forward_6": 1.3662460484420045,
+   "indoor_forward_7": 2.4852306655930674,
+   "indoor_forward_9": 1.4586902121135121,
+   "indoor_forward_10": 1.5585685078682938,
+   "indoor_45_2": 19.070743650853405,
+   "indoor_45_4": 18.1061026184624,
+   "indoor_45_9": 61.33092972443083,
+   "indoor_45_13": 17.017584330876574,
+   "outdoor_45_1": 76.090096314454
+  }
+ },
+ "checks": {
+  "identity_true_rotations": {
+   "n": 15,
+   "max_deg": 1.9090959104164224e-06
+  },
+  "e01_variant_a_reproduction": {
+   "indoor_forward_3": {
+    "computed": 0.9904289719959462,
+    "published": 0.99,
+    "abs_diff": 0.0004289719959461591
+   },
+   "indoor_forward_5": {
+    "computed": 0.7051429408155518,
+    "published": 0.71,
+    "abs_diff": 0.00485705918444812
+   },
+   "indoor_forward_6": {
+    "computed": 1.1937337019959062,
+    "published": 1.19,
+    "abs_diff": 0.00373370199590628
+   },
+   "indoor_forward_7": {
+    "computed": 1.81506353846256,
+    "published": 1.82,
+    "abs_diff": 0.0049364615374400955
+   },
+   "indoor_forward_9": {
+    "computed": 0.9388191348861885,
+    "published": 0.94,
+    "abs_diff": 0.0011808651138114357
+   },
+   "indoor_forward_10": {
+    "computed": 0.887888436227575,
+    "published": 0.89,
+    "abs_diff": 0.0021115637724250513
+   },
+   "outdoor_forward_1": {
+    "computed": 8.362432011517907,
+    "published": 8.36,
+    "abs_diff": 0.0024320115179072843
+   },
+   "outdoor_forward_3": {
+    "computed": 7.830870388985652,
+    "published": 7.9,
+    "abs_diff": 0.06912961101434867
+   },
+   "outdoor_forward_5": {
+    "computed": 9.590056746336096,
+    "published": 9.59,
+    "abs_diff": 5.6746336095869765e-05
+   }
+  },
+  "sim_geometry_lean_dep_max_abs_diff_deg": 3.885780586188048e-16
+ },
+ "decision": {
+  "rule": "10 s median-of-unit-medians propagated error <= 0.50 x reader median, and failure rate <= 0.20, in BOTH forest_sim and real_outdoor_uzh",
+  "per_stratum": {
+   "forest_sim": {
+    "ratio": 0.2118865909236153,
+    "accuracy_ok": true,
+    "failure_ok": true
+   },
+   "real_outdoor_uzh": {
+    "ratio": 0.05104712057368671,
+    "accuracy_ok": true,
+    "failure_ok": true
+   }
+  },
+  "pass": true
+ }
+}

@@ -1,0 +1,161 @@
+# Track N, Part 1 -- initial gravity, drift, and the translation-direction addendum.
+#
+# NEW pre-registration, written and committed BEFORE any Part 1 number (start-arm error,
+# propagated drift with estimated starts, essential-matrix direction error, track noise on
+# generated clips) was computed. It is conditional on Part 0 passing its own pre-registered
+# rule (configs/n01_pretest_prereg.yaml): if Part 0 fails, nothing here is run and the file
+# stands as the frozen design for the record.
+prereg_version: 1
+date: '2026-11-22'
+status: preregistered
+track: N
+owner_branch: track-n-rotation
+written: >
+  After Part 0's pre-registration (ebacc7c) and before Part 0's outcome was known. The only
+  numbers in hand are published ones: J01's rotation error, the reader errors of E01/L01, and
+  the clips' own speed distributions (a property of the frozen paths, not an outcome).
+conditional_on: Part 0 pass.
+
+# =========================================================================== Part 1 proper
+part1_start_arms:
+  question: >
+    How much error does the choice of initial gravity add, and does an offset-free tier see it?
+    A constant start error is a constant offset in the lean; the offset-free tiers (coherence,
+    the per-clip fit C2) ignore it, the fixed-calibration tier F0 cannot.
+  arms:
+    oracle:
+      definition: the true up vector at the first frame of the scored window
+      role: upper bound; not implementable
+    first_frame_reader:
+      definition: the frozen reader's up vector at the first frame
+    first_T_reader:
+      definition: the reader's up vector averaged over the first T seconds (T = 1.0 s),
+        each frame as a unit vector then renormalised
+    two_parameter_huber:
+      definition: >
+        fit the initial gravity g0 (a unit vector) and a constant reader offset (a 2-vector
+        in the yaw frame) to ALL of the clip's reader readings after rotating them into the
+        first frame with the estimated relative rotations:
+        minimise sum_i Huber_kappa( angle( R_est(i)^T g0_rotated, up_reader(i) ) ), kappa
+        set by the median absolute residual (Huber's 95 % efficiency rule), a 2-parameter fit
+        by damped Gauss-Newton from the first-T median; no per-clip tuning.
+    reader_plus_translation:
+      only_if: the addendum rule below passes
+      definition: the first-T reader up vector rotated by the minimal rotation that nulls the
+        measured-vs-predicted velocity-direction disagreement in the straight window (§addendum a)
+  statistic: >
+    angle between the estimated start up vector and the true up vector at the first frame
+    (degrees), per clip/sequence; and the propagated 10 s error when propagation starts from
+    each arm instead of the oracle.
+  stratification: scene family x mount (sim), sequence (UZH); median of unit medians, n beside.
+  no_rule: descriptive. Part 1's only gate is the addendum rule; this table exists to say what
+    each start costs, not to select one after seeing it.
+
+# =========================================================================== addendum
+addendum_translation_direction:
+  question: >
+    Does the direction of camera translation between two frames, measured by an essential
+    matrix, agree with the known world velocity direction closely enough to supply a 1-DOF
+    tilt anchor (and, in straight windows, the initial gravity)?
+  observable_and_not:
+    observable: >
+      the angle delta between the estimated unit baseline t_est (in the first camera frame) and
+      the true unit displacement direction t_true = unit(R_cw_true(i)^T (pos_j - pos_i)).
+      delta is exactly the tilt error in the plane containing the travel direction; a rotation
+      about t_true leaves the baseline direction unchanged and is NOT observable from one pair.
+    not_observable: rotation of the camera about the velocity direction (roll about the axis of
+      travel). Reported explicitly, and the turn test below asks whether two non-parallel
+      velocity directions make it observable when combined with the integrated rotation.
+    why_delta_not_a_2vector: >
+      a unit direction is two degrees of freedom, so one pair constrains two components of the
+      attitude error; the one it cannot see is the rotation whose axis is the direction itself.
+      delta is the magnitude of the observable part.
+
+  extractor:
+    detector: SIFT, 2000 features, contrast threshold 0.04, ratio test 0.75 (Lowe)
+    essential: cv2.findEssentialMat(RANSAC, threshold 1.0 px, confidence 0.999, calibrated K)
+    pose: cv2.recoverPose on the inliers; t is the unit baseline in the first camera frame;
+      sign chosen by the chirality test inside recoverPose (positive depth majority)
+    calibration: UZH `intrinsics_pinhole`; sim fx=fy=320, cx=320, cy=180 (640x360)
+    minimum_inliers: 20; a pair with fewer is a failed pair and is reported as such
+  pair_gaps_s: [0.1, 0.2, 0.3, 0.5]
+  sampling: every 3rd frame as a start (sim 30 fps -> 10 Hz starts; UZH 15.07 Hz -> every 2nd)
+    at each gap, so the four gaps are not independent -- reported, not treated as replicates.
+  baseline_speed: median over the pair's frames of |v|; the pair's speed class uses that median.
+  statistics:
+    delta_deg: per pair, angle(t_est, t_true)
+    per_second: for a 1 s block, the circular mean of the pair directions then delta, i.e.
+      delta computed once per second from the mean estimated and mean true directions
+    sign_split: the component of the small rotation taking t_true to t_est about the axis
+      perpendicular to t_true in the horizontal plane (a signed tilt) reported beside delta
+    per_second_report: median over 1 s blocks, by stratum
+  populations:
+    gate_strata:
+      forest_sim: the 26 feasible dev forest clips (sim frames decoded from the verified mp4s)
+      real_outdoor_uzh: the 3 outdoor_forward sequences (450/450/223 pinhole frames)
+    reported: urban_sim, industrial_sim, indoor UZH, 45-down UZH
+    speed_condition: the rule is evaluated on pairs with baseline speed >= 8.0 m/s.
+      evaluability: a stratum is `not evaluable` if it has fewer than 5 clips or fewer than
+        100 qualifying pairs; the counts are printed beside the verdict.
+  decision_rule:
+    source: handoff 26 addendum, quoted: "proceed if median error is 3 degrees or less in
+      forest and real outdoor at speeds of 8 m/s or more"
+    formal: >
+      in BOTH forest_sim and real_outdoor_uzh, among pairs with baseline speed >= 8.0 m/s,
+      the median delta_deg <= 3.0 (primary, per pair) AND the median over 1 s blocks <= 3.0
+      (secondary, must also hold). If a stratum is not evaluable, the rule cannot pass.
+    no_tuning: no per-sequence detector thresholds, no per-scene reweighting, no outlier
+      rejection beyond the RANSAC inlier mask and the 20-inlier minimum.
+
+  use_a_initial_gravity:
+    straight_window: the first window (length 1.0 s) in the clip in which the angle between the
+      horizontal acceleration and the horizontal velocity is < 10 deg for every frame and the
+      median speed >= 8 m/s; if no such window exists the arm is not evaluable for that clip
+    construction: >
+      take the first-T reader up vector; rotate it by the minimal rotation about the axis
+      perpendicular to the measured direction that makes its predicted velocity direction match
+      the measured one (one DOF corrected, the reader's other axis kept). Report the start
+      error and the propagated 10 s error against the oracle-start and reader-start arms.
+  use_b_periodic_anchor:
+    rule: at every A seconds (A = 2 and 5), replace the up vector's observable component with
+      the value implied by the current pair direction, keeping the propagated component about
+      the velocity axis; propagate on from there.
+    statistic: propagated error at 5, 10 and 20 s, anchored vs unanchored, per stratum.
+  turn_observability_test:
+    design: >
+      pairs of windows (i, j) separated by 2-5 s with velocity-direction angle theta. Baseline:
+      roll about v_i from the integrated video rotation alone. Test: the same roll after
+      correcting the integrated relative rotation with the two measured directions (find the
+      rotation about t_j that maps R_rel t_i to t_j), which makes the roll observable when the
+      directions are not parallel. Compare both with the truth.
+    report: roll error (median, p90) by theta bin (<10, 10-30, >=30 deg) and stratum.
+    reading: supports "turns make roll observable" if the median roll error at theta >= 30 deg
+      is <= 5.0 deg and at least 30 % lower than the video-only baseline there; otherwise the
+      claim is reported as not supported. No threshold is fitted.
+
+  generated_clip_track_noise:
+    question: what feature-tracking noise (px) do the generated clips carry, since the budget
+      says this decides whether a geometry route is viable there?
+    clips: the local copies of the H04 SolarWM draw-0 videos (all arms, from track-m's
+      `data/m02_inputs/h04/videos`) and the H01 ANWM clips (from track-h's inputs); nothing is
+      re-downloaded and no held-out simulated clip is read.
+    statistic: median Sampson error (px) of the RANSAC inliers on the fitted essential matrix,
+      per pair; median and p90 per model and arm; plus the fraction of pairs with < 20 inliers.
+    no_rule: descriptive. It bounds Part 4 and is reported even if the addendum rule fails.
+    note: records the model labels as Track H/H2 wrote them; no attitude claim is made here.
+
+  compute:
+    plan: CPU only, local (OpenCV SIFT + findEssentialMat). No GPU, no Modal, no R2 write.
+    estimate_usd: 0.0
+    frames: sim 80 clips x ~420 frames decoded from the verified mp4s; UZH 3 x 450 pinhole
+      frames pulled read-only from awmv-e-data; H04/H01 videos already local.
+    runtime_estimate: under 1 h single-core; a Modal CPU container is used only if local runtime
+      exceeds 3 h (then charge at Modal CPU rates and record it in docs/COST_LEDGER.md).
+
+  outputs:
+    - results/n02/pairs.csv         (stratum, unit, gap, i, j, speed, delta, inliers, sampson_px, status)
+    - results/n02/per_second.csv
+    - results/n02/turn_roll.csv
+    - results/n02/generated_track_noise.csv
+    - results/n02/summary.json      (stratum table, evaluability, rule verdict, start-arm table)
+    - reports/N02_initial_gravity_and_translation.md

@@ -1,0 +1,52 @@
+# Track N, N06 -- diagnosing the 30/45-degree mount drift.
+#
+# NEW pre-registration, written BEFORE the 320x180 DPVO runs, the two-view estimator and the
+# full-resolution UZH edit runs exist.
+prereg_version: 1
+date: '2026-11-23'
+status: preregistered
+track: N
+owner_branch: track-n-rotation
+
+question: >
+  Why does the oracle-start propagated lean drift 8.62 deg (30 deg mount) and 14.83 deg (45 deg
+  mount) after 10 s in simulated forest when the 0/15 deg mounts drift 0.7-0.9 deg, and does a
+  full relative-pose estimator or full resolution change it?
+
+populations:
+  sim: the 80 feasible development clips, by mount (0/15/30/45), forest separately (26)
+  uzh_edits: the 63 Track E v3 edited clips (3 sequences x 3 clips x 7 conditions), for the
+    resolution comparison only (3/9 extractor failures at 320x240 in N02b)
+
+arms:
+  current: DPVO at native 640x360 (height cropped to 352), the N01 poses
+  resolution: DPVO at 320x180 (centre crop, intrinsics scaled by 0.5), otherwise identical
+  full_relative_pose: >
+    a two-view relative-pose estimator: SIFT -> RANSAC essential matrix -> recoverPose R for
+    frame pairs 2 frames apart (15 Hz), chained multiplicatively from the first frame. Only the
+    rotation is used; no translation, no bundle adjustment. Full 640x360 and 320x180 variants.
+  note: DPVO is itself a full pose estimator; the "full relative-pose" arm is the two-view
+    alternative that does not accumulate a map, and is reported as such rather than as a
+    different kind of quantity.
+
+statistic:
+  drift: >
+    oracle-start propagated lean error at 10 s, per clip: u_prop = (R_est(j)^T R_est(i)) u_true(i)
+    against u_true(j); median over valid starts, then median across clips, by mount.
+  resolution_check_uzh: >
+    the fraction of the 63 edited clips whose oracle-start 2 s error is <= 10 deg (the N02b
+    extraction-validity check), full 640x480 vs 320x240.
+  also: 1 s and 5 s medians, and the per-step relative-rotation error of each arm against truth.
+
+checks_before_scoring:
+  - the two-view chain reproduces the stored DPVO 1 s median to within a factor of 2 on the
+    forest 30 deg mount (a coarse sanity check, not an equality test)
+  - on synthetic rotations the chain is exact (identity test)
+
+compute:
+  plan: DPVO 320x180 on 80 sim clips and full 640x480 on 63 UZH edit clips; two-view on CPU
+  estimate_usd: 1.0
+
+outputs:
+  - results/n06/summary.json, drift.csv
+  - reports/N06_mount_drift_diagnosis.md

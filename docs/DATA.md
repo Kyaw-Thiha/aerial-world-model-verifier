@@ -289,3 +289,22 @@ list, the stride and the focal prior per source.
 The simulated set's truth is the render's own attitude (`lean_req`, `lean_dep`, `R_cb` in the gt
 npz); the frozen reader on the simulated clips is Track L's stored per-frame table
 (`track-l/l01/per_frame/`, 80 objects, 3.6 MB), not re-run here.
+
+## 10. Track N artefacts (2026-11-22)
+
+| path | size | what | rebuild |
+| --- | --- | --- | --- |
+| `results/n01_pretest/` | < 150 KB | every number in N01: population table, UZH reader medians, per-unit and per-horizon errors, summary and verdict | `experiments/n01_rotation_pretest.py` |
+| `data/n01/poses/{uzh,sim}/` | 3.6 MB | DPVO poses for the 14 UZH sequences (450 frames each) and the 80 simulated clips; gitignored | `modal run remote/n_rotation.py`, then `scripts/pull_volume.py awmv-n-data poses data/n01/poses` |
+| `data/n01/uzh_frames/` | 149 MB | the 450/450/223 pinhole frames of the three outdoor UZH sequences, pulled read-only from `awmv-e-data`; gitignored | `scripts/pull_volume.py awmv-e-data uzh/<seq>/frames_pinhole data/n01/uzh_frames/<seq>` |
+| Modal volume `awmv-n-data` | small | `poses/` and `runs/` for the 94 DPVO runs | re-run the app |
+| `results/n02/` | 12 MB (gzipped pair tables) | every number in N02: start arms, translation-direction pairs, turn test, generated track noise | `experiments/n02_*.py` (CPU) |
+| `results/n04/` | < 1 MB | every number in N04: clip hashes, tracking, horizons, ANWM fit | `experiments/n04_generated_rotation.py` |
+| `results/n02b/`, `results/n03/` | < 1 MB | every number in N02b and N03: per-clip tier scores, gate curve | `experiments/n02b_part2_verdicts.py`, `experiments/n03_agreement_gate.py` |
+| `results/n05/`, `results/n06/` | 1 MB | N05 per-clip tier scores, diagnostics, two draws; N06 drift and reproducibility | `experiments/n05_*.py`, `experiments/n06_mount_drift.py` |
+| `data/n05/{videos,gt,scores,poses}` | 300 MB | the 200 dev clips (held-out absent), their gt, reader scores, DPVO poses (2 draws + half res) | manifest hash-verified; `remote/n_readers.py`, `remote/n_rotation.py` |
+| Modal volume `awmv-n-data/sim200` | ~1 GB | 200 videos + gt + reader scores + poses | re-run the apps |
+| `data/n01/poses/uzh_edits/` | 1 MB | DPVO poses for the 63 Track E v3 edited clips | `modal run remote/n_rotation.py --which uzh_edit` |
+| `data/n04/poses/gen/fov*` | 4 MB | DPVO poses for the 234 H04 clips and 24 focal-sensitivity runs | `modal run remote/n_rotation.py --which gen` |
+
+No R2 object was created or written. The volume is the only new Modal object; the app was stopped.

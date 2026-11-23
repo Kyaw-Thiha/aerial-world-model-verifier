@@ -1,0 +1,57 @@
+# Track N, Part 3 -- agreement gate and coverage (UZH outdoor, descriptive)
+#
+# NEW pre-registration, written and committed BEFORE any gate number was computed.
+prereg_version: 1
+date: '2026-11-22'
+status: preregistered
+track: N
+owner_branch: track-n-rotation
+why_descriptive: >
+  The gate is meant to abstain where the reader and the rotation-propagated lean disagree. The
+  only population with both is the UZH outdoor set: 3 sequences, 9 clips per condition, 3-6
+  usable after the extraction check (N02b). No interval is a confidence interval; coverage is
+  k/n. Gate B (reader vs Perspective Fields) was not computed on UZH; M02's real-TII and simulated
+  numbers are quoted as context only and are not a like-for-like comparison.
+
+question: >
+  Can a reader-versus-propagation disagreement score abstain on the clips where the per-frame
+  reader is untrustworthy, and what coverage does that cost on dynamic clips?
+
+gate:
+  score: >
+    d = median over the clip's valid frames of the angle between the reader lean and the
+    rotation-propagated lean (both in the yaw frame, schema v3 required mask).
+  rule: keep the clip if d <= tau, abstain otherwise.
+  threshold_selection: >
+    split-conformal risk control on the no-violation clips (real + null_edit), leave one
+    sequence out: tau = the smallest threshold whose sequence-clustered false-flag rate is at
+    most the target on the held-out sequence. Two targets are reported: 0.10 and 0.20. A 0.05
+    target is not certifiable with 6 no-violation clips (it needs at least 19), and this is
+    stated rather than worked around.
+
+populations:
+  clips: the 63 UZH v3 clips; only clips with a valid extraction (oracle 2 s error <= 10 deg,
+    the N02b pipeline check) enter the gate table.
+  dynamic: peak required tilt >= 15 deg (the handoff's dynamic-clip restriction). All UZH clips
+    here are dynamic (peak 25-32 deg), so the restriction costs nothing on this set.
+  no_violation: real + null_edit
+  violations: tilt_removal, scale_0.5, scale_1.5, mirror_roll
+
+statistics:
+  coverage: kept clips / dynamic clips, per condition and pooled.
+  risk: false-flag rate on no-violation clips, k/n, with the sequence-clustered spread shown
+    (3 clusters; descriptive).
+  detection: the F0 tier's flag rate on the violation conditions among kept clips, beside the
+    same rate without the gate.
+  also: the propagated-arm equivalents (gate on the same d, tier on the propagated lean), and
+    the per-sequence reason codes (abstained_disagreement, invalid_extraction, not_dynamic).
+
+no_gate_change: >
+  The F0, C2 and coherence thresholds are those of N02b; no tier is refitted here. The gate is
+  the only new object and its threshold is set by the rule above.
+
+compute: zero GPU, CPU only.
+outputs:
+  - results/n03/curve.csv
+  - results/n03/summary.json
+  - reports/N03_agreement_gate_and_coverage.md

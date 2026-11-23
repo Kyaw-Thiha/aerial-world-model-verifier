@@ -1,0 +1,203 @@
+# Track N, Part 0 -- the decisive pre-test for "attitude from video rotation".
+#
+# NEW pre-registration. Written and committed BEFORE any horizon number (1, 5, 10 or 20 s) was
+# computed on any dataset, and before the new DPVO runs exist. No frozen config is edited; the
+# frozen reader, gate and thresholds are cited, not changed.
+#
+# Why the test exists: the tilt reader needs absolute gravity from appearance and fails where
+# appearance gives no gravity cue (simulated forest 6.95-10.66 deg, real outdoor UZH 8.4-9.7 deg).
+# Video rotation is strong exactly there. The candidate replacement is: read gravity ONCE (an
+# oracle start here), then propagate the up vector with the camera's estimated rotation. An error
+# in the start is a constant offset that the offset-free tiers ignore, so the quantity that
+# decides the idea is the propagated LEAN error at a horizon, against the reader's per-frame error.
+prereg_version: 1
+date: '2026-11-22'
+status: preregistered
+track: N
+owner_branch: track-n-rotation
+written: >
+  Before `remote/n_rotation.py` was run and before any horizon statistic was computed. The only
+  propagation numbers in hand when this file was written are the already-published per-step,
+  0.5 s and 1.0 s numbers of reports J01 (§5) on TII DPVO and three UZH DPVO/ViPE sequences, and
+  the published reader errors (E01 per sequence; L01 per scene family and mount). Nothing here
+  was chosen after seeing a 5, 10 or 20 s outcome.
+depends_on_read_only_branches:
+  - track-j-reader          # J01 per-step/1 s rotation numbers, reused as a validation target
+  - track-e-depicted-uzh    # UZH prepared pinhole frames (Modal volume awmv-e-data) and reader JSONL
+  - track-i-simset          # the frozen simulated split table and the 186 clips on R2
+  - track-l-reader-simreal  # L01 per-frame frozen-reader scores on the 80 feasible dev clips
+  - track-m-gates           # the simulated-clip reader comparison convention (M02)
+  note: read-only; nothing was merged. Files copied into this branch are byte-identical and
+    their provenance (branch, commit, sha256) is recorded in results/n01_pretest/provenance.json.
+
+# --------------------------------------------------------------------------- question
+question: >
+  With an oracle initial gravity, how far does the propagated lean drift over 1, 5, 10 and 20 s
+  in the scenes where the reader fails -- simulated forest and real outdoor UZH -- and is the
+  10 s drift at most half the reader's own error there, with the extractor failing on at most
+  20 % of clips?
+
+# --------------------------------------------------------------------------- populations
+populations:
+  gate_strata:
+    forest_sim:
+      source: Track I `configs/sim_splits_frozen.json`, dev split, label == feasible,
+        family == forest_ridge
+      clips: 26 (one per family x mount cell, less the four 10.0 s clips when a horizon does not fit)
+      mounts_deg: [0, 15, 30, 45]
+      why: the scene family where the reader is known to fail (L01: 6.95-10.66 deg)
+      units: clips
+    real_outdoor_uzh:
+      sequences: [outdoor_forward_1, outdoor_forward_3, outdoor_forward_5]
+      why: the real outdoor UZH forward rigs; the reader is 7.9-9.6 deg there on every variant
+        (E01 §"per sequence")
+      frames: 450 / 450 / 223 at 15.07 Hz (30.0 / 30.0 / 14.8 s)
+      units: sequences
+  reported_not_decisive:
+    urban_sim: dev feasible clips, family == urban_checker (27)
+    industrial_sim: dev feasible clips, family == industrial (27)
+    real_indoor_uzh: [indoor_forward_3, indoor_forward_5, indoor_forward_6, indoor_forward_7,
+      indoor_forward_9, indoor_forward_10]
+    real_45down_uzh: [indoor_45_2, indoor_45_4, indoor_45_9, indoor_45_13, outdoor_45_1]
+    tii: the eight flights with stored DPVO stride-8 poses (the weak case, J01)
+  held_out:
+    simulated: none -- Track I's 100 held-out clips are not all on R2 and Part 0 is a pretest;
+      the three held-out clips that exist are NOT read here
+    real: Track N keeps TII flights 13p and 07a out of every fit; Part 0 is a measurement, not a
+      detector, so all eight flights are reported and the two held-out flights are marked
+    rule: Part 0 reads no held-out simulated clip and fits nothing on the real held-out flights.
+
+# --------------------------------------------------------------------------- inputs
+inputs:
+  uzh_frames:
+    volume: awmv-e-data
+    path: uzh/<sequence>/frames_pinhole/00000..00449.png  (640x480 8-bit, pinhole, Kalibr focal)
+    truth: uzh/<sequence>/truth.npz and meta.json
+    reader_jsonl: geocalib/<sequence>__{a,b,c}.jsonl (Track E, pull-to-local, sha256 recorded)
+  sim_videos:
+    local: read-only copy from track-l worktree `data/l01/sim_dev/videos/<clip_id>.mp4`
+      (itself re-hashed against results/i02/manifest.csv by L01, 160 objects / 0 mismatches)
+    uploaded: awmv-n-data/sim/videos/<clip_id>.mp4 (byte-identical, sha256 recorded)
+  sim_truth: track-l worktree `data/l01/sim_dev/gt/<clip_id>.npz`
+    fields: t (250 Hz), R_bw, R_bw_cam (camera-to-world), R_cb, lean_req, lean_dep
+  sim_reader: track-l worktree `data/l01/scores/<clip_id>.npz` (frozen GeoCalib-224 reader),
+    fields: up_est, up_gt, up_error_deg
+  tii_poses: data/raw/dpvo/<flight>_stride8_fov100_s0.5/poses.npz (poses, frame_ts_us)
+  tii_truth: data/raw/tii/{autonomous,piloted}/mocap_<flight>.csv (column-major drone_rot)
+
+# --------------------------------------------------------------------------- extractor
+extractor:
+  primary: DPVO
+  commit: 0ac95b656d1fda91c271d2a106460d19ad966fc7
+  settings: PATCHES_PER_FRAME 48, REMOVAL_WINDOW 12, OPTIMIZATION_WINDOW 8, PATCH_LIFETIME 5
+    (the settings Track A and Track C used; not tuned here)
+  input: native resolution prepared frames (UZH 640x480 pinhole; sim 640x360 pinhole, height
+    cropped to 352 = multiple of 16), scalar intrinsics from the sequence meta or the render
+    (sim: fx = fy = 320, cx = 320, cy = 180, horizontal field 90 deg)
+  tii: the stored stride-8 DPVO poses (15 Hz) are used unchanged; no re-run
+  second_extractor:
+    name: ViPE (feed-forward, MIT-licensed code, already used by Track F)
+    status: exploratory, run ONLY if the primary 10 s ratio lies within 0.20 of the decision
+      boundary in a gate stratum (i.e. ratio in [0.30, 0.70] if the bar is <= 0.50)
+    rule: its result is reported beside the primary and cannot change the confirmatory outcome
+
+# --------------------------------------------------------------------------- statistic
+statistic:
+  unit: a clip (sim) or a sequence (UZH/TII)
+  up_vector: u = R_cw^T e3, i.e. world-up in the camera frame; an error is the angle between
+    two unit up vectors in degrees (arccos of the dot product). This is the same definition the
+    reader error uses (E01, J01), so the two sides are commensurable.
+  propagated_lean_error:
+    steps:
+      - at start index i take the TRUE up vector u_i = R_true[i]^T e3 (this is the oracle start)
+      - find j = first index with t_j >= t_i + h; skip the start if no such j exists; require
+        t_j - t_i - h <= 1.5 / fps so a pair is within a sample of the horizon
+      - predicted up at j: u_prop = (R_est[j]^T R_est[i]) u_i
+      - error = angle(u_prop, u_j), degrees, with u_j = R_true[j]^T e3
+    note: yaw drift is unconstrained and does not enter; the construction carries only the
+      gravity direction, exactly as a complementary filter would.
+  horizons_s: [1, 5, 10, 20]
+  unit_statistic: median over the unit's valid start frames
+  stratum_statistic_primary: median of the unit medians (each clip/sequence equal weight)
+  stratum_statistic_secondary: median over all pooled start frames (reported beside)
+  also_reported: p90, n starts, per-mount (sim) and per-sequence (UZH) medians, and the lean
+    2-vector error (pitch/roll in the yaw frame) as a cross-check on the angle definition.
+  reader_reference_same_units:
+    sim: per-clip median of `up_error_deg` from L01's frozen reader on the same frames
+    uzh: per-frame angle(up_est, R_cw^T e3) recomputed from the stored variant-a jsonl
+      (pinhole, Kalibr focal prior) and the same truth; variants b (raw fisheye) and c
+      (pinhole, estimated focal) reported as sensitivity. Pipeline check: must reproduce
+      E01's published per-sequence medians (8.36 / 7.90 / 9.59 outdoors; 0.99 / 0.71 / 0.94 etc.)
+      to within 0.10 deg before the rule is applied.
+    tii: per-flight median reader error from J01/L01, context only
+  failure_rate:
+    unit_failed_if_any:
+      - the extractor raised or wrote no poses
+      - fewer than 90 % of input frames returned a pose
+      - frozen estimate: median |relative rotation| per step < 0.10 x the truth's median
+        per-step rotation while the truth's median exceeds 0.02 deg
+      - no valid 10 s start exists although the unit is longer than 10.2 s (lost tracking)
+    reason_codes: [crash, partial_poses, frozen_estimate, no_horizon_pair]
+    denominator: all attempted units in the stratum
+    short_units: units shorter than 10.2 s are reported as `insufficient_duration` and are
+      excluded from both the 10 s median and the failure denominator (this is a property of the
+      clip, not an extractor failure); they are counted separately.
+
+# --------------------------------------------------------------------------- decision rule
+decision_rule:
+  source: handoff 26, Part 0, quoted verbatim: "proceed if, in forest and in real outdoor UZH,
+    the 10 s-horizon median propagated-lean error is at most half the reader's error on the same
+    clips and the failure rate is at most 20 %."
+  formal:
+    for_each_stratum: [forest_sim, real_outdoor_uzh]
+      a_accuracy: median_10s_propagated_lean_error <= 0.50 * reader_median_error_same_units
+        reader_median_error_same_units: median of the same unit medians (sim: L01 frozen reader;
+          UZH: variant a), i.e. both sides are "median of per-unit medians"
+      b_failures: failed_units / attempted_units <= 0.20
+    pass: both strata satisfy (a) and (b)
+    fail: otherwise
+  reported_beside_the_verdict:
+    - the same ratio at 1, 5 and 20 s
+    - the pooled-over-frames reading of both sides
+    - per mount (forest) and per sequence (outdoor UZH)
+    - variants b and c for the UZH reader
+    - if the primary and pooled readings disagree on the pass/fail, that is stated explicitly
+      and the primary (median of unit medians) decides
+  no_tuning: no per-sequence horizon, no per-sequence scale, no outlier exclusion beyond the
+    stated failure definition, no change to the reader reference after seeing the propagation
+    numbers. Any post-hoc variant is labelled exploratory in the report and every table.
+  stop: if the rule fails, Parts 1-4 are not run. The numbers are reported and the track stops.
+
+# --------------------------------------------------------------------------- pipeline checks
+checks_before_scoring:
+  - identity: propagating with the TRUE rotations gives error 0 for every pair (assert)
+  - reproduction: TII per-step and 1 s medians reproduce J01's rotation.json (8 flights) to
+    0.05 deg; UZH 150-frame stored poses reproduce J01's UZH DPVO 1 s medians to 0.05 deg
+  - geometry: on sim clips, the camera up from R_bw_cam agrees with the render's `lean_dep` to
+    < 1e-6 (they are the same construction), and the sim frame timestamps are i / (n_frames /
+    duration)
+  - reader reproduction: E01 per-sequence medians as above
+  - if any check fails, the run stops and the discrepancy is reported rather than resolved.
+
+# --------------------------------------------------------------------------- compute
+compute:
+  plan: >
+    One Modal app `awmv-n-rotation` (A10), writing poses to the new volume `awmv-n-data`. UZH:
+    11 sequences x up to 450 frames; sim: 80 clips x 300-900 frames. About 53k frames total.
+  estimate_usd: 1.5
+  estimate_basis: >
+    DPVO measured at 20-56 frames/s on an A10 depending on resolution (Track A/C); 53k frames
+    at a conservative 20 frames/s is 0.74 A10-hours, plus container start and a cached image
+    build, at USD 1.10/h. Under the USD 20 estimate line and far under the USD 30 ceiling.
+  storage: poses and run JSON on `awmv-n-data` only; nothing written to R2; no app left running.
+
+# --------------------------------------------------------------------------- outputs
+outputs:
+  results:
+    - results/n01_pretest/provenance.json       (input files, branch, commit, sha256)
+    - results/n01_pretest/sim_population.csv    (80 feasible dev clips + durations + mounts)
+    - results/n01_pretest/reader_same_units.csv (per-unit reader medians, sim and UZH)
+    - results/n01_pretest/horizons.csv          (per unit x horizon: n, median, p90, lean split)
+    - results/n01_pretest/summary.json          (stratum table, ratio, failure counts, verdict)
+  report: reports/N01_rotation_pretest.md
+  candidate_section: report_candidates/n_video_rotation_attitude.tex (only if Parts 1-4 run)

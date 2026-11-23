@@ -41,6 +41,13 @@ results; none of them runs an experiment.
 | J04 | learned reader confidence (1c) | J | `track-j-reader` | `results/j04_confidence/` | J04 |
 | E14 | reader validity on generated frames | H3 | `track-h3-reader-validity` | `results/h03/`, `results/h03_recompute/` | H03 |
 | E15 | SolarWM continuous-attitude campaign | H4 | `track-h3-reader-validity` | `results/h04/` | H04 |
+| N01 | rotation-propagated gravity, Part 0 (oracle start, 1/5/10/20 s) | N | `track-n-rotation` | `results/n01_pretest/` | N01 |
+| N02 | initial-gravity arms, translation-direction addendum, turn observability, generated-clip track noise | N | `track-n-rotation` | `results/n02/` | N02 |
+| N02b | verdict tiers on the rotation-propagated lean, UZH v3 edits (descriptive) | N | `track-n-rotation` | `results/n02b/` | N02b |
+| N03 | reader-vs-propagation agreement gate and coverage, UZH (descriptive) | N | `track-n-rotation` | `results/n03/` | N03 |
+| N04 | video rotation on generated clips (H04 SolarWM, H01 ANWM) | N | `track-n-rotation` | `results/n04/` | N04 |
+| N05 | C2 and coherence on the propagated lean, all 200 simulated dev clips, level-body start, no oracle/reader | N | `track-n-rotation` | `results/n05/` | N05 |
+| N06 | 30°/45° mount drift: resolution and two-view relative-pose estimator | N | `track-n-rotation` | `results/n06/` | N06 |
 
 R2 prefixes are `track-a/`, `track-a/a2/`, `track-b/`, `track-c/`, `track-d/`, `track-e/`, `track-h/`, `track-h2/`
 (counts and bytes: `report/data/r2_counts.json`, measured 2026-11-15; verified read-only again
@@ -584,3 +591,14 @@ code, copied byte-identically), `track-h3-reader-validity` (H04/H03), `track-l-r
 (L01), `track-i-simset` (the frozen simulated split).
 | M04 | sign sub-tier with a reader-noise-tied dead-band (new pre-registered variant, frozen rule reported beside it) | `experiments/m04_sign_deadband.py` | `configs/m04_sign_deadband_prereg.yaml` | `results/m04/` | M04 |
 | M05 | coverage restricted to dynamic clips (peak required tilt >= 15 deg, pre-registered), Gate A / B / both, real and simulated, by family and track, with reason codes | `experiments/m05_dynamic_coverage.py` | `configs/m05_dynamic_coverage_prereg.yaml` | `results/m05/` | M05 |
+
+## Track N — attitude from video rotation (branch `track-n-rotation`, off `main` `6bc7b5d`)
+
+Round 3. New volume `awmv-n-data` (DPVO poses). Nothing written to R2.
+
+| ID | experiment | stored results | report | configs |
+| --- | --- | --- | --- | --- |
+| N01 | rotation-propagated gravity, the decisive pre-test: DPVO on the 450-frame UZH pinhole sequences and the 80 feasible simulated clips, propagated lean at 1/5/10/20 s with an oracle start | `results/n01_pretest/` | `reports/N01_rotation_pretest.md` | `n01_pretest_prereg.yaml` |
+
+Regenerate: `modal run remote/n_rotation.py --which uzh|sim` (A10), pull `poses/` from
+`awmv-n-data`, then `PYTHONPATH=. python experiments/n01_rotation_pretest.py` (CPU, ~4 s).

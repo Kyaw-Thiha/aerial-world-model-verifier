@@ -1,0 +1,97 @@
+# Track N, N05 -- C2 and coherence on the propagated lean over all 200 simulated dev clips.
+#
+# NEW pre-registration, written and committed BEFORE any DPVO run or reader run on the defect
+# clips and before any tier score on them. Track I is complete (200 dev, 100 held-out); the
+# held-out split is NEVER read by this experiment.
+prereg_version: 1
+date: '2026-11-23'
+status: preregistered
+track: N
+owner_branch: track-n-rotation
+
+question: >
+  With a start that is available in deployment and uses neither truth nor the reader, do the
+  per-clip offset-and-drag fit (C2) and the scale-free coherence tier separate the simulated
+  camera defects from the feasible clips as well as they do on the reader's lean, at matched
+  false-reject?
+
+population:
+  clips: all 200 development clips of Track I's frozen split; the 100 held-out clips are not read
+    (no video, truth or score is opened; the split column is filtered before any file access)
+  conditions:
+    feasible: 80 (no-violation control and the null)
+    tilt_removed: 27
+    mirrored_roll: 27
+    tilt_scaled: 33 (x0.5 and x1.5; the factor is `defect_magnitude`)
+    partial: 20 (interval 10/25/50 % of the clip; reported by fraction)
+    thrust_limit: 13 (path-side label, camera honest; reported separately, NOT a camera defect)
+  stratification: family (urban_checker / forest_ridge / industrial) and mount (0/15/30/45 deg)
+
+start_attitude:
+  propagated_arm: >
+    LEVEL BODY at the first scored frame, u_cam(0) = R_cb^T e3, where R_cb is the airframe mount
+    from the clip's ground truth and e3 is world up. No truth attitude from the clip and no
+    reader reading is used anywhere on this arm: the start says "the body was level at t0", which
+    is wrong by the clip's actual tilt whenever the clip starts banked.
+  why_this_definition: >
+    it is the only start that uses no oracle and no reader and is still available in deployment
+    (the mount is a mechanical constant and a flight controller knows whether it is level); the
+    test is precisely whether the offset-free tiers ignore its error.
+  reader_arm: the per-frame frozen reader (below); its start is not used for the propagated arm.
+
+depicted_sides:
+  reader: >
+    the frozen GeoCalib-224 pinhole reader of L01, same commit, weights, camera model, focal
+    prior (90 deg horizontal) and stride 2 (15 Hz); copied byte-identically from
+    `track-l-reader-simreal remote/l_score_sim.py` into `remote/n_readers.py`, provenance recorded.
+  propagated: >
+    DPVO (commit 0ac95b6, 48 patches, removal 12, optimisation 8, lifetime 5) on the clip's own
+    frames at the native 640x360 (height cropped to 352), same stride sampling as the reader;
+    up(t) = (R_est(t)^T R_est(0)) u_cam(0); lean via `depicted_lean_from_gravity(up, R_cb)`.
+required_side: the clip's own ground-truth `lean_req` (exact schema v3, 250 Hz) interpolated at
+  the scored frame times; the velocity regressor for C2 from the ground-truth `vel` and `yaw`.
+
+tiers:
+  C2: >
+    per clip, l_dep = l_req + k_d * v_reg + offset, with k_d on the fixed grid
+    {0.00, 0.05, ..., 0.40}; offset = per-axis median residual; statistic = median angle between
+    the fitted and the observed lean (axis convention of the project).
+  R: >
+    Pearson correlation per axis between l_dep and l_req; statistic 1 - min(r_x, r_y).
+  no_other_tier: F0 is not run (the task names C2 and coherence).
+
+thresholds_and_matching:
+  folds: leave-one-scene-seed-out over the six scene seeds (101-106); each fold fits on the other
+    five seeds' FEASIBLE clips.
+  natural: 95th percentile of the fit folds' feasible scores (alpha = 0.05).
+  matched: >
+    for each arm and tier, the threshold is the (k+1)-th largest feasible score over the same
+    leave-one-seed-out population, where k is the reader-C2 natural false-reject count. Both arms
+    therefore have the same pooled feasible false-reject count; every detection rate is reported
+    at both the natural and the matched point.
+  small_clusters: six scene seeds; any spread is descriptive and is labelled as such.
+
+reporting:
+  - per condition and per tier and arm: flag counts k/n, at natural and matched thresholds
+  - by family and by mount (4 mounts, cells 3-7 clips; dagger where n < 10)
+  - the null: the feasible clips are the no-violation control (every detection table prints the
+    feasible rate beside it); there is no separate null-edit rendering for the simulated set
+  - yaw control: >
+      NOT available on the simulated set. Track I has no yaw-warp family, and a yaw warp cannot be
+      constructed without re-rendering. For the propagated arm a world-yaw warp is analytically
+      invisible to the lean (the up vector is invariant), so its tier score would equal the
+      feasible score by construction; that is a statement, not a measurement. The measured yaw
+      control comes from the UZH v3 clips (N02b) and is quoted there.
+  - score medians per condition for both arms
+  - thrust_limit reported separately as a path-side condition
+
+compute:
+  plan: DPVO on 200 clips (99,591 frames) and the frozen reader on 200 clips at stride 2
+    (49,795 frames), Modal A10/A10G, volume awmv-n-data
+  estimate_usd: 7.0
+  basis: reader at the measured 2.8 estimates/s is 4.9 A10-hours (USD 5.4); DPVO at 45 frames/s
+    is 0.6 A10-hours (USD 0.7); container starts and image builds add about 0.9.
+
+outputs:
+  - results/n05/summary.json, per_clip.csv, per_cell.csv
+  - reports/N05_sim_propagated_verdicts.md

@@ -331,3 +331,31 @@ from Track A2's `awmv-a-data` volume, mounted read-only.
 | 2026-11-22 | `awmv-m-readers` smoke: 2 simulated clips | A10 | 0.02 | 0.02 | 27 s of inference after a 7 s model load |
 | 2026-11-22 | `awmv-m-readers` v1 (crop feed) and v2/v3 (corrected feeds): 4 shards x (TII 25 clips x 6 conditions + 42 sim + 58 H04 + 20 H01), plus one killed first pass and its relaunch | A10 | ~2.6 | ~2.85 | wall times from the shard logs in `data/m02_logs/` (generators 15:22-15:44, pinhole TII 15:22-15:36, an earlier killed pass ~0.4 h); the throughput is ~15 s per simulated clip at stride 4 and ~38 s per TII clip at six conditions |
 | 2026-11-22 | **Track M total** | A10 | ~2.7 | ~2.95 | against a 25 USD ceiling; nothing outside `awmv-m-data` was written, and every app is stopped |
+
+## Track N — attitude from video rotation (2026-11-22)
+
+Ceiling for the track: **30 USD** (handoff 26). Estimate posted before any job; the Part 0 job
+set is expected to be about **1.5 USD** (rental), so no 20 USD pre-approval is needed.
+
+| date | track | job | GPU | hours | USD | notes |
+| --- | --- | --- | --- | --- | --- | --- |
+| 2026-11-22 | N | `awmv-n-rotation` Part 0 (estimate, before the run) | A10 | 0.75 | 1.50 est. | ~53k frames (11 UZH sequences x 450; 80 sim clips x 300-900) at a conservative 20 frames/s, plus container start and a cached image build; A10 at 1.10 USD/h |
+| 2026-11-22 | N | `awmv-n-rotation` Part 0 (actual) | A10/A10G | 0.231 | **0.25** | 94 runs, 42,782 frames, 830.4 s of measured DPVO wall time at 1.10 USD/h; one failed test run before the grayscale fix adds ~0.05; image builds are CPU |
+
+Actual Part 0 spend: **about 0.30 USD**, one fifth of the estimate. The Part 1 translation
+addendum ran locally on CPU at zero spend.
+
+The Part 1 translation-direction addendum is pre-registered in
+`configs/n02_initial_gravity_prereg.yaml` with an estimate of **0.00 USD**: SIFT +
+`findEssentialMat` run on local CPU on already-local frames (a Modal CPU container is used only
+if local runtime exceeds 3 h; it did not).
+| 2026-11-22 | N | `awmv-n-rotation` Part 4 (generated clips) | A10/A10G | 0.12 | **0.13** | 234 H04 clips x 81 frames at 864x480 plus 24 focal-sensitivity runs; ~430 s of measured DPVO wall time at 1.10 USD/h |
+| 2026-11-22 | N | `awmv-n-rotation` Part 2 (UZH edited clips) | A10/A10G | 0.03 | **0.03** | 63 clips x 60 frames at 320x240; ~80 s of measured DPVO wall time at 1.10 USD/h |
+
+## Track N, round 2 (2026-11-23)
+
+| date | track | job | GPU | hours | USD | notes |
+| --- | --- | --- | --- | --- | --- | --- |
+| 2026-11-23 | N | N05/N06 estimate (before the runs) | A10/A10G | 6.0 | 7.0 est. | reader 200 clips at stride 2 (4.9 h) + DPVO 200 clips (0.6 h) + N06 320x180/UZH full-res (0.5 h); A10 1.10 USD/h |
+| 2026-11-23 | N | N05 reader, 200 clips stride 2 | A10G x4 | 2.57 | **2.83** | 2,312 s wall over 4 shards; 49,795 estimates; USD 1.10/h |
+| 2026-11-23 | N | N05/N06 DPVO (two full draws, half-res, full-res UZH) | A10/A10G | 1.10 | **1.21** | ~330 clip-runs; sum of per-clip wall time |

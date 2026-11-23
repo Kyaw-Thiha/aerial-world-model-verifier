@@ -1,0 +1,224 @@
+{
+ "n_pairs": 49702,
+ "n_ok": 43115,
+ "fail_reasons": {
+  "few_features": 3518,
+  "few_inliers": 1854,
+  "few_matches": 1215
+ },
+ "strata": {
+  "sim_forest_ridge": {
+   "n_pairs": 13766,
+   "n_ok": 13766,
+   "n_high": 2410,
+   "n_units": 26,
+   "n_units_high": 8,
+   "median_deg": 15.244765415369475,
+   "median_high_deg": 18.36295696333942,
+   "p90_high_deg": 104.68273681139561,
+   "sampson_median_px": 9.94146021559919
+  },
+  "sim_industrial": {
+   "n_pairs": 15408,
+   "n_ok": 15408,
+   "n_high": 4002,
+   "n_units": 26,
+   "n_units_high": 9,
+   "median_deg": 12.963490829430912,
+   "median_high_deg": 10.767845364394136,
+   "p90_high_deg": 75.08274018909299,
+   "sampson_median_px": 9.747213885526357
+  },
+  "sim_urban_checker": {
+   "n_pairs": 13404,
+   "n_ok": 13404,
+   "n_high": 1319,
+   "n_units": 25,
+   "n_units_high": 4,
+   "median_deg": 13.281922221373033,
+   "median_high_deg": 16.437177542238302,
+   "p90_high_deg": 97.63525623890827,
+   "sampson_median_px": 9.574222827397952
+  },
+  "uzh_outdoor": {
+   "n_pairs": 537,
+   "n_ok": 537,
+   "n_high": 209,
+   "n_units": 3,
+   "n_units_high": 3,
+   "median_deg": 1.8410538948731467,
+   "median_high_deg": 1.7806185702793706,
+   "p90_high_deg": 17.780022219255507,
+   "sampson_median_px": 14.473042447819394
+  }
+ },
+ "by_gap": {
+  "sim_forest_ridge": {
+   "0.1": 27.07592210313261,
+   "0.2": 15.224866065166438,
+   "0.3": 12.10957189992966,
+   "0.5": 10.019733108372241
+  },
+  "sim_industrial": {
+   "0.1": 21.67982824815094,
+   "0.2": 12.918227034111958,
+   "0.3": 10.291053434191282,
+   "0.5": 8.70923775828895
+  },
+  "sim_urban_checker": {
+   "0.1": 19.952099458977727,
+   "0.2": 13.636405611030659,
+   "0.3": 11.44443140996864,
+   "0.5": 9.343025126030625
+  },
+  "uzh_outdoor": {
+   "0.2": 1.8410538948731467
+  }
+ },
+ "by_speed": {
+  "sim_forest_ridge": {
+   "(0, 2]": {
+    "n": 533,
+    "median_deg": 29.505673885266372
+   },
+   "(2, 4]": {
+    "n": 2880,
+    "median_deg": 16.551802031915237
+   },
+   "(4, 6]": {
+    "n": 4478,
+    "median_deg": 16.022073693195196
+   },
+   "(6, 8]": {
+    "n": 2615,
+    "median_deg": 10.872007529713077
+   },
+   "(8, 12]": {
+    "n": 2410,
+    "median_deg": 18.36295696333942
+   }
+  },
+  "sim_industrial": {
+   "(0, 2]": {
+    "n": 1325,
+    "median_deg": 17.43724902896077
+   },
+   "(2, 4]": {
+    "n": 2029,
+    "median_deg": 10.207299073007635
+   },
+   "(4, 6]": {
+    "n": 6031,
+    "median_deg": 16.407573504378963
+   },
+   "(6, 8]": {
+    "n": 1083,
+    "median_deg": 8.455711564602012
+   },
+   "(8, 12]": {
+    "n": 3252,
+    "median_deg": 12.925380817284797
+   },
+   "(12, 100]": {
+    "n": 750,
+    "median_deg": 4.55643299133422
+   }
+  },
+  "sim_urban_checker": {
+   "(0, 2]": {
+    "n": 569,
+    "median_deg": 15.888311169364185
+   },
+   "(2, 4]": {
+    "n": 3692,
+    "median_deg": 12.385346291537243
+   },
+   "(4, 6]": {
+    "n": 4105,
+    "median_deg": 14.048394538667715
+   },
+   "(6, 8]": {
+    "n": 3270,
+    "median_deg": 11.762910999510982
+   },
+   "(8, 12]": {
+    "n": 1319,
+    "median_deg": 16.437177542238302
+   }
+  },
+  "uzh_outdoor": {
+   "(0, 2]": {
+    "n": 71,
+    "median_deg": 5.268984501572486
+   },
+   "(2, 4]": {
+    "n": 33,
+    "median_deg": 1.3382141759176915
+   },
+   "(4, 6]": {
+    "n": 68,
+    "median_deg": 1.4972835015103891
+   },
+   "(6, 8]": {
+    "n": 156,
+    "median_deg": 1.3931166273292432
+   },
+   "(8, 12]": {
+    "n": 143,
+    "median_deg": 1.5218480671434482
+   },
+   "(12, 100]": {
+    "n": 66,
+    "median_deg": 3.4274100056866734
+   }
+  }
+ },
+ "per_second": {
+  "sim_forest_ridge": {
+   "n": 1520,
+   "n_high": 294,
+   "median_deg": 12.225447410987346,
+   "median_high_deg": 13.818790960828828
+  },
+  "sim_industrial": {
+   "n": 1669,
+   "n_high": 429,
+   "median_deg": 8.522612629870245,
+   "median_high_deg": 6.817839262747197
+  },
+  "sim_urban_checker": {
+   "n": 1482,
+   "n_high": 155,
+   "median_deg": 9.036255915644638,
+   "median_high_deg": 8.311696597683941
+  },
+  "uzh_outdoor": {
+   "n": 73,
+   "n_high": 28,
+   "median_deg": 1.6135413483105112,
+   "median_high_deg": 2.671915127977645
+  }
+ },
+ "decision": {
+  "rule": "median delta <= 3.0 deg at speed >= 8 m/s in both strata, per pair and per 1 s block, with >=5 clips and >=100 pairs",
+  "per_stratum": {
+   "forest": {
+    "evaluable": true,
+    "median_pair_high_deg": 18.36295696333942,
+    "median_second_high_deg": 13.818790960828828,
+    "pair_ok": false,
+    "second_ok": false,
+    "pass": false
+   },
+   "outdoor": {
+    "evaluable": false,
+    "median_pair_high_deg": 1.7806185702793706,
+    "median_second_high_deg": 2.671915127977645,
+    "pair_ok": true,
+    "second_ok": true,
+    "pass": false
+   }
+  },
+  "pass": false
+ }
+}
