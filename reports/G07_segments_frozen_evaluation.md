@@ -54,6 +54,86 @@ the window statistic itself.
 **Testability is the first result.** The coherence tier needs ≥9 usable frames and non-trivial
 lean variance in a 12-frame window, and on these scenes it abstains almost everywhere:
 
+| arm | testable null clips | false-reject | false segments / min |
+| --- | --- | --- | --- |
+| **coh12_p1** (primary) | **9 / 40** | **1/9 (11.1 %) †** | 0.40 |
+| coh12_p2 | 8 / 40 | 0/8 (0.0 %) † | 0.00 |
+| coh8_p1 | 5 / 40 | 0/5 (0.0 %) † | 0.00 |
+| res12_p1 | 32 / 40 | 0/32 (0.0 %) | 0.00 |
+| res8_p1 (comparison) | 32 / 40 | 1/32 (3.1 %) † | 0.24 |
+| res8_p2 | 32 / 40 | 0/32 (0.0 %) | 0.00 |
+| sign12_p1 | 9 / 40 | 0/9 (0.0 %) † | 0.00 |
+| whole-clip median (baseline) | 40 / 40 | 0/40 (0.0 %) | 0.00 |
+| a2_bh_coh12_q10 | 9 / 40 | 2/9 (22.2 %) † | 1.21 |
+| a2_bh_res8_q10 | 32 / 40 | 1/32 (3.1 %) † | 0.24 |
+| a5_joint | 10 / 40 | **10/10 (100 %) †** | 3.60 |
+| a4_lag_coh12 | 8 / 40 | 1/8 (12.5 %) † | 0.97 |
+| a3_refined | 9 / 40 | 1/9 (11.1 %) † | 0.40 |
+
+† fewer than ten clusters (6 scene seeds) or fewer than ten testable clips; the `coh12_p1` null
+interval is [0.00, 0.50] and `res8_p1`'s [0.00, 0.05], both descriptive.
+
+**Detection, primary arm and baseline, with the testable denominator printed** (k / testable,
+clips in the cell in brackets; IoU is the median over testable clips with undetected counted as 0):
+
+| cell | primary `coh12_p1` | whole-clip median |
+| --- | --- | --- |
+| full-clip tilt removal | 0/1 [1] — IoU 0.00 | 8/13 [13] — IoU 0.998 |
+| full-clip mirrored roll | 2/2 [2] — IoU 0.185, onset +20 f | 10/13 [13] — IoU 1.000 |
+| full-clip tilt scaling | 0/3 [3] — IoU 0.00 | 8/17 [17] — IoU 0.00 |
+| thrust limit (family with no power claimed) | 0/0 [7] | **7/7 [7] — a false reject of physical clips** |
+| partial removal, 10 % | 0/0 [2] | 1/2 [2] — IoU 0.05, onset −290 f |
+| partial removal, 25 % | **0/0 [1]** | 1/1 [1] — IoU 0.251, onset −314 f |
+| partial removal, 50 % | 0/0 [1] | 1/1 [1] — IoU 0.498, onset −35 f |
+| partial mirror, 10 % | 0/0 [1] | 0/1 [1] |
+| partial mirror, 25 % | **0/0 [1]** | 0/1 [1] |
+| partial mirror, 50 % | 1/1 [1] — IoU 0.04, onset +177 f | 1/1 [1] — IoU 0.499 |
+| partial scaling, 10 % | 0/1 [1] | 0/1 [1] |
+| partial scaling, 25 % | **0/0 [1]** | 0/1 [1] |
+| partial scaling, 50 % | 0/0 [1] | 0/1 [1] |
+
+Three things this table says. (i) **Every 25 %-coverage figure has zero testable clips** — the
+cells hold one clip each and the coherence tier abstains on it; that is why S1/S2 are not
+evaluable rather than failed. (ii) The baseline's IoU on partial edits is bounded at 0.251 /
+0.498 / 0.050 by construction: it flags the whole clip, so its IoU *is* the interval fraction, and
+its onset errors are −290 to −314 frames, i.e. it points at the clip start. (iii) The primary's
+only testable partial detection (mirror, 50 %) localises nothing (IoU 0.04, onset +177 frames).
+
+**The one arm that recovers the residual tier is the within-clip FDR rule** — same windows, same
+statistic, different decision:
+
+| cell | `a2_bh_res8_q10` (q = 0.10) | `res8_p1` (max-over-windows) |
+| --- | --- | --- |
+| full-clip tilt removal | **8/13** — IoU 0.832 | 1/13 — IoU 0.00 |
+| full-clip mirrored roll | **10/11** — IoU 0.963 | 2/11 — IoU 0.00 |
+| full-clip tilt scaling | 5/13 — IoU 0.00 (detected-only 0.952) | 2/13 — IoU 0.00 |
+| partial removal, 25 % | 1/1 [1] — IoU 0.366 | 0/1 [1] |
+| partial removal, 50 % | 1/1 [1] — IoU 0.646 | 0/1 [1] |
+| partial mirror, 50 % | 1/1 [1] — IoU 0.730 | 0/1 [1] |
+| null | 1/32 (3.1 %) † | 1/32 (3.1 %) † |
+| realised false-discovery proportion, partial clips | **0.383** (820 flagged frames) | undefined (0 flagged frames) |
+
+The max-over-windows thresholds are 66-75 deg of window residual, fitted on dev feasible clips;
+no held-out window reaches them except at the thrust limit. The BH rule compares each window with
+its dev distribution instead, and fires. Its cost is measured too: 38 % of the frames it flags on
+partial clips are outside the true interval, which is the S3 failure below.
+
+**Ablations.** `a4_lag_coh12` (per-clip lag): 1/8 null †, mirror full-clip 2/2 with IoU 0.166
+vs 0.185 without the lag, and false segments 0.97/min vs 0.40 — the lag makes the primary worse
+on every measured quantity. `a3_refined`: the only arm that improves on its comparator, median
+IoU 0.153 → 0.325 over the 3 flagged defect clips (+0.172) † (a fourth flagged clip is
+the null clip, unchanged at 0). `a5_joint`: standardised across lengths
+8/12/16 and calibrated at 4.254, it flags **10 of 10 testable null clips** and still localises
+nothing (IoU 0.025-0.053, onsets 152-322 frames): its dev standardisation does not transfer to
+unseen scenes at all.
+
+**Minimum localisable violation: not estimable on this block.** No cell has more than two
+testable clips, the largest partial testable cell is n = 1, and the best median IoU among
+testable partial detections is 0.04 (primary) — so the contour the pre-registration asks for
+cannot be drawn here, and no localisation claim is made. The noise-floor arithmetic that fixes
+the floor is unchanged from G06: a window median's standard error is ~2.4 deg at 5-6 deg per-frame
+spread, so nothing under a few windows is localisable.
+
 ### Real held-out flights
 
 Three of the 18 clips are gate-kept and testable (`13p` 3, `07a` 0); every rate below is k/3.
