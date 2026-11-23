@@ -229,6 +229,47 @@ def gen(clip: str, fov_deg: float = 90.0, force: bool = False) -> dict:
     return rec
 
 
+@app.function(image=image, volumes={E_DATA: e_vol, N_DATA: n_vol, A_DATA: a_vol},
+              gpu="A10", timeout=3600, max_containers=6)
+def uzh_edit(clip_id: str, seq: str, force: bool = False) -> dict:
+    """DPVO on one Track-E v3 edited clip (320x240 raw crop -> undistorted pinhole)."""
+    import cv2
+    import numpy as np
+
+    out_npz = Path(N_DATA) / "poses" / "uzh_edits" / f"{clip_id}.npz"
+    out_json = Path(N_DATA) / "runs" / f"uzh_edit__{clip_id}.json"
+    if out_npz.exists() and not force:
+        return json.loads(out_json.read_text())
+    meta = json.loads((Path(E_DATA) / "uzh" / seq / "meta.json").read_text())
+    ip = meta["intrinsics_kb4"]
+    fx, fy = float(ip["fx"]), float(ip["fy"])
+    # Track E's v3 clips are a fixed centred 0.5 crop of the 640x480 raw frame
+    cx, cy = float(ip["cx"]) - 160.0, float(ip["cy"]) - 120.0
+    K_in = np.array([[fx, 0, cx], [0, fy, cy], [0, 0, 1.0]])
+    D = np.array(ip["k"], dtype=np.float64)
+    K_out = np.array([[fx, 0, 160.0], [0, fy, 120.0], [0, 0, 1.0]])
+    frame_dir = Path(N_DATA) / "uzh_clips" / seq / clip_id / "frames"
+    paths = sorted(frame_dir.glob("*.png"))
+    frames = []
+    for p in paths:
+        im = cv2.imread(str(p), cv2.IMREAD_GRAYSCALE)
+        und = cv2.fisheye.undistortImage(im, K_in, D, Knew=K_out, new_size=(320, 240))
+        frames.append(und)
+    if not frames:
+        raise RuntimeError(f"{clip_id}: no frames under {frame_dir}")
+    fps = 15.07
+    rec = _run_dpvo(frames, (fx, fy, 160.0, 120.0), fps, clip_id, "uzh_edit")
+    rec.update({"clip_id": clip_id, "sequence": seq, "dpvo_commit": DPVO_COMMIT,
+                "undistort": "KB4 crop 0.5 -> pinhole 320x240, same focal"})
+    out_npz.parent.mkdir(parents=True, exist_ok=True)
+    np.savez_compressed(out_npz, c2w=rec.pop("c2w"), t=rec.pop("t"),
+                        n_input=rec["n_input"], n_pose=rec["n_pose"], fps=rec["fps"])
+    out_json.parent.mkdir(parents=True, exist_ok=True)
+    out_json.write_text(json.dumps(rec, indent=1))
+    n_vol.commit()
+    return rec
+
+
 @app.local_entrypoint()
 def main(which: str = "all", limit: int = 0, ids: str = "", seq: str = "", fov: float = 90.0):
     import csv
@@ -246,6 +287,13 @@ def main(which: str = "all", limit: int = 0, ids: str = "", seq: str = "", fov: 
         print(f"gen clips: {len(vids)} fov {fov}")
         for r in gen.map(vids, kwargs={"fov_deg": fov}):
             print("GEN", r)
+    if which == "uzh_edit":
+        import csv as _csv
+        with open(Path("results/n02b/clips.csv")) as fh:
+            rows = [(r["clip_id"], r["seq"]) for r in _csv.DictReader(fh)]
+        print(f"uzh edit clips: {len(rows)}")
+        for r in uzh_edit.starmap(rows):
+            print("EDIT", r)
     if which in ("all", "sim"):
         if ids:
             clip_ids = [x for x in ids.split(",") if x]

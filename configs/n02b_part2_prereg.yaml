@@ -1,0 +1,87 @@
+# Track N, Part 2 -- verdict tiers on the propagated lean (descriptive, UZH outdoor)
+#
+# NEW pre-registration, written and committed BEFORE DPVO was run on any edited clip and before
+# any tier score was computed.
+prereg_version: 1
+date: '2026-11-22'
+status: preregistered
+track: N
+owner_branch: track-n-rotation
+why_descriptive: >
+  The confirmatory Part 2 populations are the six TII dev flights and Track I's defect clips.
+  TII's rotation source is dead (N01: 42 deg at 10 s, two frozen estimates) and Track I's defect
+  clips are not on R2. The only population with both edited video and a working rotation source
+  is the UZH outdoor set, which the handoff itself calls descriptive. Three sequence clusters,
+  nine clips per condition: no interval is a 95 % confidence interval and every rate carries k/n.
+
+question: >
+  On real outdoor UZH clips with Track E's v3 edits, do the frozen verdict tiers behave as well
+  on the rotation-propagated lean as on the per-frame reader lean -- and does propagation remove
+  the reader's view dependence (the yaw control) and the null-edit resampling effect?
+
+populations:
+  clips: >
+    Track E's v3 clip set, all 3 outdoor_forward sequences x 3 clips x 7 conditions
+    (real, null_edit, yaw_control, tilt_removal, scale_0.5, scale_1.5, mirror_roll) = 63 clips of
+    60 frames at 15.07 Hz. Local, from data/clips_v3 (frames 320x240 raw crops, per-condition
+    reader lean in the npz). Nothing re-downloaded.
+  units: 3 sequences (descriptive clusters)
+  conditions_expected: >
+    real and null_edit are no-violation; tilt_removal/scale_*/mirror_roll are violations;
+    yaw_control is a tilt-preserving warp and must not be flagged.
+
+inputs:
+  reader_side: the stored `depicted_lean` (GeoCalib variant b, raw fisheye) of the same condition
+  propagated_side:
+    start: the stored depicted lean of the SAME condition at the first frame that is valid in the
+      required-lean mask, converted to a camera-frame up vector with the published mount
+    rotation: DPVO (commit 0ac95b6, standing settings) on the condition's own 60 frames,
+      undistorted from the 320x240 raw crop to a pinhole view at the same focal
+    lean: each propagated up is turned into a lean with the same `depicted_lean_from_gravity`
+      construction the reader uses
+  required_side: schema v3 exact, u = unit(a + g e3 + 0.295 v), from the sequence truth at
+    15.07 Hz (Savitzky-Golay 0.37 s, polyorder 3), sliced to the clip's `index`; the
+    required_lean mask is applied. Not the linearised "lean_req0 + k*vel" form.
+
+tiers:
+  F0: >
+    median over frames of the angle between the depicted and required lean, degrees.
+    Threshold: leave-one-sequence-out, 95th percentile of the other two sequences' real-clip
+    scores. Also a matched point at the reader arm's real false-reject count.
+  C2: >
+    per-clip least squares of a 2-vector offset plus k_d on the fixed grid
+    {0.00, 0.05, ..., 0.40} minimising the median residual; statistic = the fitted median
+    residual. Threshold as F0.
+  R: >
+    Pearson correlation per axis between depicted and required lean; statistic
+    1 - min(r_x, r_y). Frozen TII threshold tau = 0.619653015661502 (transfer, not refit), plus
+    the leave-one-sequence-out reading.
+  note: >
+    No tier is refitted on UZH; the frozen thresholds are used where they exist and the LOFO
+    reading is reported beside them. Both arms use identical frames, masks and required side, so
+    the only difference is the depicted series.
+
+reporting:
+  - per condition (k/n = 9 clips): flag counts for reader and propagated, for F0, C2 and R, at
+    the LOFO threshold and at the matched point
+  - the yaw control and the null edit beside every rate
+  - per sequence, with the small-sample dagger (n < 10)
+  - the median depicted-required residual per condition, reader vs propagated
+  - no intervals; three clusters; all spreads descriptive
+
+prediction_stated_in_advance:
+  - the propagated lean is yaw-free, so a world-up warp cannot change it: the yaw-control rate
+    should be lower for the propagated arm than for the reader arm
+  - the null edit changes only resampling: both arms should be unaffected
+  - a start error is a constant offset: C2 (intercept) should be insensitive to the arm, F0 should
+    not (its threshold is domain-calibrated)
+
+compute:
+  plan: 63 clips x 60 frames at 320x240, DPVO on an A10, new volume path uzh_clips/ and
+    poses/uzh_edits/
+  estimate_usd: 0.15
+
+outputs:
+  - results/n02b/summary.json
+  - results/n02b/per_clip.csv
+  - reports/N02b_propagated_lean_verdicts.md
