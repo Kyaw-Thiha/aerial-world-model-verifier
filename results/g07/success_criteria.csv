@@ -1,0 +1,9 @@
+criterion,defect,fraction,arm,n_clips,n_testable,k,value,iou_med,met
+S1,tilt_removed,0.25,coh12_p1,1,0,0,,,False
+S2,tilt_removed,0.25,coh12_p1 - res8_p1 (matched),1,0,,,,False
+S1,mirrored_roll,0.25,coh12_p1,1,0,0,,,False
+S2,mirrored_roll,0.25,coh12_p1 - res8_p1 (matched),1,0,,,,False
+S3,partial (any),all,a2_bh_coh12_q10,,9,2,,,False
+S4,any flagged,all,a3_refined - coh12_p1,3,3,,0.1716666666666667,,True
+S5,all,all,a4_lag_coh12 - coh12_p1,,8,,-1.3906627314193725,0.0,False
+S6,tilt_removed+mirrored_roll,0.25,a5_joint - best single length,,0,,,,False

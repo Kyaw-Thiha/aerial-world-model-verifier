@@ -203,3 +203,19 @@ during consolidation — see `docs/DATA.md` for the current status of listing ac
 * **Data**: the clips and truth are Track I's on R2 (`track-i/`); this track adds the 12-clip yaw
   slice under the Modal volume `awmv-g3-data` (`yaw_slice/`) and, when published, R2
   `track-g3/yaw_slice/`.
+
+## G07 — the frozen held-out evaluation (Track G3, 2026-11-23)
+
+One execution of `configs/g06_eval_frozen.yaml` (committed `3023889`, unedited) over the 100
+held-out simulated clips (two unseen scene families, seeds 201-206) and the 18 real held-out clips
+(3 gate-kept). Driver `experiments/g07_heldout.py` (`759b01f`), runners
+`scripts/g07_score_heldout.sh` (4 L40S shards, per-clip idempotent) and
+`scripts/g07_pull_and_run.sh`. Scores `awmv-g3-data:scores/stride1/heldout_c0..c3`, pulled to
+`results/g07/scores/` (100/100, frame counts equal to the manifest, stride 1, median 13.0 fps).
+Results `results/g07/` (7 CSVs + `sim_summary.json`). Report
+`reports/G07_segments_frozen_evaluation.md`. Cost 2.75 USD; see `docs/COST_LEDGER.md`.
+
+Outcome in one line: S4 (boundary refinement) met; S1, S2 and S6 not evaluable (0 testable clips
+in every 25 %-coverage cell); S3 and S5 failed; the within-clip BH rule on the residual tier is
+the only threshold mechanism that transferred. The recipe's `arms_evaluated` block is not valid
+YAML and is parsed line by line; recorded in the report and `docs/decisions.md`.

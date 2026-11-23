@@ -30,3 +30,17 @@ concurrency only buys wall time when capacity exists.
 * The yaw render (12 clips, 4,646 frames, EEVEE 16 spp, L40S) is the second GPU job.
 * The 78 stride-2 reader files Track I published had to be re-scored at stride 1 for a uniform
   window duration; that re-scoring is inside the 5.27.
+
+### G07 held-out pass (2026-11-23)
+
+| job | GPU | containers | wall per container | USD |
+| --- | --- | --- | --- | --- |
+| one-clip path check (`i02_heldout_000`) | L40S | 1 | ~1 min | 0.03 |
+| held-out scores, 4 shards of 25 clips (`heldout_c0..c3`) | L40S | 4 | 19-22 min each | 2.72 |
+
+**G07 total: 2.75 USD.** The frozen recipe projected 2.3; the difference is the 4-container
+overlap (Modal charged full wall time for all four, including the shard that queued for a GPU).
+Cumulative for the track across both passes: **8.02 USD** against the raised 14.00 ceiling
+(`configs/g06_segments_prereg.yaml` states 8.00; the user raised it to 14.00 on 2026-11-22).
+No CPU or storage cost. All apps were stopped by `modal run` returning; `modal app list` shows no
+running `awmv-g3-*` app after the pass.

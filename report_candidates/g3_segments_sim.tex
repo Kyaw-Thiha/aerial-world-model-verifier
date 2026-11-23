@@ -64,3 +64,24 @@ partial-coverage criteria are not evaluated here; they await the remaining dev c
 % \caption{...}
 % \input{tables/tab_g3_detection_1}
 % \end{table}
+
+\paragraph{Frozen held-out evaluation.}
+The recipe of \texttt{configs/g06\_eval\_frozen.yaml} was executed once on 100 held-out clips from
+two unseen scene families (40 feasible, the rest camera defects and thrust-limit clips, ten of
+them partial) with every threshold unchanged from dev. Three results replace the dev pass's
+optimism. First, \emph{testability collapses}: the 12-frame coherence tier has an eligible window
+on 9 of 40 null clips and on none of the three 25\,\%-coverage cells, so the pre-registered S1,
+S2 and S6 are not evaluable rather than failed, and the null rate where it is testable is 1/9. Second,
+\emph{the conformal maximum does not transfer}: the residual thresholds of 61--75$^\circ$
+fitted on dev barely fire on unseen scenes (1/13 whole-clip removals, 2/11 mirrored rolls), while
+Benjamini--Hochberg at $q=0.10$ on the same windows detects 8/13 and 10/11 at a 3.1\,\% null ---
+with a realised false-discovery proportion of 0.38 on partial clips, so S3 still fails as written,
+and the joint multi-scale rule flags all ten testable null clips. Third, of the ablations only
+boundary refinement survives (median IoU 0.153 $\rightarrow$ 0.325 on the three flagged defect
+clips, S4), while per-clip alignment makes the false-segment rate worse (0.40 $\rightarrow$
+0.97 per minute, S5 fails). On the three gate-kept real held-out clips the coherence primary
+rejects none of the real clip or either control and detects 3/3 removals and 3/3 mirrored rolls
+with IoU 0.51/0.75, where the whole-clip median rejects two of the three real clips; three clips
+is a direction, not a rate. The window statistic survives contact with unseen scenes; the
+threshold transfer does not, and a within-clip decision rule (item 3) is the only mechanism in the
+frozen set that does.

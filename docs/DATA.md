@@ -126,3 +126,15 @@ to rebuild `report/` (see `docs/REPRODUCE.md`).
 The yaw slice is Track G3's own auxiliary set: 12 feasible development clips re-rendered with the
 camera yawed about world up. It is **not** part of Track I's frozen 300 and is never pooled with
 it (`configs/g06_yaw_slice.json`).
+
+## 9. Track G3 held-out artefacts (2026-11-23)
+
+| path | size | what | rebuild |
+| --- | --- | --- | --- |
+| `results/g07/scores/` | ~3.5 MB, 100 files | held-out stride-1 reader output (`<clip>_score.json`), pulled from `awmv-g3-data:scores/stride1/heldout_c*` | `scripts/g07_score_heldout.sh` then `g07_pull_and_run.sh` |
+| `results/g07/*.csv`, `sim_summary.json` | < 1 MB | every number in report G07 | `experiments/g07_heldout.py` |
+| `awmv-g3-data` volume | — | the authoritative score copies plus the dev scores and yaw slice | — |
+
+The 100 held-out score files are committed because they are small and every held-out number
+depends on them; the mp4/GT inputs remain on Track I's volume (`awmv-i-data:i02/clips/`), read
+only. Nothing was written to Track I's volume or R2.
