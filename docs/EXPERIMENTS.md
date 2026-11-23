@@ -41,6 +41,7 @@ results; none of them runs an experiment.
 | J04 | learned reader confidence (1c) | J | `track-j-reader` | `results/j04_confidence/` | J04 |
 | N01 | rotation-propagated gravity, Part 0 (oracle start, 1/5/10/20 s) | N | `track-n-rotation` | `results/n01_pretest/` | N01 |
 | N02 | initial-gravity arms, translation-direction addendum, turn observability, generated-clip track noise | N | `track-n-rotation` | `results/n02/` | N02 |
+| N04 | video rotation on generated clips (H04 SolarWM, H01 ANWM) | N | `track-n-rotation` | `results/n04/` | N04 |
 
 R2 prefixes are `track-a/`, `track-a/a2/`, `track-b/`, `track-c/`, `track-d/`, `track-e/`, `track-h/`, `track-h2/`
 (counts and bytes: `report/data/r2_counts.json`, measured 2026-11-15; verified read-only again

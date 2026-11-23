@@ -146,3 +146,4 @@ The Part 1 translation-direction addendum is pre-registered in
 `configs/n02_initial_gravity_prereg.yaml` with an estimate of **0.00 USD**: SIFT +
 `findEssentialMat` run on local CPU on already-local frames (a Modal CPU container is used only
 if local runtime exceeds 3 h; it did not).
+| 2026-11-22 | N | `awmv-n-rotation` Part 4 (generated clips) | A10/A10G | 0.12 | **0.13** | 234 H04 clips x 81 frames at 864x480 plus 24 focal-sensitivity runs; ~430 s of measured DPVO wall time at 1.10 USD/h |

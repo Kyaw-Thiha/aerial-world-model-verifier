@@ -230,7 +230,7 @@ def gen(clip: str, fov_deg: float = 90.0, force: bool = False) -> dict:
 
 
 @app.local_entrypoint()
-def main(which: str = "all", limit: int = 0, ids: str = "", seq: str = ""):
+def main(which: str = "all", limit: int = 0, ids: str = "", seq: str = "", fov: float = 90.0):
     import csv
 
     if which in ("all", "uzh"):
@@ -238,11 +238,13 @@ def main(which: str = "all", limit: int = 0, ids: str = "", seq: str = ""):
         for r in uzh.map(seqs):
             print("UZH", r)
     if which == "gen":
-        vids = sorted(p.stem for p in Path("data/n04/videos").glob("*.mp4")) if Path("data/n04/videos").is_dir() else []
-        if not vids:
-            print("no local data/n04/videos; pass ids")
-            return
-        for r in gen.map(vids):
+        import csv as _csv
+        with open(Path("results/n04/clips.csv")) as fh:
+            vids = [r["clip"] for r in _csv.DictReader(fh)]
+        if ids:
+            vids = [x for x in ids.split(",") if x]
+        print(f"gen clips: {len(vids)} fov {fov}")
+        for r in gen.map(vids, kwargs={"fov_deg": fov}):
             print("GEN", r)
     if which in ("all", "sim"):
         if ids:

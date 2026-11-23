@@ -701,3 +701,13 @@ Every row below was read from the project's own repo/HF card on 2026-11-10. "ver
   usable H04 pairs (77 %), similar across arms and draws; 33/234 clips have fewer than half their
   pairs usable. Feature tracking is not the bottleneck for a geometry route on generated video,
   but a low residual at 0.2-0.5 s baselines does not certify multi-view consistency (Part 4).
+- [N] **Part 4: generated SolarWM video supports rotation extraction.** All 234 H04 clips returned
+  81/81 poses and no frozen estimate; with an oracle start the propagated tilt is 3.54/4.40/6.69°
+  at 1/2/5 s against the commanded attitude for the flatness arm (reader 9.07° on the same clips),
+  0.36/0.77/1.04° for the level arm (reader 2.21°) and 4.00/4.70/6.16° for the mirrored arm
+  (reader 8.14°). Generated video drifts far more than real UZH (6.7° in 5 s against 0.4° in 10 s)
+  but not enough to stop the route.
+- [N] Generated-video intrinsics are unknown. 90° horizontal is assumed and a 12-clip sensitivity
+  arm at 70/90/110° moves the 5 s error 1.48/1.80/2.36°; the conclusion survives, the absolute
+  numbers carry that uncertainty. H01 ANWM is much weaker: 20/80 clip directories give a usable
+  two-frame essential-matrix fit (>= 20 inliers). LingBot ramps were not in the local mirrors.

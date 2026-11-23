@@ -191,5 +191,7 @@ No R2 object and no Modal volume was created, written or deleted in round 2.
 | `data/n01/uzh_frames/` | 149 MB | the 450/450/223 pinhole frames of the three outdoor UZH sequences, pulled read-only from `awmv-e-data`; gitignored | `scripts/pull_volume.py awmv-e-data uzh/<seq>/frames_pinhole data/n01/uzh_frames/<seq>` |
 | Modal volume `awmv-n-data` | small | `poses/` and `runs/` for the 94 DPVO runs | re-run the app |
 | `results/n02/` | 12 MB (gzipped pair tables) | every number in N02: start arms, translation-direction pairs, turn test, generated track noise | `experiments/n02_*.py` (CPU) |
+| `results/n04/` | < 1 MB | every number in N04: clip hashes, tracking, horizons, ANWM fit | `experiments/n04_generated_rotation.py` |
+| `data/n04/poses/gen/fov*` | 4 MB | DPVO poses for the 234 H04 clips and 24 focal-sensitivity runs | `modal run remote/n_rotation.py --which gen` |
 
 No R2 object was created or written. The volume is the only new Modal object; the app was stopped.
