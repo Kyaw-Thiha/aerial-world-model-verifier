@@ -17,6 +17,11 @@ Pre-registration `configs/n07_sim_tiers_prereg.yaml` + amendment A, both committ
 F0/sign/start score existed. Code `experiments/n07_sim_tiers.py`. Results `results/n2/n07/`.
 All 200 development clips; **no held-out clip was read**. CPU only, **zero spend**.
 
+*Reading of the brief.* The handoff predates Track N's round 2: N05 (C2 and coherence on the
+propagated lean), N06 (the 30/45° drift diagnosis) and the N04 clarification already exist on
+`track-n-rotation`. This branch extends those reports rather than repeating them, and the three
+N2 reports are numbered N2A–N2C so they do not collide with N05/N06.
+
 ## Plain-language summary
 
 1. **What was missing and is now done.** N05 compared two of the three verdict tiers (the
@@ -29,7 +34,9 @@ All 200 development clips; **no held-out clip was read**. CPU only, **zero spend
 2. **The reader is already perfect on forest removals.** At every pooled false-reject budget from
    5/80 to 10/80, F0 on the reader's lean catches 9/9 forest tilt removals. There is no room for
    a detection gain, and the pre-registered "+3 of 9" forest criterion could not be met by any
-   arm. That mis-calibration is reported, not repaired.
+   arm. That mis-calibration is reported, not repaired. The cost is visible too: the reader spends
+   its whole pooled budget in forest, where its false-reject is 5/26 at pooled 5/80, 7/26 at 7/80
+   and 10/26 at 10/80.
 3. **The propagated arm's threshold is set by the high mounts.** At the matched point the reader's
    F0 cut is 9.3°, the reader-start propagated cut is 18.0°, and the oracle-start cut is 16.4°.
    The reason is a heavy tail: at 45° mount, 5 of 20 feasible clips have an F0 residual above 20°

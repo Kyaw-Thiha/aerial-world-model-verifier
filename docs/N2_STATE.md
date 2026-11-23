@@ -65,6 +65,7 @@ cd ~/Documents/Projects/awmv-n2
 PYTHONPATH=. pixi run python experiments/n07_sim_tiers.py
 PYTHONPATH=. pixi run python experiments/n08_mount_draws.py
 PYTHONPATH=. pixi run python experiments/n09_part4_provenance.py
+PYTHONPATH=. pixi run python experiments/n2_checks.py      # 50 report-number checks, expect 0 failed
 ```
 
 All three are CPU, seconds, zero spend. No detached Modal app or job exists for this track.

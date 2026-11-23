@@ -32,6 +32,13 @@ validity flag drops a clip from every arm if either single draw reaches 85° at 
 published draw-2 C2 values exactly (median |difference| 0.0 over 200 clips), so the two draws are
 genuinely independent runs.
 
+**The other two arms are N06's, reported as published.** (i) the two-view relative-pose chain
+(SIFT → RANSAC essential matrix → `recoverPose` on 2-frame pairs, chained) drifts 70–85° at 10 s in
+forest, about 18× worse than DPVO; (ii) resolution: on the simulated set, half resolution
+(320×180 from the 640×360 native, height cropped to 352) worsens the 30° forest drift to 8.71°,
+and on the UZH edited clips full 640×480 turns 12/63 valid extractions at the 320×240 fixed crop
+into 63/63. This report does not recompute either arm.
+
 ## Results
 
 10 s oracle-start drift (degrees), **all 80 feasible clips** (n = 20 per mount, 19 at 45°):
