@@ -204,6 +204,37 @@ def measure_uzh(seq: str) -> list[dict]:
 
 
 # --------------------------------------------------------------------------- generated track noise
+def pair_fundamental(fa: np.ndarray, fb: np.ndarray) -> dict:
+    """Calibration-free two-view fit: fundamental matrix Sampson error (px) of RANSAC inliers."""
+    import cv2
+
+    sift = cv2.SIFT_create(nfeatures=4000, contrastThreshold=0.01)
+    ka, da = sift.detectAndCompute(fa, None)
+    kb, db = sift.detectAndCompute(fb, None)
+    if da is None or db is None or len(ka) < 30 or len(kb) < 30:
+        return {"status": "few_features", "n_matches": 0, "n_inliers": 0,
+                "sampson_median_px": float("nan")}
+    knn = cv2.BFMatcher(cv2.NORM_L2).knnMatch(da, db, k=2)
+    good = [m for m, n in (x for x in knn if len(x) == 2) if m.distance < 0.75 * n.distance]
+    if len(good) < MIN_INLIERS:
+        return {"status": "few_matches", "n_matches": len(good), "n_inliers": 0,
+                "sampson_median_px": float("nan")}
+    p1 = np.float64([ka[m.queryIdx].pt for m in good])
+    p2 = np.float64([kb[m.trainIdx].pt for m in good])
+    F, mask = cv2.findFundamentalMat(p1, p2, cv2.RANSAC, 1.0, 0.999)
+    if F is None or mask is None or F.shape != (3, 3):
+        return {"status": "no_fundamental", "n_matches": len(good), "n_inliers": 0,
+                "sampson_median_px": float("nan")}
+    mask = mask.ravel().astype(bool)
+    n_in = int(mask.sum())
+    if n_in < MIN_INLIERS:
+        return {"status": "few_inliers", "n_matches": len(good), "n_inliers": n_in,
+                "sampson_median_px": float("nan")}
+    samp = sampson_px(F, p1[mask], p2[mask])
+    return {"status": "ok", "n_matches": len(good), "n_inliers": n_in,
+            "sampson_median_px": float(np.median(samp))}
+
+
 def measure_generated(path: str, tag: str) -> list[dict]:
     import cv2
 
@@ -218,16 +249,13 @@ def measure_generated(path: str, tag: str) -> list[dict]:
     cap.release()
     if len(frames) < 4:
         return []
-    h, w = frames[0].shape[:2]
-    K = np.array([[0.5 * w / np.tan(np.radians(45.0)), 0, w / 2],
-                  [0, 0.5 * w / np.tan(np.radians(45.0)), h / 2], [0, 0, 1.0]])
     rows = []
     for i in range(0, len(frames) - 1, 2):
         for gap in (0.2, 0.5):
             j = i + max(1, int(round(gap * fps)))
             if j >= len(frames):
                 continue
-            g = pair_geometry(frames[i], frames[j], K)
+            g = pair_fundamental(frames[i], frames[j])
             rows.append({"tag": tag, "clip": Path(path).stem, "i": i, "gap_s": gap,
                          "n_matches": g["n_matches"], "n_inliers": g["n_inliers"],
                          "sampson_median_px": g["sampson_median_px"], "status": g["status"]})
@@ -273,6 +301,10 @@ def run_measure() -> None:
     print(f"wrote {len(urows)} UZH pairs")
 
 
+def _gen_task(a):
+    return measure_generated(*a)
+
+
 def run_generated() -> None:
     jobs = []
     vids = sorted(H04.glob("*.mp4"))
@@ -284,17 +316,24 @@ def run_generated() -> None:
             frames = sorted(d.glob("*.png")) + sorted(d.glob("*.jpg"))
             if frames:
                 jobs.append((d, "h01_anwm"))
+    jobs = [j for j in jobs if not Path(j[0]).is_dir()]
     print(f"generated jobs: {len(jobs)}")
     rows = []
-    for k, (path, tag) in enumerate(jobs):
-        if Path(path).is_dir():
-            continue
-        rows += measure_generated(path, tag)
-        if k % 20 == 0:
-            print(f"generated {k + 1}/{len(jobs)}", flush=True)
+    with ProcessPoolExecutor(max_workers=min(8, os.cpu_count() or 1)) as ex:
+        for k, part in enumerate(ex.map(_gen_task, jobs)):
+            rows += part
+            if k % 20 == 0:
+                print(f"generated {k + 1}/{len(jobs)}", flush=True)
     _write(rows, OUT / "generated_track_noise.csv",
            ["tag", "clip", "i", "gap_s", "n_matches", "n_inliers", "sampson_median_px", "status"])
     print(f"wrote {len(rows)} generated pair rows")
+
+
+def _parse_vec(x) -> np.ndarray:
+    if not isinstance(x, str):
+        return np.asarray(x, float)
+    parts = x.strip().strip("[]").replace(",", " ").split()
+    return np.asarray([float(v) for v in parts], float)
 
 
 def run_analyse() -> None:
@@ -335,8 +374,8 @@ def run_analyse() -> None:
     for (unit, gap), g in ok.groupby(["unit", "gap_s"]):
         fps_u = float(g.fps.iloc[0]) if "fps" in g else (30.0 if g.kind.iloc[0] == "sim" else 15.07)
         for sec, gg in g.groupby((g.i / fps_u).astype(int)):
-            te = np.mean(np.array(gg.t_est.tolist()), axis=0)
-            tt = np.mean(np.array(gg.t_true.tolist()), axis=0)
+            te = np.mean(np.array([_parse_vec(x) for x in gg.t_est]), axis=0)
+            tt = np.mean(np.array([_parse_vec(x) for x in gg.t_true]), axis=0)
             ps.append({"unit": unit, "gap_s": gap, "second": int(sec),
                        "stratum": gg.stratum.iloc[0], "speed_mps": float(gg.speed_mps.median()),
                        "delta_deg": angle_between(te, tt) if np.linalg.norm(te) > 0 else np.nan})

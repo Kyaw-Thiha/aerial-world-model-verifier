@@ -1,0 +1,191 @@
+{
+ "real_indoor_uzh": {
+  "oracle": {
+   "units": 6,
+   "start_error_median_deg": 0.0,
+   "prop10_median_of_unit_medians_deg": 0.661170644354113
+  },
+  "first_frame_reader": {
+   "units": 6,
+   "start_error_median_deg": 0.9140520284867719,
+   "prop10_median_of_unit_medians_deg": 0.955808594821542
+  },
+  "first_T_reader": {
+   "units": 6,
+   "start_error_median_deg": 11.912842961585792,
+   "prop10_median_of_unit_medians_deg": 9.918593949496032
+  },
+  "huber_3s": {
+   "units": 6,
+   "start_error_median_deg": 9.399539801819891,
+   "prop10_median_of_unit_medians_deg": 8.743338198169857
+  },
+  "huber_all_10s": {
+   "units": 6,
+   "start_error_median_deg": 7.969087020692485,
+   "prop10_median_of_unit_medians_deg": 7.837843024711083
+  }
+ },
+ "real_outdoor_uzh": {
+  "oracle": {
+   "units": 3,
+   "start_error_median_deg": 0.0,
+   "prop10_median_of_unit_medians_deg": 0.41678185342895235
+  },
+  "first_frame_reader": {
+   "units": 3,
+   "start_error_median_deg": 8.219851959001929,
+   "prop10_median_of_unit_medians_deg": 7.645001976330765
+  },
+  "first_T_reader": {
+   "units": 3,
+   "start_error_median_deg": 7.96005369706473,
+   "prop10_median_of_unit_medians_deg": 8.831377091176645
+  },
+  "huber_3s": {
+   "units": 3,
+   "start_error_median_deg": 11.92651403534377,
+   "prop10_median_of_unit_medians_deg": 12.906184255465126
+  },
+  "huber_all_10s": {
+   "units": 3,
+   "start_error_median_deg": 9.869251078700138,
+   "prop10_median_of_unit_medians_deg": 9.820081768590507
+  }
+ },
+ "sim_forest_ridge": {
+  "oracle": {
+   "units": 26,
+   "start_error_median_deg": 0.0,
+   "prop10_median_of_unit_medians_deg": 2.254562048295603
+  },
+  "first_frame_reader": {
+   "units": 26,
+   "start_error_median_deg": 8.854332297114574,
+   "prop10_median_of_unit_medians_deg": 9.234072398488403
+  },
+  "first_T_reader": {
+   "units": 26,
+   "start_error_median_deg": 8.088109313914094,
+   "prop10_median_of_unit_medians_deg": 9.021934375190426
+  },
+  "huber_3s": {
+   "units": 26,
+   "start_error_median_deg": 8.523901351626455,
+   "prop10_median_of_unit_medians_deg": 8.492984036562783
+  },
+  "huber_all_10s": {
+   "units": 26,
+   "start_error_median_deg": 4.982038505604869,
+   "prop10_median_of_unit_medians_deg": 7.335746680153237
+  }
+ },
+ "sim_industrial": {
+  "oracle": {
+   "units": 27,
+   "start_error_median_deg": 0.0,
+   "prop10_median_of_unit_medians_deg": 2.4998487718041282
+  },
+  "first_frame_reader": {
+   "units": 27,
+   "start_error_median_deg": 1.2653036291322648,
+   "prop10_median_of_unit_medians_deg": 2.6581462010143606
+  },
+  "first_T_reader": {
+   "units": 27,
+   "start_error_median_deg": 2.0947409017390117,
+   "prop10_median_of_unit_medians_deg": 7.493839110226782
+  },
+  "huber_3s": {
+   "units": 27,
+   "start_error_median_deg": 3.393377723860045,
+   "prop10_median_of_unit_medians_deg": 10.523868996712153
+  },
+  "huber_all_10s": {
+   "units": 27,
+   "start_error_median_deg": 1.871432252700286,
+   "prop10_median_of_unit_medians_deg": 9.731572932085601
+  }
+ },
+ "sim_urban_checker": {
+  "oracle": {
+   "units": 27,
+   "start_error_median_deg": 0.0,
+   "prop10_median_of_unit_medians_deg": 4.6162415917933695
+  },
+  "first_frame_reader": {
+   "units": 27,
+   "start_error_median_deg": 0.7255758622475065,
+   "prop10_median_of_unit_medians_deg": 4.8502339302514255
+  },
+  "first_T_reader": {
+   "units": 27,
+   "start_error_median_deg": 2.9891691146892754,
+   "prop10_median_of_unit_medians_deg": 6.600260177104875
+  },
+  "huber_3s": {
+   "units": 27,
+   "start_error_median_deg": 5.2485976376424315,
+   "prop10_median_of_unit_medians_deg": 10.28123032678365
+  },
+  "huber_all_10s": {
+   "units": 27,
+   "start_error_median_deg": 4.8141866377630524,
+   "prop10_median_of_unit_medians_deg": 8.59854095913445
+  }
+ },
+ "tii_dev": {
+  "oracle": {
+   "units": 6,
+   "start_error_median_deg": 0.0,
+   "prop10_median_of_unit_medians_deg": 44.21898520172111
+  },
+  "first_frame_reader": {
+   "units": 6,
+   "start_error_median_deg": 3.925843299398566,
+   "prop10_median_of_unit_medians_deg": 41.82743709249415
+  },
+  "first_T_reader": {
+   "units": 6,
+   "start_error_median_deg": 8.760634562244464,
+   "prop10_median_of_unit_medians_deg": 38.23068568959813
+  },
+  "huber_3s": {
+   "units": 6,
+   "start_error_median_deg": 13.078588572087112,
+   "prop10_median_of_unit_medians_deg": 30.1662078241468
+  },
+  "huber_all_10s": {
+   "units": 6,
+   "start_error_median_deg": 13.2534457514823,
+   "prop10_median_of_unit_medians_deg": 26.223190567158504
+  }
+ },
+ "tii_held": {
+  "oracle": {
+   "units": 2,
+   "start_error_median_deg": 0.0,
+   "prop10_median_of_unit_medians_deg": 42.121495554478884
+  },
+  "first_frame_reader": {
+   "units": 2,
+   "start_error_median_deg": 7.343431473303015,
+   "prop10_median_of_unit_medians_deg": 35.288463371317405
+  },
+  "first_T_reader": {
+   "units": 2,
+   "start_error_median_deg": 17.48186621500664,
+   "prop10_median_of_unit_medians_deg": 32.01165287159404
+  },
+  "huber_3s": {
+   "units": 2,
+   "start_error_median_deg": 28.446029586808933,
+   "prop10_median_of_unit_medians_deg": 31.230804543822824
+  },
+  "huber_all_10s": {
+   "units": 2,
+   "start_error_median_deg": 29.097705249830106,
+   "prop10_median_of_unit_medians_deg": 26.795151329949373
+  }
+ }
+}

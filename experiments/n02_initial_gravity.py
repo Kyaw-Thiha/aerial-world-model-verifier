@@ -156,19 +156,24 @@ def evaluate(stratum: str, kind: str, unit: str, R_est, R_true, t, up_reader, fp
             continue
         # reader readings carried into the start frame
         lo = i
-        hi = min(n, int(np.searchsorted(t, t[i] + max(T_FIRST, T_FIT))))
-        idx = np.arange(lo, hi)
+        hi_fit = min(n, int(np.searchsorted(t, t[i] + T_FIT)))
+        hi_all = j + 1  # up to and including the horizon partner
+        idx = np.arange(lo, hi_fit)
         idx = idx[np.isfinite(up_reader[idx]).all(axis=1)]
         if len(idx) < 3:
             continue
         rel = np.einsum("nji,jk->nik", R_est[idx], R_est[i])  # R_est(k)^T R_est(i)
         w = np.einsum("nij,nj->ni", rel, up_reader[idx])
+        idx_all = np.arange(i, min(hi_all, n))
+        idx_all = idx_all[np.isfinite(up_reader[idx_all]).all(axis=1)]
+        rel_all = np.einsum("nji,jk->nik", R_est[idx_all], R_est[i])
+        w_all = np.einsum("nij,nj->ni", rel_all, up_reader[idx_all])
         arms = {"oracle": u_true[i],
                 "first_frame_reader": up_reader[i],
                 "first_T_reader": np.mean(w[t[idx] - t[i] <= T_FIRST], axis=0)
                 if np.any(t[idx] - t[i] <= T_FIRST) else np.mean(w[:1], axis=0),
                 "huber_3s": fit_constant(w[t[idx] - t[i] <= T_FIT])[0] if np.any(t[idx] - t[i] <= T_FIT) else np.mean(w, axis=0),
-                "huber_all_10s": fit_constant(w)[0]}
+                "huber_all_10s": fit_constant(w_all)[0] if len(idx_all) >= 3 else np.mean(w, axis=0)}
         for arm, g0 in arms.items():
             g0 = g0 / np.linalg.norm(g0)
             rel_ij = R_est[j].T @ R_est[i]

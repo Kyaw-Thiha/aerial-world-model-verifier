@@ -33,6 +33,12 @@ TURN_MIN, TURN_MAX = 2.0, 5.0
 BINS = [(0.0, 10.0), (10.0, 30.0), (30.0, 180.0)]
 
 
+def parse_vec(x) -> np.ndarray:
+    if not isinstance(x, str):
+        return np.asarray(x, float)
+    return np.asarray([float(v) for v in x.strip().strip("[]").replace(",", " ").split()], float)
+
+
 def up_of(R):
     R = np.asarray(R, float)
     return np.einsum("...ji,j->...i", R, E3)
@@ -81,6 +87,8 @@ def solve_correction(R_preds, v_worlds, t_ests, two: bool):
         ds.append(-d0)
     G = np.asarray(gs)
     d = np.asarray(ds)
+    if not (np.isfinite(G).all() and np.isfinite(d).all()):
+        return None
     if two:
         c, *_ = np.linalg.lstsq(G, d, rcond=None)
     else:
@@ -156,10 +164,10 @@ def main() -> int:
                 r1, r2 = wins[w1], wins[w2]
                 if not (np.isfinite(u_reader[w1]).all() and np.isfinite(u_reader[w2]).all()):
                     continue
-                t_est1 = np.asarray(json.loads(r1.t_est), float)
-                t_est2 = np.asarray(json.loads(r2.t_est), float)
-                v1 = -(R_true[w1] @ np.asarray(json.loads(r1.t_true), float))
-                v2 = -(R_true[w2] @ np.asarray(json.loads(r2.t_true), float))
+                t_est1 = parse_vec(r1.t_est)
+                t_est2 = parse_vec(r2.t_est)
+                v1 = -(R_true[w1] @ parse_vec(r1.t_true))
+                v2 = -(R_true[w2] @ parse_vec(r2.t_true))
                 v1 = v1 / np.linalg.norm(v1)
                 v2 = v2 / np.linalg.norm(v2)
                 theta = np.degrees(np.arccos(np.clip(v1 @ v2, -1, 1)))
@@ -175,8 +183,12 @@ def main() -> int:
                 Rp2 = R_pred2 @ C_start
                 base = ang(up_of(Rp2), up_of(R_true[w2]))
                 c1 = solve_correction([Rp2], [v2], [t_est2], two=False)
+                if c1 is None:
+                    continue
                 one = ang(up_of(Rp2 @ body_corr(c1)), up_of(R_true[w2]))
                 cc = solve_correction([Rp1, Rp2], [v1, v2], [t_est1, t_est2], two=True)
+                if cc is None:
+                    continue
                 two_arm = ang(up_of(Rp2 @ body_corr(cc)), up_of(R_true[w2]))
                 rows.append({"kind": kind, "unit": unit, "w1": w1, "w2": w2, "theta_deg": theta,
                              "baseline_deg": base, "one_constraint_deg": one,
