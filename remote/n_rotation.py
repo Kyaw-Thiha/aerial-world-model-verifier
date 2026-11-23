@@ -192,6 +192,43 @@ def sim(clip_id: str, force: bool = False) -> dict:
     return rec
 
 
+@app.function(image=image, volumes={N_DATA: n_vol, A_DATA: a_vol},
+              gpu="A10", timeout=3600, max_containers=6)
+def gen(clip: str, fov_deg: float = 90.0, force: bool = False) -> dict:
+    """DPVO on one generated clip (H04 SolarWM), native 864x480, assumed focal."""
+    import cv2
+    import numpy as np
+
+    tag = f"fov{int(round(fov_deg))}"
+    out_npz = Path(N_DATA) / "poses" / "gen" / tag / f"{clip}.npz"
+    out_json = Path(N_DATA) / "runs" / f"gen__{tag}__{clip}.json"
+    if out_npz.exists() and not force:
+        return json.loads(out_json.read_text())
+    video = Path(N_DATA) / "gen" / "videos" / f"{clip}.mp4"
+    cap = cv2.VideoCapture(str(video))
+    frames, fps = [], float(cap.get(cv2.CAP_PROP_FPS))
+    while True:
+        ok, fr = cap.read()
+        if not ok:
+            break
+        frames.append(cv2.cvtColor(fr, cv2.COLOR_BGR2GRAY))
+    cap.release()
+    if not frames:
+        raise RuntimeError(f"{clip}: no frames decoded")
+    h, w = frames[0].shape[:2]
+    f = (w / 2.0) / np.tan(np.deg2rad(fov_deg / 2.0))
+    rec = _run_dpvo(frames, (f, f, w / 2.0, h / 2.0), fps, clip, "gen")
+    rec.update({"clip_id": clip, "fov_deg": fov_deg, "video": str(video),
+                "dpvo_commit": DPVO_COMMIT})
+    out_npz.parent.mkdir(parents=True, exist_ok=True)
+    np.savez_compressed(out_npz, c2w=rec.pop("c2w"), t=rec.pop("t"),
+                        n_input=rec["n_input"], n_pose=rec["n_pose"], fps=rec["fps"])
+    out_json.parent.mkdir(parents=True, exist_ok=True)
+    out_json.write_text(json.dumps(rec, indent=1))
+    n_vol.commit()
+    return rec
+
+
 @app.local_entrypoint()
 def main(which: str = "all", limit: int = 0, ids: str = "", seq: str = ""):
     import csv
@@ -200,6 +237,13 @@ def main(which: str = "all", limit: int = 0, ids: str = "", seq: str = ""):
         seqs = [seq] if seq else UZH
         for r in uzh.map(seqs):
             print("UZH", r)
+    if which == "gen":
+        vids = sorted(p.stem for p in Path("data/n04/videos").glob("*.mp4")) if Path("data/n04/videos").is_dir() else []
+        if not vids:
+            print("no local data/n04/videos; pass ids")
+            return
+        for r in gen.map(vids):
+            print("GEN", r)
     if which in ("all", "sim"):
         if ids:
             clip_ids = [x for x in ids.split(",") if x]

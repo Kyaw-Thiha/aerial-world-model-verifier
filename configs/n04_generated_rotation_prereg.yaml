@@ -1,0 +1,81 @@
+# Track N, Part 4 -- does video rotation work on generated video?
+#
+# NEW pre-registration, written and committed BEFORE DPVO was run on any generated clip and
+# before any tracking or propagation number was computed. Conditional on Part 0 passing (it did).
+prereg_version: 1
+date: '2026-11-22'
+status: preregistered
+track: N
+owner_branch: track-n-rotation
+
+question: >
+  On generated aerial video, what fraction of clips supports rotation extraction at all, and where
+  it does, does the propagated tilt follow the camera attitude the generator was commanded to
+  render -- better or worse than the per-frame reader?
+
+populations:
+  h04_solarwm:
+    clips: the 234 local draw-0..2 clips of Track H4 (78 per arm x 3 arms), from track-m's
+      verified mirror `data/m02_inputs/h04/*.mp4`; nothing re-downloaded, no R2 write
+    arms:
+      A_flatness: camera attitude = the flatness attitude of the commanded path
+      B_level: camera held level
+      C_mirrored_roll: arm A with roll negated
+    truth_attitude: from track-h3's `results/h04/paths/paths.npz` (roll, pitch, yaw at 16 Hz,
+      one row per path), no mount (the campaign commands the camera attitude directly)
+  h01_anwm:
+    clips: the 80 ANWM clip directories under track-m's `data/m02_inputs/h01/` (16 PNGs each)
+    note: secondary; the ANWM action rate is undocumented, so no time-based horizon is claimed
+      for it -- only "does a two-frame rotation fit exist and is it non-degenerate"
+
+extractor:
+  primary: DPVO, commit 0ac95b6, settings as Track A/C (48 patches, removal 12, optimisation 8,
+    lifetime 5)
+  intrinsics: unknown for generated video; assumed 90 deg horizontal (f = 432 px for 864x480,
+    cx = 432, cy = 240). Recorded as an assumption; a sensitivity arm re-runs 10 % of the clips at
+    70 deg and 110 deg horizontal and reports the change in the 5 s propagated error.
+  frames: native 864x480, all 81 frames at 16 fps
+
+statistics:
+  tracking_success:
+    unit_failed_if_any:
+      - the extractor raised or wrote no poses
+      - fewer than 90 % of input frames returned a pose
+      - frozen estimate: median per-step relative rotation < 0.10 x the commanded attitude's
+        median per-step rotation, while the commanded median exceeds 0.02 deg
+    reason_codes: [crash, partial_poses, frozen_estimate]
+    denominator: all attempted clips per arm
+  propagated_tilt_error:
+    definition: >
+      oracle initial gravity (the commanded up at the first frame); propagate with the estimated
+      relative rotations; angle between the propagated up and the commanded up, degrees, at 1, 2
+      and 5 s. Same construction as Part 0, with the commanded attitude as truth.
+    unit_statistic: median over valid starts; stratum = median of per-clip medians
+  reader_reference: >
+    the frozen reader's per-frame tilt error on the same clips (track-h3
+    `results/h04/depicted_main/depicted.jsonl`), median per clip, same stratum aggregation
+  turn_and_null: not applicable here (no verdict)
+  h01_anwm:
+    statistic: fraction of clips with >= 20 SIFT matches and >= 20 essential-matrix inliers
+      between frames 0 and 2, and the median RANSAC inlier count; no attitude claim
+    why: the action rate is undocumented, so a horizon in seconds is not defined
+
+reporting:
+  - per arm and draw: attempted, failed (reasons), success rate, 1/2/5 s propagated error, reader
+    error on the same clips
+  - the fraction with usable tracking is quoted before any attitude number
+  - the focal sensitivity (70/90/110 deg) on the sampled clips
+  - no gate: Part 4 is descriptive and bounds the idea; it cannot change Parts 1-3.
+
+compute:
+  plan: one Modal app `awmv-n-rotation` (A10), new volume path `gen/videos` and `poses/gen`
+  estimate_usd: 0.80
+  basis: 234 clips x 81 frames = 18,954 frames at 864x480; DPVO at a conservative 8 frames/s is
+    0.66 A10-hours at 1.10 USD/h, plus container starts. Under the 20 USD estimate line.
+  stop: every app stopped; nothing written to R2.
+
+outputs:
+  - results/n04/tracking.csv
+  - results/n04/horizons.csv
+  - results/n04/summary.json
+  - reports/N04_generated_video_rotation.md
