@@ -1,0 +1,50 @@
+# Track N2, N09 -- Part C provenance check: is the Part 4 comparison like for like?
+#
+# Written and committed BEFORE the information-matched arm is computed. This does NOT redo
+# Part 4; it adds one arm to decide whether Part 4's headline comparison is information-matched.
+prereg_version: 1
+date: '2026-11-23'
+status: preregistered
+track: N2
+owner_branch: track-n2-sim-tiers
+extends: [N04]
+
+question: >
+  N04 compared the propagated tilt on SolarWM clips (oracle start, horizons 1/2/5 s) with the
+  reader's per-frame (zero-horizon) tilt error. Both are absolute errors against the commanded
+  attitude, but the propagated arm is given the true attitude at frame 0 and the reader is given
+  nothing. Does the propagated advantage survive when the propagated arm is given only the
+  reader's own frame-0 reading -- the deployment-fair start?
+
+definition:
+  arms:
+    oracle: u0 = the true commanded world-up in camera coordinates at frame 0 (N04's arm A)
+    reader_start: u0 = the frozen reader's frame-0 world-up in camera coordinates
+    reader: the reader's own per-frame world-up
+  propagated: up(k) = (R_est(k)^T R_est(0)) u0, R_est from the stored fov90 DPVO poses
+  truth: the commanded attitude from track-h3's H04 path table (arm A flatness)
+  error: angle between the arm's up and the commanded up, at frame k
+  statistic: median over frames, then median across the 78 arm-A clips; reported at 0/1/2/5 s
+    (frame 0 and 16/32/80 frames at 16 fps)
+  reader_reference: the reader's median per-frame error on the same clips (N04's 9.07 deg)
+
+decision_rule:
+  matched: >
+    if the reader-start propagated error at 1 s is below the reader's per-frame median error,
+    the comparison is information-matched in practice and Part 4 stands as published with a
+    one-sentence caveat.
+  not_matched: >
+    otherwise Part 4's advantage is conditional on a start better than the reader; the report
+    says so explicitly and no Part 4 number is recomputed or replaced (the oracle arm and the
+    reader arm are re-derived only to confirm the published values).
+
+population: the 78 arm-A (flatness) H04 clips with a stored fov90 pose and a reader serial.
+heldout: none involved; the H04 clips are not a held-out set for this project.
+
+compute:
+  plan: CPU reanalysis of stored poses, the stored reader JSONL and the stored path table.
+  estimate_usd: 0.00
+
+outputs:
+  - results/n2/n09/summary.json, per_clip.csv
+  - reports/N2C_part4_provenance.md
