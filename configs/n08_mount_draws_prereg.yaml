@@ -1,0 +1,82 @@
+# Track N2, N08 -- Part B(iii): one further single change against the 30/45 degree mount drift.
+#
+# NEW pre-registration, written and committed BEFORE the two-draw aggregate is scored.
+# N06's (i) two-view chain and (ii) resolution arms stand as published. This is (iii).
+prereg_version: 1
+date: '2026-11-23'
+status: preregistered
+track: N2
+owner_branch: track-n2-sim-tiers
+extends: [N06]
+
+question: >
+  N06 found the high-mount drift dominated by run-to-run variance of the DPVO estimate itself.
+  If that is variance around a small common bias, averaging independent draws should reduce the
+  drift; if a systematic mount bias dominates, it will not. Which is it, per mount?
+
+the_single_change:
+  name: two-draw robust aggregation
+  definition: >
+    for each clip and each 10 s horizon sample, form the propagated up from each draw separately
+    (the N06 oracle-start statistic), then average the two unit up vectors componentwise and
+    renormalise (equivalently, the slerp midpoint). All else is N06: same clips, same truth, same
+    10 s horizon rule, same median-of-starts-then-median-across-clips summary.
+  why_one_change: >
+    N06's own conclusion is that the per-mount number is a single draw of a heavy-tailed quantity.
+    The cheapest test of whether the quantity is variance (average it away) or bias (averaging
+    cannot help) is to combine the two draws that already exist; it changes only the aggregation
+    step and adds no new estimator. A per-clip validity flag (drop a clip from an arm if either
+    draw is outside the upright cone, |tilt| >= 85 deg at any horizon sample) is part of the
+    change, because a lost estimate is not a rotation error to average.
+  status: confirmatory
+
+inputs:
+  draw1: data/n05/poses/sim200/scale1 (the N05/N06 primary draw)
+  draw2: data/n05/poses/sim200/scale1_rep2 (reproduces N05's published draw-2 C2 values exactly)
+  note: >
+    data/n06/poses_repeat/scale1 no longer holds the third draw N06 reported: it now duplicates
+    draw 1 on 188/200 clips (the 8 exceptions are the clips where draws 1 and 2 coincide). The
+    N06 run-2 medians (5.87 deg at 30, 10.37 at 45) therefore cannot be reproduced from the
+    current cache. This is recorded in docs/decisions.md; N06's published numbers stand as
+    reported and are NOT recomputed or reinterpreted here.
+
+population:
+  clips: the 80 feasible development clips (N06's population), forest reported separately (26);
+    held-out clips never opened
+  mounts: 0 / 15 / 30 / 45 deg
+
+statistic:
+  same_as_n06: >
+    oracle-start propagated lean error at 10 s: for every sample i with i+10 s in the clip,
+    angle between the propagated up and the true up at i+10 s; median over i per clip, then
+    median across clips, by mount. Forest-only medians reported beside the all-clip medians.
+  arms:
+    single_draw1: as N06 dpvo_full
+    single_draw2: the same statistic on draw 2
+    aggregate: the two-draw averaged up
+  derived:
+    - the per-clip |drift(draw1) - drift(draw2)| distribution, by mount
+    - the per-clip disagreement angle between the two propagated ups at the 10 s horizon
+    - the fraction of clips whose two draws disagree by more than 15 deg (a failure flag)
+
+success_criteria:
+  c1_reduction: >
+    SUCCESS iff the 45 degree forest median drift of the aggregate is at least 25 % below the
+    mean of the two single-draw forest medians, AND the 30 degree forest median drift is not
+    worse than the better single draw by more than 10 %.
+  c2_no_harm: >
+    the aggregate must not increase the maximum per-clip drift on the high-mount forest clips
+    above the larger of the two single-draw maxima.
+  c3_reading: >
+    if c1 fails with a median disagreement below 15 deg and no failure-flagged clip, the drift is
+    a common bias and the report says draw-averaging does not help; if the disagreement is large,
+    the report says the estimator is unstable per clip and that repeats plus a validity flag, not
+    averaging, are the deployable remedy.
+
+compute:
+  plan: CPU reanalysis of two stored pose sets; no new DPVO run, no Modal app, no R2 write.
+  estimate_usd: 0.00
+
+outputs:
+  - results/n2/n08/summary.json, per_clip.csv
+  - reports/N2B_mount_drift_draw_aggregation.md

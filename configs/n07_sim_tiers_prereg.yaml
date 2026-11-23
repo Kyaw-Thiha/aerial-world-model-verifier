@@ -1,0 +1,207 @@
+# Track N2, N07 -- completing the verdict-tier comparison on the propagated lean over the
+# 200 simulated development clips: the F0 tier (which N05's pre-registration excluded), the
+# sign sub-tier (which the coherence saturation makes necessary), full stratification, and the
+# start-error sensitivity arm that N05 named as the open question.
+#
+# NEW pre-registration, written and committed BEFORE any F0/sign/start-arm score is computed on
+# any clip. N05's tables (C2 and R, level start) are already published and are REUSED, not
+# re-fitted. The 100 held-out simulated clips are never read. This file does not edit any frozen
+# config (configs/sim_splits_frozen.json cdf66e28..., configs/sim_prereg.yaml 245b68bf...).
+prereg_version: 1
+date: '2026-11-23'
+status: preregistered
+track: N2
+owner_branch: track-n2-sim-tiers
+extends: [N05, N06]
+
+question: >
+  At a matched feasible false-reject count, does the propagated lean beat the reader's lean on
+  the simulated development set once the F0 (fixed-calibration) tier and the M04 sign sub-tier
+  are included, and how much of any answer is bought by the quality of the start attitude?
+
+# --------------------------------------------------------------------------------- population
+population:
+  clips: the 200 development clips of Track I's frozen split (i02_dev_*); the 100 held-out clips
+    are filtered out before any file is opened.
+  conditions:
+    feasible: 80 (the no-violation control AND the null; the simulated set has no separate
+      null-edit rendering -- recorded, not repaired)
+    tilt_removed: 27
+    mirrored_roll: 27
+    tilt_scaled: 33 (x0.5 n=17, x1.5 n=16)
+    partial: 20 (10/25/50 % of the clip: 8/6/6)
+    thrust_limit: 13 (path-side label, camera honest; never pooled with camera defects)
+  strata:
+    family: urban_checker / forest_ridge / industrial (66/67/67)
+    mount: 0 / 15 / 30 / 45 deg (50 each; feasible 20 each)
+    forest: family == forest_ridge (26 feasible, 9 removed, 9 mirrored, 11 scaled, 6 partial)
+    high_mount: mount in {30, 45} (40 feasible, 13 removed, 13 mirrored, 17 scaled, 10 partial)
+  dynamic_clip_definition: peak_tilt_req_deg >= 15 in Track I's manifest (the M05 definition);
+    used only for Part D coverage and reported beside the Part A tables.
+
+# --------------------------------------------------------------------------------- depicted arms
+start_attitude:
+  note: >
+    `u_cam(t0)` is the unit world-up expressed in the camera frame at the first scored frame
+    (frame 0 of the stride-2 grid). The propagated up at frame k is
+    up_k = (R_est(k)^T R_est(t0)) u_cam(t0); lean = depicted_lean_from_gravity(up_k, R_cb).
+  reader:
+    arm: reader
+    definition: the frozen GeoCalib-224 pinhole reader lean (L01 settings, stride 2), read from
+      the N05 score cache `data/n05/scores/<clip>.npz` (`lean_est`, verified equal to
+      depicted_lean_from_gravity(up_est, R_cb) to 3e-18).
+  dpvo_level:
+    arm: dpvo_level
+    start: u_cam(t0) = R_cb^T e3 ("the body was level at t0"). No oracle, no reader.
+    provenance: N05's primary propagated arm; its C2/R values are reused exactly.
+  dpvo_reader_start:
+    arm: dpvo_reader_start
+    start: u_cam(t0) = up_est[0] from the reader score cache. Deployable: one reader call on the
+      first frame. Labelled "reader start" everywhere.
+    status: confirmatory
+  dpvo_oracle:
+    arm: dpvo_oracle
+    start: u_cam(t0) = R_true(t0)^T e3, with R_true = R_bw_cam @ R_cb from the clip's ground
+      truth at the first scored frame.
+    status: upper bound only; labelled as such in every table. Not deployable.
+  dpvo_oracle_2deg:
+    arm: dpvo_oracle_2deg
+    start: the oracle start with the up vector rotated by exactly 2.0 deg about an axis drawn
+      uniformly in the plane orthogonal to it; 8 independent perturbations per clip with
+      numpy.random.default_rng(1), and the clip statistic is the MEDIAN over the 8 draws.
+    status: exploratory start-error sensitivity (prices a 1-3 deg external attitude source such
+      as a flight controller); not deployable and excluded from the primary success criteria.
+  draws:
+    primary: DPVO draw 1 (`data/n05/poses/sim200/scale1`).
+    robustness: draw 2 (`data/n05/poses/sim200/scale1_rep2`, which reproduces N05's published
+      draw-2 C2 values exactly). Arms dpvo_reader_start and dpvo_oracle are recomputed on draw 2
+      and reported beside draw 1; a conclusion that reverses between draws is reported as
+      draw-dependent.
+
+# --------------------------------------------------------------------------------- tiers
+tiers:
+  F0:
+    statistic: >
+      clip median of angle_between_deg(up_body_from_lean(l_dep), up_body_from_lean(l_req)),
+      which is the K03 fixed-calibration thrust-axis angle at the frozen required side
+      (schema v3 exact, k_d = 0.295). No per-clip offset, no fitted drag: this is the tier that
+      can see gain errors and the only one that cannot absorb a scene bias.
+    provenance: the frozen K02/K03 statistic (`tier_values(...)[0]`), re-implemented from the
+      published helper functions; spot-checked below.
+    status: confirmatory (this is the gap N05's prereg declared: "F0 is not run")
+  C2:
+    statistic: >
+      per clip, l_dep = l_req + k_d v_reg + offset, k_d on the fixed grid
+      {0.00,0.05,...,0.40}, offset = per-axis median residual, statistic = median angle
+      between fitted and observed lean. Reused byte-identically from N05 (`tier_scores`).
+    provenance: N05 / K03 semantics.
+    status: confirmatory, with the N05 arms already published; new arms computed with the same
+      function.
+  R:
+    statistic: >
+      Pearson correlation per clip; statistic 1 - min(r_x, r_y); undefined (NaN) where a lean
+      component has zero variance. Reused byte-identically from N05.
+    provenance: N05 / Track J-G window tier (clip form).
+    status: confirmatory, plus the varying-lean subset as a labelled post-hoc diagnostic.
+  S:
+    statistic: >
+      the M04 sign sub-tier with the reader-noise dead-band: per axis j, s_j = fraction of
+      matching signs over frames with |l_dep,j| > eps and |l_req,j| > eps, eps =
+      sin(1.0 * sigma_n), sigma_n = 1.910587818373582 deg; clip statistic 1 - min(s_x, s_y)
+      maximised over the published 8-frame windows (hop 4); a window abstains with fewer than 6
+      usable frames or fewer than 2 sign-bearing frames per axis; the clip abstains (NaN) if no
+      window is usable.
+    provenance: copied from track-m-gates `experiments/m04_sign_deadband.py` (PRIMARY db1.0).
+    status: confirmatory. It is included because N05 found the coherence tier undefined on ~60 %
+      of feasible clips (constant required lean), and the sign tier does not need variance.
+  agreement_of_statistic_conventions: >
+    the lean-vector angle used by N05's `ang_lean` and the exact axis angle used by F0 differ by
+    a median 0.001-0.03 deg over the relevant 5-20 deg range; F0 uses the exact axis angle and
+    C2/R reuse N05, so the cross-tier comparison carries that sub-0.1 deg inconsistency and it is
+    stated in the report.
+
+# --------------------------------------------------------------------------------- thresholds
+thresholds_and_matching:
+  folds: leave-one-scene-seed-out over the six scene seeds (101-106); each fold's cut is the
+    alpha = 0.05 upper quantile of the FEASIBLE clips of the other five seeds.
+  natural: the leave-one-seed-out flag for each clip (this is the published N05 construction).
+  k_ref: >
+    per tier, the reader arm's natural false-reject count on the 80 feasible clips. Every arm in
+    that tier is then cut at its own (k_ref+1)-th largest pooled feasible score, so all arms in a
+    tier have exactly the same pooled feasible false-reject count (the N05 matched construction).
+  curve: >
+    beside the matched point, each arm/tier is evaluated at pooled feasible false-reject counts
+    of 5/80, 10/80 and the N05 continuity point 7/80; detections are k/n with n printed.
+  small_clusters: six scene seeds. Any interval is descriptive and labelled; cells with n < 10
+    are k/n only, no rate, daggered.
+
+# --------------------------------------------------------------------------------- success criteria
+# Fixed now, before any F0/S/start-arm number exists. "Reader" means the reader-lean arm of the
+# SAME tier. Delta counts are over the same clips.
+success_criteria:
+  primary_forest:
+    tier: F0
+    arm: dpvo_reader_start
+    criterion: >
+      SUCCESS iff on the forest stratum at the primary matched point BOTH hold:
+      (a) detections(propagated, tilt_removed) - detections(reader, tilt_removed) >= +3 of 9;
+      (b) feasible false-rejects(propagated) - feasible false-rejects(reader) <= 0 of 26.
+      Also required at the fixed 10/80 pooled point for the same arm and stratum.
+  primary_high_mount:
+    tier: F0
+    arm: dpvo_reader_start
+    criterion: >
+      SUCCESS iff on the 30+45 degree mount stratum at the primary matched point BOTH hold:
+      (a) feasible false-rejects(propagated) - feasible false-rejects(reader) <= +2 of 40;
+      (b) detections(propagated, tilt_removed) - detections(reader, tilt_removed) >= 0 of 13.
+  upper_bound_forest:
+    tier: F0
+    arm: dpvo_oracle
+    criterion: >
+      reported, not gating: SUCCESS iff delta detection >= +4 of 9 with delta false-reject <= 0.
+      This prices the best case and separates "the propagation is good but the start is not" from
+      "the propagation itself does not help".
+  whole_set_other_tiers:
+    census: >
+      for C2, R and S, the same delta rule is applied to every stratum (all / forest /
+      high_mount) and every defect family, but those were pre-registered as NEGATIVE in N05 for
+      C2/R on the level arm; they are confirmatory re-checks of the published N05 numbers, not
+      new opportunities. S is the one new confirmatory tier.
+  what_counts_as_a_gain_for_part_d:
+    rule: >
+      Part D (the agreement gate on coverage over dynamic clips) is run iff at least one
+      DEPLOYABLE arm (reader, dpvo_level or dpvo_reader_start) meets the `primary_forest`
+      criterion under any tier. Otherwise Part D is not run and the report says so.
+  directional_readings_of_failure:
+    - if dpvo_oracle meets the forest F0 criterion and dpvo_reader_start does not, the report
+      says the propagation is sound but the start dominates -- the same reading N05 reached for
+      C2, now with F0.
+    - if neither the oracle nor the reader-start arm meets it, propagation does not improve F0 on
+      sim and the report says so plainly.
+
+# --------------------------------------------------------------------------------- reporting
+reporting:
+  - every detection table prints the feasible (null) rate beside it, k/n
+  - every table is split by family and by mount; forest and high_mount are the pre-registered
+    strata; the all-clip row is printed but never replaces them
+  - removal, mirror, scale (and x0.5/x1.5), partial (and 10/25/50 %), thrust_limit separately
+  - yaw control: NOT measurable on the simulated set (no yaw-warp family; a world-yaw warp cannot
+    be rendered); the propagated lean is analytically invariant to a world-yaw warp, so its score
+    would equal the feasible score by construction -- a statement, not a measurement. The measured
+    yaw control is the UZH one (N02b), quoted with its denominators.
+  - null: the 80 feasible clips are the null; there is no separate null rendering for sim.
+  - both DPVO draws for the reader-start and oracle arms
+  - a "census" table of every arm x tier x stratum with the reader difference, so no variant is
+    hidden behind a best-of
+  - labelled confirmatory vs exploratory in every table header
+  - intervals: scene-clustered bootstrap (5,000 draws, numpy.random.default_rng(1)) where at least
+    10 clusters exist; with six seeds it is descriptive
+
+compute:
+  plan: CPU reanalysis of the N05 reader score cache and the two stored DPVO pose sets; no new
+    reader run, no new DPVO run, no Modal app, no R2 write.
+  estimate_usd: 0.00
+
+outputs:
+  - results/n2/n07/per_clip.csv, summary.json, census.csv, start_sensitivity.csv
+  - reports/N2A_verdict_tiers_propagated_f0.md
