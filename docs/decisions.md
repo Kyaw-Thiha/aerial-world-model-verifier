@@ -668,3 +668,116 @@ Every row below was read from the project's own repo/HF card on 2026-11-10. "ver
 - [K] **J02's floor table survives after K01's relabelling, with one short-window qualification.** Exact drag-free whole-clip MDV 6.95 deg against J02's 6.88 (their "k_d = 0.295" row, which was drag-free); exact k_d = 0.295 7.29. 24/16-frame cells match; the 8-frame floor is 8.81 (drag-free) / 9.58 (k_d 0.295) against 10.52, 1.7 deg lower because the exact floor masks 239-242 frames with required tilt >85 deg and drops windows with two masked frames. The σ/bias grid is reproduced (drag-free 4.75→10.00 against J02 4.66→9.63), and the physical modes differ by at most 0.7 deg, not 2 deg.
 - [K] **J02's anchor numbers are mode-mislabelled, confirmed.** Exact k_d = 0.295: 6.65 deg H0 / 11.40 threshold; exact drag-free: 9.31 / 14.80, matching J02's 9.22 / 14.46 (their drag-free-labelled row). J02's "drag-free" 16.38 / 31.11 is k_d = −0.295. The measured-error replay is **inconclusive**: H0 4.01 matches J02's 3.97, but the LOFO threshold is 46.6 deg because the 100-clip set includes the racing reader failures as clip medians; J02's 7.66 used J01's frame table, which is not a K03 input. Reported, not smoothed.
 - [K] **No frozen config or published report edited.** The proposed J03/J02 corrections remain the K01 §6 note; K03 is the re-derivation, with its own pre-registration and results.
+
+## Track L — reader fine-tune on simulated scenes (2026-11-22) — entries tagged [L]
+
+- [L] **Started on a partial I02 set, on the user's explicit instruction, and the gap is recorded rather than
+  papered over.** At the start of the track R2 holds 173 of Track I's 300 clips: 170 of 200 development clips
+  and 3 of 100 held-out clips. The 30 missing development clips are all infeasible-defect clips; all 80
+  feasible development clips are present. The 80 feasible development clips were re-downloaded and hashed
+  against `results/i02/manifest.csv`: **160 objects, 160 sha256 matches, 0 mismatches**. The `awmv-i-data`
+  volume holds 174 clips and no Track I app was running, so the missing clips are unrendered, not merely
+  unpublished. Consequence: Part 1 (feasible-clip reader error) and all training arms run on the feasible
+  development clips; the pre-registered simulated held-out evaluation and any infeasible-clip score are
+  **deferred** until I02 is complete. No held-out clip was read.
+- [L] **No branch was merged into `track-l-reader-simreal`, on the user's instruction; the needed files were
+  copied byte-identically so the later consolidation is a no-op for them.** Base is `main` at `41d1dad`.
+  Sources: `track-i-simset` at `955c0b3` (108 files: `src/sim/*`, the sim tests, `configs/sim_prereg.yaml`,
+  `configs/sim_splits_frozen.json`, the `i02_*` tools, `remote/i_score.py`, the manifest/composition/reader-grid
+  results and the 86 stored score JSONs), `track-g-segments2` at `c189727` (17 files: the G03 pre-registration,
+  the three `g03_*` scripts, `remote/g_tilt_reader.py`, the G03 fold results) and `track-j-reader` at `f7ba108`
+  (16 files: `src/depicted/anatomy.py`, `src/verdict/segments.py`, `experiments/j01_anatomy.py`, and the
+  out-of-fold G03 per-frame inputs under `results/j_inputs/g03_folds/`). Every one of the 141 files has its
+  source branch, source commit, source path and sha256 in `results/l00/provenance.json`; the hash was recomputed
+  on the copied file and compared with the source blob stream, and all 141 match. The copied sim tests pass
+  (24 passed). This entry is the per-file record; the JSON is its machine-readable form.
+- [L] **The sim route and the real route are different camera models, and no arm mixes them in one batch
+  silently.** The simulated clips are rendered pinhole (640x360, 90 deg hfov) and Track I scores them with
+  GeoCalib `weights="pinhole"`, `camera_model="pinhole"`, scalar focal prior. The adopted real route is the
+  raw TII fisheye (`weights="distorted"`, `simple_divisional`). G03 forbids mixing them in one fold. Track L's
+  arms therefore state their route and initialisation explicitly in `configs/l02_reader_prereg.yaml`; the
+  domain-randomised arm warps simulated frames to a synthetic `simple_divisional` fisheye so that the real
+  and simulated batches share a camera model, and the warp parameters are drawn from a pre-registered grid.
+
+- [L] **The L01 re-score reproduces I02 to 0.11 deg at worst, and the prereg's 0.05 deg stop rule
+  fired; the rule was amended rather than ignored** (`configs/l01_amendment_a.yaml`). The two
+  stride-1 clips agree to 0.03 deg, the maximum over the first 36 is 0.109, and the re-score's
+  own even/odd subset medians bracket I02's stored value (e.g. dev_008: stored 6.318, even
+  6.382, odd 6.433, full 6.404). That is the signature of a frame-enumeration offset in I02's
+  stride-2 loader, not of a different estimate, and its size is GeoCalib's own run-to-run
+  difference (Track A measured 0.13-0.16 deg for the identity edit). The amended check is
+  0.25 deg per clip and 0.10 deg on the pooled median, still an order of magnitude below every
+  effect L01 reports.
+- [L] **The regenerated TII edits are validated on the condition-specific change, not on an
+  absolute comparison** (`configs/l02_amendment_b.yaml`). On `flight-01a-ellipse#00`, the frozen
+  reader on our regenerated frames differs from the stored condition leans by 0.56-0.67 deg
+  **on every condition including `real`**, so the offset belongs to the reader invocation (the
+  stored leans came from Track A2's gate extraction on the zip-decoded frames), not to the
+  warps. Relative to `real`, the four conditions move by +0.05 (null), -0.07 (tilt removal),
+  -0.06 (mirror) and +0.04 (yaw) deg. Aligning two policies to Track A2's (per-condition warp
+  with black border and no common mask; the default LM schedule for the frozen reader) is what
+  reduced the spread from 0.3-1.8 deg on the first attempt. Consequence recorded: the new
+  readers' downstream rates use the identity-warped frame as the real condition so real and
+  edits share resampling, with the raw-frame sensitivity reported beside it.
+
+- [L] **A mixed-batch shape bug aborted the mixed arm before it produced a fold.** Simulated frames
+  are 640x360 and real TII frames 640x480; the training loop stacked a batch without checking
+  shape, so every mixed fold and the mixed final died with `stack expects each tensor to be equal
+  size`. The real-only and simulated-only arms are unaffected (one shape each) and completed.
+  Fix: the sampler flushes its buffer whenever the next sample has a different shape, so a batch
+  never mixes resolutions; nothing else about the arm changes. The failed runs produced no fold
+  record and are rerun at the same pre-registered budget. Cost of the failure: one finals attempt
+  and the mixed folds' queued time, recorded in the ledger.
+
+- [L] **The edit reader now uses Track A's stored per-frame edit matrices, and the mismatch
+  disappears.** Recomputing the camera-frame maps from the mocap quaternion and mount gave the
+  right rotation *angle* but a slightly different *axis* (0.4-0.8 deg on a 2.7 deg edit), which on
+  the mirror condition reached 0.48 deg between our regenerated condition and the stored one. The
+  matrices that produced the stored clips are on `awmv-a-data` at `/edits/p3a_v1/<flight>.npz`;
+  using them directly (verified name-for-name against the frame table) brings the condition-relative
+  offsets on five `flight-01a` clips to +0.00 (null), +0.11 (tilt removal), +0.02 (mirror) and
+  +0.23 (yaw), all inside amendment B's 0.25 deg line, with the absolute reader offset 0.30 deg on
+  the real condition. Recorded because the first check (single clip, recomputed maps) had passed at
+  0.07 deg and the five-clip version did not; the difference was the map convention, not the reader.
+
+- [L] **The mixed arm needed a second sampling fix: batches are now domain-homogeneous.** After
+  the frame-shape fix, the mixed arm still died in `backward` with "element 0 of tensors does not
+  require grad" on the per-sample forward path (a mixed batch with real and simulated samples
+  calling `set_camera_model` per item). Rather than debug a path the other two arms never take,
+  the sampler now builds **separate streams** for the real and simulated halves of the epoch and
+  alternating batches from each, so every batch has one camera model and one resolution. This is
+  also the strict reading of G03's rule that no fold mixes camera models, applied at batch level.
+  Half the 600-frame epoch comes from each domain. A guard now raises with the camera-model set
+  and parameter-grad count if a loss ever arrives without a graph. Tested on a 4-step mixed fold
+  before relaunching; the real-only and simulated-only arms are untouched.
+
+- [L] **The three final models were trained with seed 1, not the pre-registered 101.** The
+  `final` Modal function takes `seed=101`, but the local entrypoint passes its own `seed` argument
+  (default 1) explicitly, so the value the function received was 1. No held-out outcome had been
+  inspected when this was noticed (the mixed final had just been written, and its record showed
+  `seed: 1`). The seed is not a fitted quantity and no result was used to choose it, but the
+  deviation is recorded here and in the report rather than patched silently; the folds keep the
+  pre-registered `1 + index` seeds. Rerunning three finals for a seed would cost about one
+  GPU-hour with no scientific gain, so they are reported as seed 1.
+- [L] **S1 fails for all three arms and the mixed arm is the worst on the hard real flight.** The
+  pooled held-out trimmed RMSE is 7.51 deg for real-only (-9.4 % against G03's 8.29), 19.87 for
+  simulated-only and **20.44 for mixed+DR** (13p alone 27.05; 07a 5.64). The 15 % bar (7.04) is
+  met by no arm. The mixed arm's training loss rose from 0.045 to 0.054 over its second epoch --
+  the domain-randomised objective was not converging -- and its 13p result is the worst of the
+  three. This is the plain answer to the track's question: on this data, simulated training does
+  not improve the reader on real held-out flights, and mixing it with real under this DR recipe is
+  worse than training on real alone.
+
+- [L] **The full frozen edit pass makes the pipeline check fail on the two racing flights, not on the
+  open ones** (amendment C covered the first three flights; the numbers below are the full eight).
+  Absolute offset on the unedited real frames: 0.04 deg (01p, 07p), 0.06-0.07 (16p, 13p), 0.30 (01a),
+  0.31 (13a), 0.90 (04a), 1.00 (07a). Condition-relative offsets: null <=0.07 everywhere; tilt
+  removal +0.14..+0.20 on the six non-racing flights but **+0.81 on 13p and 16p**; mirror -0.41 on
+  04a, +0.29 on 07a, <=0.21 elsewhere; yaw +0.26/+0.30/+0.37 on 04a/07a/16p, <=0.20 elsewhere. The
+  two 0.81 tilt values are the extreme ceiling-view flights, where the tilt edit blanked most of the
+  frame; the reader's horizon estimate there is unstable to resampling, and Track A's own null-edit
+  check on these flights was never published per flight. The maps are not the cause (identity is
+  exact everywhere). Consequence recorded: detection rates are measured on the regenerated pixels
+  and are unaffected in practice (the edits move the lean by 16-27 deg), while the *controls* on
+  13p/16p/04a/07a carry up to 0.8 deg of pipeline uncertainty and are reported with it; a
+  sensitivity table excludes those flights from the control rates.

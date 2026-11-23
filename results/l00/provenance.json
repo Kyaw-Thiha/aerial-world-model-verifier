@@ -1,0 +1,993 @@
+{
+ "note": "Byte-identical copies made from unmerged track branches into track-l-reader-simreal; no merge was performed. Each sha256 was recomputed on the copied file and compared with the source blob stream at the recorded commit.",
+ "copied_utc": "2026-11-22",
+ "files": [
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "src/sim/__init__.py",
+   "sha256": "fd3911871917f973f9c8dcf5a403faf1af1db944a14107655e907fb7033c5d78",
+   "target_path": "src/sim/__init__.py"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "src/sim/blender_render.py",
+   "sha256": "b96d520b1e1852a84341779863cead306e3d9aad4bc22d88486769c92ae06c42",
+   "target_path": "src/sim/blender_render.py"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "src/sim/dataset.py",
+   "sha256": "ce84d3dc2788fb54114872c09c6190329c97d90aebe37baa08bbfa4f793e322b",
+   "target_path": "src/sim/dataset.py"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "src/sim/flight.py",
+   "sha256": "f6bf587307f51285109ba68502f734a258903f568f678e72726812aacdb01ecf",
+   "target_path": "src/sim/flight.py"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "src/sim/labels.py",
+   "sha256": "cb31664638632f9d1b662edf99eff8da0124155695cb03cdc5be776c37cde080",
+   "target_path": "src/sim/labels.py"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "src/sim/scene.py",
+   "sha256": "50dd594f79ebe723f59e01552514652be33abc4c2d16c99a56ae2000ae365a37",
+   "target_path": "src/sim/scene.py"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "src/sim/scenes.py",
+   "sha256": "f96362996fd71d946c26485f38ae46338fe129de40b907353314ad09b60e0c44",
+   "target_path": "src/sim/scenes.py"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "tests/test_sim_dataset.py",
+   "sha256": "04a9f183f15ec3dc3db96fc41b2a581f9f8be58349a3fea95dedb658f6217289",
+   "target_path": "tests/test_sim_dataset.py"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "tests/test_sim_flight.py",
+   "sha256": "bdc7a79f78cf9a397bd5d925c81f7c7ce1ff0983fe6398396effd9a2e30c5c60",
+   "target_path": "tests/test_sim_flight.py"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "configs/sim_prereg.yaml",
+   "sha256": "245b68bfb34991813636c224445e6d7ec683be0eedc8c2fe580ca6cee83e75fb",
+   "target_path": "configs/sim_prereg.yaml"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "configs/sim_splits_frozen.json",
+   "sha256": "cdf66e28387178be9767a2da1f5f24cb4a5c6df2e7a1c013ecdaa6166c120dbd",
+   "target_path": "configs/sim_splits_frozen.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "experiments/i02_build_manifest.py",
+   "sha256": "fd320652c63955eac21c62a4e9b833d0cd8f171b0d088cecdb303e8b491325c2",
+   "target_path": "experiments/i02_build_manifest.py"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "experiments/i02_publish.py",
+   "sha256": "04cacd58b8ad0fc80786b240d53c7102f373f1015c9e4c58055a0c121ee8d9e2",
+   "target_path": "experiments/i02_publish.py"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "experiments/i02_reader_table.py",
+   "sha256": "bcb63b2e7ba1ea5ec0710e6bccb29cb9530037f4c20435bfb8e348a116a8dfa4",
+   "target_path": "experiments/i02_reader_table.py"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "experiments/i02_export_gt.py",
+   "sha256": "1bba935a25b3d43404d5d371b9a7e8c65e9c7905de9723090eac5bb659941420",
+   "target_path": "experiments/i02_export_gt.py"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "experiments/i02_freeze_splits.py",
+   "sha256": "c204e63f8ebe1b4c2480145e0f80cd0021cc55c91c845d4843587e89464a758c",
+   "target_path": "experiments/i02_freeze_splits.py"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "remote/i_score.py",
+   "sha256": "2b71e479178daa0ff608dab0282d8ade32aa3dce273d507dc66af7e2908994b3",
+   "target_path": "remote/i_score.py"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/manifest.csv",
+   "sha256": "813175d406373b6bdd737e78993e94840df8cfd7ea322833f43e80cced4976b6",
+   "target_path": "results/i02/manifest.csv"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/composition.json",
+   "sha256": "243607dd96aeb108a361863f97331bb3f20b108e50e1e60c44b77e5f1da6358c",
+   "target_path": "results/i02/composition.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/reader_feasible_grid.csv",
+   "sha256": "7dae71b77d9aea4122eac0f0fb256849c282bedfb44f7bac7c33fd5a25065180",
+   "target_path": "results/i02/reader_feasible_grid.csv"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/reader_feasible_grid.json",
+   "sha256": "3a8312419ca670f13cf9eba57425de6830d46ff6fe553f915f203289626caa73",
+   "target_path": "results/i02/reader_feasible_grid.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/reader_table.md",
+   "sha256": "5f97fcdd852e267a8ffd704e5f841cc8fad4a5d074a498d6a5ad8a665ae909a1",
+   "target_path": "results/i02/reader_table.md"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_000_score.json",
+   "sha256": "c37418a73e495f958d602381742d4822ac326c62f3b94313ed21b1dd1c156346",
+   "target_path": "results/i02/scores/i02_dev_000_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_001_score.json",
+   "sha256": "d88df77a140fb5a277ba6b54a96c3d4508eb6f775b65d480d3b6a5159956598c",
+   "target_path": "results/i02/scores/i02_dev_001_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_002_score.json",
+   "sha256": "840a53615b5dea709574c162079a4dc89d3006a04884f2ebc7ac4fdf2eb55659",
+   "target_path": "results/i02/scores/i02_dev_002_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_003_score.json",
+   "sha256": "c676c6e595bdee6140151ea270e2879c90c8439e9f58be0fc5407cd76c36b3c0",
+   "target_path": "results/i02/scores/i02_dev_003_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_004_score.json",
+   "sha256": "fa2216ea325b54938954b60adc4a886d1b58cbc0195af1804f3263f4b87fdb69",
+   "target_path": "results/i02/scores/i02_dev_004_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_005_score.json",
+   "sha256": "73cd7d60547ae113e0b63db0bf28413d075e23e025b89326f6e81f67885d44b8",
+   "target_path": "results/i02/scores/i02_dev_005_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_006_score.json",
+   "sha256": "8ad0003ba54bc883851859cb16d482aba45605289cbec563bc80fe91bb8e0a73",
+   "target_path": "results/i02/scores/i02_dev_006_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_007_score.json",
+   "sha256": "a4a76a22caa3deddf5489bb796e2e69a70cf3f134679aaf054887191a876a123",
+   "target_path": "results/i02/scores/i02_dev_007_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_008_score.json",
+   "sha256": "12171f6d95e6367685db41208893ed607fdc85e58341a0aee583abbcb017e164",
+   "target_path": "results/i02/scores/i02_dev_008_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_009_score.json",
+   "sha256": "c9a2faf207a47ff5336defee3d937efb447940e7b74695ddb71aabea4c15bc30",
+   "target_path": "results/i02/scores/i02_dev_009_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_010_score.json",
+   "sha256": "bc20a63b09d64967bab2f50e62d232d23ae85925651c7a99f4bdf01d32e009cf",
+   "target_path": "results/i02/scores/i02_dev_010_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_011_score.json",
+   "sha256": "eda9e91aa52df574ff6de0521209b233c34cae7dad8bc8f8e384330e490932c4",
+   "target_path": "results/i02/scores/i02_dev_011_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_012_score.json",
+   "sha256": "5aaea183f7d5de31e8c8bcf9910a5f6e0e2bba2b5835a549d7842bdcf9d13ee4",
+   "target_path": "results/i02/scores/i02_dev_012_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_013_score.json",
+   "sha256": "8349ca22b8058504e1cf7aa6447092950145d1831100abdd09e7803b18b8037b",
+   "target_path": "results/i02/scores/i02_dev_013_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_014_score.json",
+   "sha256": "55fa5819939f192ef9ff94a8f4fe60152abdc266deed1bdad768299d8464704e",
+   "target_path": "results/i02/scores/i02_dev_014_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_015_score.json",
+   "sha256": "6c6e6d25227d43779b52a9c5030375057e9a27f70a08d1df9b0654f7f329c1f9",
+   "target_path": "results/i02/scores/i02_dev_015_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_016_score.json",
+   "sha256": "72bbfe49e8763847d1b0a2794cfb8f5fd8744929f58783112dd8c5bb78bde2bb",
+   "target_path": "results/i02/scores/i02_dev_016_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_017_score.json",
+   "sha256": "9d39681e2024b374d1ea4adf6088f8e9887465b3184a6e00554f4e6a74a68800",
+   "target_path": "results/i02/scores/i02_dev_017_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_018_score.json",
+   "sha256": "512e940975857bb96328b96f4f96fca67da9582fe0ff59654ed5df65f0658297",
+   "target_path": "results/i02/scores/i02_dev_018_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_019_score.json",
+   "sha256": "bca3eb9147c691f285e35a89f2a317206ba7cc8e0db5d8a5378ebdcbe13517ad",
+   "target_path": "results/i02/scores/i02_dev_019_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_020_score.json",
+   "sha256": "e7cdd7a5e8881f6378fb397db70f464586b95d0ed26ff4c3b3febe77414c39ab",
+   "target_path": "results/i02/scores/i02_dev_020_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_021_score.json",
+   "sha256": "0c2e9e01f297c83dad21e494144b5ca9448e1a16b3b4ab15a11194f2e5a642a7",
+   "target_path": "results/i02/scores/i02_dev_021_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_022_score.json",
+   "sha256": "4ce9bb8b6edf948d54a5eef9bbfb89a743d2d89023ad5372a4590377f0560fad",
+   "target_path": "results/i02/scores/i02_dev_022_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_023_score.json",
+   "sha256": "889800d22747eb8449b1759e930f293a40d00227c7f947f8e22dbf20e6197e6c",
+   "target_path": "results/i02/scores/i02_dev_023_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_024_score.json",
+   "sha256": "69fb0e757ff8ee8739101f16ebff53b97bf4cfd87190a1f5ed2f1608ce2699f6",
+   "target_path": "results/i02/scores/i02_dev_024_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_025_score.json",
+   "sha256": "344fb405667285b4f6bb6fe2f2e368f40f90c162266459551b03478402c2a827",
+   "target_path": "results/i02/scores/i02_dev_025_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_026_score.json",
+   "sha256": "9a9e6491349ceb68e119b39c55448533ba796bab88a9c21930ac034bf76a9f80",
+   "target_path": "results/i02/scores/i02_dev_026_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_027_score.json",
+   "sha256": "33352609117c25c6751a7ced23e87b4014a6bede9ac594cd2e17a7d5efa4acf3",
+   "target_path": "results/i02/scores/i02_dev_027_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_028_score.json",
+   "sha256": "72c0b9ab85e3e5447203281f1c4f85c677a950e19ec268bd7c4028aeb336143d",
+   "target_path": "results/i02/scores/i02_dev_028_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_029_score.json",
+   "sha256": "b39cfc9c898682fb61226fcc6362b80ea5270d723708a4d0f96fd53ca6ae30b7",
+   "target_path": "results/i02/scores/i02_dev_029_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_030_score.json",
+   "sha256": "af62f9d631656bca859022f8b8ca41664643915a28d045e77e62dc8d35b7381a",
+   "target_path": "results/i02/scores/i02_dev_030_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_031_score.json",
+   "sha256": "ee5faf7cc1c9291aee6b2274f35aae988b6346b943340cd331f84903a0bafe80",
+   "target_path": "results/i02/scores/i02_dev_031_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_032_score.json",
+   "sha256": "c96814bf0d86493181fe1f2699672f71dfce29e052f4ef8870f7adafc907aea4",
+   "target_path": "results/i02/scores/i02_dev_032_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_033_score.json",
+   "sha256": "62ea7cfba3bad8dd2a935760db157543a7f0de9cb4fd7249d8e6019ab23583a3",
+   "target_path": "results/i02/scores/i02_dev_033_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_034_score.json",
+   "sha256": "739b8b2afcca527ca498078189aeaf9d025a4a4c0079c906904f1457f55f1639",
+   "target_path": "results/i02/scores/i02_dev_034_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_035_score.json",
+   "sha256": "71a1dd060c1d53f67a9511a65e62e24b6ed22b97da0801383269b0b2690b70db",
+   "target_path": "results/i02/scores/i02_dev_035_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_036_score.json",
+   "sha256": "907324e6152ad2b35b03a9d8c48296b0d12e91a9266a94ade80738efeccc41f9",
+   "target_path": "results/i02/scores/i02_dev_036_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_037_score.json",
+   "sha256": "e2caec8e912b974df0db4f599ca78f08dffb39c9fbc8772c90ca54606d9ebcef",
+   "target_path": "results/i02/scores/i02_dev_037_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_038_score.json",
+   "sha256": "b6e07c59a30bec93fca40f549cb0a40babcb2b134df0e38411d35b98963f3c3e",
+   "target_path": "results/i02/scores/i02_dev_038_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_039_score.json",
+   "sha256": "66ab2f0a13a73415e4664ab799f3ced15e0ddcee607e5ffde9c2e81c569d691a",
+   "target_path": "results/i02/scores/i02_dev_039_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_040_score.json",
+   "sha256": "1c171ab25563da6451a7e6f13c152cd1807522c75da3f1172a64ba8f2adc8ecf",
+   "target_path": "results/i02/scores/i02_dev_040_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_041_score.json",
+   "sha256": "9d16409bd7861eff0227018e2b102a4b3b2298395c8f7d994be8d7c7f7548d64",
+   "target_path": "results/i02/scores/i02_dev_041_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_042_score.json",
+   "sha256": "1de1487c0af6413b5243c2fee5d6dc44698bdf95ab12c6ae7ffa215354acb1a7",
+   "target_path": "results/i02/scores/i02_dev_042_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_043_score.json",
+   "sha256": "41440f5364109dea95944e0aa86196cd0ff7ec4a9a922b21d80acc5d844174e6",
+   "target_path": "results/i02/scores/i02_dev_043_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_044_score.json",
+   "sha256": "15499e27f99dad0983149adc55dbde9ea7240379206293e9fd8c29b1b99897b0",
+   "target_path": "results/i02/scores/i02_dev_044_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_045_score.json",
+   "sha256": "1c30015763608acdc6088c7456d4fd3111dbcf1283f01d2503002a618de985e0",
+   "target_path": "results/i02/scores/i02_dev_045_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_046_score.json",
+   "sha256": "63aa1c626fe12ef37af3e057138d00b67d8890de34d46b1617fc5d7134e658aa",
+   "target_path": "results/i02/scores/i02_dev_046_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_047_score.json",
+   "sha256": "8dde6324a50589eb861a5f9f4b74800a2e118f4f72e6fa5f77b59e61efb99ff0",
+   "target_path": "results/i02/scores/i02_dev_047_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_048_score.json",
+   "sha256": "9c0271ca4391407dfba87b98601ae973ed97ae7a5f396b4be201304fb134167c",
+   "target_path": "results/i02/scores/i02_dev_048_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_049_score.json",
+   "sha256": "58a679672fb54880a2d98d627c5fd8f7f5feb9d12d685b084f40eba111caeaf5",
+   "target_path": "results/i02/scores/i02_dev_049_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_050_score.json",
+   "sha256": "d2b1b41cf40f050be03d4a1322d0e12b1b251b7b2a9745a5dce1e8b3c4c5ad94",
+   "target_path": "results/i02/scores/i02_dev_050_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_051_score.json",
+   "sha256": "8476ee3a1e9660eb74716d445cad3ce51ca1fbb2b91af0fa043f6f3ca5d3ddf8",
+   "target_path": "results/i02/scores/i02_dev_051_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_052_score.json",
+   "sha256": "f36d1e8bb9569b7085e9c5ed5d397def9bab46ba99994618aec85c4c70a2ecd0",
+   "target_path": "results/i02/scores/i02_dev_052_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_053_score.json",
+   "sha256": "223d80599ecb2f21734cf4336c0ef94e7fb49f38ee0f4e0edd70a984852fa294",
+   "target_path": "results/i02/scores/i02_dev_053_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_054_score.json",
+   "sha256": "82dc5c9f0b263d3ff09863192db15ea615801260cafeb4d8a60857b366cc317a",
+   "target_path": "results/i02/scores/i02_dev_054_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_055_score.json",
+   "sha256": "3c73c4906c0cd3084a6c2151b24b47b369dd1b2f5acfa9b9329e1b9f1a792a34",
+   "target_path": "results/i02/scores/i02_dev_055_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_056_score.json",
+   "sha256": "329b81e20639177ff143c8825b9688ba824910c7f25d95e3f1509e7af9fb1300",
+   "target_path": "results/i02/scores/i02_dev_056_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_057_score.json",
+   "sha256": "4237700486fd3149b9bf59fc8ecb46dc5a51e8a093651a56870360461b877dec",
+   "target_path": "results/i02/scores/i02_dev_057_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_058_score.json",
+   "sha256": "aa2f2ee2eb01f753e0be763e786f3070c7703afb28a232270892bbdd29b1d658",
+   "target_path": "results/i02/scores/i02_dev_058_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_059_score.json",
+   "sha256": "b02c3126446184d55122674a2676ba2a1e00606502be6920006f8966bafa7273",
+   "target_path": "results/i02/scores/i02_dev_059_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_060_score.json",
+   "sha256": "0d91bd3db06df3679a487ab37d08cbe3654ca16c6ed78f7af320e6ce7fb9a9de",
+   "target_path": "results/i02/scores/i02_dev_060_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_061_score.json",
+   "sha256": "c6f110b718d4799312120e1f19315d634ea713882bdae3f8c2c47c342df30ec9",
+   "target_path": "results/i02/scores/i02_dev_061_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_062_score.json",
+   "sha256": "53deac34d50c7d843f1e680ba54ce3e099a328e090b1daef4e4b9665b0f713dc",
+   "target_path": "results/i02/scores/i02_dev_062_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_063_score.json",
+   "sha256": "283e712979937b145773a615b2d6cf5201708a2e80f6d00ee0819b8e90948c2e",
+   "target_path": "results/i02/scores/i02_dev_063_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_064_score.json",
+   "sha256": "9757cbd2dce2dbf2e7d7e6908818ac7f4a1fe869fcdeb6348377b408fe993235",
+   "target_path": "results/i02/scores/i02_dev_064_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_065_score.json",
+   "sha256": "109958d66fbc5d4e31d430aa035725eb709d89cecc294f278558a23468dbb38f",
+   "target_path": "results/i02/scores/i02_dev_065_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_066_score.json",
+   "sha256": "aa442237c652664f995c3d0727572d0e7e396bed087c0e59d96d6d34858cd5a6",
+   "target_path": "results/i02/scores/i02_dev_066_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_067_score.json",
+   "sha256": "058506c8631ecee2317e3cadd5e87aba6937c35518feb4bc57bee533e7a1b291",
+   "target_path": "results/i02/scores/i02_dev_067_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_068_score.json",
+   "sha256": "968a22977b12d44e9c24b3affaa6391ac6b9662e351d23b41ce9cf6112e202e0",
+   "target_path": "results/i02/scores/i02_dev_068_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_069_score.json",
+   "sha256": "4fd70f830be66220a810cf27e26b49948d9e2610fb520d8dec914776561e630f",
+   "target_path": "results/i02/scores/i02_dev_069_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_070_score.json",
+   "sha256": "32501b35b394ab46059b4c23a4e7605fa756e7e69bac4a4828bde530b1005178",
+   "target_path": "results/i02/scores/i02_dev_070_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_071_score.json",
+   "sha256": "0e9fe47fbaf5de0ac24ffbbac37397553855602de6974595bf504c5aebef2518",
+   "target_path": "results/i02/scores/i02_dev_071_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_072_score.json",
+   "sha256": "8e0c26514a912d778158b5d0b37102b9bcca43c47b0237e29e5bec21166f3893",
+   "target_path": "results/i02/scores/i02_dev_072_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_073_score.json",
+   "sha256": "4c29a31ae1554ba32c04a4d8e27ad55ba74a843832f61c076debb1c0fadf5a3f",
+   "target_path": "results/i02/scores/i02_dev_073_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_074_score.json",
+   "sha256": "9c6dacf1511198ee5a5a0f36b1de83e29e8cf102b08e80a134a952f22d8cadde",
+   "target_path": "results/i02/scores/i02_dev_074_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_075_score.json",
+   "sha256": "7cdbe3c190113e9b1ca9179ffd195019629f1f217b0e83f926ea0cc19e03dad6",
+   "target_path": "results/i02/scores/i02_dev_075_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_076_score.json",
+   "sha256": "02d32403ce62b567e6f9d2adbd838e292aea85a6f399766648cd97a663c11c66",
+   "target_path": "results/i02/scores/i02_dev_076_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_077_score.json",
+   "sha256": "09da9bb4b4d47cff8a07bf0f46eafce759e3ddfd37440e1146421d0e86f7895c",
+   "target_path": "results/i02/scores/i02_dev_077_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_078_score.json",
+   "sha256": "7e5a6e03a04ac7ae748732062f4d1780304ad1ff4a997bc6a2424b541ac535df",
+   "target_path": "results/i02/scores/i02_dev_078_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_079_score.json",
+   "sha256": "3ff22ba2078624d87660a3bc2ed003ed3de50df17c085002ce1efdb606990aa2",
+   "target_path": "results/i02/scores/i02_dev_079_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_080_score.json",
+   "sha256": "61f3f87ffc86365212183f014b18e84e15eedb98ff6075fcdb08eb8a55d20d3d",
+   "target_path": "results/i02/scores/i02_dev_080_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_107_score.json",
+   "sha256": "31398e8f2ef372df4e43e82603fb48e46d42866424500f90244d64d80ad508df",
+   "target_path": "results/i02/scores/i02_dev_107_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_134_score.json",
+   "sha256": "a94350380ab0d736b37f908f1358450503f53cbd414fae6311ae0f90908fdcc9",
+   "target_path": "results/i02/scores/i02_dev_134_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_135_score.json",
+   "sha256": "4c17dfbfc270533ef8b91fdcd7559e7a0d8a7396ddac2d4f8c19e301ab3a4797",
+   "target_path": "results/i02/scores/i02_dev_135_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_180_score.json",
+   "sha256": "ef61d3427ca3a5e4e2f8c3f5a2077f3bccc72db2b9bf6af55241d73f02687c4f",
+   "target_path": "results/i02/scores/i02_dev_180_score.json"
+  },
+  {
+   "source_branch": "track-i-simset",
+   "source_commit": "955c0b33c0bc2aeabc7b8aede0a9af7014f1b981",
+   "source_path": "results/i02/scores/i02_dev_181_score.json",
+   "sha256": "4cecd85ebc8aa129b69090f465840dbc05b00bc1d494a4f5444fc0bf655da9ea",
+   "target_path": "results/i02/scores/i02_dev_181_score.json"
+  },
+  {
+   "source_branch": "track-g-segments2",
+   "source_commit": "c18972789267968795145132dba786c4d494d444",
+   "source_path": "configs/g03_tilt_reader_prereg.yaml",
+   "sha256": "74924429bafdbb4b7facc7cf12f9217955265c5a70116ac00c45c6e8559dfc7a",
+   "target_path": "configs/g03_tilt_reader_prereg.yaml"
+  },
+  {
+   "source_branch": "track-g-segments2",
+   "source_commit": "c18972789267968795145132dba786c4d494d444",
+   "source_path": "experiments/g03_prepare_frames.py",
+   "sha256": "d0b36202c8b905903082208b1911739f359b4cee6c872629f3c252e6c956ea71",
+   "target_path": "experiments/g03_prepare_frames.py"
+  },
+  {
+   "source_branch": "track-g-segments2",
+   "source_commit": "c18972789267968795145132dba786c4d494d444",
+   "source_path": "experiments/g03_prepare_uzh.py",
+   "sha256": "77891ba8871027b5b054193ffe33ce8b994029665b4cbbba827dd680ad3098ac",
+   "target_path": "experiments/g03_prepare_uzh.py"
+  },
+  {
+   "source_branch": "track-g-segments2",
+   "source_commit": "c18972789267968795145132dba786c4d494d444",
+   "source_path": "experiments/g03_evaluate.py",
+   "sha256": "0cd800b09993b126c887e3b6cb9dfda5efc879fd13c74a2e675be6ddae1cfa93",
+   "target_path": "experiments/g03_evaluate.py"
+  },
+  {
+   "source_branch": "track-g-segments2",
+   "source_commit": "c18972789267968795145132dba786c4d494d444",
+   "source_path": "remote/g_tilt_reader.py",
+   "sha256": "d15c705717e217893b8a0f052cf646e1b5ed2da949890f47bb15004d984d1c23",
+   "target_path": "remote/g_tilt_reader.py"
+  },
+  {
+   "source_branch": "track-g-segments2",
+   "source_commit": "c18972789267968795145132dba786c4d494d444",
+   "source_path": "results/g03_tilt_reader/summary.json",
+   "sha256": "9386eb85fc6df37f0fefe175460b696c3e9f9c4ebc69ec65354db6bc2dd982ae",
+   "target_path": "results/g03_tilt_reader/summary.json"
+  },
+  {
+   "source_branch": "track-g-segments2",
+   "source_commit": "c18972789267968795145132dba786c4d494d444",
+   "source_path": "results/g03_tilt_reader/folds/tii__flight-01a-ellipse.json",
+   "sha256": "27396a8517d865a71b207563a41bb13c6a0c67406dbc1721327abbf64e7f8e19",
+   "target_path": "results/g03_tilt_reader/folds/tii__flight-01a-ellipse.json"
+  },
+  {
+   "source_branch": "track-g-segments2",
+   "source_commit": "c18972789267968795145132dba786c4d494d444",
+   "source_path": "results/g03_tilt_reader/folds/tii__flight-01p-ellipse.json",
+   "sha256": "5dd96b4204458505b179c91db3465cc9bb41081fcf25a3797c58b31f53bf9eac",
+   "target_path": "results/g03_tilt_reader/folds/tii__flight-01p-ellipse.json"
+  },
+  {
+   "source_branch": "track-g-segments2",
+   "source_commit": "c18972789267968795145132dba786c4d494d444",
+   "source_path": "results/g03_tilt_reader/folds/tii__flight-04a-ellipse.json",
+   "sha256": "e373204b71214cdc8eb4b95b4d4d0ef09faad0f1ba85ef132d6c59cee636ac7f",
+   "target_path": "results/g03_tilt_reader/folds/tii__flight-04a-ellipse.json"
+  },
+  {
+   "source_branch": "track-g-segments2",
+   "source_commit": "c18972789267968795145132dba786c4d494d444",
+   "source_path": "results/g03_tilt_reader/folds/tii__flight-07a-lemniscate.json",
+   "sha256": "a3e5e3a980e70bb3fd3d784527e908de678b750649e494b8a48d0f4763883b40",
+   "target_path": "results/g03_tilt_reader/folds/tii__flight-07a-lemniscate.json"
+  },
+  {
+   "source_branch": "track-g-segments2",
+   "source_commit": "c18972789267968795145132dba786c4d494d444",
+   "source_path": "results/g03_tilt_reader/folds/tii__flight-07p-lemniscate.json",
+   "sha256": "1effe8b47dac3d4b54857e24ba304bd978c2060690cea7b5f4a351fb9f0dc973",
+   "target_path": "results/g03_tilt_reader/folds/tii__flight-07p-lemniscate.json"
+  },
+  {
+   "source_branch": "track-g-segments2",
+   "source_commit": "c18972789267968795145132dba786c4d494d444",
+   "source_path": "results/g03_tilt_reader/folds/tii__flight-13a-trackRATM.json",
+   "sha256": "fe3a080358a1db3b35ff53c55b18c351c4c6fc0d7f111f70c554825828b38c36",
+   "target_path": "results/g03_tilt_reader/folds/tii__flight-13a-trackRATM.json"
+  },
+  {
+   "source_branch": "track-g-segments2",
+   "source_commit": "c18972789267968795145132dba786c4d494d444",
+   "source_path": "results/g03_tilt_reader/folds/tii__flight-13p-trackRATM.json",
+   "sha256": "0f1bdf71b24328c8d70c543257097a7f7adfdfd39aad1443ca396c09e2d84a91",
+   "target_path": "results/g03_tilt_reader/folds/tii__flight-13p-trackRATM.json"
+  },
+  {
+   "source_branch": "track-g-segments2",
+   "source_commit": "c18972789267968795145132dba786c4d494d444",
+   "source_path": "results/g03_tilt_reader/folds/tii__flight-16p-trackRATM.json",
+   "sha256": "c0ed1c975291f7feacc3ad592467362634990dae4afeff0a2c34913e1dbb6c19",
+   "target_path": "results/g03_tilt_reader/folds/tii__flight-16p-trackRATM.json"
+  },
+  {
+   "source_branch": "track-g-segments2",
+   "source_commit": "c18972789267968795145132dba786c4d494d444",
+   "source_path": "results/g03_tilt_reader/folds/uzh__indoor_forward_3.json",
+   "sha256": "123aeb81da754f0a81eaae5a1617b1e3b7a5a6c8ee26b8bb0a75ea10eebd649a",
+   "target_path": "results/g03_tilt_reader/folds/uzh__indoor_forward_3.json"
+  },
+  {
+   "source_branch": "track-g-segments2",
+   "source_commit": "c18972789267968795145132dba786c4d494d444",
+   "source_path": "results/g03_tilt_reader/folds/uzh__indoor_forward_5.json",
+   "sha256": "d4d065ad41867f373dc1edf274f7dfb411a80cc006b68faeb5148e8a7010379b",
+   "target_path": "results/g03_tilt_reader/folds/uzh__indoor_forward_5.json"
+  },
+  {
+   "source_branch": "track-g-segments2",
+   "source_commit": "c18972789267968795145132dba786c4d494d444",
+   "source_path": "results/g03_tilt_reader/folds/uzh__indoor_forward_9.json",
+   "sha256": "953297c9e30dab2a08ba3b6380336f029db6e87b466eebd5644c7abd8014f8e1",
+   "target_path": "results/g03_tilt_reader/folds/uzh__indoor_forward_9.json"
+  },
+  {
+   "source_branch": "track-j-reader",
+   "source_commit": "f7ba10855e0b85ba621fad366eb3f561bb2c384f",
+   "source_path": "src/depicted/anatomy.py",
+   "sha256": "4dcb1e24286ea4147fbc6ab73757fc8fe1f7cc4b04db26feb41f336db8de7643",
+   "target_path": "src/depicted/anatomy.py"
+  },
+  {
+   "source_branch": "track-j-reader",
+   "source_commit": "f7ba10855e0b85ba621fad366eb3f561bb2c384f",
+   "source_path": "src/verdict/segments.py",
+   "sha256": "8bf5f9d32fcb8d421a62306997545b49a6633dafc1ec4cb954474e71c8bce742",
+   "target_path": "src/verdict/segments.py"
+  },
+  {
+   "source_branch": "track-j-reader",
+   "source_commit": "f7ba10855e0b85ba621fad366eb3f561bb2c384f",
+   "source_path": "experiments/j01_anatomy.py",
+   "sha256": "184f4497e11ef57977d4c731cff8ea80b5756cb9a551678f4cb53947f3be4812",
+   "target_path": "experiments/j01_anatomy.py"
+  },
+  {
+   "source_branch": "track-j-reader",
+   "source_commit": "f7ba10855e0b85ba621fad366eb3f561bb2c384f",
+   "source_path": "results/j_inputs/provenance.json",
+   "sha256": "a49e63621209efd5b0dc892defe49d07a97b4c1e47328166b5ef88340421dc3c",
+   "target_path": "results/j_inputs/provenance.json"
+  },
+  {
+   "source_branch": "track-j-reader",
+   "source_commit": "f7ba10855e0b85ba621fad366eb3f561bb2c384f",
+   "source_path": "results/j_inputs/g03_folds/_summary.json",
+   "sha256": "9386eb85fc6df37f0fefe175460b696c3e9f9c4ebc69ec65354db6bc2dd982ae",
+   "target_path": "results/j_inputs/g03_folds/_summary.json"
+  },
+  {
+   "source_branch": "track-j-reader",
+   "source_commit": "f7ba10855e0b85ba621fad366eb3f561bb2c384f",
+   "source_path": "results/j_inputs/g03_folds/tii__flight-01a-ellipse.json",
+   "sha256": "27396a8517d865a71b207563a41bb13c6a0c67406dbc1721327abbf64e7f8e19",
+   "target_path": "results/j_inputs/g03_folds/tii__flight-01a-ellipse.json"
+  },
+  {
+   "source_branch": "track-j-reader",
+   "source_commit": "f7ba10855e0b85ba621fad366eb3f561bb2c384f",
+   "source_path": "results/j_inputs/g03_folds/tii__flight-01p-ellipse.json",
+   "sha256": "5dd96b4204458505b179c91db3465cc9bb41081fcf25a3797c58b31f53bf9eac",
+   "target_path": "results/j_inputs/g03_folds/tii__flight-01p-ellipse.json"
+  },
+  {
+   "source_branch": "track-j-reader",
+   "source_commit": "f7ba10855e0b85ba621fad366eb3f561bb2c384f",
+   "source_path": "results/j_inputs/g03_folds/tii__flight-04a-ellipse.json",
+   "sha256": "e373204b71214cdc8eb4b95b4d4d0ef09faad0f1ba85ef132d6c59cee636ac7f",
+   "target_path": "results/j_inputs/g03_folds/tii__flight-04a-ellipse.json"
+  },
+  {
+   "source_branch": "track-j-reader",
+   "source_commit": "f7ba10855e0b85ba621fad366eb3f561bb2c384f",
+   "source_path": "results/j_inputs/g03_folds/tii__flight-07a-lemniscate.json",
+   "sha256": "a3e5e3a980e70bb3fd3d784527e908de678b750649e494b8a48d0f4763883b40",
+   "target_path": "results/j_inputs/g03_folds/tii__flight-07a-lemniscate.json"
+  },
+  {
+   "source_branch": "track-j-reader",
+   "source_commit": "f7ba10855e0b85ba621fad366eb3f561bb2c384f",
+   "source_path": "results/j_inputs/g03_folds/tii__flight-07p-lemniscate.json",
+   "sha256": "1effe8b47dac3d4b54857e24ba304bd978c2060690cea7b5f4a351fb9f0dc973",
+   "target_path": "results/j_inputs/g03_folds/tii__flight-07p-lemniscate.json"
+  },
+  {
+   "source_branch": "track-j-reader",
+   "source_commit": "f7ba10855e0b85ba621fad366eb3f561bb2c384f",
+   "source_path": "results/j_inputs/g03_folds/tii__flight-13a-trackRATM.json",
+   "sha256": "fe3a080358a1db3b35ff53c55b18c351c4c6fc0d7f111f70c554825828b38c36",
+   "target_path": "results/j_inputs/g03_folds/tii__flight-13a-trackRATM.json"
+  },
+  {
+   "source_branch": "track-j-reader",
+   "source_commit": "f7ba10855e0b85ba621fad366eb3f561bb2c384f",
+   "source_path": "results/j_inputs/g03_folds/tii__flight-13p-trackRATM.json",
+   "sha256": "0f1bdf71b24328c8d70c543257097a7f7adfdfd39aad1443ca396c09e2d84a91",
+   "target_path": "results/j_inputs/g03_folds/tii__flight-13p-trackRATM.json"
+  },
+  {
+   "source_branch": "track-j-reader",
+   "source_commit": "f7ba10855e0b85ba621fad366eb3f561bb2c384f",
+   "source_path": "results/j_inputs/g03_folds/tii__flight-16p-trackRATM.json",
+   "sha256": "c0ed1c975291f7feacc3ad592467362634990dae4afeff0a2c34913e1dbb6c19",
+   "target_path": "results/j_inputs/g03_folds/tii__flight-16p-trackRATM.json"
+  },
+  {
+   "source_branch": "track-j-reader",
+   "source_commit": "f7ba10855e0b85ba621fad366eb3f561bb2c384f",
+   "source_path": "results/j_inputs/g03_folds/uzh__indoor_forward_3.json",
+   "sha256": "123aeb81da754f0a81eaae5a1617b1e3b7a5a6c8ee26b8bb0a75ea10eebd649a",
+   "target_path": "results/j_inputs/g03_folds/uzh__indoor_forward_3.json"
+  },
+  {
+   "source_branch": "track-j-reader",
+   "source_commit": "f7ba10855e0b85ba621fad366eb3f561bb2c384f",
+   "source_path": "results/j_inputs/g03_folds/uzh__indoor_forward_5.json",
+   "sha256": "d4d065ad41867f373dc1edf274f7dfb411a80cc006b68faeb5148e8a7010379b",
+   "target_path": "results/j_inputs/g03_folds/uzh__indoor_forward_5.json"
+  },
+  {
+   "source_branch": "track-j-reader",
+   "source_commit": "f7ba10855e0b85ba621fad366eb3f561bb2c384f",
+   "source_path": "results/j_inputs/g03_folds/uzh__indoor_forward_9.json",
+   "sha256": "953297c9e30dab2a08ba3b6380336f029db6e87b466eebd5644c7abd8014f8e1",
+   "target_path": "results/j_inputs/g03_folds/uzh__indoor_forward_9.json"
+  }
+ ]
+}

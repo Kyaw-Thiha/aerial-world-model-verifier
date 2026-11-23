@@ -1,0 +1,119 @@
+# Track L, L01 pre-registration: scene-stratified reader error on the simulated development set
+#
+# Committed BEFORE the re-score job that produces the confidence fields, and before any
+# per-clip bias, gate or anatomy number is computed. The population, the statistics, the gate
+# constant and the bands below are fixed here. This experiment is descriptive: it has no
+# success criterion and no threshold is fitted. Anything added after the numbers exist is an
+# amendment with its own commit and is labelled exploratory in the report.
+version: 1
+date: 2026-11-22
+owner: track-l
+handoff: "22 Part 1 (scene-stratified reader error)"
+status: committed_before_scoring
+gpu_usd_estimate: 1.4
+
+# ------------------------------------------------------------------ population
+population:
+  set: "Track I simulated labelled set, configs/sim_splits_frozen.json (sha256 cdf66e28...)"
+  split: dev
+  label: feasible
+  clips: 80
+  frames_expected: 37401            # the whole 30 fps video, stride 1
+  scene_families: [urban_checker, forest_ridge, industrial]
+  mounts_deg: [0, 15, 30, 45]
+  cells: "3 families x 4 mounts, 6-7 clips per cell"
+  exclusions: >
+    None. A clip whose video or truth fails its manifest sha256 is reported as missing and is
+    not replaced by another clip: the cell denominator shrinks and the report says so.
+  heldout: "not read, not scored, not downloaded (I02 incomplete: 3 of 100 held-out clips on R2)"
+
+# ------------------------------------------------------------------ instrument (frozen, no tuning)
+reader:
+  model: "GeoCalib, pinned 1dedb29f94fc11b896c5f572005978aeebccd67f"
+  weights: pinhole
+  camera_model: pinhole
+  focal_prior: "scalar f = 0.5 * 640 / tan(45 deg) = 320 px (the render's 90 deg hfov)"
+  stride: 1                          # full 30 Hz, so the anatomy fast band reaches 15 Hz
+  code: "remote/i_score.py as copied from track-i-simset 955c0b3, extended only to store the "
+        "per-frame gate inputs (latitude_confidence_mean, up_confidence_mean, "
+        "gravity_uncertainty_raw); the estimate path is unchanged"
+  reproduction_check: >
+    The I02 grid was scored at stride 2 on 78 clips and at stride 1 on i02_dev_000 and
+    i02_dev_001 (inferred exactly: the grid n equals the clip frame count on those two and
+    ceil(n/2) on the other 78). On the I02 frame subset (all frames for those two, even-index
+    frames otherwise) the re-score must reproduce the stored I02 clip median up-error to
+    |delta| <= 0.05 deg on every one of the 80 clips, else the run is stopped and the
+    discrepancy diagnosed before any other number is read. This is the harness's own check on
+    the same frames, not a new estimate.
+  determinism: >
+    GeoCalib has no sampling; the LM refinement is deterministic on CPU/GPU for a fixed batch
+    shape. The job evaluates one frame at a time (the I02 script's loop), so batch shape is not
+    a free parameter between runs.
+
+# ------------------------------------------------------------------ frozen gate
+gate:
+  config: configs/gate_frozen.yaml   # sha256 dc0cc4ff..., frozen by Track A2, amendment 2
+  signal: "S3_latitude_confidence = -median(latitude_confidence_mean) over the clip's frames"
+  rule: "drop when signal > tau; tau = -0.0016656352350220922 (frozen)"
+  level: clip
+  note: >
+    The gate is applied unchanged; no tau is refitted on simulated clips (there is no mocap
+    label on a simulation, and refitting would be the selection-by-outcome the A2 amendment
+    removed). "Abstain" below means the gate drops the clip.
+
+# ------------------------------------------------------------------ statistics (all pre-specified)
+error:
+  frame_error_deg: "angle(up_est, up_true), up_true = R_wc^T e3 from the render pose"
+  per_clip: [median, p90, fraction > 10 deg, fraction > 20 deg]
+  bias:
+    definition: "mean over the clip's frames of (lean_est - lean_gt), per axis (forward, left), "
+                "in the verdict's lean basis; lean_gt is the rendered truth lean and equals "
+                "lean_req exactly on a feasible clip (asserted, not assumed)"
+    sign: "positive forward = reader leans further forward than the camera does"
+  cell: "one row per (family, mount): clips, frames, median of the per-clip medians, min-max of "
+        "the per-clip medians, mean per-clip bias per axis with its SE across clips, pooled "
+        "fraction > 10 deg, gate keep rate (k/n)"
+  family: "one row per family pooling mounts, and the per-mount family spread = max - min of the "
+          "three family medians (descriptive; 3 clusters)"
+  scene: "per-scene-seed row (6 seeds per split), reported but not pooled with the cells"
+  intervals: >
+    Not computed. Three scene-family clusters and, at cell level, 6-7 clips, are far below the
+    ~10-cluster floor; every number is descriptive and the report says so. No bootstrap is run
+    on this population.
+
+anatomy:
+  method: "J01's decomposition, applied to the simulated clips: per axis, the clip mean is the "
+          "constant term and the residual is split by an orthogonal DCT-II at 0.5 Hz, so the "
+          "run energy is exactly bias^2 + slow + fast with no cross term"
+  bands_hz: {constant: "0", slow: "0 < f <= 0.5", fast: "f > 0.5"}
+  sampling: "30 Hz (stride 1), so fast covers 0.5-15 Hz; each clip is one contiguous run of "
+            "10-30 s, so slow starts at 1/duration = 0.033-0.10 Hz"
+  reporting: "shares of the total second moment (bias^2 + slow + fast), pooled per axis and per "
+             "family, beside J01's real-TII 29.6 / 40.4 / 30.0 (all frames) and 42.8 / 40.3 / "
+             "19.8 (gate-kept) as a comparison, not as a target"
+  caveat: "the band edges are comparable to J01's; the clip length and sampling rate are not, "
+          "and the report states both"
+
+gate_analysis:
+  - "per cell and per family: keep rate, and the reader's median error on kept vs dropped clips"
+  - "the forest-vs-open question stated as a number: keep rate on forest_ridge against the "
+    "pooled keep rate on urban_checker + industrial, with denominators"
+  - "no reclassification: a dropped clip is reported as dropped, never as a reader failure"
+
+# ------------------------------------------------------------------ what would be a finding
+pre_specified_readings:
+  - "forest_ridge sits 5-10 deg above the open families at every mount (I02 measured 7.0-10.7 "
+    "against 0.5-2.8); L01 checks whether that survives the re-score and whether it is bias or "
+    "spread, which I02 did not separate"
+  - "the S3 gate abstains on forest clips at a different rate than on open clips; if it does "
+    "not, the gate cannot be the defence against the scene bias and the report says so"
+  - "the simulated anatomy differs from J01's real anatomy by more than the band-edge "
+    "difference can explain; if it does, sim-to-real training must not be read as a noise-model "
+    "match"
+
+# ------------------------------------------------------------------ outputs
+outputs:
+  results: "results/l01/{reader_rescore.json, per_clip.csv, cells.csv, families.csv, anatomy.json}"
+  report: reports/L01_scene_stratified_reader_error.md
+  r2: "track-l/l01/ (the per-frame gravity and confidence arrays, one .npz per clip, with a manifest)"
+  decisions: "docs/decisions.md [L]"

@@ -510,3 +510,16 @@ K01's reproduction of E1 is `results/phase0_floor/20261122T072349Z_41d1dad5`
 (1.24 / 5.46 / 1.22 deg, identical to the published run). K01's reproduction of A2's modes
 is `results/a2_modes/20261122T071523Z` (14.73 / 12.95 / 8.96 / 6.46). Neither modifies the
 stored 2026-11-08/11-10 runs.
+
+## Track L — reader on simulated scenes (2026-11-22)
+
+| ID | what | branch / commit | config | stored results | report |
+| --- | --- | --- | --- | --- | --- |
+| L01 | frozen reader's error on the 80 feasible simulated development clips, by scene family and mount, with the frozen S3 gate and J01's anatomy split | `track-l-reader-simreal` (`674e7b8`, `2bf2cb2`) | `configs/l01_scene_stratified_prereg.yaml` (+ amendments A, C) | `results/l01/`; per-frame arrays on R2 `track-l/l01/per_frame/` | `reports/L01_scene_stratified_reader_error.md` |
+| L02 | fine-tune arms (real-only, sim-only, mixed+DR) with matched budget and held-out discipline; downstream coherence tier on regenerated pixel edits | `track-l-reader-simreal` | `configs/l02_reader_prereg.yaml` (+ amendment B) | `results/l02/`; fold records `awmv-l-data /l02/folds`, checkpoints `/l02/models` | `reports/L02_reader_finetune_sim_real.md` |
+
+L01's reader job is `remote/l_score_sim.py` (Modal `awmv-l-reader`); L02's training is
+`remote/l_tilt_reader.py` (`awmv-l-tilt-reader`) and the edit reader is
+`remote/l_edit_reader.py` (`awmv-l-edit-reader`). Inputs are copied byte-identically from
+`track-i-simset`, `track-g-segments2` and `track-j-reader` (provenance in
+`results/l00/provenance.json`, `docs/decisions.md` [L]).

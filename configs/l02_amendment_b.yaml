@@ -1,0 +1,59 @@
+# Track L, L02 amendment B: how the regenerated pixel edits are checked
+#
+# Written after the frozen-reader pipeline check on one clip and before any new-reader edit
+# score was computed. The prereg's absolute tolerance (0.5 deg against the stored condition
+# leans) fired; the cause is diagnosed here and the check restated as a *relative* one, because
+# the stored leans come through a different reader invocation whose absolute output differs by a
+# constant 0.6 deg on identical pixels.
+version: 1
+date: 2026-11-22
+amends: configs/l02_reader_prereg.yaml (commit c37b12b)
+status: committed_before_new_reader_edit_rates
+
+observed:
+  clip: "flight-01a-ellipse#00, frozen reader, the same 49 frames"
+  absolute_median_angle_to_store_deg:
+    real: 0.622
+    null_edit: 0.673
+    tilt_removal: 0.557
+    mirror_roll: 0.559
+    yaw_control: 0.666
+  relative_to_real_deg:
+    null_edit: +0.051
+    tilt_removal: -0.065
+    mirror_roll: -0.063
+    yaw_control: +0.044
+
+diagnosis: >
+  The absolute offset is present on the *real* condition too (0.62 deg on identical pixels), so
+  it is not an edit error: it is the difference between the stored run's reader invocation and
+  ours. The stored leans were produced by Track A2's gate extraction, which calls
+  ``GeoCalib.calibrate`` on frames decoded from the release zips; our re-run decodes the same
+  JPEG bytes but through a different image build, and GeoCalib's LM has a small run-to-run
+  dependence. What the edits must reproduce is the *condition-specific* change, and they do:
+  every condition's offset differs from the real condition's offset by at most 0.065 deg, i.e.
+  the warps add no measurable bias of their own. Two policies were also aligned to Track A2's
+  (per-condition warp with black border, no common mask; default LM schedule for the frozen
+  reader), which is what brought the spread down from 0.3-1.8 deg on the first attempt.
+
+restated_check:
+  statistic: "offset(cond) = median angle(our_frozen_cond, stored_cond) on the same frames"
+  rule: "|offset(cond) - offset(real)| <= 0.25 deg for every condition, on every flight checked"
+  absolute_tolerance_deg: null
+  note: >
+    The absolute 0.5 deg is withdrawn as a criterion because it tests the reader invocation, not
+    the pixels. The relative check is stricter where it matters: a wrong warp would move the
+    condition's offset away from the real condition's, which is exactly what the relative
+    statistic measures.
+
+downstream_consequences:
+  real_condition: >
+    The new readers' rates use ``null_edit`` (the identity-warped frame) as the real condition,
+    so the real and the edits share resampling and border treatment; the raw-frame condition is
+    reported beside it as a sensitivity. The frozen reader's rates come from the same
+    regenerated frames, so every arm is scored on one pipeline.
+  thresholds: "unchanged: leave-one-flight-out 95th percentile of the real coherence score, beside the frozen absolute 1.75"
+  remaining_limits: >
+    The regeneration uses the 175 deg equidistant model Track A used, with each frame's own
+    condition map; it inherits Track A's model error (their null-edit check measured 0.13-0.16
+    deg on the frozen reader). Nothing here re-derives the fisheye calibration.

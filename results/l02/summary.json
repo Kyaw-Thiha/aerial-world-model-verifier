@@ -1,0 +1,855 @@
+{
+ "folds": {
+  "mixed__flight-01a-ellipse": {
+   "arm": "mixed",
+   "holdout": "flight-01a-ellipse",
+   "n_train_pool": 7031,
+   "frames_per_epoch": 600,
+   "history": [
+    {
+     "epoch": 0,
+     "loss": 0.0366433251897494,
+     "steps": 300,
+     "seconds": 462.34424352645874
+    },
+    {
+     "epoch": 1,
+     "loss": 0.04211902260780334,
+     "steps": 300,
+     "seconds": 906.3027276992798
+    }
+   ],
+   "real": {
+    "flight-01a-ellipse": {
+     "n": 270,
+     "median": 1.5403310787832702,
+     "trimmed_rmse": 2.7169709067036267,
+     "p90": 6.912970582489117,
+     "frac_gt10": 0.040740740740740744,
+     "frac_gt20": 0.025925925925925925
+    }
+   }
+  },
+  "mixed__flight-01p-ellipse": {
+   "arm": "mixed",
+   "holdout": "flight-01p-ellipse",
+   "n_train_pool": 6034,
+   "frames_per_epoch": 600,
+   "history": [
+    {
+     "epoch": 0,
+     "loss": 0.07232354551553727,
+     "steps": 300,
+     "seconds": 518.4408183097839
+    },
+    {
+     "epoch": 1,
+     "loss": 0.06530380576848983,
+     "steps": 300,
+     "seconds": 1011.3412327766418
+    }
+   ],
+   "real": {
+    "flight-01p-ellipse": {
+     "n": 1267,
+     "median": 2.619828910392112,
+     "trimmed_rmse": 2.7470474181196276,
+     "p90": 4.603950791458754,
+     "frac_gt10": 0.0031570639305445935,
+     "frac_gt20": 0.0
+    }
+   }
+  },
+  "mixed__flight-04a-ellipse": {
+   "arm": "mixed",
+   "holdout": "flight-04a-ellipse",
+   "n_train_pool": 6951,
+   "frames_per_epoch": 600,
+   "history": [
+    {
+     "epoch": 0,
+     "loss": 0.05050996840000153,
+     "steps": 300,
+     "seconds": 463.24346375465393
+    },
+    {
+     "epoch": 1,
+     "loss": 0.051560210883617404,
+     "steps": 300,
+     "seconds": 916.5358386039734
+    }
+   ],
+   "real": {
+    "flight-04a-ellipse": {
+     "n": 350,
+     "median": 2.119611940947186,
+     "trimmed_rmse": 2.673204077246937,
+     "p90": 6.933460717134863,
+     "frac_gt10": 0.06,
+     "frac_gt20": 0.022857142857142857
+    }
+   }
+  },
+  "mixed__flight-07p-lemniscate": {
+   "arm": "mixed",
+   "holdout": "flight-07p-lemniscate",
+   "n_train_pool": 6017,
+   "frames_per_epoch": 600,
+   "history": [
+    {
+     "epoch": 0,
+     "loss": 0.06197421967983246,
+     "steps": 300,
+     "seconds": 473.86998653411865
+    },
+    {
+     "epoch": 1,
+     "loss": 0.05740849693616231,
+     "steps": 300,
+     "seconds": 944.6822605133057
+    }
+   ],
+   "real": {
+    "flight-07p-lemniscate": {
+     "n": 1284,
+     "median": 3.740944795599714,
+     "trimmed_rmse": 4.071521906406076,
+     "p90": 7.373052498405589,
+     "frac_gt10": 0.006230529595015576,
+     "frac_gt20": 0.0
+    }
+   }
+  },
+  "mixed__flight-13a-trackRATM": {
+   "arm": "mixed",
+   "holdout": "flight-13a-trackRATM",
+   "n_train_pool": 6744,
+   "frames_per_epoch": 600,
+   "history": [
+    {
+     "epoch": 0,
+     "loss": 0.03007114162047704,
+     "steps": 300,
+     "skipped_no_grad": 0,
+     "seconds": 483.67014050483704
+    },
+    {
+     "epoch": 1,
+     "loss": 0.02248673588037491,
+     "steps": 300,
+     "skipped_no_grad": 0,
+     "seconds": 958.5537276268005
+    }
+   ],
+   "real": {
+    "flight-13a-trackRATM": {
+     "n": 557,
+     "median": 6.052002845345192,
+     "trimmed_rmse": 30.990239291028264,
+     "p90": 87.20124501805049,
+     "frac_gt10": 0.3267504488330341,
+     "frac_gt20": 0.2764811490125673
+    }
+   }
+  },
+  "mixed__flight-16p-trackRATM": {
+   "arm": "mixed",
+   "holdout": "flight-16p-trackRATM",
+   "n_train_pool": 6928,
+   "frames_per_epoch": 600,
+   "history": [
+    {
+     "epoch": 0,
+     "loss": 0.04866705894470215,
+     "steps": 300,
+     "skipped_no_grad": 0,
+     "seconds": 503.67833638191223
+    },
+    {
+     "epoch": 1,
+     "loss": 0.038518693844477335,
+     "steps": 300,
+     "skipped_no_grad": 0,
+     "seconds": 976.4686172008514
+    }
+   ],
+   "real": {
+    "flight-16p-trackRATM": {
+     "n": 373,
+     "median": 8.070503886223433,
+     "trimmed_rmse": 13.72905216313763,
+     "p90": 59.79941968016433,
+     "frac_gt10": 0.40482573726541554,
+     "frac_gt20": 0.16890080428954424
+    }
+   }
+  },
+  "mixed__forest_ridge": {
+   "arm": "mixed",
+   "holdout": "forest_ridge",
+   "n_train_pool": 6261,
+   "frames_per_epoch": 600,
+   "history": [
+    {
+     "epoch": 0,
+     "loss": 0.04891959806283315,
+     "steps": 300,
+     "seconds": 489.04394936561584
+    },
+    {
+     "epoch": 1,
+     "loss": 0.04589623053868612,
+     "steps": 300,
+     "seconds": 956.9139935970306
+    }
+   ],
+   "sim": {
+    "forest_ridge": {
+     "n": 1040,
+     "bias_lean": [
+      -0.03286612119289107,
+      0.01271760959368558
+     ],
+     "bias_fwd_deg": -1.8834292115143765,
+     "bias_left_deg": 0.7286849987398667,
+     "bias_magnitude_deg": 2.0194770169957827
+    }
+   },
+   "sim_error": {
+    "n": 1040,
+    "median": 6.726348708837726,
+    "trimmed_rmse": 6.657589828858834,
+    "p90": 10.853878473168031,
+    "frac_gt10": 0.16346153846153846,
+    "frac_gt20": 0.013461538461538462
+   }
+  },
+  "mixed__industrial": {
+   "arm": "mixed",
+   "holdout": "industrial",
+   "n_train_pool": 6221,
+   "frames_per_epoch": 600,
+   "history": [
+    {
+     "epoch": 0,
+     "loss": 0.04128359744946162,
+     "steps": 300,
+     "seconds": 482.1423499584198
+    },
+    {
+     "epoch": 1,
+     "loss": 0.03636796166499456,
+     "steps": 300,
+     "seconds": 939.0350348949432
+    }
+   ],
+   "sim": {
+    "industrial": {
+     "n": 1080,
+     "bias_lean": [
+      -0.023592133094711164,
+      0.005899075681513451
+     ],
+     "bias_fwd_deg": -1.3518550803733724,
+     "bias_left_deg": 0.33799409991304563,
+     "bias_magnitude_deg": 1.3934676780992543
+    }
+   },
+   "sim_error": {
+    "n": 1080,
+    "median": 3.129885525342486,
+    "trimmed_rmse": 3.571078255606576,
+    "p90": 7.527662617672847,
+    "frac_gt10": 0.06296296296296296,
+    "frac_gt20": 0.041666666666666664
+   }
+  },
+  "mixed__none": {
+   "arm": "mixed",
+   "holdout": "none",
+   "n_train_pool": 7301,
+   "frames_per_epoch": 600,
+   "history": [
+    {
+     "epoch": 0,
+     "loss": 0.04502761840820312,
+     "steps": 300,
+     "seconds": 464.8512370586395
+    },
+    {
+     "epoch": 1,
+     "loss": 0.05423675447702408,
+     "steps": 300,
+     "seconds": 910.64106965065
+    }
+   ],
+   "held_real": {
+    "flight-13p-trackRATM": {
+     "n": 536,
+     "median": 7.403314789429611,
+     "trimmed_rmse": 27.050518924672698,
+     "p90": 89.95917926889149,
+     "frac_gt10": 0.3805970149253731,
+     "frac_gt20": 0.24440298507462688
+    },
+    "flight-07a-lemniscate": {
+     "n": 370,
+     "median": 1.02154056748013,
+     "trimmed_rmse": 5.635420109113905,
+     "p90": 61.12696480756768,
+     "frac_gt10": 0.17297297297297298,
+     "frac_gt20": 0.10540540540540541
+    }
+   }
+  },
+  "mixed__urban_checker": {
+   "arm": "mixed",
+   "holdout": "urban_checker",
+   "n_train_pool": 6221,
+   "frames_per_epoch": 600,
+   "history": [
+    {
+     "epoch": 0,
+     "loss": 0.04057496319214503,
+     "steps": 300,
+     "seconds": 464.82349491119385
+    },
+    {
+     "epoch": 1,
+     "loss": 0.03548705448706945,
+     "steps": 300,
+     "seconds": 911.9692132472992
+    }
+   ],
+   "sim": {
+    "urban_checker": {
+     "n": 1080,
+     "bias_lean": [
+      -0.002839736216882421,
+      0.03192461303079389
+     ],
+     "bias_fwd_deg": -0.16270511883674915,
+     "bias_left_deg": 1.8294564368849915,
+     "bias_magnitude_deg": 1.8366773832536867
+    }
+   },
+   "sim_error": {
+    "n": 1080,
+    "median": 3.294998417791429,
+    "trimmed_rmse": 4.643783554417265,
+    "p90": 11.87712445436,
+    "frac_gt10": 0.15,
+    "frac_gt20": 0.03611111111111111
+   }
+  },
+  "real__flight-01a-ellipse": {
+   "arm": "real",
+   "holdout": "flight-01a-ellipse",
+   "n_train_pool": 3831,
+   "frames_per_epoch": 600,
+   "history": [
+    {
+     "epoch": 0,
+     "loss": 0.03857416450977325,
+     "steps": 300,
+     "seconds": 396.75336718559265
+    },
+    {
+     "epoch": 1,
+     "loss": 0.05092453648646673,
+     "steps": 300,
+     "seconds": 797.1670823097229
+    }
+   ],
+   "real": {
+    "flight-01a-ellipse": {
+     "n": 270,
+     "median": 1.764373318054767,
+     "trimmed_rmse": 1.8775545138487175,
+     "p90": 4.14159117247569,
+     "frac_gt10": 0.037037037037037035,
+     "frac_gt20": 0.02962962962962963
+    }
+   }
+  },
+  "real__flight-01p-ellipse": {
+   "arm": "real",
+   "holdout": "flight-01p-ellipse",
+   "n_train_pool": 2834,
+   "frames_per_epoch": 600,
+   "history": [
+    {
+     "epoch": 0,
+     "loss": 0.08241617222627004,
+     "steps": 300,
+     "seconds": 424.88547921180725
+    },
+    {
+     "epoch": 1,
+     "loss": 0.056751216351985934,
+     "steps": 300,
+     "seconds": 851.811112165451
+    }
+   ],
+   "real": {
+    "flight-01p-ellipse": {
+     "n": 1267,
+     "median": 1.320852858578693,
+     "trimmed_rmse": 1.4039609620597913,
+     "p90": 2.6342670103674184,
+     "frac_gt10": 0.0031570639305445935,
+     "frac_gt20": 0.0
+    }
+   }
+  },
+  "real__flight-04a-ellipse": {
+   "arm": "real",
+   "holdout": "flight-04a-ellipse",
+   "n_train_pool": 3751,
+   "frames_per_epoch": 600,
+   "history": [
+    {
+     "epoch": 0,
+     "loss": 0.04762899726629257,
+     "steps": 300,
+     "seconds": 463.98896408081055
+    },
+    {
+     "epoch": 1,
+     "loss": 0.046023300290107726,
+     "steps": 300,
+     "seconds": 895.409811258316
+    }
+   ],
+   "real": {
+    "flight-04a-ellipse": {
+     "n": 350,
+     "median": 1.4525048843255366,
+     "trimmed_rmse": 1.5985914839525401,
+     "p90": 3.382056948976911,
+     "frac_gt10": 0.011428571428571429,
+     "frac_gt20": 0.011428571428571429
+    }
+   }
+  },
+  "real__flight-07p-lemniscate": {
+   "arm": "real",
+   "holdout": "flight-07p-lemniscate",
+   "n_train_pool": 2817,
+   "frames_per_epoch": 600,
+   "history": [
+    {
+     "epoch": 0,
+     "loss": 0.07646189659833907,
+     "steps": 300,
+     "seconds": 424.9522280693054
+    },
+    {
+     "epoch": 1,
+     "loss": 0.06004863848288854,
+     "steps": 300,
+     "seconds": 855.2766194343567
+    }
+   ],
+   "real": {
+    "flight-07p-lemniscate": {
+     "n": 1284,
+     "median": 2.132808096313478,
+     "trimmed_rmse": 2.5190882515881228,
+     "p90": 5.214331839454446,
+     "frac_gt10": 0.0,
+     "frac_gt20": 0.0
+    }
+   }
+  },
+  "real__flight-13a-trackRATM": {
+   "arm": "real",
+   "holdout": "flight-13a-trackRATM",
+   "n_train_pool": 3544,
+   "frames_per_epoch": 600,
+   "history": [
+    {
+     "epoch": 0,
+     "loss": 0.01951561858256658,
+     "steps": 300,
+     "seconds": 412.16929388046265
+    },
+    {
+     "epoch": 1,
+     "loss": 0.016891750693321227,
+     "steps": 300,
+     "seconds": 815.8130209445953
+    }
+   ],
+   "real": {
+    "flight-13a-trackRATM": {
+     "n": 557,
+     "median": 5.058112032891966,
+     "trimmed_rmse": 33.69995004222647,
+     "p90": 89.11917400402521,
+     "frac_gt10": 0.32854578096947934,
+     "frac_gt20": 0.289048473967684
+    }
+   }
+  },
+  "real__flight-16p-trackRATM": {
+   "arm": "real",
+   "holdout": "flight-16p-trackRATM",
+   "n_train_pool": 3728,
+   "frames_per_epoch": 600,
+   "history": [
+    {
+     "epoch": 0,
+     "loss": 0.04303320795297623,
+     "steps": 300,
+     "seconds": 385.0154345035553
+    },
+    {
+     "epoch": 1,
+     "loss": 0.03443215797344844,
+     "steps": 300,
+     "seconds": 768.0923345088959
+    }
+   ],
+   "real": {
+    "flight-16p-trackRATM": {
+     "n": 373,
+     "median": 7.438572822361318,
+     "trimmed_rmse": 18.869574528506163,
+     "p90": 83.39265048587917,
+     "frac_gt10": 0.36193029490616624,
+     "frac_gt20": 0.1876675603217158
+    }
+   }
+  },
+  "real__none": {
+   "arm": "real",
+   "holdout": "none",
+   "n_train_pool": 4101,
+   "frames_per_epoch": 600,
+   "history": [
+    {
+     "epoch": 0,
+     "loss": 0.05364422877629598,
+     "steps": 300,
+     "seconds": 477.2008707523346
+    },
+    {
+     "epoch": 1,
+     "loss": 0.04468399405479431,
+     "steps": 300,
+     "seconds": 944.5011155605316
+    }
+   ],
+   "held_real": {
+    "flight-13p-trackRATM": {
+     "n": 536,
+     "median": 6.303105103115758,
+     "trimmed_rmse": 8.851535857396263,
+     "p90": 27.280715631320135,
+     "frac_gt10": 0.27052238805970147,
+     "frac_gt20": 0.14365671641791045
+    },
+    "flight-07a-lemniscate": {
+     "n": 370,
+     "median": 1.4939521173184147,
+     "trimmed_rmse": 6.063852273013457,
+     "p90": 69.6553099085553,
+     "frac_gt10": 0.17567567567567569,
+     "frac_gt20": 0.10540540540540541
+    }
+   }
+  },
+  "sim__forest_ridge": {
+   "arm": "sim",
+   "holdout": "forest_ridge",
+   "n_train_pool": 2160,
+   "frames_per_epoch": 600,
+   "history": [
+    {
+     "epoch": 0,
+     "loss": 0.011435236533482869,
+     "steps": 300,
+     "seconds": 405.7966947555542
+    },
+    {
+     "epoch": 1,
+     "loss": 0.00549339234828949,
+     "steps": 300,
+     "seconds": 775.6961052417755
+    }
+   ],
+   "sim": {
+    "forest_ridge": {
+     "n": 1040,
+     "bias_lean": [
+      -0.013209049757264838,
+      0.016739868132762067
+     ],
+     "bias_fwd_deg": -0.7568448124781412,
+     "bias_left_deg": 0.9591685940497852,
+     "bias_magnitude_deg": 1.2218095031495353
+    }
+   },
+   "sim_error": {
+    "n": 1040,
+    "median": 4.598367860707381,
+    "trimmed_rmse": 4.795276417751223,
+    "p90": 8.42056002446609,
+    "frac_gt10": 0.04423076923076923,
+    "frac_gt20": 0.011538461538461539
+   }
+  },
+  "sim__industrial": {
+   "arm": "sim",
+   "holdout": "industrial",
+   "n_train_pool": 2120,
+   "frames_per_epoch": 600,
+   "history": [
+    {
+     "epoch": 0,
+     "loss": 0.012202295462290446,
+     "steps": 300,
+     "seconds": 458.7075877189636
+    },
+    {
+     "epoch": 1,
+     "loss": 0.004554705917835236,
+     "steps": 300,
+     "seconds": 883.6173386573792
+    }
+   ],
+   "sim": {
+    "industrial": {
+     "n": 1080,
+     "bias_lean": [
+      -0.00989488250390504,
+      0.003917559513365206
+     ],
+     "bias_fwd_deg": -0.566944257970778,
+     "bias_left_deg": 0.22446020025162552,
+     "bias_magnitude_deg": 0.6097607507400226
+    }
+   },
+   "sim_error": {
+    "n": 1080,
+    "median": 2.2659235521786942,
+    "trimmed_rmse": 2.5202384987410045,
+    "p90": 5.659294076157962,
+    "frac_gt10": 0.04814814814814815,
+    "frac_gt20": 0.03148148148148148
+   }
+  },
+  "sim__none": {
+   "arm": "sim",
+   "holdout": "none",
+   "n_train_pool": 3200,
+   "frames_per_epoch": 600,
+   "history": [
+    {
+     "epoch": 0,
+     "loss": 0.011136397222677867,
+     "steps": 300,
+     "seconds": 405.64263463020325
+    },
+    {
+     "epoch": 1,
+     "loss": 0.006497254371643066,
+     "steps": 300,
+     "seconds": 793.9622800350189
+    }
+   ],
+   "held_real": {
+    "flight-13p-trackRATM": {
+     "n": 536,
+     "median": 8.636684786596742,
+     "trimmed_rmse": 25.70533407532529,
+     "p90": 86.21511220584796,
+     "frac_gt10": 0.4458955223880597,
+     "frac_gt20": 0.2966417910447761
+    },
+    "flight-07a-lemniscate": {
+     "n": 370,
+     "median": 3.9768995092222896,
+     "trimmed_rmse": 6.514572081724094,
+     "p90": 33.549781991018534,
+     "frac_gt10": 0.1891891891891892,
+     "frac_gt20": 0.11621621621621622
+    }
+   }
+  },
+  "sim__urban_checker": {
+   "arm": "sim",
+   "holdout": "urban_checker",
+   "n_train_pool": 2120,
+   "frames_per_epoch": 600,
+   "history": [
+    {
+     "epoch": 0,
+     "loss": 0.010670185089111328,
+     "steps": 300,
+     "seconds": 423.0459249019623
+    },
+    {
+     "epoch": 1,
+     "loss": 0.0037218580643335977,
+     "steps": 300,
+     "seconds": 830.1173293590546
+    }
+   ],
+   "sim": {
+    "urban_checker": {
+     "n": 1080,
+     "bias_lean": [
+      0.0007012009749942917,
+      0.0029554646546043435
+     ],
+     "bias_fwd_deg": 0.04017585974992833,
+     "bias_left_deg": 0.16933589772791918,
+     "bias_magnitude_deg": 0.17403662248494198
+    }
+   },
+   "sim_error": {
+    "n": 1080,
+    "median": 2.1124360263566038,
+    "trimmed_rmse": 2.3963293572015143,
+    "p90": 5.430533948549425,
+    "frac_gt10": 0.05,
+    "frac_gt20": 0.027777777777777776
+   }
+  }
+ },
+ "criteria": {
+  "s1_g03_baseline": {
+   "flight-13p-trackRATM": {
+    "n": 536,
+    "median": 6.5245875327520055,
+    "trimmed_rmse": 9.864013276595252,
+    "p90": 43.05929764461415,
+    "frac_gt10": 0.27798507462686567,
+    "frac_gt20": 0.15858208955223882
+   },
+   "flight-07a-lemniscate": {
+    "n": 370,
+    "median": 1.9040722639537053,
+    "trimmed_rmse": 5.219558417607307,
+    "p90": 45.16114305595222,
+    "frac_gt10": 0.16756756756756758,
+    "frac_gt20": 0.10270270270270271
+   }
+  },
+  "s1_arms": {
+   "real": {
+    "pooled": {
+     "n": 906,
+     "median": 4.868954459649755,
+     "trimmed_rmse": 7.508627125974636,
+     "p90": 28.183852735910662,
+     "frac_gt10": 0.23178807947019867,
+     "frac_gt20": 0.1280353200883002
+    },
+    "per_flight": {
+     "flight-13p-trackRATM": {
+      "n": 536,
+      "median": 6.303105103115758,
+      "trimmed_rmse": 8.851535857396263,
+      "p90": 27.280715631320135,
+      "frac_gt10": 0.27052238805970147,
+      "frac_gt20": 0.14365671641791045
+     },
+     "flight-07a-lemniscate": {
+      "n": 370,
+      "median": 1.4939521173184147,
+      "trimmed_rmse": 6.063852273013457,
+      "p90": 69.6553099085553,
+      "frac_gt10": 0.17567567567567569,
+      "frac_gt20": 0.10540540540540541
+     }
+    },
+    "reduction_vs_pooled_g03": 0.09386152970909056
+   },
+   "sim": {
+    "pooled": {
+     "n": 906,
+     "median": 6.205100982397353,
+     "trimmed_rmse": 19.867309126758183,
+     "p90": 83.18402766374169,
+     "frac_gt10": 0.34105960264900664,
+     "frac_gt20": 0.2229580573951435
+    },
+    "per_flight": {
+     "flight-13p-trackRATM": {
+      "n": 536,
+      "median": 8.636684786596742,
+      "trimmed_rmse": 25.70533407532529,
+      "p90": 86.21511220584796,
+      "frac_gt10": 0.4458955223880597,
+      "frac_gt20": 0.2966417910447761
+     },
+     "flight-07a-lemniscate": {
+      "n": 370,
+      "median": 3.9768995092222896,
+      "trimmed_rmse": 6.514572081724094,
+      "p90": 33.549781991018534,
+      "frac_gt10": 0.1891891891891892,
+      "frac_gt20": 0.11621621621621622
+     }
+    },
+    "reduction_vs_pooled_g03": -1.3975798503352257
+   },
+   "mixed": {
+    "pooled": {
+     "n": 906,
+     "median": 5.366250338324093,
+     "trimmed_rmse": 20.44341002594458,
+     "p90": 86.55387970305648,
+     "frac_gt10": 0.2958057395143488,
+     "frac_gt20": 0.18763796909492272
+    },
+    "per_flight": {
+     "flight-13p-trackRATM": {
+      "n": 536,
+      "median": 7.403314789429611,
+      "trimmed_rmse": 27.050518924672698,
+      "p90": 89.95917926889149,
+      "frac_gt10": 0.3805970149253731,
+      "frac_gt20": 0.24440298507462688
+     },
+     "flight-07a-lemniscate": {
+      "n": 370,
+      "median": 1.02154056748013,
+      "trimmed_rmse": 5.635420109113905,
+      "p90": 61.12696480756768,
+      "frac_gt10": 0.17297297297297298,
+      "frac_gt20": 0.10540540540540541
+     }
+    },
+    "reduction_vs_pooled_g03": -1.4671035034296946
+   }
+  },
+  "s2_frozen": {
+   "urban_checker": 0.16806377026316227,
+   "forest_ridge": 2.424319686727118,
+   "industrial": 0.4378520974933689
+  },
+  "s2_frozen_spread": 2.2562559164639557,
+  "s2_sim": {
+   "per_family": {
+    "urban_checker": 0.17403662248494198,
+    "forest_ridge": 1.2218095031495353,
+    "industrial": 0.6097607507400226
+   },
+   "spread": 1.0477728806645934,
+   "reduction_vs_frozen": 0.5356143454211162
+  },
+  "s2_mixed": {
+   "per_family": {
+    "urban_checker": 1.8366773832536867,
+    "forest_ridge": 2.0194770169957827,
+    "industrial": 1.3934676780992543
+   },
+   "spread": 0.6260093388965284,
+   "reduction_vs_frozen": 0.7225450648889061
+  }
+ }
+}

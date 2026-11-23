@@ -144,6 +144,13 @@ Track G/G2 `GNN_`, Track H/H2 `HNN_`, Track J `JNN_`.
 | `K02_physics_model_refinement.md` | M0-M5 airframe models, LOFO and cross-domain, schema v3, thresholds and edit detection | current; Part 2 of the track |
 | `K03_exact_semantics_absorption.md` | J03's absorption and J02's floor re-derived under exact drag semantics, with the pre-registered survival rules | current; Part 3 of the track |
 
+## Track L — reader on simulated scenes (branch `track-l-reader-simreal`)
+
+| report | title | status |
+| --- | --- | --- |
+| `L01_scene_stratified_reader_error.md` | Scene-stratified reader error on the simulated development set | current for the 80 feasible dev clips; held-out scenes deferred with I02 |
+| `L02_reader_finetune_sim_real.md` | Fine-tuning the reader on simulated scenes, with the real held-out flights | current when written; see its own status line |
+
 ## Notes
 
 * Report 04 quotes the pre-registration sha256 `b8fd7013…` for `configs/verdict_preregistration.yaml`

@@ -233,3 +233,14 @@ New generated tree (gitignored, reproducible from the committed generator):
 
 Small summaries under `results/k01/` and `results/k02_*` are in git; the v3 tree is not
 (it is ~20 MB of `.npz`, regenerable in under a minute from the committed fit file).
+
+## 7. Track L (2026-11-22)
+
+| location | objects | contents |
+| --- | --- | --- |
+| R2 `track-l/l01/per_frame/` | 80 | per-frame reader arrays for the feasible simulated development clips (gravity, lean, truth, gate inputs), manifest `results/l01/r2_manifest.json` |
+| Modal `awmv-l-data` | volume | `/l01/inputs` (videos, truth), `/l02/frames` (3,200 training frames), `/l02/real_frames` (5,007 TII frames), `/l02/folds` (per-fold records), `/l02/models` (final checkpoints), `/l02/downstream` (edit-reader outputs) |
+| local `data/l01`, `data/l02` | gitignored | downloaded inputs and score arrays; reconstructable from R2 and the volume |
+
+The L01/L02 jobs read Track I's published videos and truth from R2 after verifying their sha256
+against `results/i02/manifest.csv`; nothing under `track-i/` was written.

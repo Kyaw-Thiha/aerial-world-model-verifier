@@ -1,0 +1,66 @@
+[
+ {
+  "family": "urban_checker",
+  "pooled": {
+   "frames_x_axes": 24670,
+   "bias": 0.04828818797615296,
+   "slow": 0.44004943708522154,
+   "fast": 0.5116623749386254,
+   "mean_squared_error_deg2": 0.010763189844998852
+  },
+  "per_clip": {
+   "clips": 27,
+   "bias_median": 0.31881177865265903,
+   "slow_median": 0.2753349303026692,
+   "fast_median": 0.2629958065575829
+  }
+ },
+ {
+  "family": "forest_ridge",
+  "pooled": {
+   "frames_x_axes": 23936,
+   "bias": 0.4053701523832661,
+   "slow": 0.373872346711892,
+   "fast": 0.22075750090484184,
+   "mean_squared_error_deg2": 0.01670409428751175
+  },
+  "per_clip": {
+   "clips": 26,
+   "bias_median": 0.4923293042537009,
+   "slow_median": 0.2995678345919278,
+   "fast_median": 0.16257481353515185
+  }
+ },
+ {
+  "family": "industrial",
+  "pooled": {
+   "frames_x_axes": 26196,
+   "bias": 0.09232474949060968,
+   "slow": 0.47026741612671424,
+   "fast": 0.4374078343826761,
+   "mean_squared_error_deg2": 0.004791953762434538
+  },
+  "per_clip": {
+   "clips": 27,
+   "bias_median": 0.5992193279516493,
+   "slow_median": 0.16600448359454217,
+   "fast_median": 0.1784515463434727
+  }
+ },
+ {
+  "family": "all",
+  "pooled": {
+   "frames_x_axes": 74802,
+   "bias": 0.23579877466005889,
+   "slow": 0.4113901389498269,
+   "fast": 0.35281108639011427,
+   "mean_squared_error_deg2": 0.01057307445125449
+  },
+  "per_clip": {
+   "clips": 80,
+   "bias_median": 0.5002402619625865,
+   "slow_median": 0.2627436554424405,
+   "fast_median": 0.20152347427798617
+  }
+ }
+]

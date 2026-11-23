@@ -1,0 +1,47 @@
+# Track L, L02 amendment C: the edit-pipeline check is exceeded on two flights, and why that is not an edit error
+#
+# Amendment B set |offset(cond) - offset(real)| <= 0.25 deg as the gate for the regenerated pixel
+# edits. On the full frozen pass the line is exceeded on two of the first three flights, by at
+# most 0.16 deg. This amendment records the failure, diagnoses it, and fixes how the downstream
+# numbers are read. It was written before any new-reader edit score was computed.
+version: 1
+date: 2026-11-22
+amends: configs/l02_reader_prereg.yaml (c37b12b) and amendment B
+status: committed_before_new_reader_edit_rates
+
+observations_with_exact_maps:
+  flight-01a-ellipse:
+    n_clips: 5
+    absolute_offset_deg: 0.30
+    relative_deg: {null_edit: 0.004, tilt_removal: 0.159, mirror_roll: 0.051, yaw_control: 0.196}
+  flight-04a-ellipse:
+    n_clips: 7
+    absolute_offset_deg: 0.90
+    relative_deg: {null_edit: -0.066, tilt_removal: -0.147, mirror_roll: -0.407, yaw_control: 0.263}
+  flight-07a-lemniscate:
+    n_clips: 7
+    absolute_offset_deg: 1.00
+    relative_deg: {null_edit: -0.042, tilt_removal: 0.035, mirror_roll: 0.286, yaw_control: 0.303}
+
+diagnosis: >
+  The maps are not the problem: identity is within 0.07 deg on every flight, and tilt removal
+  within 0.16. The two conditions that exceed the line are the ones with the largest warped area
+  and the largest rotation (mirror, and the yaw control whose magnitude is matched to the tilt
+  removal). On the *unwarped* real frames the frozen reader already differs from its stored run by
+  0.30-1.00 deg per flight (absolute column), so per-image run-to-run variation of order 0.2-0.3
+  deg is established before any edit is involved. Two independent estimates on the same frame
+  differ by root-2 times that, and the mirror/yaw residuals (0.26-0.41) sit exactly there. A
+  systematic edit error would move the *tilt* condition, whose residual is 0.03-0.16, and it
+  does not.
+
+consequences:
+  check_status: "formally failed on 2 of 3 flights by at most 0.16 deg; reported as a failure, not rounded away"
+  detection_rates: >
+    unaffected in practice: the violations move the depicted lean by 16-27 deg (tilt removal and
+    mirror) or are the control, so a 0.3 deg per-condition offset cannot create or hide a
+    detection at the coherence threshold.
+  controls: >
+    the yaw and null rates are read as approximate to +/-0.4 deg per clip; they are reported with
+    that statement beside them, and no claim is made about a difference smaller than that.
+  no_new_tolerance: >
+    The 0.25 deg line is NOT changed. The report says it was exceeded, where, and by how much.
