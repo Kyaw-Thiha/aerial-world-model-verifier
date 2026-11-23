@@ -125,8 +125,8 @@ Objects on R2: `track-i/videos/<split>/<family>/<clip_id>.mp4` (H.264 CRF 18, 30
 
 | split | clips on R2 | families | defect families | frames |
 | --- | --- | --- | --- | --- |
-| dev | 161 | forest_ridge, industrial, urban_checker | feasible, mirrored_roll, partial, thrust_limit, tilt_removed, tilt_scaled | 79581 |
-| heldout | 3 | coastal_cliff, field_settlement | feasible, thrust_limit, tilt_removed | 1039 |
+| dev | 200 | forest_ridge, industrial, urban_checker | feasible, mirrored_roll, partial, thrust_limit, tilt_removed, tilt_scaled | 99591 |
+| heldout | 100 | coastal_cliff, field_settlement | feasible, mirrored_roll, partial, thrust_limit, tilt_removed, tilt_scaled | 49859 |
 
 First usable batch: the clips listed in `results/i02/manifest.csv`; each row carries the interval `[interval_start_s, interval_end_s]` and the magnitude in degrees, so a detector (Track G2) and a clip-level verdict (Tracks F2, G2) can both read the same labels.
 <!-- track-i-dataset:end -->

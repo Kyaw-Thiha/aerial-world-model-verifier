@@ -196,7 +196,8 @@ volume; `experiments/i02_publish.py` pulls them, uploads with the uploader's sha
 check (the hash is computed on the bytes written and read back), and records the key, hash and
 size in the manifest row. `experiments/i02_build_manifest.py --verify` then HEADs every object on
 R2 and re-hashes a sample; `--full-hash` (added in this round) re-hashes **every** object instead.
-The final check reports all 600 objects present with matching sha256.
+The final check reports **600 objects** (300 clips x video + truth) present, 0 missing, 0 bad and
+0 rows without an R2 key, every one fully re-hashed from R2.
 
 **What changed in the repository.** `results/i02/manifest.csv` is 300 rows (200 development, 100
 held-out), one per clip, each with its split, scene and seed, manoeuvre and parameters, mount,
@@ -209,7 +210,7 @@ records.
 **Frames.** 149,450 in total (99,591 development, 49,859 held-out), matching the composition
 recorded before rendering.
 
-**Spend.** 6.4 USD for the whole render (Modal billing export, `awmv-i-dataset`), against the
+**Spend.** 7.55 USD for the whole render (Modal billing export, `awmv-i-dataset`), against the
 40 USD ceiling.
 
 **What is still not claimed.** Rendering and publishing are not scoring: no held-out clip has
