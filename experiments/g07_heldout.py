@@ -411,9 +411,9 @@ def run_sim(args, arms, out, smoke: bool) -> dict:
     dev = {c: x for c, x in dev_all.items() if man[c]["split"] == "dev"}
     fit_ids = [c for c in dev if man[c]["label"] == "feasible"]
     if smoke:
-        ev_ids = [c for c in dev if man[c]["label"] == "infeasible"]
-        ev_scores = args.scores_dev
-        print(f"SMOKE on dev: fit {len(fit_ids)} feasible, evaluate {len(ev_ids)} dev defect clips")
+        ev_ids = list(dev)          # code check: every dev clip, feasible ones included, so the
+        ev_scores = args.scores_dev  # false-reject and matched-threshold paths are exercised
+        print(f"SMOKE on dev: fit {len(fit_ids)} feasible, evaluate {len(ev_ids)} dev clips")
     else:
         ev_ids = None
         ev_scores = args.scores_heldout
@@ -454,8 +454,9 @@ def run_sim(args, arms, out, smoke: bool) -> dict:
     # matched false-reject thresholds, from the FIT side only
     matched = {}
     for a in arms:
-        if a["kind"] in ("bh", "joint", "median"):
-            continue
+        if a["kind"] in ("bh", "joint", "median", "refined"):
+            continue   # no clip-level threshold to loosen (BH has its own FDP control; A3
+                       # inherits the primary's threshold and does not change the statistic)
         if a["kind"] == "lag":
             vals = []
             for x in fit_clips.values():
