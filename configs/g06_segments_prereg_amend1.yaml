@@ -1,0 +1,66 @@
+# Amendment 1 to the G3 pre-registration: reader reproducibility and the compute plan
+#
+# Written and committed BEFORE any defect clip was scored in this track, after three
+# single-clip engineering checks and before the production run. It changes NO statistic, NO
+# threshold, NO arm, NO calibration and NO success criterion. It records two measured facts
+# that the pre-registration assumed otherwise, and the compute choice they force.
+date: '2026-11-22'
+amends: configs/g06_segments_prereg.yaml
+status: committed_before_production_scoring
+changes_science: false
+
+measured:
+  throughput_per_clip:
+    clip: i02_dev_002 (601 frames, 30 fps)
+    A10G_batch1: {fps: 4.69, usd_per_1000_frames_at_1_10: 0.0651}
+    A10G_batch8: {fps: 4.76, decode_s: 1.7, infer_s: 124.6}
+    A100_80GB_batch8: {fps: 11.56, usd_per_1000_frames_at_2_50: 0.0601}
+    L40S_batch8: {fps: 11.78, decode_s: 1.7, infer_s: 49.2, usd_per_1000_frames_at_1_95: 0.0460}
+    conclusion: >
+      L40S is the cheapest per frame for this instrument, so production runs on L40S with
+      batch 8. Batching does not change the measurement in any way that matters (below):
+      the batch-1 versus batch-8 difference (median 2.7e-3 lean units) is inside the reader's
+      own run-to-run spread.
+  reproducibility:
+    same_device_same_code_two_runs:
+      what: i02_dev_002 scored twice on L40S, batch 8, deterministic flags set
+      deterministic_flags: [cudnn.benchmark=false, cudnn.deterministic=true,
+                            torch.use_deterministic_algorithms(warn_only=true),
+                            CUBLAS_WORKSPACE_CONFIG=:4096:8]
+      per_component_abs_d_lean: {median: 2.19e-3, p90: 6.75e-3, p99: 2.24e-2, max: 5.55e-2}
+      max_abs_d_tilt_deg: 2.40
+    same_clip_across_devices:
+      A100_vs_A10_batch8: {median: 2.67e-3, max: 9.29e-2}
+      L40S_vs_TrackI_A10: {median: 2.75e-3, p90: 9.39e-3, p99: 2.59e-2, max: 4.33e-2}
+    conclusion: >
+      GeoCalib is not bit-reproducible on these GPUs even with deterministic flags; the
+      residual is the instrument's own per-frame stochastic component (~0.002 lean units
+      median, ~0.02 at p99, up to ~0.055 worst case, i.e. ~0.1 deg typical and a few degrees
+      in the tail). Our own runs cannot be made exact, and no run can be compared to Track I's
+      published rows exactly.
+
+consequences:
+  consistency_check:
+    was: "the pre-registration expected exact equality between stride-1 and stride-2 rows"
+    now: >
+      The check becomes distributional. For each stride-2 clip it reports the per-component
+      |Delta lean_est| at the shared (even) frame indices: median, p90, p99, max, and the best
+      frame offset. PASS means (i) the best offset is 0 frames, and (ii) the new-vs-old median
+      and p99 are within a factor of 2 of the same-device repeat-run envelope. It is reported
+      either way; nothing is adjusted.
+    observed_on_the_one_clip_checked: >
+      Best offset 0. New-vs-old median 2.75e-3 against a repeat-run envelope median of
+      2.19e-3 (ratio 1.26), p99 2.59e-2 against 2.24e-2 (ratio 1.16). Within the envelope, so
+      the stride-1 rows agree with the stride-2 rows as closely as two identical runs do;
+      no decode-path difference is detectable on this clip.
+  reporting:
+    - every reader-derived table in G06/G07 states that the reader is stochastic run to run,
+      with the envelope above, and that per-window averaging reduces but does not remove it
+    - the minimum-localisable-violation section states the envelope as part of its noise floor
+  compute_plan:
+    dev_170_clips: {frames: 84658, gpu: L40S, projected_usd: 3.89}
+    yaw_slice: {frames: 4646, render_l40s_usd: 0.40, reader_l40s_usd: 0.21}
+    batch2_30_clips: {frames_est: 13000, projected_usd: 0.60}
+    heldout_100_clips: {frames: 49859, gpu: L40S, projected_usd: 2.29}
+    projected_total_usd: 7.39
+    ceiling_usd: 8.0

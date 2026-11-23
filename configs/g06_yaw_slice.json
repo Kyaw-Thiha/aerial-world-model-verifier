@@ -1,0 +1,161 @@
+{
+ "date": "2026-11-22",
+ "track": "G3",
+ "kind": "auxiliary yaw-control slice",
+ "manifest_sha256_at_selection": "9dd728cb71ab79f0802a2522906d6e22380dccc5e817e14b569f8ecc91b0ec8a",
+ "selection_rule": "per (scene family, uptilt) cell: the feasible dev clip with the largest peak_tilt_req_deg, ties by clip_id; metadata only, before any statistic",
+ "edit": "R_wc -> Rz(alpha_i) @ R_wc per frame (world yaw), translation unchanged; alpha_i = min(tilt_req_deg_i, 60)",
+ "rationale": "Rz leaves the body-frame world-up vector (and therefore the schema lean) exactly invariant, so a depicted-side yaw control is the null edit; only a render tests the reader's view dependence",
+ "storage": {
+  "volume": "awmv-g3-data",
+  "path": "yaw_slice/",
+  "r2_prefix": "track-g3/yaw_slice/",
+  "results": "results/g06/yaw_slice/"
+ },
+ "clips": [
+  {
+   "clip_id": "i02_dev_056",
+   "family": "forest_ridge",
+   "uptilt_deg": 0.0,
+   "scene_seed": 103,
+   "maneuver": "accel_brake",
+   "duration_s": 10.120000000000001,
+   "n_frames": 304,
+   "peak_tilt_req_deg": 11.59104743914765,
+   "median_tilt_req_deg": 7.137611027439089,
+   "r2_video": "track-i/videos/dev/forest_ridge/i02_dev_056.mp4"
+  },
+  {
+   "clip_id": "i02_dev_077",
+   "family": "forest_ridge",
+   "uptilt_deg": 15.0,
+   "scene_seed": 106,
+   "maneuver": "ellipse",
+   "duration_s": 12.988,
+   "n_frames": 390,
+   "peak_tilt_req_deg": 20.933386437400735,
+   "median_tilt_req_deg": 20.93338643740072,
+   "r2_video": "track-i/videos/dev/forest_ridge/i02_dev_077.mp4"
+  },
+  {
+   "clip_id": "i02_dev_014",
+   "family": "forest_ridge",
+   "uptilt_deg": 30.0,
+   "scene_seed": 103,
+   "maneuver": "turn",
+   "duration_s": 19.672,
+   "n_frames": 591,
+   "peak_tilt_req_deg": 33.957636751471355,
+   "median_tilt_req_deg": 33.957636751471355,
+   "r2_video": "track-i/videos/dev/forest_ridge/i02_dev_014.mp4"
+  },
+  {
+   "clip_id": "i02_dev_047",
+   "family": "forest_ridge",
+   "uptilt_deg": 45.0,
+   "scene_seed": 106,
+   "maneuver": "ellipse",
+   "duration_s": 10.0,
+   "n_frames": 301,
+   "peak_tilt_req_deg": 50.486618640224094,
+   "median_tilt_req_deg": 50.48661864022409,
+   "r2_video": "track-i/videos/dev/forest_ridge/i02_dev_047.mp4"
+  },
+  {
+   "clip_id": "i02_dev_024",
+   "family": "industrial",
+   "uptilt_deg": 0.0,
+   "scene_seed": 101,
+   "maneuver": "turn",
+   "duration_s": 17.204,
+   "n_frames": 517,
+   "peak_tilt_req_deg": 10.813319316131897,
+   "median_tilt_req_deg": 10.813319316131897,
+   "r2_video": "track-i/videos/dev/industrial/i02_dev_024.mp4"
+  },
+  {
+   "clip_id": "i02_dev_021",
+   "family": "industrial",
+   "uptilt_deg": 15.0,
+   "scene_seed": 104,
+   "maneuver": "ellipse",
+   "duration_s": 10.0,
+   "n_frames": 301,
+   "peak_tilt_req_deg": 19.405825770438042,
+   "median_tilt_req_deg": 19.405825770438042,
+   "r2_video": "track-i/videos/dev/industrial/i02_dev_021.mp4"
+  },
+  {
+   "clip_id": "i02_dev_006",
+   "family": "industrial",
+   "uptilt_deg": 30.0,
+   "scene_seed": 101,
+   "maneuver": "accel_brake",
+   "duration_s": 13.396,
+   "n_frames": 402,
+   "peak_tilt_req_deg": 42.39407859069791,
+   "median_tilt_req_deg": 21.59742666118152,
+   "r2_video": "track-i/videos/dev/industrial/i02_dev_006.mp4"
+  },
+  {
+   "clip_id": "i02_dev_063",
+   "family": "industrial",
+   "uptilt_deg": 45.0,
+   "scene_seed": 104,
+   "maneuver": "slalom",
+   "duration_s": 11.812,
+   "n_frames": 355,
+   "peak_tilt_req_deg": 48.97396478864858,
+   "median_tilt_req_deg": 39.37547621915925,
+   "r2_video": "track-i/videos/dev/industrial/i02_dev_063.mp4"
+  },
+  {
+   "clip_id": "i02_dev_016",
+   "family": "urban_checker",
+   "uptilt_deg": 0.0,
+   "scene_seed": 105,
+   "maneuver": "accel_brake",
+   "duration_s": 13.404,
+   "n_frames": 403,
+   "peak_tilt_req_deg": 11.749346841910054,
+   "median_tilt_req_deg": 4.862244943373038,
+   "r2_video": "track-i/videos/dev/urban_checker/i02_dev_016.mp4"
+  },
+  {
+   "clip_id": "i02_dev_001",
+   "family": "urban_checker",
+   "uptilt_deg": 15.0,
+   "scene_seed": 102,
+   "maneuver": "ellipse",
+   "duration_s": 11.884,
+   "n_frames": 357,
+   "peak_tilt_req_deg": 22.205884309817925,
+   "median_tilt_req_deg": 22.205884309817925,
+   "r2_video": "track-i/videos/dev/urban_checker/i02_dev_001.mp4"
+  },
+  {
+   "clip_id": "i02_dev_046",
+   "family": "urban_checker",
+   "uptilt_deg": 30.0,
+   "scene_seed": 105,
+   "maneuver": "accel_brake",
+   "duration_s": 13.94,
+   "n_frames": 419,
+   "peak_tilt_req_deg": 30.659748585097603,
+   "median_tilt_req_deg": 11.90731533530364,
+   "r2_video": "track-i/videos/dev/urban_checker/i02_dev_046.mp4"
+  },
+  {
+   "clip_id": "i02_dev_079",
+   "family": "urban_checker",
+   "uptilt_deg": 45.0,
+   "scene_seed": 102,
+   "maneuver": "slalom",
+   "duration_s": 10.184000000000001,
+   "n_frames": 306,
+   "peak_tilt_req_deg": 48.41899502090036,
+   "median_tilt_req_deg": 38.84797270737862,
+   "r2_video": "track-i/videos/dev/urban_checker/i02_dev_079.mp4"
+  }
+ ]
+}

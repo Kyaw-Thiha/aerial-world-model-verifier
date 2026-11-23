@@ -244,3 +244,30 @@ Small summaries under `results/k01/` and `results/k02_*` are in git; the v3 tree
 
 The L01/L02 jobs read Track I's published videos and truth from R2 after verifying their sha256
 against `results/i02/manifest.csv`; nothing under `track-i/` was written.
+
+## 7. Track G3 additions (2026-11-22)
+
+| path | where | what |
+| --- | --- | --- |
+| `results/g06/scores/<clip_id>_score.json` | git | stride-1 GeoCalib reader output for all 170 simulated development clips (per-frame `lean_est`, `lean_req`, `tilt_est`, `tilt_gt`, `up_error`). ~20 MB. Published so a later track can reuse them without a GPU run. |
+| `results/g06/consistency/` | git | stride-1 versus stride-2 comparison and the run-to-run envelope |
+| `results/g06/ablation/` | git | A1-A5 tables, MDV curves, `tables.md` |
+| `results/g06/yaw_slice/` | git | the auxiliary yaw slice's analysis |
+| `yaw_slice/<clip_id>/` | Modal volume `awmv-g3-data` | the 12 re-rendered yaw-control clips (`<clip_id>.mp4`, `render.npz`, `yaw_meta.json`); not in git |
+| `track-g3/yaw_slice/` | R2 | publication target for the same 12 clips (pending) |
+
+The yaw slice is Track G3's own auxiliary set: 12 feasible development clips re-rendered with the
+camera yawed about world up. It is **not** part of Track I's frozen 300 and is never pooled with
+it (`configs/g06_yaw_slice.json`).
+
+## 9. Track G3 held-out artefacts (2026-11-23)
+
+| path | size | what | rebuild |
+| --- | --- | --- | --- |
+| `results/g07/scores/` | ~3.5 MB, 100 files | held-out stride-1 reader output (`<clip>_score.json`), pulled from `awmv-g3-data:scores/stride1/heldout_c*` | `scripts/g07_score_heldout.sh` then `g07_pull_and_run.sh` |
+| `results/g07/*.csv`, `sim_summary.json` | < 1 MB | every number in report G07 | `experiments/g07_heldout.py` |
+| `awmv-g3-data` volume | — | the authoritative score copies plus the dev scores and yaw slice | — |
+
+The 100 held-out score files are committed because they are small and every held-out number
+depends on them; the mp4/GT inputs remain on Track I's volume (`awmv-i-data:i02/clips/`), read
+only. Nothing was written to Track I's volume or R2.

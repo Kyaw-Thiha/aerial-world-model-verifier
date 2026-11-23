@@ -781,3 +781,88 @@ Every row below was read from the project's own repo/HF card on 2026-11-10. "ver
   and are unaffected in practice (the edits move the lean by 16-27 deg), while the *controls* on
   13p/16p/04a/07a carry up to 0.8 deg of pipeline uncertainty and are reported with it; a
   sensitivity table excludes those flights from the control rates.
+
+## Track G3 — segment detection on the simulated set (2026-11-22) — entries tagged [G3]
+
+- [G3] **A world-yaw rotation leaves the schema lean bit-identical, so a yaw control cannot be
+  composed on the depicted side.** The lean is the world-up vector in the body frame,
+  `u_b = R_bw^T e3`; `R_bw -> Rz(alpha) R_bw` gives `Rz(alpha) e3 = e3`, so `u_b` is unchanged.
+  Checked numerically on 500 random attitudes and arbitrary yaw angles (max `|Delta lean|` =
+  0; `tests/test_g3_yaw_invariance.py`). The real-clip yaw control (`Rz(alpha) R_bw`,
+  `src/negatives/edits.py`) is therefore a test of the **reader's** view dependence, not of the
+  geometry, and it can only be reproduced in simulation by rendering yawed frames. Decision
+  (user, 2026-11-22): Track G3 owns a 12-clip auxiliary rendered yaw slice
+  (`configs/g06_yaw_slice.json`), reported separately and never mixed into Track I's frozen 300.
+- [G3] **Track I's published reader scores mix two frame rates.** 8 score files are stride 1
+  (4,242 frames) and 78 are stride 2 (18,366 frames); frame indices in the rows are original, so
+  the stride is recoverable but the sampling is not uniform. A window statistic in frames cannot
+  span both rates (12 frames = 0.40 s at 30 fps, 0.80 s at 15 fps). Decision (user, 2026-11-22):
+  re-score every clip at stride 1 and check the new rows against the old stride-2 rows at the
+  overlapping even frames (expected exact, because GeoCalib is deterministic). The new scores are
+  published under `results/g06/scores/` for reuse.
+- [G3] **The handoff's "read the LaTeX report in `report/`" cannot be done from `main`.** Only the
+  generated assets (`report/tables`, `report/figures`, `report/data`, `report/scripts`,
+  `assets_test.tex`) are in the repository; the report body is still the open item recorded in
+  the consolidation log and `docs/archive/README.md`. The G3 design was written from
+  `report/ASSETS.md` plus the numbered reports, and this is recorded rather than resolved.
+- [G3] **The simulated set has no yaw or null control and no path-side statistic is added.** The
+  null edit in simulation is the unchanged feasible clip (exact identity); `thrust_limit` is a
+  path label whose depicted-vs-required residual is zero by construction, so the segment machinery
+  has no power on it and no path-side test is introduced in this track (user, 2026-11-22).
+- [G3] **Design frozen before any defect clip was scored** in `configs/g06_segments_prereg.yaml`
+  (commit recorded below): 12-frame coherence scan primary, 8-frame residual scan as comparison,
+  no per-clip nuisance fit, no demand selection, no confidence weighting, FDR/boundary/alignment/
+  multi-scale as separate pre-registered ablations.
+- [G3] **The reader is not bit-reproducible run to run, and the stride check had to become
+  distributional.** Two identical L40S runs of `i02_dev_002` (batch 8, deterministic flags) differ
+  by a median of 2.2e-3 lean units (p99 2.2e-2, max 5.5e-2); A10, A100 and L40S differ from each
+  other by the same amount, and the new stride-1 rows differ from Track I's stride-2 rows by
+  2.75e-3 median, which is inside that envelope. The best frame offset is 0, so the stride-2 row
+  mapping is right and no decode-path difference is detectable. `configs/g06_segments_prereg_amend1.yaml`
+  records this before production scoring and changes no statistic. Consequence for the science: the
+  reader's per-frame noise floor is stated in G06/G07 and enters the minimum-localisable-violation
+  section.
+- [G3] **Production scoring runs on L40S at batch 8, the cheapest per frame measured** (11.8 fps,
+  0.046 USD per 1,000 frames, against A10 4.8 fps / 0.065 and A100 11.6 fps / 0.060). Projected
+  spend 7.39 USD against the 8.00 ceiling. Batching does not change the measurement beyond the
+  reader's own stochasticity (batch-1 versus batch-8 median 2.7e-3).
+- [G3] **The first apparent "overrun" was GPU capacity queueing, not slow containers; the
+  billing export settles it.** Four concurrent L40S apps produced 83 clips in ~72 minutes of wall
+  time, which looked like a 3-6x slowdown and led to a 9.4 USD estimate against an 8.00 ceiling.
+  `modal billing report --for today` shows the true cost of everything up to that point is
+  **2.71 USD** (score apps 2.013, yaw 0.698, diag 0.003), and every score file records normal
+  per-clip compute (15-17 fps). The containers were waiting for capacity, which is not billed.
+  The estimate in the first version of the ledger was wrong and is corrected there; the user's
+  raise of the ceiling to 14.00 is recorded but was not needed. Practical rule retained anyway:
+  **one GPU container at a time**, because concurrency buys wall time only if capacity exists.
+- [G3] **The 170 development clips available at freeze contain only two partial-interval clips
+  (both 10 %).** The frozen table plans 20 partial clips (10/25/50 %), but 18 of them are among
+  the ~30 dev clips Track I has not yet rendered (`results/i02/manifest.csv`: 80 feasible, 27
+  tilt-removed full, 27 mirrored-roll full, 33 tilt-scaled full, 2 partial at 0.1, 1 thrust-limit).
+  The pre-registered partial-interval criteria (S1, S2) therefore cannot be evaluated on batch 1;
+  the report states this as a population limitation and does not substitute a different test. The
+  partial-interval ablation is re-run when batch 2 arrives, under the same thresholds.
+- [G3] **The family-wise max-over-windows calibration saturates on 100-window clips, and per-clip
+  BH is the fix.** A simulated clip yields ~100 windows where a real TII clip had 10-11; the
+  conformal 95th percentile of the maximum reaches 1.934 of the coherence ceiling 2.0 (sign 1.000,
+  no power) and 61-75 deg on the residual. Per-clip BH on the same residual windows detects 40 %
+  of the 72 whole-clip defect clips at a 4.7 % clip-level false-reject, against 8 % for the
+  family-wise rule at 6.2 %. This is a pre-registered result (A2), not a post-hoc fix.
+- [G3] **The coherence tier's scope is set by manoeuvre geometry, not by violation size.** It
+  needs both body-axis components of both leans to vary inside a window: 17 of 80 feasible clips
+  (slalom 13/16, lemniscate 4/8) are testable, and none of the steady turns, constant-speed
+  ellipses, straight accelerations or climbs are. A level camera also supplies little variance, so
+  tilt removal loses most of the tier's power; J03's real-clip removal detection depended on the
+  reader's ~4 deg noise, which a low-noise simulated reader does not provide.
+
+## Track G3 — frozen held-out evaluation — entries tagged [G3-G07]
+
+- [G3-G07] **The held-out pass ran once, on 2026-11-23, with no re-scoring.** `scripts/g07_score_heldout.sh` scores the 100 held-out clips in four L40S shards; the app skips a clip whose score file exists, so an interruption is resumed by re-running the same script. Verification after the pass: 100/100 files, every `n_frames` equal to the manifest, `stride = 1`, median 13.0 fps. No threshold, window, arm or code path changed after any held-out outcome was seen.
+- [G3-G07] **`configs/g06_eval_frozen.yaml` is not valid YAML as written** — its `arms_evaluated` entries are flow mappings containing nested braces (`rule: standardised max over lengths {8,12,16}`) — so the driver reads that block line by line against a name→knobs table (`ARM_TABLE`) and cross-checks each line's stated length/persistence/q. The file is untouched (it is frozen); the parse mode is recorded in the report. Anyone re-reading the recipe with a YAML parser will hit the same error.
+- [G3-G07] **The real held-out block was executed once during driver debugging, before the simulated held-out scores existed**, because the driver's real path has no held-out toggle. Nothing was changed afterwards and the path is deterministic (no bootstrap), so the reported real numbers are that first execution's. Disclosed in the report rather than glossed.
+- [G3-G07] **The matched-false-reject rule is undefined on the held-out simulated block**: the whole-clip baseline false-rejects 0/40, so there is no empirical false-reject to match and the quantile at alpha = 0 does not exist. Nothing was substituted; S2 and S6 are therefore not evaluable, and the report says so instead of reporting a nominal-threshold comparison as if it were matched. On the real block the driver computed nominal-threshold rates only — matched thresholds were implemented for the simulated block and not for the real one; found after the run and left rather than patched post hoc.
+- [G3-G07] **Testability, not detection, is the held-out headline.** The 12-frame coherence tier is testable on 9 of 40 null clips and on 0 of 1 in every 25 %-coverage cell; the 8/12-frame residual arms on 32 of 40. Any future arm must either lower the variance floor with a stated cost to its null rate or print the testable denominator as its headline, as G07 does.
+- [G3-G07] **Threshold transfer fails across scene families; the within-clip decision rule does not.** Dev-fitted max-over-windows thresholds of 61-75 deg of window residual fire on 1/13 whole-clip removals and 2/11 mirrored rolls; Benjamini–Hochberg at q = 0.10 on the same windows detects 8/13 and 10/11 at a 3.1 % null, with a realised false-discovery proportion of 0.383 on partial clips (so S3 fails as written). `a5_joint` flags 10/10 testable null clips — its dev standardisation does not transfer at all. This is the same per-flight/per-scene threshold pathology earlier rounds recorded, now measured against unseen scenes.
+- [G3-G07] **Thrust-limit clips are a false reject for the whole-clip baseline (7/7 flagged).** The family is physical by construction and the machinery has no power on it, as the pre-registration states; its rate is reported as N/A and never as detection.
+- [G3-G07] **Frame-rate asymmetry is reported, not corrected.** Window lengths are frames: 12 frames is 0.40 s at the simulated 30 fps and 1.0 s at the real 12 Hz, so an arm means different durations on the two blocks. The frozen recipe fixes frames, so the report states the mismatch beside the numbers.
+- [G3-G07] **Spend: 2.75 USD for the held-out pass, 8.02 USD cumulative** against the 14.00 ceiling (raised from 8.00 on 2026-11-22). The frozen recipe projected 2.3 for the pass; the 0.45 overrun is four-container overlap, including a shard that queued for a GPU.

@@ -523,3 +523,40 @@ L01's reader job is `remote/l_score_sim.py` (Modal `awmv-l-reader`); L02's train
 `remote/l_edit_reader.py` (`awmv-l-edit-reader`). Inputs are copied byte-identically from
 `track-i-simset`, `track-g-segments2` and `track-j-reader` (provenance in
 `results/l00/provenance.json`, `docs/decisions.md` [L]).
+
+## Track G3 — segment detection on the simulated set (not part of E1-E10)
+
+* **Branch** `track-g3-segments` (worktree `~/Documents/Projects/awmv-g3`), off `main` at `41d1dad`.
+* **What it is**: the window-statistic ablations on Track I's simulated labelled set — 12-frame
+  coherence scan (primary), 8-frame residual scan (comparison), whole-clip median (baseline),
+  per-clip BH, boundary refinement, per-clip time alignment, multi-scale, the synthetic
+  minimum-detectable-step curve, and the 12-clip auxiliary yaw slice.
+* **Pre-registration**: `configs/g06_segments_prereg.yaml` (`2744dbb`), amendment 1
+  `configs/g06_segments_prereg_amend1.yaml` (`ac21197`), evaluation recipe
+  `configs/g06_eval_frozen.yaml`.
+* **Code**: `experiments/g3_*.py`, `remote/g3_score.py` (reader, L40S), `remote/g3_yaw_render.py`.
+  `src/verdict/segments.py` ported verbatim from `track-g2-segments` (`4c6eacf`); `src/sim/` from
+  `track-i-simset` (`2d815cc`).
+* **Results**: `results/g06/scores/` (the stride-1 reader output for all 170 dev clips, published
+  for reuse), `results/g06/consistency/`, `results/g06/ablation/`, `results/g06/yaw_slice/`.
+* **Reports**: `reports/G06_segments_ablation_on_sim.md` (dev), `reports/G07_segments_frozen_evaluation.md`
+  (held-out, not yet scored).
+* **Data**: the clips and truth are Track I's on R2 (`track-i/`); this track adds the 12-clip yaw
+  slice under the Modal volume `awmv-g3-data` (`yaw_slice/`) and, when published, R2
+  `track-g3/yaw_slice/`.
+
+## G07 — the frozen held-out evaluation (Track G3, 2026-11-23)
+
+One execution of `configs/g06_eval_frozen.yaml` (committed `3023889`, unedited) over the 100
+held-out simulated clips (two unseen scene families, seeds 201-206) and the 18 real held-out clips
+(3 gate-kept). Driver `experiments/g07_heldout.py` (`759b01f`), runners
+`scripts/g07_score_heldout.sh` (4 L40S shards, per-clip idempotent) and
+`scripts/g07_pull_and_run.sh`. Scores `awmv-g3-data:scores/stride1/heldout_c0..c3`, pulled to
+`results/g07/scores/` (100/100, frame counts equal to the manifest, stride 1, median 13.0 fps).
+Results `results/g07/` (7 CSVs + `sim_summary.json`). Report
+`reports/G07_segments_frozen_evaluation.md`. Cost 2.75 USD; see `docs/COST_LEDGER.md`.
+
+Outcome in one line: S4 (boundary refinement) met; S1, S2 and S6 not evaluable (0 testable clips
+in every 25 %-coverage cell); S3 and S5 failed; the within-clip BH rule on the residual tier is
+the only threshold mechanism that transferred. The recipe's `arms_evaluated` block is not valid
+YAML and is parsed line by line; recorded in the report and `docs/decisions.md`.

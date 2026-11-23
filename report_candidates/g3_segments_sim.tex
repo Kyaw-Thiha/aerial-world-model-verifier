@@ -1,0 +1,87 @@
+% Track G3 candidate section for the report (G06/G07).
+% Numbers are filled from results/g06/ablation/*.csv and results/g07/; every value in the final
+% version must name its run directory and commit, as the report's rule requires.
+\section{Segment detection on the simulated set}
+\label{sec:g3-segments}
+
+The frozen verdict is one clip-level median, so a violation that covers part of a flight is
+averaged away. Earlier work found that a sliding window scan finds partial violations but
+localises them poorly (mean IoU 0.15--0.24 on real clips), while the scale-free coherence tier
+was the only tier a per-clip nuisance fit could not absorb and had the smallest detectable local
+step (16.8$^\circ$ at 25\,\% coverage). The simulated labelled set (300 clips, exact violation
+intervals, 30\,fps, exact required lean) makes it possible to ask which of false-discovery-rate
+control, boundary refinement, per-clip time alignment and multi-scale windows actually improve
+localisation, and what the smallest localisable violation is.
+
+\paragraph{Population and reader.}
+170 development clips over three procedural scene families and four camera mounts; 80 feasible,
+the rest whole-clip or partial camera defects plus one path-side thrust-limit clip. Every clip
+was read with GeoCalib (pinhole, focal prior) at every video frame. The reader is stochastic run
+to run: two identical runs differ by a median of $2.2\times10^{-3}$ lean units (p99
+$2.2\times10^{-2}$), and rare single frames jump by up to a few degrees. This envelope is quoted
+wherever the reader enters a number.
+
+\paragraph{Window statistic.}
+The primary arm is a 12-frame (0.40\,s) window, hop 4, with the coherence statistic
+$1-\min(r_x,r_y)$ and the clip decision taken as the maximum over windows against a
+leave-one-scene-out conformal 95th percentile. The comparison is the 8-frame residual scan; the
+whole-clip median is the baseline. Nothing is fitted per clip.
+
+\paragraph{What limits the window tier.}
+Two limits appear before any detection rate is quoted, and both are properties of the design
+rather than of the violation. First, the coherence statistic needs both axes of both leans to
+vary inside a window; on steady turns, constant-speed ellipses, straight accelerations and
+climbs one axis is constant, so the tier abstains. On the simulated set the tier is testable on
+the manoeuvres whose lean direction rotates (slalom, lemniscate) and not on the others. Second,
+and more sharply, a level camera has almost no lean variance, so \emph{tilt removal makes the
+coherence tier abstain rather than fire}: the real-corpus detection of tilt removal came from
+the reader's own $\sim4^\circ$ noise supplying that variance, which a low-noise simulated reader
+does not provide.
+
+\paragraph{Calibration.}
+Calibrating the maximum over roughly one hundred windows per clip saturates the conformal
+threshold: the coherence threshold sits at 1.934 of a maximum 2.0, the sign threshold at 1.000
+(no clip can exceed it, so that tier has no power), and the residual threshold at 61--75$^\circ$,
+carried by three feasible clips with catastrophic reader windows. Benjamini--Hochberg within a
+clip is the pre-registered response, and it is the one ablation that changes the conclusion: on
+the same 8-frame residual windows it detects 36.7\,\% of the 90 whole-clip defect clips at a
+4.7\,\% clip-level false-reject ($q=0.05$), and 46.7\,\% at 10.9\,\% ($q=0.10$), against
+8\,\% for the family-wise rule at 6.2\,\%. The corpus-level variant is worse at $q=0.05$ and
+over-flags at $q=0.10$.
+
+\paragraph{Localisation.}
+Boundary refinement inside the flagged regions raises the median IoU from 0.686 to 0.824 on the
+eight clips with a region (S4 met). Per-clip time alignment does not help (chosen lag zero on
+most clips; mean IoU $-0.002$) and the joint multi-scale maximum inherits the saturation and
+detects nothing (S5 and S6 fail). The pre-registered synthetic step curve is flat at the
+false-reject rate for the coherence arm at every step up to 24$^\circ$ and only reaches 11--16\,\%
+for the residual arm above 20$^\circ$; no violation below whole-clip coverage is localised by
+this design. The 170-clip batch contains only two partial-interval clips, so the pre-registered
+partial-coverage criteria are not evaluated here; they await the remaining dev clips.
+
+% \begin{table}[t]
+% \centering
+% \caption{...}
+% \input{tables/tab_g3_detection_1}
+% \end{table}
+
+\paragraph{Frozen held-out evaluation.}
+The recipe of \texttt{configs/g06\_eval\_frozen.yaml} was executed once on 100 held-out clips from
+two unseen scene families (40 feasible, the rest camera defects and thrust-limit clips, ten of
+them partial) with every threshold unchanged from dev. Three results replace the dev pass's
+optimism. First, \emph{testability collapses}: the 12-frame coherence tier has an eligible window
+on 9 of 40 null clips and on none of the three 25\,\%-coverage cells, so the pre-registered S1,
+S2 and S6 are not evaluable rather than failed, and the null rate where it is testable is 1/9. Second,
+\emph{the conformal maximum does not transfer}: the residual thresholds of 61--75$^\circ$
+fitted on dev barely fire on unseen scenes (1/13 whole-clip removals, 2/11 mirrored rolls), while
+Benjamini--Hochberg at $q=0.10$ on the same windows detects 8/13 and 10/11 at a 3.1\,\% null ---
+with a realised false-discovery proportion of 0.38 on partial clips, so S3 still fails as written,
+and the joint multi-scale rule flags all ten testable null clips. Third, of the ablations only
+boundary refinement survives (median IoU 0.153 $\rightarrow$ 0.325 on the three flagged defect
+clips, S4), while per-clip alignment makes the false-segment rate worse (0.40 $\rightarrow$
+0.97 per minute, S5 fails). On the three gate-kept real held-out clips the coherence primary
+rejects none of the real clip or either control and detects 3/3 removals and 3/3 mirrored rolls
+with IoU 0.51/0.75, where the whole-clip median rejects two of the three real clips; three clips
+is a direction, not a rate. The window statistic survives contact with unseen scenes; the
+threshold transfer does not, and a within-clip decision rule (item 3) is the only mechanism in the
+frozen set that does.
