@@ -758,3 +758,59 @@ Every row below was read from the project's own repo/HF card on 2026-11-10. "ver
   deterministic view bias. Resolution: full 640×480 gives 63/63 valid UZH edited-clip
   extractions against 12/63 at the 320×240 crop; half resolution worsens the simulated 30° drift
   (8.71 vs 4.58). A two-view relative-pose chain is unusable (70-85° at 10 s).
+- [N2] **Part A: F0 and the sign tier added; the forest criterion fails because the reader is
+  saturated.** At a matched 8/80 pooled feasible false-reject, F0 on the propagated lean detects
+  13/27 removals (reader start), 13/27 (oracle) and 14/27 (oracle+2°) against the reader's 22/27;
+  forest is 4/9 against 9/9. The reader is at 9/9 forest removals at every pooled point from 5/80
+  to 10/80, so the pre-registered "+3 of 9" forest criterion could not be met by any arm; it is
+  reported as failed and not repaired. The high-mount criterion passes (13/13 vs 13/13 at 8/40,
+  ΔFR 0). The propagated constant is a 45° feasible tail: 5–6 of 80 feasible clips (all high mount)
+  exceed 20° under reader-start/oracle/2° starts, 0 under the reader, which lifts the cut from ~4°
+  to 16–18°.
+- [N2] **A reader start imports the forest bias; a 2° external attitude does not.** F0 forest
+  feasible medians: reader 8.73°, reader start 8.39°, oracle 1.73°, oracle+2° 2.49°. At a pooled
+  10/80 the 2° arm matches the reader's 9/9 forest removals with 2/26 instead of 10/26 forest
+  false-rejects and 9/9 instead of 6/9 forest mirrors; the reader-start arm gives 4/9 removals.
+  A 2° start error costs +0.8° on feasible clips and nothing on the defect conditions, so N05's
+  open question (does a 1–3° start help?) is answered: yes, it reaches the oracle residual; what
+  remains is the 45° drift.
+- [N2] **The M04 sign sub-tier is not usable on the simulated set at a 5–10 % budget.** Its
+  feasible scores are bimodal (`{0: 42, 1: 16}` for the reader, `{0: 35, 1: 28}` for the reader
+  start), so the leave-one-seed-out 95th percentile is the ceiling (1.0) and nothing is flagged.
+  Every scoreable removal and mirror clip scores exactly 1.0. At a fixed 0.5 cut it flags 18/80
+  feasible and detects 15/27 removals and 23/27 mirrors — a ~22–29 % false-reject tier. M04's
+  real-clip point (4/56) does not transfer: the simulated reader is quiet enough that a fully
+  removed tilt has no sign-bearing frame.
+- [N2] **A reader start recovers C2 exactly to the oracle-start arm** (6/27 removals at 7/80 for
+  both), confirming that N05's level-start failure was the start and that a small (reader-scale)
+  error is absorbed by C2's offset fit while a 10–30° level error is not. C2 still loses to the
+  reader (16/27) because the offset absorbs constant-bank removals. Coherence reproduces N05
+  (reader 10/27, propagated 6/27).
+- [N2] **Part A pre-registered criteria could not discriminate, and that is reported.** The
+  `primary_forest` and `upper_bound_forest` criteria required a removal gain over a reader that was
+  already at 9/9 in forest; both are recorded as FAIL and the substantive reading is left to the
+  pre-registered 5/7/10 pooled curve and the descriptive within-forest curve. Part D's gate (any
+  deployable arm meeting `primary_forest` under any tier) is therefore not met and Part D is not
+  run, as pre-registered.
+- [N2] **Part B(iii): two-draw averaging does not reduce the high-mount drift.** Pre-registered
+  c1 fails: 45° forest aggregate 8.65° against the mean of the two single medians 8.95° (−3.4 %,
+  needs −25 %), and 30° aggregate 8.30° is +81 % worse than the better draw (4.58°). c2 passes:
+  the worst 45° forest clip falls from 41.5° to 19.7°. The two draws disagree by a median 15.6° at
+  45° in forest, with every forest 45° clip above 15° at some samples. The reading is that a
+  common, clip-correlated error dominates; the deployable remedy is repeats plus a validity flag,
+  not averaging.
+- [N2] **Part C: the Part 4 comparison is not like for like.** N04 compares the propagated
+  **relative** 1 s error (3.54°, oracle start) with the reader's **absolute** per-frame error
+  (9.07°). On the same 78 clips: relative 1 s — propagated 3.62° (oracle) / 3.70° (reader start)
+  vs reader 7.39°; absolute — oracle 4.41°, reader start 9.56°, reader 9.07° (medians over
+  frames), and at a matched 1 s horizon the reader-start arm is worse (5.21° vs 4.71°). So the
+  propagation tracks rotation changes better, but its absolute advantage requires a start better
+  than the reader's first frame. N04's numbers are not recomputed or replaced; the provenance note
+  is the correction. The pre-registered binary rule passed on a horizon-mismatched comparison and
+  is reported as passed but not relied on.
+- [N2] **Data integrity: one DPVO draw is no longer in the cache.** `data/n06/poses_repeat/scale1`
+  now duplicates draw 1 on 188/200 clips; it does not hold the third draw N06 reported as "run 2"
+  (N06's 5.87°/10.37° medians cannot be reproduced from it). `data/n05/poses/sim200/scale1_rep2`
+  does reproduce N05's published draw-2 C2 values exactly (median |diff| 0.0 over 200 clips) and is
+  the second draw N08 uses. N06's published numbers stand as reported, unrecomputed. No file was
+  modified; the observation is recorded here and in N2B/N_STATE.

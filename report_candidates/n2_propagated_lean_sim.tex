@@ -1,0 +1,127 @@
+% Track N2 — candidate section for the report.
+% Numbers from results/n2/{n07,n08,n09}/summary.json at the commits in docs/N2_STATE.md.
+% Pre-registrations: configs/n07_sim_tiers_prereg.yaml (+ amend A), n08_mount_draws_prereg.yaml,
+% n09_part4_provenance_prereg.yaml. Do not edit the main LaTeX files from this branch.
+
+\section{Verdict tiers on a rotation-propagated lean over the simulated set}
+\label{sec:n2-propagated-lean}
+
+\paragraph{Decision.}
+\textbf{No detection gain, a specificity gain, and the start is the hinge.} At a matched
+8/80 pooled feasible false-reject the fixed-calibration tier $F_0$ detects 13/27 tilt removals
+on the rotation-propagated lean against the reader's 22/27, and in the forest stratum 4/9
+against 9/9, so the pre-registered forest criterion fails; the high-mount criterion passes
+(13/13 vs 13/13 at 8/40). The propagated arm's operating point is set by a 45$^\circ$ mount
+drift tail that the reader does not have (five of 80 feasible clips above
+20$^\circ$), and a start read from the reader imports the forest bias, so the forest
+improvement appears only with an external start of 2$^\circ$ or better.
+
+\paragraph{Question.}
+Track N showed that attitude can be propagated from video rotation (relative drift 0.4--1.8$^\circ$
+at 10\,s on real and simulated feasible clips) and that the per-clip fit and the scale-free
+coherence tier do not absorb a \emph{level-body} start error. It did not run $F_0$, the one tier
+that cannot absorb a scene bias or a gain error, and it could not stratify the answer by scene
+family and mount. This section asks whether $F_0$ on the propagated lean, with starts that are
+available in deployment, separates the simulated defects as well as the reader's lean at a
+matched false-reject, and how much of the answer is bought by the start attitude.
+
+\paragraph{Setup.}
+All 200 development clips of Track I's frozen split (80 feasible, 27 tilt-removed, 27 mirrored,
+33 scaled, 20 partial, 13 thrust-limited; families urban/forest/industrial; mounts
+0/15/30/45$^\circ$). Held-out clips were not opened. The propagated up is
+$\mathrm{up}_k=(R_k^{\top}R_0)u_0$ from DPVO, converted to a lean by the project's
+\texttt{depicted\_lean\_from\_gravity}. Five arms differ only in $u_0$: the reader's own lean;
+a level body; the reader's frame-0 up; the true attitude at frame 0 (an upper bound, labelled);
+and the true attitude perturbed by exactly 2$^\circ$ (eight draws, median). Tiers are $F_0$
+(clip-median thrust-axis angle, no nuisance, $k_d=0.295$), $C2$ (per-clip offset plus $k_d$ grid),
+coherence $R$, and the Track M sign sub-tier with the reader-noise dead-band. Thresholds are
+leave-one-scene-seed-out 95th percentiles of the feasible clips, matched to the reader arm's
+false-reject count; detections are also reported at fixed pooled 5/7/10 per 80. Pre-registered in
+\texttt{configs/n07\_sim\_tiers\_prereg.yaml} with one pre-scoring amendment (a zero natural count
+is replaced by the common 7/80).
+
+\begin{table}[t]
+\centering
+\caption{$F_0$ at a matched 8/80 pooled feasible false-reject, 200 development clips. Every cell
+is flags $(k/n)$; the feasible (null) rate is the same 8/80 for every arm by construction.
+Forest is 26 feasible / 9 removed; high mount (30$^\circ$+45$^\circ$) is 40 feasible / 13 removed.
+\textbf{Reader start} is the only deployable propagated arm; \textbf{oracle} and \textbf{+2$^\circ$}
+are upper bounds on the start.}
+\label{tab:n2-f0-matched}
+\begin{tabular}{lrrrrr}
+\toprule
+ & reader & level & reader start & oracle & oracle $+2^\circ$ \\
+\midrule
+all removed        & \textbf{22/27} & 1/27  & 13/27 & 13/27 & 14/27 \\
+all mirrored       & 15/27 & 6/27  & 16/27 & 19/27 & \textbf{20/27} \\
+all scaled         & \textbf{15/33} & 3/33  & 7/33  & 8/33  & 10/33 \\
+forest feasible    & 8/26  & 3/26  & 3/26  & 2/26  & 2/26 \\
+forest removed     & \textbf{9/9} & 0/9   & 4/9   & 4/9   & 5/9 \\
+forest mirrored    & 6/9   & 4/9   & 6/9   & \textbf{9/9} & \textbf{9/9} \\
+high-mount feasible & 8/40 & 8/40  & 8/40  & 7/40  & 8/40 \\
+high-mount removed & 13/13 & 1/13  & 13/13 & 13/13 & 13/13 \\
+high-mount mirrored & 6/13 & 3/13 & 8/13  & 10/13 & \textbf{11/13} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Why the propagated threshold is high.}
+The matched $F_0$ cut is 9.3$^\circ$ for the reader, 18.0$^\circ$ with a reader start and
+16.4$^\circ$ with an oracle start. The cause is a tail, not a median: feasible $F_0$ residuals
+at 0/15/30/45$^\circ$ mount are 1.2/1.3/1.3/2.5$^\circ$ for the reader and
+0.5/1.6/3.1/5.5$^\circ$ for the oracle arm, but five of 20 feasible clips at 45$^\circ$ exceed
+20$^\circ$ (and one at 30$^\circ$) for every propagated arm, against none for the reader. This is
+the run-to-run DPVO drift Track N diagnosed, now visible as the verdict's operating point.
+
+\paragraph{The start.}
+A reader start inherits the reader's absolute error: the forest feasible $F_0$ median is 8.4$^\circ$
+against the reader's 8.7$^\circ$, while the oracle and the 2$^\circ$ arm give 1.7$^\circ$ and
+2.5$^\circ$. The 2$^\circ$ arm costs $+0.8^\circ$ on feasible clips and nothing on the defect
+conditions, so at a pooled 10/80 it matches the reader's 9/9 forest removals while flagging
+2/26 instead of 10/26 forest feasible clips and 9/9 instead of 6/9 forest mirrors. The reader-start
+arm gives 4/9 removals and 5/26 forest false-rejects: a start read from the same biased reader
+does not buy the forest calibration. This is the same conclusion an information-matched replay of
+the SolarWM comparison reaches (the Part C provenance note, N2C).
+
+\paragraph{The other tiers.}
+$C2$ reproduces Track N (reader-start 6/27 removals against the reader's 16/27 at 7/80); a reader
+start recovers $C2$ exactly to the oracle-start arm, confirming the level-start failure was the
+start and that a small error is absorbed by the offset fit. Coherence reproduces Track N
+(10/27 against 6/27) and saturates on constant-lean clips. The M04 sign sub-tier is \emph{not}
+usable at a 5--10\,\% budget on the simulated set: its feasible scores are bimodal at the ceiling
+($\{0{:}42,1{:}16\}$ for the reader), so the leave-one-seed-out 95th percentile is 1.0 and nothing
+is flagged; every scoreable removal and mirror clip scores exactly 1.0. At a fixed 0.5 cut it is a
+$\sim$25\,\% false-reject tier. The yaw control is not measurable on the simulated split (no
+yaw-warp family; a world-yaw warp is analytically invisible to a propagated lean), and the
+feasible clips are the null.
+
+\paragraph{Part B(iii): two-draw averaging.}
+Averaging two independent DPVO draws does not meet the pre-registered drift reduction: the 45$^\circ$
+forest 10\,s drift is 8.65$^\circ$ against 8.95$^\circ$ for the mean of the single draws
+(needs $-25\,\%$), and at 30$^\circ$ the aggregate is 8.30$^\circ$ against the better draw's
+4.58$^\circ$. It does cut the worst 45$^\circ$ forest clip from 41.5$^\circ$ to 19.7$^\circ$, and the
+two draws disagree by a median 15.6$^\circ$. The reading is a clip-correlated error that averaging
+cannot remove: repeats plus a validity flag, not averaging.
+
+\paragraph{Part C: the SolarWM comparison is not like for like.}
+Track N's Part 4 set the propagated \emph{relative} 1\,s error (3.54$^\circ$, oracle start) against
+the reader's \emph{absolute} per-frame error (9.07$^\circ$). Recomputed on the same 78 clips with
+the reader's own frame-0 reading as the start, the relative 1\,s errors are 3.70$^\circ$
+(propagated) and 7.39$^\circ$ (reader), so the propagation does track rotation changes better; but
+the absolute errors over the clip are 9.56$^\circ$ (reader start) and 9.07$^\circ$ (reader), and at
+a matched 1\,s horizon the reader-start arm is worse (5.21$^\circ$ vs 4.71$^\circ$). Only the oracle
+start (4.41$^\circ$) is better. The generator's conditioning pose supplies the start in deployment
+only if the model exposes it, and its accuracy is then 1--3$^\circ$, not zero.
+
+\paragraph{What this does not show.}
+Whether fixing the 45$^\circ$ drift unlocks the forest detection gain (predicted, not measured);
+anything about a deployed generator that hides its conditioning pose; and anything about the TII
+population (excluded) or the held-out simulated clips (not read). Forest and high-mount cells are
+5--13 clips, so every reading is descriptive and is reported as $k/n$.
+
+\paragraph{Provenance.}
+Pre-registrations \texttt{configs/n07\_sim\_tiers\_prereg.yaml} (+ \texttt{amend\_a}),
+\texttt{n08\_mount\_draws\_prereg.yaml}, \texttt{n09\_part4\_provenance\_prereg.yaml}; code
+\texttt{experiments/n07\_sim\_tiers.py}, \texttt{n08\_mount\_draws.py},
+\texttt{n09\_part4\_provenance.py}; results \texttt{results/n2/}. CPU reanalysis of the Track N
+caches, zero spend; no held-out clip read.

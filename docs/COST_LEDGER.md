@@ -156,3 +156,19 @@ if local runtime exceeds 3 h; it did not).
 | 2026-11-23 | N | N05/N06 estimate (before the runs) | A10/A10G | 6.0 | 7.0 est. | reader 200 clips at stride 2 (4.9 h) + DPVO 200 clips (0.6 h) + N06 320x180/UZH full-res (0.5 h); A10 1.10 USD/h |
 | 2026-11-23 | N | N05 reader, 200 clips stride 2 | A10G x4 | 2.57 | **2.83** | 2,312 s wall over 4 shards; 49,795 estimates; USD 1.10/h |
 | 2026-11-23 | N | N05/N06 DPVO (two full draws, half-res, full-res UZH) | A10/A10G | 1.10 | **1.21** | ~330 clip-runs; sum of per-clip wall time |
+
+## Track N2 — verdict tiers on the propagated lean (2026-11-23)
+
+Ceiling for this track: **25 USD** (handoff 28). Track N had spent 4.45 USD before this branch
+(0.41 round 1 + 4.04 round 2, above). No new GPU job, volume or R2 write was created: every N2
+number is a CPU reanalysis of the stored N05 reader scores, the stored DPVO poses and the stored
+H04 reader/path data.
+
+| date | track | job | GPU | hours | USD | notes |
+| --- | --- | --- | --- | --- | --- | --- |
+| 2026-11-23 | N2 | N07 (F0/sign/C2/coherence, 5 arms × 2 draws × 200 clips) | — | 0 (CPU ~20 s) | **0.00** | local CPU |
+| 2026-11-23 | N2 | N08 (two-draw aggregation, 80 clips) | — | 0 (CPU ~2 s) | **0.00** | local CPU |
+| 2026-11-23 | N2 | N09 (Part C, 78 H04 clips) | — | 0 (CPU ~2 s) | **0.00** | local CPU |
+
+**N2 spend: 0.00 USD.** Track N total after N2: **4.45 USD** of its 30 USD ceiling; the 25 USD
+ceiling of this handoff is untouched (24.94 USD unspent).

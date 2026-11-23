@@ -134,8 +134,10 @@ Feasible F0 residual, median by mount (degrees):
 | oracle + 2° | 2.00 | 2.48 | 3.63 | 6.09 |
 
 Feasible clips with F0 > 20°: reader **0/20 at every mount**; oracle **1/20 at 30° and 5/20 at
-45°**; reader start the same (1 and 5). Six feasible clips, all high-mount, are enough to move the
-pooled 8/80 cut from ~4° to ~16–18°. This is the N06 drift, expressed as a verdict operating point.
+45°**; reader start the same (1 and 5). Six feasible clips, all high-mount, lift the oracle arm's
+8/80 cut from **9.8°** (the 8th-largest of the remaining 74 feasible scores with those six set
+aside) to 16.4°, and the reader-start arm's from 15.6° to 18.0°; the reader's cut stays at 9.3°
+because it has no such tail. This is the N06 drift, expressed as a verdict operating point.
 
 ### At a matched *pooled* false-reject of 10/80 (pre-registered curve point)
 

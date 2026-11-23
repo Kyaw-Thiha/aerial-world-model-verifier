@@ -1,0 +1,66 @@
+{
+ "n_clips": 78,
+ "fps": 16.0,
+ "note": "absolute = angle(arm up at frame k, commanded up at k) with the propagated arms started at frame 0; relative = N04's horizon form (the arm's up at i+h against its up at i rotated by the TRUE relative rotation), computed identically for every arm. N04's published 3.54/4.40/6.69 are the oracle arm's relative medians over all sliding windows.",
+ "abs": {
+  "oracle": {
+   "0s": 0.0,
+   "1s": 2.0342837330131935,
+   "2s": 3.598985837461912,
+   "5s": 6.690306380129523
+  },
+  "readerstart": {
+   "0s": 6.98472638142743,
+   "1s": 5.2105440185581475,
+   "2s": 9.23345178211517,
+   "5s": 12.368714754621893
+  },
+  "reader": {
+   "0s": 6.98472638142743,
+   "1s": 4.707115481513461,
+   "2s": 8.903400076093444,
+   "5s": 9.229509346629431
+  }
+ },
+ "rel": {
+  "oracle": {
+   "0s": 0.0,
+   "1s": 3.6208085728021233,
+   "2s": 4.624968552670557,
+   "5s": 6.690306380129577
+  },
+  "readerstart": {
+   "0s": 0.0,
+   "1s": 3.7020912423089998,
+   "2s": 4.563527926771442,
+   "5s": 7.3006968488681565
+  },
+  "reader": {
+   "0s": 0.0,
+   "1s": 7.391945510371672,
+   "2s": 7.460706772911999,
+   "5s": 6.795016858640216
+  }
+ },
+ "abs_median_over_frames": {
+  "oracle": 4.4108975422493,
+  "readerstart": 9.559263241294875,
+  "reader": 9.06853710391605
+ },
+ "decision": {
+  "reader_start_abs_1s": 5.2105440185581475,
+  "reader_per_frame_median": 9.06853710391605,
+  "information_matched": true,
+  "reading": "the reader-start arm is below the reader's all-frame median at 1 s",
+  "at_matched_horizon_1s": {
+   "readerstart": 5.2105440185581475,
+   "reader": 4.707115481513461,
+   "readerstart_better": false
+  },
+  "relative_1s": {
+   "oracle": 3.6208085728021233,
+   "readerstart": 3.7020912423089998,
+   "reader": 7.391945510371672
+  }
+ }
+}

@@ -200,3 +200,25 @@ No R2 object and no Modal volume was created, written or deleted in round 2.
 | `data/n04/poses/gen/fov*` | 4 MB | DPVO poses for the 234 H04 clips and 24 focal-sensitivity runs | `modal run remote/n_rotation.py --which gen` |
 
 No R2 object was created or written. The volume is the only new Modal object; the app was stopped.
+
+## 11. Track N2 artefacts (2026-11-23)
+
+Branch `track-n2-sim-tiers` (off `track-n-rotation`). Everything here is a CPU reanalysis of
+Track N's stored inputs; no new reader run, no new DPVO run, no Modal app, no R2 write.
+
+| path | size | what | rebuild |
+| --- | --- | --- | --- |
+| `results/n2/n07/` | 560 KB | N07 per-clip tier scores for 5 arms × 4 tiers × 2 draws, the full census, the detection curves, and the thresholds | `experiments/n07_sim_tiers.py` |
+| `results/n2/n08/` | 36 KB | N08 two-draw aggregation: per-clip drift and disagreement, criteria | `experiments/n08_mount_draws.py` |
+| `results/n2/n09/` | 24 KB | N09 absolute and relative errors for the oracle / reader-start / reader arms on the H04 clips | `experiments/n09_part4_provenance.py` |
+| `results/n2/inputs/manifest.csv` | 95 KB | read-only staging of Track I's `results/i02/manifest.csv` from `track-i-simset@272bb93`, sha256 `50aacbb2…ce6794` | `git show track-i-simset:results/i02/manifest.csv` |
+
+Inputs are the Track N caches, read through read-only symlinks from `awmv-n`:
+`data/n05/{gt,scores,poses}` (200 clips, reader scores, two DPVO draws), `data/n04/poses/gen/fov90`
+(H04 generated poses) and, read-only from `awmv-h3`, `results/h04/{depicted_main/depicted.jsonl,
+paths/paths.npz}`. The 100 held-out simulated clips are not present and were never opened.
+
+**Cache integrity note.** `data/n06/poses_repeat/scale1` no longer holds the third DPVO draw N06
+reported as "run 2": it now duplicates draw 1 on 188/200 clips. `data/n05/poses/sim200/scale1_rep2`
+does reproduce N05's draw-2 C2 values exactly and is the second draw N08 uses. N06's published
+run-2 numbers are not recomputed. Recorded in `docs/decisions.md`.

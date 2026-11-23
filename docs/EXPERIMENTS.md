@@ -46,6 +46,9 @@ results; none of them runs an experiment.
 | N03 | reader-vs-propagation agreement gate and coverage, UZH (descriptive) | N | `track-n-rotation` | `results/n03/` | N03 |
 | N05 | C2 and coherence on the propagated lean, all 200 simulated dev clips, level-body start, no oracle/reader | N | `track-n-rotation` | `results/n05/` | N05 |
 | N06 | 30°/45° mount drift: resolution and two-view relative-pose estimator | N | `track-n-rotation` | `results/n06/` | N06 |
+| N07 | F0 and M04 sign tiers on the propagated lean, all 200 dev clips; level/reader/oracle/2° starts; family × mount stratification | N2 | `track-n2-sim-tiers` | `results/n2/n07/` | N2A |
+| N08 | Part B(iii): two-draw robust aggregation against the high-mount drift | N2 | `track-n2-sim-tiers` | `results/n2/n08/` | N2B |
+| N09 | Part C: information-matched start and relative/absolute decomposition for the SolarWM comparison | N2 | `track-n2-sim-tiers` | `results/n2/n09/` | N2C |
 R2 prefixes are `track-a/`, `track-a/a2/`, `track-b/`, `track-c/`, `track-d/`, `track-e/`, `track-h/`, `track-h2/`
 (counts and bytes: `report/data/r2_counts.json`, measured 2026-11-15; verified read-only again
 during consolidation — see `docs/DATA.md` for the current status of listing access).
@@ -429,3 +432,33 @@ Round 3. New volume `awmv-n-data` (DPVO poses). Nothing written to R2.
 
 Regenerate: `modal run remote/n_rotation.py --which uzh|sim` (A10), pull `poses/` from
 `awmv-n-data`, then `PYTHONPATH=. python experiments/n01_rotation_pretest.py` (CPU, ~4 s).
+
+---
+
+## Track N2 — verdict tiers on the propagated lean over the simulated set (branch `track-n2-sim-tiers`)
+
+Extends Track N (round 3). CPU reanalysis of the Track N caches; no new GPU job. Held-out clips
+never read.
+
+| ID | experiment | stored results | report | configs |
+| --- | --- | --- | --- | --- |
+| N07 | F0 + M04 sign + C2 + coherence on the propagated lean over the 200 dev clips; reader / level / reader-start / oracle / oracle+2° starts; family × mount strata; pre-registered numeric success criteria | `results/n2/n07/{per_clip,census,curve}.csv`, `summary.json` | `reports/N2A_verdict_tiers_propagated_f0.md` | `n07_sim_tiers_prereg.yaml`, `n07_sim_tiers_prereg_amend_a.yaml` |
+| N08 | Part B(iii): two-draw robust aggregation of the oracle-start drift, per mount | `results/n2/n08/{per_clip.csv,summary.json}` | `reports/N2B_mount_drift_draw_aggregation.md` | `n08_mount_draws_prereg.yaml` |
+| N09 | Part C: the SolarWM comparison's start, horizon and like-for-like status; relative vs absolute errors with a reader start | `results/n2/n09/{per_clip.csv,summary.json}` | `reports/N2C_part4_provenance.md` | `n09_part4_provenance_prereg.yaml` |
+
+Regenerate (all CPU, seconds, zero spend):
+
+```
+PYTHONPATH=. python experiments/n07_sim_tiers.py
+PYTHONPATH=. python experiments/n08_mount_draws.py
+PYTHONPATH=. python experiments/n09_part4_provenance.py
+```
+
+Headline: at a matched 8/80 pooled feasible false-reject, F0 detects 13/27 removals on the
+reader-start propagated arm against the reader's 22/27 (forest 4/9 against 9/9), so the
+pre-registered forest criterion fails; the high-mount criterion passes (13/13 vs 13/13 at 8/40).
+The propagated arm's F0 cut (16–18°) is set by a 45° feasible tail (5–6 of 80 clips above 20°)
+that the reader does not have. A reader start imports the forest bias (forest feasible median 8.4°
+against 8.7°); a 2° external attitude behaves like the oracle (2.5° vs 1.7°) and matches the
+reader's forest curve. The M04 sign tier is bimodal (feasible scores 0 or 1) and cannot run at a
+5–10 % budget. Two-draw averaging does not meet its pre-registered reduction. Part D is gated off.
