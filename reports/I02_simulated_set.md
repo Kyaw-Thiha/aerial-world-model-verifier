@@ -183,3 +183,36 @@ envelope, not a tilt that is visible in a frame.
   hand-flown irregularity, which is what TII supplies.
 * Publishing runs on the workstation because the Modal secret cannot write to `track-i/`
   (`docs/decisions.md`); the videos are small (~90 kB per 12 s clip) so the transfer is cheap.
+
+## Batch 2 — the full set on R2 (2026-11-22)
+
+The first batch left 127 clips unrendered: 30 development clips (18 partial-interval at 10 / 25 /
+50 % and 12 thrust-limit) and 97 held-out clips (`field_settlement` 49, `coastal_cliff` 48). They
+were rendered with the frozen recipe — EEVEE Next, 16 spp, 640x360, 30 fps, exposure -3, one
+container at a time, resumable — and published clip by clip to `track-i/` on R2.
+
+**Publishing and verification.** The container leaves each clip's video and truth on the Modal
+volume; `experiments/i02_publish.py` pulls them, uploads with the uploader's sha256 round-trip
+check (the hash is computed on the bytes written and read back), and records the key, hash and
+size in the manifest row. `experiments/i02_build_manifest.py --verify` then HEADs every object on
+R2 and re-hashes a sample; `--full-hash` (added in this round) re-hashes **every** object instead.
+The final check reports all 600 objects present with matching sha256.
+
+**What changed in the repository.** `results/i02/manifest.csv` is 300 rows (200 development, 100
+held-out), one per clip, each with its split, scene and seed, manoeuvre and parameters, mount,
+label, violation, magnitude in degrees, exact interval, R2 keys and both sha256 values.
+`docs/DATA.md` carries the regenerated dataset block. No frozen file changed:
+`configs/sim_prereg.yaml` (`245b68bf…`) and `configs/sim_splits_frozen.json` (`cdf66e28…`) are
+byte-identical to their committed values, and the render settings are the ones the manifest
+records.
+
+**Frames.** 149,450 in total (99,591 development, 49,859 held-out), matching the composition
+recorded before rendering.
+
+**Spend.** 6.4 USD for the whole render (Modal billing export, `awmv-i-dataset`), against the
+40 USD ceiling.
+
+**What is still not claimed.** Rendering and publishing are not scoring: no held-out clip has
+been scored by any track. Track G3's development pass used the 170 clips that existed at its
+freeze; the remaining 30 development clips enter its batch 2 under the same thresholds, and the
+held-out clips are scored once in its frozen evaluation.
