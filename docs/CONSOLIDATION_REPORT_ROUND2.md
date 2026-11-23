@@ -277,3 +277,214 @@ frozen configs on `main` were not touched.
 | `configs/j02_noise_budget_prereg.yaml` | `9652848` | 1 | `dfba27ccae0ed67c` |
 | `configs/j03_perclip_prereg.yaml` | `d01d398` | 1 | `726b17ec751e197e` |
 | `configs/j04_learned_confidence_prereg.yaml` | `1dbdd55` | 1 | `e2e03d915c9e0086` |
+
+---
+
+# Part II — wave 2 (2026-11-23)
+
+Seven more branches were merged into `main` with history preserved and nothing re-analysed. This
+part continues the numbering of Part I: it records what was merged and in what order, every
+conflict and how it was resolved, the one stop condition, the verification results, the Modal
+billing check against the track ledgers, the findings, and how to roll back.
+
+Headline: `main` moved from `6bc7b5d` (`consolidated-round2-wave1`) to the tagged wave-2 result —
+**169 commits** (161 branch commits, 7 merge commits, 1 editorial commit). The suite is
+**328 passed, 4 skipped, 0 failed** (17 failures, and only those, without the ANWM clone); the
+report assets rebuild **16/16** with `CHECKS.md` unchanged at **103 checked / 100 match / 2
+mismatch / 1 not checkable**; all seven wave-1 frozen configs still hash their recorded values and
+the three wave-2 frozen values you named match; **142 of the 144** in-repo commit tokens cited in
+the trees are reachable (the two exceptions are the stale `track-g-segments` commits);
+`report/assets_test.tex` still compiles with 0 undefined references. The LaTeX report sources
+remain absent. No worktree or branch was removed, nothing was pushed, and no GPU job was run.
+
+## 10. What was merged, and in what order
+
+Every branch was merged with `git merge --no-ff`, in the order of the brief. I, H3, K, L and G3
+branch from `41d1dad`; M and N branch from the wave-1 result `6bc7b5d`. No wave-2 branch contains
+another, so the order is the content dependency order.
+
+| # | branch | tip | commits | merge commit | conflicts | suite after |
+| --- | --- | --- | --- | --- | --- | --- |
+| — | `main` (before) | `6bc7b5d` | — | — | — | 258 passed, 3 skipped |
+| 1 | `track-i-simset` | `272bb93` | 25 | `55b7945` | ledger, DATA, EXPERIMENTS, decisions | 282 passed, 3 skipped |
+| 2 | `track-h3-reader-validity` | `20a93cb` | 18 | `5cee0a3` | ledger, DATA, EXPERIMENTS, decisions, INDEX | 287 passed, 4 skipped |
+| 3 | `track-k-calibration` | `b4ddc9f` | 15 | `26c7cc2` | DATA, EXPERIMENTS, decisions, INDEX | 296 passed, 4 skipped |
+| 4 | `track-l-reader-simreal` | `2fd64d8` | 25 | `e88dbf5` | ledger, DATA, EXPERIMENTS, decisions, INDEX, manifest, build script | 296 passed, 4 skipped |
+| 5 | `track-g3-segments` | `e76411e` | 32 | `7f12e15` | ledger, DATA, EXPERIMENTS, decisions, `segments.py` | 298 passed, 4 skipped |
+| 6 | `track-m-gates` | `d80abc5` | 24 | `ba829a9` | ledger, DATA, EXPERIMENTS, decisions | 323 passed, 4 skipped |
+| 7 | `track-n-rotation` | `8e280f3` | 22 | `49bc1d3` | ledger, DATA, EXPERIMENTS, decisions | 328 passed, 4 skipped |
+
+`pixi.toml`, `pixi.lock`, `.gitignore` and `pytest.ini` are unchanged. Before each merge the
+branch's new pre-registrations were checked for immutability (two exceptions, §16), and the seven
+wave-1 frozen configs were checked to be untouched on every branch. Both held.
+
+## 11. Conflicts, and how each was resolved
+
+Only the five documents conflicted, plus two data/code add/adds. The documents were rebuilt from
+committed snapshots by the same union approach as wave 1 (`awmv-archive/inventory/build_round2_wave2_docs.py`):
+`decisions.md`, `EXPERIMENTS.md` and `INDEX.md` take new sections only; `DATA.md` is merged
+per section with a real 3-way merge using each branch's own base (it has mid-section insertions);
+`COST_LEDGER.md` takes new track sections. After each rebuild the script verifies that **every
+line a branch adds relative to its own base appears in the output**; the only permitted
+transformations are the E-number mapping in §12 and the absorbed ledger preamble in §14.
+
+* **`docs/COST_LEDGER.md`** — Track I, H3, L and G3 added their own file (base predates wave 1);
+  M and N add a section to the wave-1 file. The result keeps the wave-1 header and seven track
+  sections, then the new sections in branch order: I (I01, I02, full-set, booked), H3/H4, L
+  (L01, L02, running total), G3, M, N (round 1 and round 2). Each table is verbatim; no spend was
+  added, removed or recomputed.
+* **`docs/DATA.md`** — I inserts an R2 row, a Modal row and a generated dataset block inside
+  existing sections; H3, K, L, G3, M and N add new sections. The 3-way merge kept I's insertions
+  in place; the generated block was then moved to its own section 10 (its
+  `<!-- track-i-dataset:begin/end -->` markers are intact, so `i02_build_manifest.py` can still
+  regenerate it), and the branch-local numbers 5/7/9/10 were renumbered 10-16 because they
+  collided with wave 1's sections 5/7/9/10. No line was dropped.
+* **`docs/EXPERIMENTS.md`** — summary rows and sections from all seven; H3's E11/E12 rows and
+  headings are carried as E14/E15. The table was re-sorted by family (E, G, I, J, K, L, M, N) and
+  given summary rows for G06-G07, I, K, L, M and N (their branches kept those rows inside their
+  own section tables). Track M's own section has its M04/M05 table rows after two prose
+  paragraphs — a markdown table break in the branch's text; it is left as authored.
+* **`docs/decisions.md`** — every new section kept, in branch order: I, H3, H4, K, L, G3,
+  G3-G07, M, N, then the `[consolidation-round2-wave2]` entry.
+* **`docs/reports/INDEX.md`** — H3/H4, K and L added sections; I, G3, M and N did not, so their
+  sections were added from their reports. The order groups families (G3 with G, H3/H4 with H, I
+  before J). No report text was edited.
+* **`results/i02/manifest.csv`** (add/add) — Track I's 301-row manifest is a strict superset of
+  L's 165-row copy: all 165 of L's lines are present, no L-only line exists. I's version is kept.
+  L copied the manifest before the full 300-clip set was rendered; nothing is lost.
+* **`experiments/i02_build_manifest.py`** (add/add) — I's version adds `--full-hash`; L's is the
+  earlier copy with no other difference. I's version is kept.
+* **`src/verdict/segments.py`** (add/add) — G3's file is the merged G2 copy (231 lines) without
+  Track J's four-line provenance header. The merged 235-line file is kept; the diff is exactly
+  those four comment lines, so no code changed.
+
+No conflict was resolved by discarding a side.
+
+## 12. Experiment IDs
+
+Track H3 independently used E11/E12. `docs/EXPERIMENTS.md` carries them as **E14** (reader
+validity on generated frames, H03) and **E15** (SolarWM continuous-attitude campaign, H04). The
+other new tracks keep their own series: I01-I02, K01-K03, L01-L02, G06-G07, M01-M05 and
+N01-N06. The branches' reports and `report_candidates/*.tex` keep their authored labels.
+
+## 13. The stop condition: Track M's frozen Gate B file
+
+`configs/m02_gate_b_frozen.yaml` was frozen as **v1** at `tau = 3.0` (`42a2cf3`, marked
+"IMMUTABLE after this commit") and **replaced by v2** at `tau = 4.5` in `846e8bf`, the same commit
+that reports M02/M03 results. The v2 file also changes the selection unit (per-clip real-condition
+disagreement instead of any-condition row) and the accepted/coverage numbers, and
+`configs/m02_gate_b_amend2.yaml` (same commit) documents the correction and says it was written
+before the H04/H01 generator clips were read. The branch's report, amendment and final frozen file
+are internally consistent (all use 4.5).
+
+This matches the posted stop condition — a frozen config whose content and sha changed after
+freezing. It was posted with the merge plan and the user approved **merging M as-is**: the v1→v2
+edit is recorded here and in `docs/decisions.md`, and the file is not repaired or reverted.
+
+## 14. Verification
+
+| # | check | result |
+| --- | --- | --- |
+| 1 | full suite with `third_party/anwm` | **328 passed, 4 skipped, 0 failed** (54 s) |
+| 1a | same suite without the clone | **17 failed, 311 passed, 4 skipped**; all 17 are `tests/test_generation_paths.py` on the missing `third_party/anwm/anwm/config.py` — the known dependency. The extra skip (3→4) is a new skip on the wave-2 branches, not a failure |
+| 2 | `make_all.py` + `check_numbers.py` | **16/16 asset groups**; `CHECKS.md` unchanged at **103 / 100 match / 2 mismatch / 1 not checkable**; text assets byte-identical; the 11 figures differ only in matplotlib's `/CreationDate` (restored) |
+| 3 | frozen configs | wave-1 **7 of 7** (`c5d3b55e…`, `c8ffac93…`, `dc0cc4ff…`, `845f4c69…`, `28f91f7f…`, `40a40bea…`, `75b208da…`); `sim_splits_frozen.json` `cdf66e28…`; `sim_prereg.yaml` `245b68bf…`; `g06_eval_frozen.yaml` `615f228f…`; `m01_gate_a_frozen.yaml` `8ebe72e7…`; `m02_gate_b_frozen.yaml` `a8d652b9…` (v2, see §13); `sim_splits_frozen_readonly.json` `cdf66e28…` |
+| 4 | cited commit hashes under `docs/`, `reports/`, `report/` reachable from the result | **144 resolve, 142 reachable**; the two exceptions are `3fe20cc` and `cdfdbf3`, the stale `track-g-segments` line (unchanged from Part I; the Track I citations are now reachable) |
+| 5 | LaTeX | `report/assets_test.tex` builds to a 9-page, 404 KB PDF with **0 undefined references**; the full report still cannot be built — its sources are absent |
+| 6 | tag and `main` | `consolidated-round2-wave2` on the commit that adds this section; `main` fast-forwarded to it |
+
+## 15. Modal billing against the track ledgers
+
+`modal billing report --start 2026-11-16 --end 2026-11-24 --json` returns 291 entries totalling
+**USD 121.27** for the window. Per-track billing is the sum over apps whose name starts
+`awmv-<prefix>-`; the ledger total is what the track's ledger states, or the sum of its actual rows
+when it states no total. Raw export, comparison and method:
+`results/consolidation_round2/`.
+
+| track | ledger total (basis) | Modal billing | difference |
+| --- | --- | --- | --- |
+| F | 5.20 (sum of actual rows; no total row) | 7.78 | +2.58 |
+| F2 | 0.70 (actual; the 8.00 estimate was not spent) | 0.80 | +0.10 |
+| G | 10.23 (total row; includes the 2.20 wasted run) | 5.48 | −4.75 |
+| G2 | 0.00 (CPU only) | 0.00 | 0 |
+| G3 | 8.02 (both passes; G07 actual 2.75) | 8.11 | +0.09 |
+| H | ~13 (estimate) | 17.52 | +4.5 |
+| H2 | ~5 (estimate) | 7.73 | +2.7 |
+| H3/H4 | ~30 (actual, "about") | 17.24 | −12.8 |
+| I | ~25.2 (planned total; render actual 7.55) | 23.27 | −1.9 vs planned |
+| J | 0.00 (CPU only) | 0.00 | 0 |
+| K | 0.00 (CPU only; no ledger) | 0.00 | 0 |
+| L | 29.40 (booked total) | 22.89 | −6.51 |
+| M | 2.95 (total row) | 4.37 | +1.42 |
+| N | 4.45 (sum of actual rows; no total row) | 6.08 | +1.63 |
+
+The differences are accounting, not science and not a finding about any result: the ledgers mix
+estimates, planned totals and wall-clock arithmetic at list prices, the billing export is actual
+charge by app name in a fixed window, CPU work does not appear as an app, and queued capacity is
+not billed. They are recorded, not reconciled. The largest gaps are H3/H4 (ledger about 30,
+billing 17.24) and L (29.40 vs 22.89); both ledgers contain estimates or failed-attempt hours.
+
+## 16. Findings and open items (recorded, not resolved)
+
+* **The Track M frozen-file edit** in §13 is the only stop condition that fired. Merged as-is on
+  the user's approval; the v1→v2 history is intact.
+* **Track I's `sim_splits_frozen.json` was edited once after creation** (second commit `2d815cc`
+  adds `uptilt_deg` / `mount_yaw_deg` labels per clip). The final sha is the specified
+  `cdf66e28…`, so the frozen object you named is correct; the edit is recorded because a frozen
+  file was touched.
+* **Track L's `l02_reader_prereg.yaml` was edited once** (`2bf2cb2`: per-epoch budget 1200→600,
+  on measured throughput, before any fold outcome; the file states this and every arm keeps the
+  same number of steps). Recorded, not treated as clean.
+* **The E11/E12 collision** in §12 is resolved in the index only.
+* **`docs/DATA.md` branch-local section numbers** collided (three different "7", two different
+  "9"); they are renumbered 10-16 in the consolidation, with the archived section text unchanged.
+* **Billing differences** in §15 are listed with their basis and left unreconciled.
+* **Track M's EXPERIMENTS section** keeps its authored M04/M05 table rows after two prose
+  paragraphs (a markdown table break); left as authored.
+* **The two unreachable citations** are the stale `track-g-segments` commits; the branch is still
+  present, tagged and bundled, and the G prereg bytes it carries are identical to the merged ones.
+* **Round 1's open science discrepancies are untouched**, as are all wave-1 and wave-2 reports.
+
+## 17. Rollback
+
+**Tags** (in the repository; `main` moved forward from `6bc7b5d`):
+
+```
+consolidated-round2-wave1                  6bc7b5d   (the state before this wave)
+archive/main-pre-round2-wave2              6bc7b5d
+archive/track-i-simset-pre-round2-wave2    272bb93
+archive/track-h3-reader-validity-pre-round2-wave2 20a93cb
+archive/track-k-calibration-pre-round2-wave2 b4ddc9f
+archive/track-l-reader-simreal-pre-round2-wave2 2fd64d8
+archive/track-g3-segments-pre-round2-wave2 e76411e
+archive/track-m-gates-pre-round2-wave2     d80abc5
+archive/track-n-rotation-pre-round2-wave2  8e280f3
+```
+
+**Bundles** in `~/Documents/Projects/awmv-archive/backups/`, all `git bundle verify`-clean,
+sha256 in `SHA256SUMS-round2-wave2.txt`:
+
+| bundle | sha256 (first 16) |
+| --- | --- |
+| `main-pre-round2-wave2.bundle` | `bdde0327df925991` |
+| `track-i-simset-pre-round2-wave2.bundle` | `d4261e3ed685f557` |
+| `track-h3-reader-validity-pre-round2-wave2.bundle` | `109e536be5ec9af8` |
+| `track-k-calibration-pre-round2-wave2.bundle` | `435104e240d18ade` |
+| `track-l-reader-simreal-pre-round2-wave2.bundle` | `38f19efa8a117549` |
+| `track-g3-segments-pre-round2-wave2.bundle` | `7fee31f4c6ea277f` |
+| `track-m-gates-pre-round2-wave2.bundle` | `ec90094532004a66` |
+| `track-n-rotation-pre-round2-wave2.bundle` | `60ed068e42c82409` |
+
+To put `main` back before wave 2 without rewriting published history:
+`git checkout main && git reset --hard consolidated-round2-wave1` (local only; nothing was
+pushed).
+
+## 18. What changed in the repository
+
+Only documentation, the new billing result files, and the two conflict resolutions on existing
+files (`results/i02/manifest.csv` and `experiments/i02_build_manifest.py` keep Track I's
+supersets; `src/verdict/segments.py` keeps the merged 235-line version). Everything else under
+`src/`, `experiments/`, `remote/`, `scripts/`, `tests/`, `configs/`, `results/`, `reports/` and
+`report_candidates/` is exactly the branches' content, added as-is. `report/` is byte-identical to
+wave 1. `pixi.toml`, `pixi.lock`, `.gitignore` and `pytest.ini` are unchanged. No worktree,
+branch, R2 object or Modal app was removed or started.

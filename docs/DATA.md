@@ -316,5 +316,5 @@ No R2 object was created or written. The volume is the only new Modal object; th
 The pre-wave-2 tips of the seven merged branches and `main` are tagged
 `archive/<branch>-pre-round2-wave2` and bundled in
 `~/Documents/Projects/awmv-archive/backups/<branch>-pre-round2-wave2.bundle`, each
-`git bundle verify`-clean, sha256 in `SHA256SUMS-round2-wave2.txt` (142-205 MB each). Restore as in
+`git bundle verify`-clean, sha256 in `SHA256SUMS-round2-wave2.txt` (140-205 MB each). Restore as in
 section 9. No R2 object and no Modal volume was created, written or deleted in wave 2.
