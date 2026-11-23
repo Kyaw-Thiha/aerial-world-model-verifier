@@ -47,13 +47,29 @@ frames), turned into the camera-to-world the generator was conditioned on:
 `R_cw = body_rotation(yaw, pitch, roll) @ R_bc` with `R_bc = camera_to_body_pitched(0)`, exactly the
 construction in `h04_solarwm_inputs.py`; arm B zeroes pitch and roll, arm C negates roll.
 
+**Start attitude (exactly).** The propagated arm starts from the **true commanded camera-to-world
+attitude at frame 0** — the same c2w pose the generator was conditioned on, taken from Track H4's
+path table (`R_cw(0) = body_rotation(yaw₀, pitch₀, roll₀) @ R_bc`, with the arm's level/mirror
+transform applied). It is an **oracle start**: its error is zero by construction, so the 1/2/5 s
+numbers measure relative-rotation fidelity only, not a deployable end-to-end error. In a real
+deployment the analogous start is available: the generator's conditioning pose is an input, and
+on an aircraft the flight controller or the navigation filter supplies the attitude at the first
+frame. What is not free in deployment is its *accuracy*; a reader-based or inertial start would
+add its own error (N02's start-arm table prices that: 8-9° in forest and outdoors).
+
 **Extractor.** DPVO at the standing settings on the native 864x480 frames, 81 per clip at 16 fps.
 Intrinsics are unknown for generated video; 90° horizontal (f = 432) is assumed, with the focal
 sensitivity below. Statistic: oracle start, propagate, angle to the commanded up at 1/2/5 s,
 median over starts per clip, then median across clips.
 
-**Reader reference.** The frozen reader's per-frame up on the same clips
+**Reader reference and its horizon.** The frozen reader's per-frame up on the same clips
 (`track-h3 results/h04/depicted_main/depicted.jsonl`), error against the same commanded attitude.
+The reader's **9.07°** (arm A; 2.21° arm B, 8.14° arm C) is a **per-frame (zero-horizon) error**:
+for each clip, the median over its 81 frames of the angle between the reader up and the commanded
+up, and then the median of those per-clip medians. It is not a 1, 2 or 5 s number, so the
+like-for-like comparison is the propagated **1 s** column (3.54° arm A); the 2 s and 5 s columns
+are progressively longer horizons with no reader counterpart. The reader value is the same on all
+horizons because it is evaluated independently on every frame.
 
 ## Results
 

@@ -270,8 +270,82 @@ def uzh_edit(clip_id: str, seq: str, force: bool = False) -> dict:
     return rec
 
 
+@app.function(image=image, volumes={E_DATA: e_vol, N_DATA: n_vol, A_DATA: a_vol},
+              gpu="A10", timeout=3600, max_containers=6)
+def sim200(clip_id: str, scale: float = 1.0, force: bool = False) -> dict:
+    """DPVO on one Track I dev clip at full or half resolution (N05/N06)."""
+    import cv2
+    import numpy as np
+
+    tag = f"scale{scale:g}"
+    out_npz = Path(N_DATA) / "poses" / "sim200" / tag / f"{clip_id}.npz"
+    out_json = Path(N_DATA) / "runs" / f"sim200__{tag}__{clip_id}.json"
+    if out_npz.exists() and not force:
+        return json.loads(out_json.read_text())
+    video = Path(N_DATA) / "sim200" / "videos" / f"{clip_id}.mp4"
+    cap = cv2.VideoCapture(str(video))
+    frames, fps = [], float(cap.get(cv2.CAP_PROP_FPS))
+    while True:
+        ok, fr = cap.read()
+        if not ok:
+            break
+        g = cv2.cvtColor(fr, cv2.COLOR_BGR2GRAY)
+        if scale != 1.0:
+            g = cv2.resize(g, None, fx=scale, fy=scale, interpolation=cv2.INTER_AREA)
+        frames.append(g)
+    cap.release()
+    if not frames:
+        raise RuntimeError(f"{clip_id}: no frames decoded")
+    intr = (320.0 * scale, 320.0 * scale, 320.0 * scale, 180.0 * scale)
+    rec = _run_dpvo(frames, intr, fps, clip_id, "sim200")
+    rec.update({"clip_id": clip_id, "scale": scale, "video": str(video),
+                "dpvo_commit": DPVO_COMMIT})
+    out_npz.parent.mkdir(parents=True, exist_ok=True)
+    np.savez_compressed(out_npz, c2w=rec.pop("c2w"), t=rec.pop("t"),
+                        n_input=rec["n_input"], n_pose=rec["n_pose"], fps=rec["fps"])
+    out_json.parent.mkdir(parents=True, exist_ok=True)
+    out_json.write_text(json.dumps(rec, indent=1))
+    n_vol.commit()
+    return rec
+
+
+@app.function(image=image, volumes={E_DATA: e_vol, N_DATA: n_vol, A_DATA: a_vol},
+              gpu="A10", timeout=3600, max_containers=6)
+def uzh_edit_full(clip_id: str, seq: str, force: bool = False) -> dict:
+    """DPVO on one Track E v3 edited clip at the full 640x480 pinhole resolution (N06)."""
+    import cv2
+    import numpy as np
+
+    out_npz = Path(N_DATA) / "poses" / "uzh_edits_full" / f"{clip_id}.npz"
+    out_json = Path(N_DATA) / "runs" / f"uzh_edit_full__{clip_id}.json"
+    if out_npz.exists() and not force:
+        return json.loads(out_json.read_text())
+    meta = json.loads((Path(E_DATA) / "uzh" / seq / "meta.json").read_text())
+    ip = meta["intrinsics_pinhole"]
+    # the clip's frames are the sequence frames index [a, b) at the 15.07 Hz grid
+    cmeta = json.loads((Path(N_DATA) / "uzh_clips" / seq / clip_id / "meta.json").read_text())         if (Path(N_DATA) / "uzh_clips" / seq / clip_id / "meta.json").exists() else None
+    a, b = (cmeta or {}).get("index", [0, 60])
+    frame_dir = Path(E_DATA) / "uzh" / seq / "frames_pinhole"
+    paths = sorted(frame_dir.glob("*.png"))[a:b]
+    frames = [cv2.imread(str(p), cv2.IMREAD_GRAYSCALE) for p in paths]
+    if not frames:
+        raise RuntimeError(f"{clip_id}: no frames")
+    fps = float(meta["fps_measured"])
+    rec = _run_dpvo(frames, (ip["fx"], ip["fy"], ip["cx"], ip["cy"]), fps, clip_id,
+                    "uzh_edit_full")
+    rec.update({"clip_id": clip_id, "sequence": seq, "dpvo_commit": DPVO_COMMIT,
+                "resolution": "640x480 pinhole"})
+    out_npz.parent.mkdir(parents=True, exist_ok=True)
+    np.savez_compressed(out_npz, c2w=rec.pop("c2w"), t=rec.pop("t"),
+                        n_input=rec["n_input"], n_pose=rec["n_pose"], fps=rec["fps"])
+    out_json.parent.mkdir(parents=True, exist_ok=True)
+    out_json.write_text(json.dumps(rec, indent=1))
+    n_vol.commit()
+    return rec
+
+
 @app.local_entrypoint()
-def main(which: str = "all", limit: int = 0, ids: str = "", seq: str = "", fov: float = 90.0):
+def main(which: str = "all", limit: int = 0, ids: str = "", seq: str = "", fov: float = 90.0, scale: float = 1.0, ids_arg: str = "", force: bool = False):
     import csv
 
     if which in ("all", "uzh"):
@@ -287,6 +361,24 @@ def main(which: str = "all", limit: int = 0, ids: str = "", seq: str = "", fov: 
         print(f"gen clips: {len(vids)} fov {fov}")
         for r in gen.map(vids, kwargs={"fov_deg": fov}):
             print("GEN", r)
+    if which == "sim200":
+        import csv as _csv
+        with open(Path("results/n05/clips.csv")) as fh:
+            ids = [r["clip_id"] for r in _csv.DictReader(fh)]
+            if ids and (len(ids) == 200):
+                pass
+        if ids_arg:
+            ids = [x for x in ids_arg.split(",") if x]
+        print(f"sim200 clips: {len(ids)} scale {scale}")
+        for r in sim200.map(ids, kwargs={"scale": scale, "force": force}):
+            print("SIM200", r)
+    if which == "uzh_edit_full":
+        import csv as _csv
+        with open(Path("results/n02b/clips.csv")) as fh:
+            rows = [(r["clip_id"], r["seq"]) for r in _csv.DictReader(fh)]
+        print(f"uzh full clips: {len(rows)}")
+        for r in uzh_edit_full.starmap(rows):
+            print("EDITFULL", r)
     if which == "uzh_edit":
         import csv as _csv
         with open(Path("results/n02b/clips.csv")) as fh:

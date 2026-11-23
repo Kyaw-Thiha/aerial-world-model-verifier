@@ -1,0 +1,21 @@
+# Track N, N06 -- Amendment A: define the low-resolution arm precisely.
+#
+# Written before any 320x180 or full-resolution UZH run. The original line said "320x180
+# (centre crop, intrinsics scaled by 0.5)", which mixes a crop (focal unchanged) with a resize
+# (focal halved). The two are different experiments.
+prereg_version: 1
+date: '2026-11-23'
+track: N
+amends: configs/n06_mount_drift_prereg.yaml
+status: frozen
+
+change:
+  sim_low_resolution_arm: >
+    RESIZE the 640x360 frame to 320x180 and scale the intrinsics by 0.5 (f = 160 px, cx = 160,
+    cy = 90). This is the pure resolution comparison on the simulated clips, where there is no
+    invalid-image border to lose.
+  uzh_full_resolution_arm: >
+    the full 640x480 pinhole frame (Track E's `frames_pinhole` on awmv-e-data) with the published
+    pinhole intrinsics, undistorted once by Track E, versus the existing 320x240 fixed 0.5 crop
+    used in N02b. This is the crop comparison on real data, where the crop was the suspect.
+unchanged: everything else, including the statistic, populations and the 10 s oracle-start drift.
