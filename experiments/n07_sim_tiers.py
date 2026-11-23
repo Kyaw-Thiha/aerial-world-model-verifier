@@ -231,8 +231,10 @@ def main() -> int:
     for i, r in enumerate(rows):
         rec1 = build(r, DRAW1, rng)
         rec1["draw"] = 1
+        rec1["dynamic"] = bool(r["dynamic"])
         rec2 = build(r, DRAW2, rng, sens=False)
         rec2["draw"] = 2
+        rec2["dynamic"] = bool(r["dynamic"])
         per.append(rec1)
         # draw-2 rows carry only the two robustness arms' tiers
         rec2["clip_id"] = r["clip_id"]
@@ -392,6 +394,47 @@ def main() -> int:
         "n_by_family": {f: int(sum(r["dynamic"] and r["family"] == f for r in d1))
                         for f in families},
     }
+
+    # ------------------------------------------------------------------ full detection curves
+    curve_rows = []
+    for sname, fn in strata.items():
+        rows_s = [r for r in d1 if fn(r)]
+        feas = [r for r in rows_s if r["condition"] == "feasible"]
+        for tier in TIERS:
+            for arm in ARMS:
+                vals = sorted([r[f"{tier}|{arm}"] for r in feas
+                               if np.isfinite(r[f"{tier}|{arm}"])], reverse=True)
+                for k in range(0, min(len(vals), 40) + 1):
+                    thr = vals[k] if k < len(vals) else (vals[-1] if vals else np.nan)
+                    if not np.isfinite(thr):
+                        continue
+                    rec = {"stratum": sname, "tier": tier, "arm": arm, "k_feasible": k,
+                           "n_feasible": len(vals), "threshold": thr}
+                    for cond in conds:
+                        sub = [r for r in rows_s if r["condition"] == cond
+                               and np.isfinite(r[f"{tier}|{arm}"])]
+                        rec[f"{cond}_det"] = int(sum(r[f"{tier}|{arm}"] > thr for r in sub))
+                        rec[f"{cond}_n"] = len(sub)
+                    curve_rows.append(rec)
+    with open(OUT / "curve.csv", "w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=list(curve_rows[0].keys()))
+        w.writeheader(); w.writerows(curve_rows)
+
+    # tail counts: feasible clips whose F0 exceeds 20 deg, by arm and mount
+    summary["f0_tail_20deg"] = {
+        a: {str(m): int(sum(1 for r in d1 if r["condition"] == "feasible"
+                            and r["mount"] == m and r[f"F0|{a}"] > 20.0))
+            for m in mounts}
+        for a in ARMS}
+    # the M04 fixed-cut reading of S (its own sim comparison), for continuity
+    sfix = {}
+    for arm in ARMS:
+        flags = {r["clip_id"]: bool(np.isfinite(r[f"S|{arm}"]) and r[f"S|{arm}"] > 0.5)
+                 for r in d1}
+        sfix[arm] = {cond: rate([r for r in d1 if r["condition"] == cond], flags)
+                     for cond in conds}
+    summary["S_fixed_cut_0p5"] = sfix
+
     summary["note"] = (
         "matched = every arm cut at the (k_ref+1)-th largest pooled feasible score, k_ref = the "
         "reader arm's natural leave-one-seed-out feasible false-reject count for that tier; "
