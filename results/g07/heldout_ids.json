@@ -1,0 +1,18 @@
+{
+ "n_clips": 100,
+ "frames_sum": 49859,
+ "scenes": [
+  "coastal_cliff",
+  "field_settlement"
+ ],
+ "seeds": [
+  201,
+  202,
+  203,
+  204,
+  205,
+  206
+ ],
+ "manifest": "awmv-track-i/results/i02/manifest.csv",
+ "note": "held-out clip ids for the frozen G07 evaluation; written before any held-out score exists"
+}
