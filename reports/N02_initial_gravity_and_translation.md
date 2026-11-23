@@ -215,7 +215,11 @@ consistent rotation is exactly what Part 4 must measure, and this table does not
 ## What this supports
 
 * **The start is the whole problem.** Parts 2-4 must be judged with the reader start's error in
-  the lean, not the oracle's; the offset-free tiers are the only ones that can ignore it.
+  the lean, not the oracle's; the offset-free tiers are the only ones that can ignore it. This is
+  exact for the constant part — a Pearson correlation and a fitted intercept are both invariant to
+  adding a constant to the depicted lean — and quantitative for the rest: the drift *beyond* the
+  start is 0.4-1.8° in 10 s in the two gate strata (Part 0) and 6.7° in 5 s on generated video
+  (N04), so the "constant offset" picture holds to within those numbers, not exactly.
 * **Translation direction is a usable absolute reference on real outdoor imagery** (1.8°) and is
   not on the simulated renders at high speed/high mount (18-26°). A hybrid that trusts it only on
   real-looking, low-mount, near-field footage is defensible; a general one is not.
@@ -224,7 +228,10 @@ consistent rotation is exactly what Part 4 must measure, and this table does not
 
 ## What this does not show
 
-* No verdict behaviour: whether the propagated lean keeps the tiers' detection is Part 2.
+* No verdict behaviour: whether the propagated lean keeps the tiers' detection is Part 2, which
+  was **not run** — it needs rotation estimates on edited video (the edit changes the relative
+  rotations), and the confirmatory real population (TII) has no usable rotation source (Part 0).
+  The invariance above is analytic, not a measured detection rate.
 * No coverage: Part 3's gate is where the constant offset and scene bias interact.
 * No generated-video attitude: Part 4 needs the rotation extractor on the generated clips; the
   track-noise number above only says whether the feature geometry exists.

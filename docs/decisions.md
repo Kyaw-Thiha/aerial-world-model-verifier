@@ -711,3 +711,14 @@ Every row below was read from the project's own repo/HF card on 2026-11-10. "ver
   arm at 70/90/110° moves the 5 s error 1.48/1.80/2.36°; the conclusion survives, the absolute
   numbers carry that uncertainty. H01 ANWM is much weaker: 20/80 clip directories give a usable
   two-frame essential-matrix fit (>= 20 inliers). LingBot ramps were not in the local mirrors.
+- [N] **Parts 2 and 3 were not run, and why.** Part 2 (verdict tiers on the propagated lean) needs
+  rotation estimates on *edited* video, because an edit changes the relative rotations; the
+  project's clean lean-series edit convention is exact only for a constant world rotation, which
+  no real edit is. The confirmatory real population is the six TII dev flights, whose rotation
+  source is dead (Part 0: 42° at 10 s, two frozen estimates), so a TII Part 2 would only measure
+  the known failure. Track I's simulated defect clips are not on R2 (only the 80 feasible dev
+  clips are), so the simulated edits are not available either. Part 3's risk-coverage curves need
+  Part 2's verdict outcomes. Unblocking: (i) render or publish Track I's defect clips, or
+  (ii) run the extractor on Track E's UZH edit frames (3 sequences x 6 conditions, ~5 GPU-minutes)
+  for a descriptive Part 2. The analytic invariance (correlation and intercept are exactly
+  invariant to a constant) is stated in N02; it is not a measured detection rate.
