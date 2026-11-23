@@ -722,3 +722,17 @@ Every row below was read from the project's own repo/HF card on 2026-11-10. "ver
   (ii) run the extractor on Track E's UZH edit frames (3 sequences x 6 conditions, ~5 GPU-minutes)
   for a descriptive Part 2. The analytic invariance (correlation and intercept are exactly
   invariant to a constant) is stated in N02; it is not a measured detection rate.
+- [N] **Part 2 (descriptive, UZH v3 edits).** The per-clip fit on the propagated lean absorbs the
+  start as predicted (real median residual 3.63° against the reader's 8.57°), but no tier detects
+  the edits better on the propagated lean: at the leave-one-sequence-out threshold C2 flags 0/6
+  real and 0/3 removals, F0 2/6 and 2/3, coherence 1/6 and 1/3 (reader coherence 1/6 and 2/3).
+  The extractor is the binding constraint: DPVO on the 320x240 fixed crop of 60 frames fails the
+  oracle-start check (2 s error > 10°) on 3/9 real clips and up to 6/9 on warped conditions,
+  against 0.4° at 10 s on the full 640x480 sequences of N01. The yaw-control prediction fails:
+  propagated F0 is 3/9 there against 2/9 for the reader, because the warp changes the estimated
+  rotation itself.
+- [N] **Part 3 (descriptive, UZH).** The reader-vs-propagation disagreement gate collapses to
+  5/35 dynamic valid clips at both the 10 % and 20 % conformal targets (all from one sequence),
+  detecting nothing; ungated F0 flags 4/12 no-violation clips and detects 2/3 removals. Gate B
+  was never computed on UZH, so no like-for-like comparison is made. A 5 % target is not
+  certifiable at this n and was not attempted.

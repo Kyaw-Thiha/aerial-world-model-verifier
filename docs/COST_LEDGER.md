@@ -147,3 +147,4 @@ The Part 1 translation-direction addendum is pre-registered in
 `findEssentialMat` run on local CPU on already-local frames (a Modal CPU container is used only
 if local runtime exceeds 3 h; it did not).
 | 2026-11-22 | N | `awmv-n-rotation` Part 4 (generated clips) | A10/A10G | 0.12 | **0.13** | 234 H04 clips x 81 frames at 864x480 plus 24 focal-sensitivity runs; ~430 s of measured DPVO wall time at 1.10 USD/h |
+| 2026-11-22 | N | `awmv-n-rotation` Part 2 (UZH edited clips) | A10/A10G | 0.03 | **0.03** | 63 clips x 60 frames at 320x240; ~80 s of measured DPVO wall time at 1.10 USD/h |

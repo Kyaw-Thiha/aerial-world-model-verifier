@@ -1,0 +1,88 @@
+{
+ "n_dynamic_valid": 35,
+ "clusters": 3,
+ "thresholds_loso": {
+  "F0_reader": {
+   "outdoor_forward_1": 52.447885656971216,
+   "outdoor_forward_3": 52.3488937228555,
+   "outdoor_forward_5": 10.183195381125909
+  },
+  "F0_propagated": {
+   "outdoor_forward_1": 60.926895956671174,
+   "outdoor_forward_3": 60.88060245465837,
+   "outdoor_forward_5": 12.756595726852064
+  },
+  "R_reader": {
+   "outdoor_forward_1": 1.0326560113723038,
+   "outdoor_forward_3": 1.3031982435421423,
+   "outdoor_forward_5": 1.3035132486880294
+  },
+  "R_propagated": {
+   "outdoor_forward_1": 1.8381436123405555,
+   "outdoor_forward_3": 1.6437839393948441,
+   "outdoor_forward_5": 1.8325761978899575
+  }
+ },
+ "gates": {
+  "0.1": {
+   "target": 0.1,
+   "tau": 4.5,
+   "coverage": "5/35",
+   "coverage_frac": 0.14285714285714285,
+   "no_violation_rate_F0_reader": "0/2",
+   "detection_F0_reader": {
+    "tilt_removal": "0/1",
+    "scale_0.5": "0/2",
+    "scale_1.5": "0/0",
+    "mirror_roll": "0/0"
+   },
+   "detection_F0_propagated": {
+    "tilt_removal": "0/1",
+    "scale_0.5": "0/2",
+    "scale_1.5": "0/0",
+    "mirror_roll": "0/0"
+   },
+   "per_sequence_kept": {
+    "outdoor_forward_1": "5/15",
+    "outdoor_forward_3": "0/6",
+    "outdoor_forward_5": "0/14"
+   }
+  },
+  "0.2": {
+   "target": 0.2,
+   "tau": 4.5,
+   "coverage": "5/35",
+   "coverage_frac": 0.14285714285714285,
+   "no_violation_rate_F0_reader": "0/2",
+   "detection_F0_reader": {
+    "tilt_removal": "0/1",
+    "scale_0.5": "0/2",
+    "scale_1.5": "0/0",
+    "mirror_roll": "0/0"
+   },
+   "detection_F0_propagated": {
+    "tilt_removal": "0/1",
+    "scale_0.5": "0/2",
+    "scale_1.5": "0/0",
+    "mirror_roll": "0/0"
+   },
+   "per_sequence_kept": {
+    "outdoor_forward_1": "5/15",
+    "outdoor_forward_3": "0/6",
+    "outdoor_forward_5": "0/14"
+   }
+  }
+ },
+ "ungated": {
+  "n": 35,
+  "no_violation_flags_F0_reader": "4/12",
+  "detection_F0_reader": {
+   "tilt_removal": "2/3",
+   "scale_0.5": "2/6",
+   "scale_1.5": "2/5",
+   "mirror_roll": "2/3"
+  },
+  "coverage_frac": 1.0
+ },
+ "note": "descriptive; 3 sequences; a 0.05 target is not certifiable with 6 no-violation clips, so 0.10 and 0.20 are the reported targets"
+}
