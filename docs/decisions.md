@@ -676,3 +676,28 @@ Every row below was read from the project's own repo/HF card on 2026-11-10. "ver
   constant offset, so the pre-registration's "offset" is not a separate free parameter. Two
   windows are reported: the first 3 s (causal-ish) and all frames up to the 10 s horizon
   (non-causal, the handoff's "all frames" reading).
+- [N] **Part 1 start arms: the start dominates.** First-frame reader 8.85°/8.22° (forest/outdoor
+  UZH) against oracle 2.25°/0.42° at 10 s; the 1 s average and the Huber fit are worse in the open
+  scenes because carrying each reading into the start frame injects the rotation drift, so a
+  single frame is the best implementable start. On TII the Huber start improves the propagated
+  result only by cancellation (44.2° -> 26.2°); no arm is usable there.
+- [N] **Translation-direction addendum fails its pre-registered rule.** At >= 8 m/s: forest
+  18.36° (2,410 pairs, 8 clips) against the 3° bar; real outdoor UZH 1.78° per pair / 2.67° per
+  1 s block (209 pairs, 3 sequences). The UZH accuracy passes, but the pre-registered evaluability
+  floor (>= 5 clips) cannot be met by a 3-sequence stratum; the floor was copied from the
+  simulated strata and is recorded as a design flaw, not repaired after the result. Because forest
+  fails, the two uses (a) initial gravity and (b) periodic anchor were **not run**, per the
+  pre-registration.
+- [N] The forest direction failure is geometric: no 0° or 15° forest clip reaches 8 m/s, so the
+  high-speed population is 30°/45° mounts (10.43°/25.92°), where forward flight is closest to the
+  optical axis. The error falls with pair gap (27.1° at 0.1 s to 10.0° at 0.5 s) as a
+  baseline/depth effect.
+- [N] **Turn test not supported.** UZH at theta >= 30°: video-only 8.28°, one direction
+  constraint 7.21°, two 6.13° (26 % below baseline, above the 5° bar). With the measured
+  directions replaced by truth in the same solver the baseline falls to 4.03°, so the mechanism
+  has headroom and the essential-matrix noise is binding. On simulated clips the corrections make
+  the error worse.
+- [N] **Generated-clip tracking noise: 0.23 px median Sampson residual** (p90 0.30) on 13,664
+  usable H04 pairs (77 %), similar across arms and draws; 33/234 clips have fewer than half their
+  pairs usable. Feature tracking is not the bottleneck for a geometry route on generated video,
+  but a low residual at 0.2-0.5 s baselines does not certify multi-view consistency (Part 4).

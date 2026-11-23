@@ -189,7 +189,28 @@ inliers in pixels**, median and p90 per arm and draw, with the fraction of pairs
 20-inlier floor. This is the number the budget says decides whether a geometry route is viable
 on generated video; it is reported even though the addendum rule failed.
 
-<!-- TRACK_NOISE -->
+| quantity | all | A flatness | B level | C mirrored roll |
+| --- | --- | --- | --- | --- |
+| clips | 234 | 78 | 78 | 78 |
+| pairs measured | 17,784 | 5,532 | 6,636 | 5,616 |
+| pairs usable (≥ 20 inliers) | 13,664 (77 %) | 4,302 | 5,109 | 4,253 |
+| Sampson residual, median (px) | **0.23** | 0.23 | 0.21 | 0.24 |
+| Sampson residual, p90 (px) | 0.30 | 0.31 | 0.29 | 0.31 |
+| inliers, median | 96 | 80 | 155 | 79 |
+
+By gap: 0.22 px at 0.2 s, 0.23 px at 0.5 s. By draw: 0.22-0.23 px (g0-g2).
+
+**The number is very low, and that is the finding to interpret carefully.** A median Sampson
+residual of 0.23 px means the matched features are internally consistent with a two-view model to
+a quarter of a pixel — the budget's tracking-noise criterion is met by a wide margin, and feature
+tracking is *not* what would stop a geometry route on these clips. Two qualifications must travel
+with it: (i) 23 % of pairs fail the 20-inlier floor and 33 of 234 clips have fewer than half their
+pairs usable, so the usable population is a majority, not all; (ii) a low residual on 0.2-0.5 s
+baselines does **not** certify multi-view consistency. With small parallax a fundamental matrix
+can fit a smooth but geometrically inconsistent (generated) video almost exactly, so this
+statistic bounds tracking noise, not generation quality. Whether the generated clips carry a
+consistent rotation is exactly what Part 4 must measure, and this table does not answer it.
+
 
 ## What this supports
 
@@ -227,5 +248,5 @@ on generated video; it is reported even though the addendum rule failed.
 * Pre-registration `8fbd8d6`; amendments A/B/C; decisions `[N]`.
 * Poses: `awmv-n-rotation` / `awmv-n-data` (Part 0); readers: L01 per-frame scores and E's UZH
   JSONL (sha256 in `results/n01_pretest/provenance.json`).
-* Pair tables `results/n02/pairs_{sim,uzh}.csv` (49,702 rows), per-second table, turn table,
-  generated track-noise table; all CPU, USD 0.00.
+* Pair tables `results/n02/pairs_{sim,uzh}.csv.gz` (49,702 rows), per-second table, turn table
+  (`turn_roll.csv.gz`), generated track-noise table; all CPU, USD 0.00.
