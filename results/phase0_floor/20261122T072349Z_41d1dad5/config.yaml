@@ -1,0 +1,51 @@
+config:
+  experiment: phase0_floor
+  dataset_root: data/raw/tii
+  flights:
+  - flight-01a-ellipse
+  - flight-04a-ellipse
+  - flight-07a-lemniscate
+  - flight-13a-trackRATM
+  - flight-01p-ellipse
+  - flight-07p-lemniscate
+  - flight-13p-trackRATM
+  - flight-16p-trackRATM
+  sg_polyorder: 3
+  sg_windows:
+  - 11
+  - 21
+  - 31
+  - 51
+  - 71
+  - 101
+  - 151
+  - 201
+  - 301
+  - 401
+  kd_bounds:
+  - 0.0
+  - 3.0
+  tilt_signal_deg: 10.0
+  speed_bins_ms:
+  - 0
+  - 2
+  - 4
+  - 6
+  - 8
+  - 10
+  - 12
+  - 14
+  - 16
+  - 18
+  - 20
+  - 22
+  - 25
+  g: 9.81
+  seed: 0
+  notes: mocap-only floor; split by flight; leave-one-flight-out
+run_id: 20261122T072349Z_41d1dad5
+git:
+  commit: 41d1dad56e609ede025fba1573d9e071bb2ff1a0
+  dirty: true
+  dirty_files:
+  - ?? results/a2_modes/20261122T071523Z/

@@ -1,0 +1,138 @@
+# Track K, Part 3 — exact-semantics re-derivation of J03's absorption and J02's floor
+#
+# Written and committed BEFORE any K03 absorption, MDV, threshold or detection number was
+# computed. The only related numbers seen before this file are K01's mode reconciliation
+# and K02's model fits, which are the reason the re-derivation exists.
+version: 1
+date: 2026-11-22
+track: K
+branch: track-k-calibration
+owner_files:
+  - experiments/k03_exact_semantics.py
+  - configs/k03_exact_semantics_prereg.yaml
+  - reports/K03_exact_semantics_absorption.md
+  - results/k03/
+
+question: >
+  Which of J03's absorption conclusions and J02's floor numbers survive when the required
+  side is the exact flatness axis and the drag coefficient is physical, instead of
+  `lean_req + (k_d - 0.295) vel_req` with the drag-free `lean_req` read as k_d = 0.295?
+
+why: >
+  K01 showed schema v2's `lean_req` is drag-free (0.016 deg from a recompute), that J02's
+  `required_at(kd)` shifts every arm by 0.295 (its "k_d = 0.295" arm is drag-free and its
+  "drag-free" arm is k_d = -0.295), that J03's F0/C1 are drag-free, and that the linear
+  reparameterisation differs from the exact axis by a median 2.17 deg and a p95 20.4 deg
+  on testable frames and can leave the unit disk. J03's own fitted k_d, read physically,
+  has median 0.30, not its bound. The tables themselves were not re-derived. This does so,
+  changing nothing except the required side.
+
+data:
+  population: 100 TII real clips, 8 flights; the gate-kept stratum is 72 clips, of which
+    the six dev flights give 69; `flight-13p-trackRATM` and `flight-07a-lemniscate` are
+    held out and never scored.
+  gate: the frozen S3 gate decision in
+    `results/a2_gate/20261109T201449Z_298ff20/clip_table.csv`, applied to the real clip
+    and inherited by its edits (J03's population).
+  edits: the schema-v2 clip set, `tilt_removal`, `mirror_roll`, `scale_0.5`, `scale_1.5`,
+    `yaw_control`, `null_edit`; partial coverage 25 % / 50 % composed on the depicted
+    side by J03's centred interval rule.
+  truth: TII mocap at 274.73 Hz. Required sides are computed from native-rate velocity and
+    acceleration with a Savitzky-Golay 101-sample / poly-3 window, A2's frozen window.
+    Frames outside the native interior are NaN.
+
+exact_constructions:
+  kd_0.295: >
+    u = normalise(a + g e3 + 0.295 v); lean = Rz(-yaw) [u_x, u_y]; axis = u.
+  drag_free: >
+    u = normalise(a + g e3); same lean/axis.
+  kd_grid: [0.00, 0.05, 0.10, 0.15, 0.20, 0.25, 0.295, 0.35, 0.40]
+  note: >
+    No (k_d - 0.295) rescaling is used anywhere. The C2 grid is evaluated by recomputing
+    the exact axis at each k_d, not by adding a velocity term. Schema v3 carries exactly
+    this required side (axis and lean) for the selected model at k_d = 0.295; the other
+    grid points are generated in memory with the same semantics.
+  inverted_frames: >
+    A lean cannot represent an inverted required axis. The median/window tiers use thrust
+    axes and include inverted frames. The lean-based constructions (J03's offset fit and
+    coherence, and J02's lean-vs-lean floor) mask required tilt > 85 deg and truth-attitude
+    tilt > 85 deg; the masked counts are reported. This applies equally to both modes.
+
+part_A_J03:
+  arms:
+    F0: exact k_d = 0.295, no nuisance.
+    C1: exact k_d = 0.295, per-clip free 2-vector Huber offset (delta 3 deg, 6 IRLS).
+    C2: per-clip Huber offset plus k_d on the physical grid above, chosen by the same
+        Huber loss; refitted on the composed partial edit, as J03 does.
+    R: fit-free coherence, 1 - min(per-axis Pearson r) in an 8-frame window, maximum over
+       windows, against the exact k_d = 0.295 lean.
+  tiers:
+    clip: median over frames of the angle between the depicted axis and the required axis
+      (after any offset).
+    window: 8 frames, hop 4, maximum over complete windows of the window median.
+  thresholds: >
+    leave-one-flight-out 95th percentile, one per real gate-kept dev clip, median over
+    clips (J03's reporting convention). Detection excludes the two held-out flights.
+  matched_false_reject: >
+    beside the natural rates, thresholds are also placed at F0's false-reject count on the
+    same real clips (pooled empirical quantile) so the arms are compared at one operating
+    point.
+  absorption: F0 minus C2 detection in clips and percentage points, per edit and coverage.
+  MDV: >
+    a uniform reduction of the displayed tilt by Delta degrees along the required direction,
+    over 25 % or 50 % of the clip, keeping the reader error in the injected region; Delta
+    grid 0-30 deg; LOFO 95th at 5 %; MDV = smallest Delta detected in half the clips,
+    linearly interpolated.
+  fitted_kd: the per-clip C2 k_d distribution over the 72 gate-kept real clips.
+
+part_B_J02:
+  generator: >
+    J02's synthetic reader error: per flight one bias vector of magnitude 2 deg in a random
+    direction; per clip an independent AR(1) process split at 0.5 Hz into slow and fast
+    parts with sigma 4.8 deg and fast share 0.5; rng = numpy.random.default_rng(1).
+  modes: exact k_d = 0.295 and exact drag-free.
+  deltas: [0, 2, 4, 6, 8, 10, 12, 15, 20, 30] deg, applied as a saturating reduction of the
+    required tilt along its own direction.
+  windows: whole clip, 24, 16, 12, 8 frames; window max of the window median, hop half the
+    window; complete windows only.
+  draws: 120 for the window table and the anchor; 60 for each parameter-grid cell.
+  threshold: leave-one-flight-out 95th percentile per clip; MDV at 50 % detection,
+    interpolated.
+  arms:
+    perfect_path: depicted = violated required lean + synthetic error.
+    measured_error_replay: depicted = exact required lean + the frozen reader's measured
+      per-frame error, where the error is `depicted_lean - truth_attitude_lean` on the
+      same clip frames (one draw, no synthetic error).
+    mocap_anchor: depicted = truth attitude lean + synthetic error; required = exact
+      required side.
+  parameter_grid: sigma in {3, 4.8, 8} deg x bias in {0, 2, 5} deg at the whole clip,
+    both modes, 60 draws.
+
+decision_rules:
+  absorption_survives: >
+    C2 loses at least 7 of 69 clips (about 10 percentage points) of full-coverage
+    detection relative to F0 for tilt removal, mirrored roll, or x1.5, at either the natural
+    threshold or the matched false-reject. Below that, the absorption is not material at
+    this sample size.
+  coherence_survives: >
+    R detects at least 7 clips more than both C1 and C2 for full-coverage tilt removal and
+    mirrored roll at the matched false-reject, and R's 25 %-coverage MDV is at least 3 deg
+    below both fitted statistics. If only one holds, the conclusion is partial and labelled.
+  false_reject: an arm is calibrated if its natural LOFO false-reject is at most 5/69.
+  j02_floor_survives: >
+    The exact k_d = 0.295 whole-clip MDV is within 1 deg of J02's published 6.92, and the
+    exact drag-free MDV within 1 deg of J02's published 4.90 (J02's "drag-free" arm), i.e.
+    the published table survives after relabelling. A difference above 1 deg is reported as
+    the exact construction changing the floor, with its direction.
+  reporting: >
+    Every cell reports k/n or a point estimate with its draw count and mode. The two racing
+    flights dominate several RMS quantities; per-flight values are reported where relevant.
+    No interval is called a 95 % confidence interval with six flights.
+
+inference:
+  clustered_intervals: >
+    flight-clustered percentile intervals (5,000 replicates, rng(1)) beside the key
+    detection and absorption cells; descriptive with six dev flights.
+  deviations: any addition after scoring is labelled exploratory in the table and summary.
+
+compute: {gpu_usd: 0, note: CPU only; no Modal, no R2}

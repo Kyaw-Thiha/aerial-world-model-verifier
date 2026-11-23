@@ -1,0 +1,29 @@
+# Track K, Part 2 — amendment A to configs/k02_model_prereg.yaml
+#
+# Written and committed before any M4 leave-one-flight-out, cross-domain, threshold or
+# detection number was produced. No result existed at the time: the M4 LOFO job had been
+# stopped twice at its parameter search, and the in-sample check had not completed.
+version: 1
+date: 2026-11-22
+track: K
+amends: configs/k02_model_prereg.yaml
+reason: >
+  M4 solves an implicit equation (the rotor-drag direction depends on the attitude being
+  solved for) and its objective has a singularity when the required axis is near inverted.
+  Powell's line search repeatedly probed that singularity, overflowed, and did not
+  converge inside 15 minutes per LOFO pass. The pre-registered parameterisation, bounds,
+  data, objective, lag nuisance and evaluation are unchanged; only the numerical search
+  changes.
+change:
+  M4_optimiser: >
+    deterministic coarse-to-fine grid over the pre-registered bounds [0, 1]^2: a 6 x 6
+    coarse grid at 0.2 spacing, then a 9 x 9 grid at 0.05 spacing in a +/-0.2 box around
+    the coarse best. The objective is evaluated on every eighth native sample (the same
+    subsample used for the other models' fitting); evaluation uses every sample.
+  unchanged:
+    - parameterisation f_drag = R diag(d_x, d_y, 0) R^T v
+    - bounds d_x, d_y in [0, 1]
+    - 12 fixed-point iterations
+    - fitting objective, lag grid, LOFO/cross-domain protocol, metrics, selection rule
+    - everything downstream
+  status: before any M4 outcome

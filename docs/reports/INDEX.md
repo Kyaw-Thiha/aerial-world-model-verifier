@@ -136,6 +136,14 @@ Track G/G2 `GNN_`, Track H/H2 `HNN_`, Track J `JNN_`.
 | `J03_per_clip_calibration.md` | Per-clip calibration on the gate-kept population, and what it absorbs (Stage 1a) | current; negative result for per-clip calibration as a primary tier |
 | `J04_fusion_and_learned_confidence.md` | Learned reader confidence (Stage 1c); 1b not run | current; Stage 1c is selected by rule 3's *literal* reading only — J01 states the premise is weak |
 
+## Track K — calibration modes and offline physics refinement (branch `track-k-calibration`)
+
+| report | title | status |
+| --- | --- | --- |
+| `K01_calibration_mode_reconciliation.md` | Every published floor mapped to its construction, mode, nuisance and population; the schema-v2 semantics and the J02/J03 label errors | current; Part 1 of the track |
+| `K02_physics_model_refinement.md` | M0-M5 airframe models, LOFO and cross-domain, schema v3, thresholds and edit detection | current; Part 2 of the track |
+| `K03_exact_semantics_absorption.md` | J03's absorption and J02's floor re-derived under exact drag semantics, with the pre-registered survival rules | current; Part 3 of the track |
+
 ## Notes
 
 * Report 04 quotes the pre-registration sha256 `b8fd7013…` for `configs/verdict_preregistration.yaml`
