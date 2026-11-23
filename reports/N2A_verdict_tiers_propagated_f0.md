@@ -128,6 +128,13 @@ and 16.05° (2°). Every arm is at 8/80 by construction; the detection columns a
 | high-mount removed | 13/13 | 1/13 | **13/13** | **13/13** | **13/13** |
 | high-mount mirrored | 6/13 | 3/13 | 8/13 | 10/13 | **11/13** |
 
+At each arm's **own** leave-one-seed-out 95th-percentile cut the trade is the same and the
+propagated arms simply sit at a stricter point: 5/80 feasible (reader start and oracle) or 7/80
+(level) against the reader's 8/80, with 11–12/27 removals against 20/27; forest 2/26 or 1/26
+against 8/26, and 4/9 removals against 9/9. No arm moves to a better detection-for-false-reject
+point than the reader at these operating points either.
+
+
 ### Why the threshold is high: the 45° tail
 
 Feasible F0 residual, median by mount (degrees):
