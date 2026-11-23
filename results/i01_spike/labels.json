@@ -1,0 +1,30 @@
+{
+  "clip_feasible": {
+    "label": "feasible",
+    "violation": null,
+    "interval_s": null,
+    "magnitude_deg": 0.0
+  },
+  "clip_level_camera": {
+    "label": "infeasible",
+    "violation": "tilt_removed",
+    "interval_s": [
+      0.0,
+      3.0
+    ],
+    "fraction_of_flight": 1.0,
+    "magnitude_deg": 25.357730006997404,
+    "note": "camera held level along the same path; the path's required tilt is unchanged"
+  },
+  "clip_mirror_roll": {
+    "label": "infeasible",
+    "violation": "mirrored_roll",
+    "interval_s": [
+      0.0,
+      3.0
+    ],
+    "fraction_of_flight": 1.0,
+    "magnitude_deg": 43.450604919981586,
+    "note": "roll sign flipped, yaw/pitch/position unchanged; lean roll component flips sign"
+  }
+}

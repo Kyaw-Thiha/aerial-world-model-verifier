@@ -1,0 +1,13 @@
+\begin{tabular}{lrrrrr}
+\toprule
+clip & depicted tilt & required tilt & tilt residual & gain (fwd / left) & up error \\
+ & (deg, median) & (deg) & (deg, median) & & (deg, median) \\
+\midrule
+feasible        & 24.77 & 25.33 & 0.62  & 0.93 / 0.99      & 1.14 \\
+tilt removed    & 0.36  & 25.33 & 24.72 & $-0.01$ / $-0.004$ & 0.36 \\
+mirrored roll   & 24.41 & 25.33 & 0.79  & 0.91 / $-1.00$   & 1.27 \\
+\midrule
+\multicolumn{6}{l}{\footnotesize GeoCalib on 91 rendered frames per clip (Cycles, 48 spp), 3\,s slalom, truth at 250\,Hz.}\\
+\multicolumn{6}{l}{\footnotesize Same pipeline on the EEVEE render of the feasible clip: 0.37 deg residual, gain 0.94/1.00, up error 0.75 deg.}\\
+\bottomrule
+\end{tabular}

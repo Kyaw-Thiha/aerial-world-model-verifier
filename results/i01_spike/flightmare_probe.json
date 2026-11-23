@@ -1,0 +1,30 @@
+{
+  "source": "Modal app awmv-i-flightmare, function probe (two attempts, second stopped during the Unity download)",
+  "repo": {
+    "name": "uzh-rpg/flightmare",
+    "licence_spdx_from_LICENSE_file": "MIT",
+    "last_push": "2024-06-14",
+    "stars": 1451,
+    "renderer": "prebuilt Unity binary, release asset RPG_Flightmare.tar.xz 936,347,476 bytes, release 0.0.5, 2020-12-01"
+  },
+  "attempt_1": {
+    "base": "ubuntu:22.04",
+    "result": "image build failed",
+    "error": "E: Unable to locate package libzmqpp-dev"
+  },
+  "attempt_2": {
+    "base": "ubuntu:22.04",
+    "extra": "zmqpp built from source before flightlib",
+    "result": "stopped during the 936 MB Unity renderer download; flightlib build not carried to a verdict"
+  },
+  "upstream_install_target": {
+    "base": "ubuntu:18.04",
+    "ros": "Melodic",
+    "note": "from the repository Dockerfile; both end-of-life"
+  },
+  "unverified": [
+    "whether the 2020 Unity player starts headless under Xvfb on a cloud GPU",
+    "whether flightlib compiles against zmqpp built from source"
+  ],
+  "conclusion": "Rejected on the missing 18.04-era package, the six-year-old display-dependent renderer, and the fact that its dynamics are unused by this track."
+}

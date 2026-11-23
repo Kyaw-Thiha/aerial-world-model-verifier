@@ -1,0 +1,48 @@
+% Candidate section for the report: Track I, simulated labelled flights.
+% Not merged; numbers are from reports/I01_simulator_spike.md and the runs it cites.
+\section{A simulated labelled flight set}
+\label{sec:i01-simset}
+
+Every detection number in this report so far rests on real flights with synthetic edits: we
+know the edit we applied, not the physical violation a model committed. That is enough to
+validate a statistic, not enough to answer a reviewer who asks for a labelled set of feasible
+and infeasible flights with exact ground truth. A simulator supplies it: since a quadrotor
+must thrust along its body $z$ axis, a path fixes the attitude it requires
+($\zb = \unit(\va + g\ve_3 + k_d \vv)$), so a rendered flight can be made infeasible
+\emph{by construction} --- hold the camera level, mirror the roll, scale the tilt --- with the
+violation's type, size and exact interval known.
+
+\paragraph{What a simulator has to provide.} Because the required tilt is a closed-form
+function of the path and the depicted tilt follows from the camera pose the renderer was
+given, the simulator's job is \emph{rendering}, not dynamics: it must draw a known camera
+trajectory in a textured 3D scene, headlessly, on a GPU we can rent. Its own flight dynamics
+would insert an integrated attitude between the two sides of the comparison and are
+deliberately unused.
+
+\paragraph{Candidate comparison.} Four candidates were assessed and three were executed:
+Blender with the project's own dynamics, Isaac Sim, Flightmare, and the Unreal-based
+AirSim/Colosseum pair. \Cref{tab:i01-candidates} states what was measured and what was only
+inspected. Blender is recommended: it renders headless on an L40S with no RT-core requirement,
+its pose$\to$pixel model matches its own camera to within half a pixel, and its scene and
+flight are both functions of a seed. Its cost is what decides the renderer setting
+(\Cref{tab:i01-throughput}): at 640$\times$360 the 180{,}000-frame set costs about USD~18 with
+EEVEE and about USD~81 with Cycles, so EEVEE is the default and Cycles the validation subset.
+Isaac Sim started headless on the same GPU and is the photorealistic fallback, at the cost of a
+10-minute, 15\,GB image and a Python API that moved between releases; no frame was obtained
+from it within the spike's time box. Flightmare's dependency set is Ubuntu 18.04 with ROS
+Melodic and its renderer is a 2020 Unity binary; Colosseum is archived and AirSim's last
+release predates the current ROS and Ubuntu generations.
+
+\paragraph{The read-out that matters first.} The tilt reader was developed on real images, so
+its error on simulated frames has to be reported before any detection rate. On a 3\,s slalom
+(required tilt 14.6--32.2$^\circ$, truth at 250\,Hz, 91 frames at 30\,fps) the reader's
+up-vector error against exact truth is 1.14$^\circ$ median (p90 1.53) on the physically
+attitude-rendered clip and 0.36$^\circ$ (p90 0.71) on the level one;
+\Cref{tab:i01-reader} gives the depicted lean and the gain slope behind it. The reader is more
+accurate on the renders than on real TII frames (3.5--4$^\circ$), as expected in the absence
+of motion blur and rolling shutter, so the sim-to-real gap will be dominated by the look of
+the scene rather than by the geometry.
+
+\paragraph{Scope.} One flight and two defect families demonstrate the pipeline end to end;
+they do not measure detection rates, and no segment-level number exists until the
+segment-level detector of \Cref{sec:segments} is applied to the labels.

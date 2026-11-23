@@ -1,0 +1,99 @@
+{
+  "CYCLES_8_dn": {
+    "rc": 0,
+    "render": {
+      "device_info": {
+        "cycles_requested": "GPU",
+        "cycles_engine": "CYCLES",
+        "cycles_backend": "OPTIX",
+        "cycles_devices_enabled": [
+          "NVIDIA L40S",
+          "NVIDIA L40S"
+        ]
+      },
+      "n_frames": 6,
+      "width": 640,
+      "height": 360,
+      "engine": "CYCLES",
+      "device": "GPU",
+      "samples": 8,
+      "seconds_total": 6.256862388,
+      "seconds_per_frame_median": 0.8273686524999997,
+      "fps": 0.958947093275915,
+      "blender_version": "4.5.9 LTS",
+      "gpu": "NVIDIA L40S, 46068 MiB"
+    }
+  },
+  "CYCLES_8": {
+    "rc": 0,
+    "render": {
+      "device_info": {
+        "cycles_requested": "GPU",
+        "cycles_engine": "CYCLES",
+        "cycles_backend": "OPTIX",
+        "cycles_devices_enabled": [
+          "NVIDIA L40S",
+          "NVIDIA L40S"
+        ]
+      },
+      "n_frames": 6,
+      "width": 640,
+      "height": 360,
+      "engine": "CYCLES",
+      "device": "GPU",
+      "samples": 8,
+      "seconds_total": 3.2933312390000005,
+      "seconds_per_frame_median": 0.5235994635000001,
+      "fps": 1.8218635067579363,
+      "blender_version": "4.5.9 LTS",
+      "gpu": "NVIDIA L40S, 46068 MiB"
+    }
+  },
+  "CYCLES_48": {
+    "rc": 0,
+    "render": {
+      "device_info": {
+        "cycles_requested": "GPU",
+        "cycles_engine": "CYCLES",
+        "cycles_backend": "OPTIX",
+        "cycles_devices_enabled": [
+          "NVIDIA L40S",
+          "NVIDIA L40S"
+        ]
+      },
+      "n_frames": 6,
+      "width": 640,
+      "height": 360,
+      "engine": "CYCLES",
+      "device": "GPU",
+      "samples": 48,
+      "seconds_total": 3.4710128769999997,
+      "seconds_per_frame_median": 0.5591402339999991,
+      "fps": 1.7286020572720568,
+      "blender_version": "4.5.9 LTS",
+      "gpu": "NVIDIA L40S, 46068 MiB"
+    }
+  },
+  "EEVEE_16": {
+    "rc": 0,
+    "render": {
+      "device_info": {
+        "cycles_requested": "GPU",
+        "cycles_engine": "BLENDER_EEVEE_NEXT",
+        "cycles_backend": "NONE",
+        "cycles_devices_enabled": []
+      },
+      "n_frames": 6,
+      "width": 640,
+      "height": 360,
+      "engine": "BLENDER_EEVEE_NEXT",
+      "device": "GPU",
+      "samples": 16,
+      "seconds_total": 17.37728698100001,
+      "seconds_per_frame_median": 0.18631594300000032,
+      "fps": 0.34527829381883857,
+      "blender_version": "4.5.9 LTS",
+      "gpu": "NVIDIA L40S, 46068 MiB"
+    }
+  }
+}

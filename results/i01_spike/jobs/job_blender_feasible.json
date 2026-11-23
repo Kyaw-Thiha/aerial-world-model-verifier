@@ -1,0 +1,13 @@
+{
+  "poses": "/home/kevin/Documents/Projects/awmv-track-i/results/i01_spike/frames_feasible.npy",
+  "out_dir": "/home/kevin/Documents/Projects/awmv-track-i/results/i01_spike/frames_blender/feasible",
+  "width": 640,
+  "height": 360,
+  "hfov_deg": 90.0,
+  "scene_seed": 7,
+  "scene": "outdoor",
+  "engine": "CYCLES",
+  "device": "GPU",
+  "samples": 24,
+  "result_json": "/home/kevin/Documents/Projects/awmv-track-i/results/i01_spike/frames_blender/feasible/render_timing.json"
+}

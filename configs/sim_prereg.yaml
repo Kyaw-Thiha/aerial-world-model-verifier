@@ -1,0 +1,180 @@
+# Track I pre-registration: the simulated labelled flight set (handoff 15, Step 2).
+#
+# Committed BEFORE a single clip of the set is generated under these rules, and long before
+# any verifier statistic touches it. Everything a split, a label, a magnitude or a success
+# criterion depends on is fixed here. Changes after this commit are amendment commits with a
+# stated reason (a new file), never edits of this one.
+#
+# What this pre-registration is for: Tracks F2 and G2 will use this set as their calibration
+# and development set, and Step 3 of this track scores the frozen verifier on it. A label that
+# could move after seeing a statistic would make every downstream number a fit, so the labels
+# are defined by construction (a camera pose and an interval) and the split is by scene.
+prereg_version: 1
+date: 2026-11-21
+owner: track-i
+handoff: "15 Step 2 (simulated labelled set)"
+status: committed_before_generation
+
+# ------------------------------------------------------------------ scope and claims
+claim_scope: >
+  The set labels flights, not models. A clip is "infeasible" when the camera's attitude
+  cannot be reconciled with the path it is flying through, or when the path itself demands
+  more thrust than a quadrotor can produce. Realism, photometric fidelity and the existence of
+  a matching real flight are not claimed.
+physics:
+  flatness: "z_B = unit(a + g e3 + k_d v)"
+  g: 9.81
+  k_d: 0.295                     # the project's frozen world-frame drag, 1/s. Not fitted here.
+  attitude: "intrinsic ZYX from the thrust axis and the path's yaw"
+  camera_mount: "hard mount, camera attitude = body attitude x R_cb(uptilt, mount_yaw)"
+  truth_rate_hz: 250             # >= 200 as the handoff asks; exact, analytic
+  video_fps: 30
+  resolution: [640, 360]
+  hfov_deg: 90.0
+  flight_duration_s: [10.0, 30.0]
+
+# ------------------------------------------------------------------ scene families
+# A scene instance is (family, seed). No instance appears in both splits. Families are
+# assigned to splits here, once, and the assignment is what `docs/DATA.md` publishes.
+scenes:
+  families:
+    dev:
+      - urban_checker      # blocks on a checker ground, the spike's scene, extended
+      - forest_ridge       # tree cover, low ridge horizon, hedged ground
+      - industrial         # long sheds, containers, service roads
+    heldout:
+      - field_settlement   # open fields, scattered houses, hedgerows
+      - coastal_cliff      # water plane, cliff edge, vegetated tops
+  seeds:
+    dev: [101, 102, 103, 104, 105, 106]
+    heldout: [201, 202, 203, 204, 205, 206]
+  assignment_rule: >
+    Seed s belongs to the split listed above; within a split, family = families[split][s mod
+    3] (dev) or families[split][s mod 2] (heldout). The resolved table is written to
+    configs/sim_splits_frozen.json and its sha256 recorded in docs/DATA.md. A clip inherits
+    its scene's split: no clip from a held-out seed is ever rendered differently or scored
+    before the development pass is closed.
+  heldout_use: >
+    Held-out scenes are rendered in the same batch (so the batch is one job) but their scores
+    are computed and reported once, after every development decision is committed. Any use of
+    a held-out clip before that point is a protocol violation and is reported as one.
+
+# ------------------------------------------------------------------ flights
+maneuvers:                       # every family carries every maneuver
+  hover:       {duration_s: [10, 12], peak_tilt_deg: [0, 3]}
+  ellipse:     {radius_m: [6, 20], speed_ms: [3, 16], peak_tilt_deg: [8, 45]}
+  lemniscate:  {scale_m: [5, 14], speed_ms: [3, 12], peak_tilt_deg: [6, 35]}
+  slalom:      {amplitude_m: [1.5, 5.0], wavelength_m: [14, 45], speed_ms: [4, 14],
+                peak_tilt_deg: [6, 35]}
+  turn:        {speed_ms: [4, 16], radius_m: [4, 25], peak_tilt_deg: [8, 45]}
+  climb_turn:  {speed_ms: [4, 12], radius_m: [5, 20], vz_ms: [0.5, 3.0],
+                peak_tilt_deg: [6, 30]}
+  accel_brake: {v0_ms: [0, 6], v_peak_ms: [6, 16], ramp_s: [1.0, 3.0],
+                peak_tilt_deg: [5, 30]}
+peak_tilt_bands_deg: [[5, 10], [10, 20], [20, 35], [35, 50]]
+thrust_to_weight_max: 2.0        # 60 deg of tilt is the attitude limit of the set
+rate_limit_deg_s: 720            # roll/pitch rate; exceeded paths are outside the set
+
+# ------------------------------------------------------------------ labels
+labels:
+  feasible:
+    definition: "camera attitude equals the flatness attitude through the fixed mount, for the whole flight"
+    count: 120
+  infeasible_camera:
+    tilt_removed:
+      definition: "camera held level (zero roll and pitch, path yaw kept) on the same path"
+      magnitude: "the whole required tilt (median reported per clip)"
+      count: 40
+    mirrored_roll:
+      definition: "roll sign flipped about the path; yaw, pitch, position, speed unchanged"
+      count: 40
+    tilt_scaled:
+      definition: "camera lean multiplied by s about the level attitude; s in {0.5, 1.5}"
+      magnitudes: [0.5, 1.5]
+      count: 50                    # 25 each
+  infeasible_path:
+    thrust_limit:
+      definition: >
+        the path itself is not realisable: peak required thrust exceeds thrust_to_weight_max
+        (equivalently, peak required tilt exceeds 60 deg) or a rate limit is exceeded. The
+        camera follows the flatness attitude, so the *picture* is honest and the *path* is
+        the violation. Reported as its own family and never pooled with the camera defects.
+      count: 20
+  partial:
+    definition: >
+      A camera defect applied over a contiguous interval [t_start, t_end] of a feasible
+      flight, with the exact interval and fraction recorded. Outside the interval the camera
+      is physical.
+    families: [tilt_removed, mirrored_roll, tilt_scaled]
+    fractions: [0.10, 0.25, 0.50]
+    interval_placement: "start chosen uniformly in [0.05, 0.95 - fraction] of the flight, rounded to a frame"
+    count: 30
+  total: 300
+
+# ------------------------------------------------------------------ sampling and defects
+defects:
+  ramp_s: 0.0                    # partial intervals switch at frame boundaries, no blending
+  magnitude_reporting: "per clip: median and peak required tilt, and the defect's own magnitude"
+  mirror_definition: "roll -> -roll in the ZYX decomposition, pitch and yaw untouched"
+  scale_definition: >
+    roll -> s*roll, pitch -> s*pitch, applied to the physical attitude. s = 0.5 under-tilts,
+    s = 1.5 over-tilts; both keep the sign and the azimuth of the true lean.
+
+# ------------------------------------------------------------------ storage and manifest
+storage:
+  video: "R2 track-i/videos/<split>/<scene>/<clip_id>.mp4 (H.264, CRF 18, 30 fps)"
+  frames: "R2 track-i/frames/<clip_id>.npz (uint8, only for clips named in the manifest)"
+  ground_truth: "R2 track-i/gt/<clip_id>.npz (250 Hz: t, pos, vel, acc, yaw, R_bw, thrust_axis)"
+  git:
+    - results/i02/manifest.csv          # one row per clip, every field below
+    - results/i02/gt_video_rate.csv     # per video frame: t, lean_req, lean_dep, tilt_req, tilt_dep
+    - configs/sim_splits_frozen.json    # the resolved scene/seed table + its sha256
+  manifest_fields:
+    - clip_id, split, family, scene_seed, maneuver, params_json
+    - duration_s, fps, n_frames, n_gt
+    - label, violation, magnitude, magnitude_unit
+    - interval_start_s, interval_end_s, interval_fraction
+    - r2_video, r2_gt, sha256_video, sha256_gt
+    - renderer, engine, samples, commit, generated_utc
+  reproducibility: "clip_id -> (family, seed, maneuver, params, defect, interval); the generator writes every draw into the manifest, so no clip depends on unrecorded randomness"
+
+# ------------------------------------------------------------------ evaluation (Step 3)
+evaluation:
+  verifier: "the frozen statistics, used without tuning"
+  configs_frozen_readonly:
+    - configs/verdict_preregistration.yaml
+    - configs/gain_frozen.yaml
+    - configs/coherence_frozen.yaml
+  threshold_source: "the real-flight conformal thresholds as frozen; no simulated clip sets a threshold"
+  development_pass:
+    scenes: dev
+    use: "everything about the pipeline may be examined here: reader error, abstention, detection floor"
+  heldout_pass:
+    scenes: heldout
+    use: "scored once, after the development pass is closed and committed; reported separately"
+  primary_outcomes:
+    - "detection rate per defect family and magnitude, with k/n"
+    - "false-reject rate on feasible clips, with k/n"
+    - "abstention rate per family"
+    - "the detection floor per family (the magnitude at which detection reaches the abstention-free operating point)"
+  intervals: "flight-clustered bootstrap, 5000 replicates, numpy.random.default_rng(1); descriptive below 10 clusters, stated as such"
+  sim_to_real: "the tilt reader's per-frame error on simulated frames against truth, reported before any detection rate"
+  segment_level: "the labels (interval, family, magnitude) are handed to Track G2; no segment-level number is claimed here"
+
+# ------------------------------------------------------------------ cost
+budget:
+  ceiling_usd: 40.0
+  spent_before_this_step_usd: 2.62
+  plan: >
+    EEVEE Next for the bulk pass at 640x360 16 spp, Cycles for a validation slice of about
+    5 % of the clips at 48 spp. At the measured rates (0.19 s/frame EEVEE, 0.83 s/frame
+    Cycles) the planned 180,000 frames cost about USD 20 including the validation slice, so
+    the set fits with the ceiling intact. The ledger is updated per job.
+
+# ------------------------------------------------------------------ prohibitions
+prohibitions:
+  - "no held-out scene is scored before the development pass is committed"
+  - "no frozen config is edited; a needed change is a new config with a reason"
+  - "no threshold is chosen on simulated data"
+  - "no clip is silently dropped: an unrenderable or corrupt clip stays in the manifest with its status"
+  - "no defect is applied to a clip whose path is already infeasible (families are disjoint)"

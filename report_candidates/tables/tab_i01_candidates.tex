@@ -1,0 +1,30 @@
+\begin{tabular}{p{2.4cm}p{1.5cm}p{2.4cm}p{2.2cm}rr}
+\toprule
+candidate & licence & headless cloud GPU & pose truth & rendered? & effort \\
+\midrule
+Blender + own dynamics (recommended)
+  & GPL-2.0 (program)
+  & yes: \texttt{-b -P}, L40S, no RT cores needed
+  & exact, analytic (ours)
+  & yes: 91 frames, 3 clips
+  & low; 0.19\,s/frame (EEVEE), 0.83\,s/frame (Cycles) \\
+Isaac Sim 6.2 (fallback)
+  & Apache-2.0 + NVIDIA components, EULA
+  & yes (L40S; A40 minimum per upstream)
+  & any pose; physics unused
+  & see note
+  & medium: 10-min, $\sim$15\,GB image \\
+Flightmare
+  & MIT (repo) + Unity binary (2020)
+  & no: needs a display for the Unity player
+  & its own integration, not commanded
+  & no
+  & high: 18.04-era deps, 936\,MB blob \\
+AirSim / Colosseum
+  & MIT (repo) + Unreal Engine EULA
+  & no documented path (Vulkan/Xvfb)
+  & its own integration
+  & not attempted
+  & very high: UE build ($\sim$100\,GB) \\
+\bottomrule
+\end{tabular}
