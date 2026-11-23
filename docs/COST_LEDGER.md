@@ -154,3 +154,5 @@ if local runtime exceeds 3 h; it did not).
 | date | track | job | GPU | hours | USD | notes |
 | --- | --- | --- | --- | --- | --- | --- |
 | 2026-11-23 | N | N05/N06 estimate (before the runs) | A10/A10G | 6.0 | 7.0 est. | reader 200 clips at stride 2 (4.9 h) + DPVO 200 clips (0.6 h) + N06 320x180/UZH full-res (0.5 h); A10 1.10 USD/h |
+| 2026-11-23 | N | N05 reader, 200 clips stride 2 | A10G x4 | 2.57 | **2.83** | 2,312 s wall over 4 shards; 49,795 estimates; USD 1.10/h |
+| 2026-11-23 | N | N05/N06 DPVO (two full draws, half-res, full-res UZH) | A10/A10G | 1.10 | **1.21** | ~330 clip-runs; sum of per-clip wall time |

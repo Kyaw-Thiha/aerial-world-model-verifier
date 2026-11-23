@@ -44,7 +44,8 @@ results; none of them runs an experiment.
 | N04 | video rotation on generated clips (H04 SolarWM, H01 ANWM) | N | `track-n-rotation` | `results/n04/` | N04 |
 | N02b | verdict tiers on the rotation-propagated lean, UZH v3 edits (descriptive) | N | `track-n-rotation` | `results/n02b/` | N02b |
 | N03 | reader-vs-propagation agreement gate and coverage, UZH (descriptive) | N | `track-n-rotation` | `results/n03/` | N03 |
-
+| N05 | C2 and coherence on the propagated lean, all 200 simulated dev clips, level-body start, no oracle/reader | N | `track-n-rotation` | `results/n05/` | N05 |
+| N06 | 30°/45° mount drift: resolution and two-view relative-pose estimator | N | `track-n-rotation` | `results/n06/` | N06 |
 R2 prefixes are `track-a/`, `track-a/a2/`, `track-b/`, `track-c/`, `track-d/`, `track-e/`, `track-h/`, `track-h2/`
 (counts and bytes: `report/data/r2_counts.json`, measured 2026-11-15; verified read-only again
 during consolidation — see `docs/DATA.md` for the current status of listing access).

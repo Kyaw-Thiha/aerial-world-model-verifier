@@ -186,6 +186,12 @@ combine them.
 
 * The forest stratum pass hides the mount split (30° 8.62°, 45° 14.83°); the pre-registered rule
   was stratum-level and both readings are stated above. It was not re-specified after the result.
+* **Every number here is one DPVO draw.** N06 re-ran two full-resolution draws on the forest
+  30°/45° clips and found run-to-run differences with a median of 2.83° at 30° and 8.78° at 45°
+  (max 42.95°), i.e. of the same order as the effect. The 0°/15° mounts and the real outdoor UZH
+  numbers are stable (both draws < 2.5° at low mounts), so the gate-stratum verdicts stand far
+  inside their bars; the per-mount 30°/45° values are a single draw and should not be quoted to
+  two decimals.
 * Four of 26 forest clips are exactly 10.0 s and have no usable 10 s pair besides the boundary
   one; they are excluded from the 10 s median and the failure denominator as pre-registered.
 * The TII 20 s column draws on a different, smaller set of flights than the 10 s column (only

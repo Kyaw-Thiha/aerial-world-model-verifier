@@ -55,7 +55,7 @@ def tier_scores(l_dep, l_req, vreg, mask):
     return best, 1.0 - min(rs), int(ok.sum())
 
 
-def build_clip(row):
+def build_clip(row, poses_dir=POSES):
     cid = row["clip_id"]
     gt = np.load(GT / f"{cid}.npz")
     tgt = np.asarray(gt["t"], float)
@@ -79,7 +79,7 @@ def build_clip(row):
     vreg = np.column_stack([c * vy[:, 0] / G0 + s * vy[:, 1] / G0,
                             -s * vy[:, 0] / G0 + c * vy[:, 1] / G0])
     # propagated: level-body start, DPVO relative rotations
-    d = np.load(POSES / f"{cid}.npz")
+    d = np.load(poses_dir / f"{cid}.npz")
     R = np.asarray(d["c2w"], float)[:, :3, :3]
     ok_idx = fidx[fidx < len(R)]
     l_prop = np.full((len(fidx), 2), np.nan)
@@ -99,20 +99,20 @@ def build_clip(row):
             "C2_reader": c2_r, "R_reader": r_r, "C2_propagated": c2_p, "R_propagated": r_p}
 
 
-def main() -> int:
+def main(poses_dir=POSES, tag="") -> int:
     rows = [r for r in csv.DictReader(open(OUT / "clips.csv"))]
     assert all("i02_dev" in r["clip_id"] for r in rows) and len(rows) == 200
     out = []
     for i, r in enumerate(rows):
         try:
-            out.append(build_clip(r))
+            out.append(build_clip(r, poses_dir))
         except Exception as exc:  # noqa: BLE001
             out.append({"clip_id": r["clip_id"], "family": r["family"],
                         "scene_seed": r["scene_seed"], "mount": r["mount"],
                         "condition": r["condition"], "error": str(exc)})
         if i % 20 == 0:
             print(i, flush=True)
-    with open(OUT / "per_clip.csv", "w", newline="") as f:
+    with open(OUT / f"per_clip{tag}.csv", "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=list(out[0].keys()), extrasaction="ignore")
         w.writeheader(); w.writerows(out)
 
@@ -190,7 +190,7 @@ def main() -> int:
                     "note": ("natural = leave-one-scene-seed-out 95th percentile of feasible; "
                              "matched = common feasible false-reject count k = reader C2 natural"),
                     "k_match": k})
-    (OUT / "summary.json").write_text(json.dumps(summary, indent=1, default=float))
+    (OUT / f"summary{tag}.json").write_text(json.dumps(summary, indent=1, default=float))
     print(json.dumps(table["natural"], indent=1))
     print("k_match", k)
     print(json.dumps(table["matched"], indent=1))
@@ -198,4 +198,9 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    import argparse
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--poses", default=str(POSES))
+    ap.add_argument("--tag", default="")
+    a = ap.parse_args()
+    raise SystemExit(main(Path(a.poses), a.tag))

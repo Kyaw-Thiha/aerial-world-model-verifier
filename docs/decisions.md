@@ -736,3 +736,25 @@ Every row below was read from the project's own repo/HF card on 2026-11-10. "ver
   detecting nothing; ungated F0 flags 4/12 no-violation clips and detects 2/3 removals. Gate B
   was never computed on UZH, so no like-for-like comparison is made. A 5 % target is not
   certifiable at this n and was not attempted.
+- [N] **N05: the level-body start is not absorbed by the offset-free tiers.** With no oracle and
+  no reader (`u_cam(0)=R_cb^T e3`), at matched 7/80 feasible false-reject C2 detects 0/27 tilt
+  removals (second draw 1/27) against the reader's 16/27, and 7/27 mirrors against 10/27. A start
+  error is a fixed BODY rotation, not a yaw-frame lean offset; with true rotations and a level
+  start C2 still leaves 8.54° on feasible clips, the matched threshold rises to 29.5°, and
+  sensitivity collapses. With an oracle start the same tier detects 6/27 removals, 7/27 mirrors,
+  so the propagation is sound and the missing ingredient is an absolute anchor.
+- [N] **Coherence saturates on constant-lean clips.** 60 % of feasible simulated clips hold a
+  constant required lean (zero variance; coordinated constant-bank turns), where a scale-free
+  correlation is undefined. The pre-registered all-clip coherence table is therefore
+  uninformative; the varying-lean subset (87 clips) is reported as a post-hoc diagnostic:
+  reader 10/14 removals and 10/14 mirrors, propagated 6/14 and 9/14.
+- [N] **Constant-bank violations are unobservable to C2 on a level-start propagated lean**: the
+  video is level and the start is level, so the depicted lean is constant and the offset fit
+  explains the constant required lean (true-rotation residual exactly 0.00° on tilt-removed
+  clips). This is a tier property on constant-lean manoeuvres.
+- [N] **N06: DPVO is not reproducible on these clips.** Two full draws on the forest 30/45° clips
+  give 10 s drifts of 4.58/5.87° (30°, median |diff| 2.83°, max 8.38°) and 12.17/10.37° (45°,
+  median |diff| 8.78°, max 42.95°). The 45° drift is dominated by run-to-run variance, not a
+  deterministic view bias. Resolution: full 640×480 gives 63/63 valid UZH edited-clip
+  extractions against 12/63 at the 320×240 crop; half resolution worsens the simulated 30° drift
+  (8.71 vs 4.58). A two-view relative-pose chain is unusable (70-85° at 10 s).
