@@ -1,0 +1,35 @@
+[
+ {
+  "path": "turn5",
+  "source_clip": "C_turn_5_fixed_0",
+  "f95_hz": 0.25,
+  "window_s": 0.37,
+  "window_samples": 371,
+  "n_masked": 2,
+  "peak_tilt_deg": 6.110695174419145,
+  "median_tilt_deg": 5.009563409922703,
+  "pos81_range_m": 57.04227865611226
+ },
+ {
+  "path": "turn10",
+  "source_clip": "C_turn_10_fixed_0",
+  "f95_hz": 0.0625,
+  "window_s": 0.37,
+  "window_samples": 371,
+  "n_masked": 2,
+  "peak_tilt_deg": 12.276792422037154,
+  "median_tilt_deg": 10.117806959734855,
+  "pos81_range_m": 28.56489020318229
+ },
+ {
+  "path": "turn20",
+  "source_clip": "C_turn_20_fixed_0",
+  "f95_hz": 0.125,
+  "window_s": 0.37,
+  "window_samples": 371,
+  "n_masked": 2,
+  "peak_tilt_deg": 24.734004383124514,
+  "median_tilt_deg": 20.84296103027808,
+  "pos81_range_m": 13.406150933628469
+ }
+]

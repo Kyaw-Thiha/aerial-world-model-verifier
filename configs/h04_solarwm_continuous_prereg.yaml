@@ -1,0 +1,211 @@
+# H04 — Pre-registration: SolarWM-5B continuous-attitude campaign
+#
+# Committed BEFORE any H04 clip is generated or scored, and before the SolarWM pose
+# convention is re-verified.  Every population, statistic, threshold, control and success
+# criterion below is fixed.  A change after an outcome is an amendment commit with a stated
+# reason and is labelled exploratory in reports/H04_solarwm_continuous_attitude.md.
+prereg_version: 1
+date: 2026-11-22
+tag: "[H4]"
+track: H4
+branch: track-h3-reader-validity
+handoff: "20 (Part 2: SolarWM continuous-attitude campaign)"
+depends_on:
+  - "H02 (branch track-h2-generator-coverage, commit 97fda68): the SolarWM-5B app, the pose
+     route, the feed convention and the ramps that passed the roll gate"
+  - "D02/E04/E05 for the frozen gain, coherence and median tiers and the window rule"
+
+# ------------------------------------------------------------------ model and route
+model:
+  checkpoint: "junchaoh-cs/SolarWM-Wan2.2-5B, SolarWM-5B-sgf-stage2-81f on SolarWM-5B-base"
+  licence: "Apache-2.0 (code and checkpoint), gated and already accepted by the user"
+  route: "Stage2 four-step SGF, 81 frames at 480x864, one A100-80GB, image and prompt as H02"
+  pose_input: "absolute OpenCV c2w [81,4,4] + per-frame intrinsics; the model rebases to the
+               first frame, so only first-frame-relative attitude changes are controllable"
+  prompt: "the same fixed aerial-scene description as H02 for every sample"
+  convention_gate: >
+    Before the campaign, two pure-roll probes (linear 0 -> +20 and 0 -> -20 across 81 frames)
+    are generated and read.  The gate passes if the +20 probe's last-10-frame depicted tilt
+    exceeds its first-10 by at least 10 deg and the -20 probe's lean has the opposite sign.
+    If the gate fails, no campaign is run and the report says so with the numbers.
+
+# ------------------------------------------------------------------ the commanded paths
+paths:
+  design: >
+    A path is a closed-form horizontal (and, for the climb/accelerate variants, vertical)
+    trajectory p(t) on a 1 kHz grid over the 5.0625 s clip (81 frames at 16 fps), with the
+    attitude-active window in the middle 3.0 s and a 0.5 s raised-cosine ramp-in/out on the
+    lateral/vertical acceleration profile, so the commanded attitude starts and ends at the
+    drag pitch and no lateral lean.  The commanded camera attitude is the flatness attitude of
+    p(t) with k_d = 0.295, z_B = unit(a + g e3 + k_d v), combined with the path yaw and the
+    camera mount camera_to_body_pitched(0).  The peak tilt is the maximum over the active
+    window; the lateral/vertical amplitude is solved numerically so it equals the requested
+    peak within 0.2 deg.
+  list:
+    - arc_5          # constant turn rate (banked arc), held bank
+    - arc_10
+    - arc_20
+    - s_5            # lateral sinusoid, one period over 3 s (S-turn)
+    - s_10
+    - s_20
+    - slalom_5       # lateral sinusoid, two periods over 3 s (oscillating slalom)
+    - slalom_10
+    - slalom_20
+    - fig8_5         # Lissajous figure-eight, x = sin(2*pi*t/T), y = sin(4*pi*t/T)/2
+    - fig8_10
+    - fig8_20
+    - arc_8
+    - s_8
+    - slalom_8
+    - fig8_8
+    - climb_turn_10  # constant turn + vertical acceleration; pitch-dominated attitude
+    - climb_turn_20
+    - accel_brake_10 # straight-line speed change; pitch-only attitude change
+    - accel_brake_20
+    - s_12
+    - slalom_12
+  count: 22
+  verification: >
+    Each path is checked before generation: max tilt equals the requested peak within 0.2 deg,
+    the attitude changes continuously (no step in the commanded roll/pitch larger than 0.5 deg
+    per frame), the peak thrust-to-weight is below 2.0 g, and the maximum first-frame-relative
+    translation is at most 16 m (the released camera guard is 20 m; H02's amendment 1 scaled to
+    16 m).  Paths failing a check are re-parameterised before any clip is generated and the
+    change is recorded in the run manifest, not in this file.
+
+# ------------------------------------------------------------------ arms, draws, scenes
+arms:
+  A_flatness: "the commanded flatness attitude (physically consistent: the generator's best case)"
+  B_level: "same translations and yaw, camera held level (zero roll and pitch)"
+  C_mirrored_roll: "arm A with the roll angle negated (the mirror defect)"
+generations:
+  per_cell: 3
+  meaning: >
+    Three independent sampling draws per (path, arm).  The release exposes a single
+    noise_seed, so these are validation draws, not a seed knob; sample variance is reported,
+    and best-of-3 is an oracle rule over the draws.
+first_frames:
+  n: 6
+  list:
+    - {id: F1, scene: anwm_city, source: "ANWM release trajectory 1, smallest recorded frame"}
+    - {id: F2, scene: anwm_city, source: "ANWM release trajectory 2, smallest recorded frame"}
+    - {id: F3, scene: anwm_city, source: "ANWM release trajectory 3, smallest recorded frame"}
+    - {id: F4, scene: urban_checker, source: "Track I i02_dev_004 first frame (awmv-i-data)"}
+    - {id: F5, scene: industrial, source: "Track I i02_dev_000 first frame (awmv-i-data)"}
+    - {id: F6, scene: forest_ridge, source: "Track I i02_dev_002 first frame (awmv-i-data)"}
+  assignment: "path index i (list order, 0-based) uses first frame F(1 + (i mod 6)); fixed here"
+  padding: "640x360 or 512x512 sources resized to 480x480 and edge-padded to 864x480, as H02"
+scene_swap_secondary:
+  paths: [arc_10, s_10, slalom_10, fig8_10]
+  first_frames: [F4, F5, F6]
+  arms: [A_flatness, B_level, C_mirrored_roll]
+  generations: 1
+  n_clips: 36
+  label: exploratory
+
+clip_counts:
+  main: "22 paths x 3 arms x 3 draws = 198"
+  scene_swap: 36
+  convention_gate: 2
+  total: 236
+
+# ------------------------------------------------------------------ scoring
+scoring:
+  reader: "GeoCalib 1dedb29, 224 px square pinhole, f = 112 px, all 81 frames (no stride)"
+  depicted_lean: "depicted_lean_from_gravity(up_cam, camera_to_body_pitched(0))"
+  required_side: >
+    lean_req/vel_req from the commanded path differentiated on the 1 kHz grid with a
+    Savitzky-Golay filter and sampled at the 81 frame times.  This is the commanded path, not
+    a path recovered from pixels: the generator is granted its best case.
+  window_rule:
+    primary: "0.5 / f95 of the commanded acceleration energy, per path, computed as
+              experiments/e_window_rule.py does (0.10 s SG differentiation, rFFT of the
+              mean-removed acceleration energy, floor 8 samples, abstain if the window exceeds
+              half the clip)"
+    secondary: "the frozen 0.37 s SG window"
+  tiers:
+    primary: "coherence tier (configs/coherence_frozen.yaml, correlation and sign, lag from the
+              gain fit; flagged if either score exceeds its frozen threshold)"
+    secondary:
+      - "gain tier: frozen R2_axis_gains band (configs/gain_frozen.yaml, threshold 2.1922)"
+      - "median tier: |depicted tilt - required tilt| median > 6.46 deg"
+  abstention: "configs/gain_frozen.yaml abstention rules, in their frozen order; every rate is
+               reported as k/n with the abstention reasons"
+  testable: "not abstained under the frozen rules"
+  accept: "testable AND not flagged by the coherence tier"
+  transfer_caveat: >
+    The R2 band and the coherence thresholds were calibrated on real TII clips whose required
+    side was differentiated from mocap.  Here the required side is analytic.  The coherence
+    tier is scale-free and therefore expected to transfer; the gain band is not, and its flag
+    rate is reported beside the raw G1/gx/gy point estimates and marked as a calibration
+    transfer, never as a standalone detector.
+
+# ------------------------------------------------------------------ endpoints and criteria
+endpoints:
+  q1_arm_A_acceptance:
+    statistic: "accepted / all arm-A clips, with testable k/n beside it and the abstention reasons"
+    success_S1: >
+      at least 30 % of the testable arm-A clips are accepted AND at least 10 clips are
+      accepted in absolute terms.  If fewer than 10 arm-A clips are testable, S1 is
+      unassessable and is reported as such, not as a failure.
+  q2_rejection_B_C:
+    statistic: "coherence-tier flag rate for arms B and C, on their testable clips"
+    success_S2: "arm B flag rate >= 80 % (k/n) and arm C flag rate >= 80 % (k/n)"
+    expected_direction: "B has no depicted lean to correlate; C's roll-axis sign is inverted"
+  q3_depicted_tilt_when_accepted:
+    statistic: "clip-median depicted tilt and its ratio to the required tilt, for accepted
+                arm-A clips; reported per path family and peak"
+    no_criterion: true
+  q4_sampling_and_best_of_3:
+    statistic: >
+      per (path, arm): seed spread (sd and range of the clip-median residual over the 3 draws),
+      and the oracle best-of-3 reduction r_1 - r_3 (median over paths), plus the number of
+      paths whose class (accept/reject by the coherence tier) changes.
+    success_S3: "median reduction >= 2.0 deg AND >= 20 % of paths change from flagged to accepted"
+    note: "carried over from H01/H02 unchanged; the three draws are validation draws"
+  q5_scene:
+    statistic: "acceptance and flag rates per first-frame scene type, main grid and scene swap"
+    no_criterion: true
+controls:
+  yaw_control: >
+    Arm A, generation 0, all 22 paths: every frame warped by the camera-frame rotation about
+    world up of +20 deg (src.negatives.edits.condition_maps('yaw_control'), pinhole f = 240 px,
+    commanded poses), then scored with the same statistic.  A world-yaw rotation leaves the
+    tilt unchanged, so its flag rate must sit beside arm A's; a large divergence is an
+    estimator or convention artefact and is reported as one.  Expected: within 10 percentage
+    points of arm A.
+  null_same_arm: >
+    Arm A draws paired (0-1, 1-2, 0-2): generation i's depicted lean is scored against
+    generation j's depicted lean in place of the required series (lag 0).  This is a
+    noise-only null with no commanded path.  Expected: flag rate no more than 10 points above
+    arm A's.
+  level_arm: "arm B is the no-attitude control and its acceptance is reported, not only its flag rate"
+
+# ------------------------------------------------------------------ statistics and spend
+statistics:
+  intervals: "path-clustered bootstrap, 5,000 replicates, numpy.random.default_rng(1); with 22
+              clusters descriptive, marked daggers"
+  denominators: "k/n beside every rate; abstentions counted, never silently dropped"
+  no_tuning: "no threshold, path, scene assignment or statistic changes after an outcome"
+
+cost:
+  measured_basis: "H02: 27.8 s/clip on one A100-80GB including model load and decode, ~36 GB peak"
+  estimate_clips: 236
+  estimate_gpu_hours: 1.9
+  estimate_usd_generation: 4.7
+  estimate_usd_reader: "236 clips x 81 frames at ~5 frames/s on an A10 -> 1.1 GPU-hours -> 1.2 USD"
+  estimate_usd_total: 6.0
+  post_estimate_threshold_usd: 20
+  ceiling_usd: 60
+
+# ------------------------------------------------------------------ gated extension (estimate only)
+gated_extension:
+  checkpoints: [SolarWM-Wan2.2-14B, SolarWM-LTX-2.5-22B, SolarWM-H3-33B]
+  action: >
+    Estimate VRAM, seconds per clip and the 200-clip cost from published parameter counts,
+    weight sizes and the measured 5B rate.  Do not run them.
+  pilot_condition: >
+    Run a 20-clip pilot of the 14B only if (a) its 200-clip estimate is at most 25 USD and
+    (b) arm A shows non-zero acceptance in the 5B campaign.  Both conditions are checked
+    after the 5B campaign is scored; the pilot is not run otherwise.
+  pilot_design: "5 paths (one per family, peak 10) x 3 arms x 1 draw + 5 level probes = 20"

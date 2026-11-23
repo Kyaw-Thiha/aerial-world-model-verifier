@@ -39,6 +39,8 @@ results; none of them runs an experiment.
 | J02 | synthetic noise budget | J | `track-j-reader` | `results/j02_noise_budget/` | J02 |
 | J03 | per-clip calibration (1a) | J | `track-j-reader` | `results/j03_perclip/` | J03 |
 | J04 | learned reader confidence (1c) | J | `track-j-reader` | `results/j04_confidence/` | J04 |
+| E14 | reader validity on generated frames | H3 | `track-h3-reader-validity` | `results/h03/`, `results/h03_recompute/` | H03 |
+| E15 | SolarWM continuous-attitude campaign | H4 | `track-h3-reader-validity` | `results/h04/` | H04 |
 
 R2 prefixes are `track-a/`, `track-a/a2/`, `track-b/`, `track-c/`, `track-d/`, `track-e/`, `track-h/`, `track-h2/`
 (counts and bytes: `report/data/r2_counts.json`, measured 2026-11-15; verified read-only again
@@ -410,6 +412,49 @@ honestly and no confirmatory evaluation can run.
 * **Regenerate**: `PYTHONPATH=. python experiments/j04_learned_confidence.py` (~25 s, CPU).
 * **Status**: selected by rule 3's literal reading; the premise is weak (88 % of the tail is in
   clips the frozen gate drops). Stage 1b was not selected by any rule and was not run.
+
+## E14 — reader validity on generated frames
+
+* **Owning track / branch**: H3, `track-h3-reader-validity` (off `main` `41d1dad`); depends
+  read-only on H01 (`track-h-generator-pilot`) and H02 (`track-h2-generator-coverage`) for the
+  generated clips and the reader rows.
+* **What it is**: is the depicted-attitude reader (GeoCalib on 224 px pinhole, f = 112 px) valid
+  on generated frames? 150 frames (ANWM, LingBot NF4/bf16, SolarWM) plus 60 controls with truth
+  (30 Track I simulated pinhole frames, 30 TII fisheye frames), read by the reader, by
+  Perspective Fields (independent learned) and by a non-learned horizon/vanishing-point
+  estimator; roll is the metric (focal-invariant).
+* **Configs**: `configs/h03_reader_validity_prereg.yaml` (commit `c629016`), amendment 1
+  `configs/h03_reader_validity_prereg_amend1.yaml` (`141ac4d`), both committed before any
+  estimator output existed.
+* **Results**: `results/h03/frames_manifest.csv`, `results/h03/frames_scored.csv`,
+  `results/h03/classical.jsonl`, `results/h03/readers/` (Modal rows + rotation sign probe),
+  `results/h03/analysis.json`, `results/h03/overlays/`, `results/h03_recompute/`.
+* **Report**: `reports/H03_reader_on_generated_frames.md`.
+* **Caveat**: the pre-registered "every independent estimator must agree" rule fails on all
+  four sources, carried by the classical estimator, which is not competent on this imagery; the
+  verdict and the attribution are both in the report.
+
+## E15 — SolarWM continuous-attitude campaign
+
+* **Owning track / branch**: H4, `track-h3-reader-validity`; the app is a copy of H02's
+  `remote/h02_solarwm.py` with a new app name (`awmv-h3-solarwm`), volume (`awmv-h3-results`)
+  and input directory.
+* **What it is**: 22 paths whose commanded attitude changes continuously over 3 s (arc, S-turn,
+  slalom, figure-eight at 5/10/20 deg bank, plus climb-turn, accelerate-brake and 8/12 deg
+  variants), each generated with the flatness attitude (arm A), a level camera (arm B) and a
+  mirrored roll (arm C), three draws per cell, six first frames; 234 clips. Scoring: the frozen
+  gain, coherence and median tiers plus the frozen abstention rules, against the *commanded*
+  path's required lean; yaw control and a same-arm null beside every rate.
+* **Configs**: `configs/h04_solarwm_continuous_prereg.yaml` (commit `c629016`), amendments 1
+  (`141ac4d`, path realisation and two substitutions) and 2 (`dfd425b`, the forward-speed
+  modulation forced by the rank deficiency).
+* **Results**: `results/h04/paths/` (verified paths + required side at two windows),
+  `results/h04/depicted_main/`, `results/h04/scored_main.json`.
+* **Report**: `reports/H04_solarwm_continuous_attitude.md`.
+* **Caveat**: the required side is the commanded path, not a path recovered from pixels: the
+  generator is granted its best case. The R2 gain band was calibrated with a mocap required
+  side and is reported as a calibration transfer, not as a standalone detector; the coherence
+  tier is the primary.
 
 ## Track I — simulated labelled flights (in progress, branch `track-i-simset`)
 

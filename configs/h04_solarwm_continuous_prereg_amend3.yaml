@@ -1,0 +1,69 @@
+# H04 — Amendment 3: the 14B pilot, its real release, and the cost gate
+
+Committed on 2026-11-22 **before the 14B weights were downloaded and before any 14B clip was
+generated**.  The user directed this pilot after the 5B campaign was scored ("run the 14B
+pilot; both pre-registered conditions hold; estimate first, within your remaining ceiling").
+The campaign's remaining allowance under the US$60 ceiling is about US$40.
+
+## What the pre-registration assumed, and what the release actually is
+
+The pre-registration estimated the 14B at "2.8x the 5B rate, ~90 s/clip, ~US$12.50 per 200
+clips", assuming a like-for-like Stage2 SGF route.  Inspecting the release before download
+shows that this assumption is wrong and must not be presented as a like-for-like comparison:
+
+| | 5B campaign (H02/H04) | 14B pilot (this amendment) |
+| --- | --- | --- |
+| checkpoint | `SolarWM-5B-sgf-stage2-81f` on `SolarWM-5B-base` | `SolarWM-14B-bid-stage0p5-81f` on `SolarWM-14B-base-high` |
+| stage | Stage2 self-forcing, 4 steps, causal | **stage0.5 flow-matching, 50 UniPC steps, bidirectional** |
+| base family | Wan2.2 **TI2V-5B** | Wan2.2 **I2V-A14B** (two 14B experts) |
+| resolution | 480x864 | 480x**832** (the release config) |
+| download | ~61 GB | **183 GB** (114.3 GB consolidated stage0.5 checkpoint + ~69 GB base/T5) |
+
+Consequences, stated rather than resolved: the 14B pilot measures **a different model at a
+different inference stage**, so its acceptance rate is not a scaling point on the 5B curve.
+It is reported as a separate, weaker-evidence result with those differences in the table above.
+The 5B campaign is unchanged.
+
+## Population (35 clips)
+
+* **20 arm-A continuous-attitude clips**: arm A, draw 0, of the 20 paths with a bank profile
+  (all 22 paths except the two pitch-only `accel_brake` paths, which abstain under the frozen
+  two-axis rule).  Chosen by a fixed rule, not by any 5B outcome.
+* **15 held-bank clips from H02's 75-clip grid**: the `flatness` arm of the three turn paths
+  (`turn5`, `turn10`, `turn20`) on H02's five first frames.  These are the clips that H02
+  found infeasible; the pilot asks whether the larger model changes that.
+* No mirrored or level arm in the pilot (cost); the 5B campaign already answers the arm
+  contrast, and the pilot's question is whether arm A acceptance rises with model size.
+
+## Scoring and controls
+
+Identical to the 5B campaign: frozen reader on every frame, the commanded path's required lean
+at the `0.5/f95` window, the frozen coherence tier (primary), the R2 band and median residual
+beside it, and the frozen abstention rules.  The **yaw control** is run on the 20 arm-A pilot
+clips (+20 deg world-yaw warp, same statistic).  The 15 held-bank clips need the required side
+rebuilt from H02's designed paths (the ANWM specs, the same cubic-spline resampling and
+flatness expression H02 used) at the dense rate; the construction is checked against H02's
+stored point required tilt before any 14B clip is scored.
+
+## Cost gate and stopping rule
+
+The pre-registration's condition was "estimate at most US$25".  The release inspection above
+puts the honest estimate at **US$25-50 for 35 clips** (15-25 min/clip at 50 bidirectional
+steps on one 80 GB GPU; 183 GB download), i.e. the pre-registered condition is **not clearly
+met**.
+
+In the light of the user's explicit instruction and the US$40 remaining allowance, the gate is
+revised to: **measure first, then spend at most the remaining allowance.**  A three-clip timing
+test (two arm-A, one held-bank) measures seconds per clip and peak VRAM; the extrapolated
+35-clip cost is posted before the pilot run.  If it exceeds the remaining allowance, the pilot
+shrinks to the 20 arm-A clips, and if even that exceeds it, only the measured clips are
+reported with their denominator and the rest is stated as not run.  The deviation from the
+US$25 condition is recorded here and in `docs/decisions.md`; nothing else changes.
+
+## What the pilot can and cannot claim
+
+* **Can**: whether this larger checkpoint, on its released stage, produces clips the frozen
+  coherence tier accepts on continuously changing commands, and whether it changes H02's
+  held-bank verdict.
+* **Cannot**: a scaling comparison with the 5B (different stage, steps, resolution and base
+  family); anything about LTX-22B or H3-33B; anything about the pixel-path verdict.

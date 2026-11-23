@@ -1,0 +1,41 @@
+# H03 — Amendment 1: operational definition of the classical estimator
+
+Committed on 2026-11-22 **before** any reader-versus-independent comparison and before any
+control error was computed.  No threshold, population or success criterion changes; this
+amendment only fixes the operational details that the pre-registration left to the
+implementation, so that they cannot be chosen after seeing an outcome.
+
+## What changes
+
+1. **Sky-line reading.** The pre-registration said "an HSV+intensity sky mask ... refined by a
+   robust line fit".  Implemented as: blue-dominant (OpenCV hue 90-140, S >= 25, V >= 55) or
+   bright low-saturation (V >= 195, S <= 45) pixels; morphological open 3x3 then close 7x7;
+   keep only connected components that reach the top four rows of the frame; boundary = the
+   lowest sky pixel of each column; least-squares line with five reweighted refits; inliers
+   within 2 px.  Support = inliers / image width.  Abstains below 25 inliers or a boundary
+   span under 60 % of the width.
+2. **Line-family reading.** LSD (refine standard), segments of at least 40 px; orientations
+   folded modulo 90 deg; circular mean and concentration.  Abstains below 12 lines, below a
+   concentration of 0.60, or when the interquartile spread of the folded orientations exceeds
+   8 deg (added because diagonal roof and road edges do not encode the horizon and must not
+   be averaged into it).  Support = concentration x min(1, n_lines / 30).
+3. **Combination.** Both supports lie in [0, 1]; the larger wins, and both readings are
+   stored per frame.  A frame with neither reading abstains.
+4. **Sign.** Verified before use on synthetic pinhole renders with a known body roll and on a
+   +10/-10 degree image-rotation probe on real, simulated and generated frames.  For the
+   reader the probe gives d(roll)/d(image rotation) = -0.96; for Perspective Fields it is
+   +0.95, so the Perspective Fields roll enters the comparison with a sign flip.
+5. **Perspective Fields reduction.** The primary reading is the parameter head's
+   `pred_roll`.  The per-pixel up field is also reduced to a circular mean for the record;
+   the pre-registered "agree within 5 deg or flag the frame" check is reported, not enforced.
+
+## Why it is not a result-dependent change
+
+The estimator existed and was unit-tested (synthetic renders, `tests/test_h03_classical.py`)
+before this amendment; what is written down here is what the committed code does.  No control
+error, disagreement or generator comparison had been computed when it was committed.
+
+## Consequence for the report
+
+None of the pre-registered statistics changes.  The report states the operational details
+above and marks any analysis whose definition differs from the original text as exploratory.

@@ -1,0 +1,63 @@
+# H04 — Amendment 1: path realisation, "peak" semantics, and two path substitutions
+
+Committed on 2026-11-22 **before any H04 clip was generated or scored**.  It fixes the
+operational meaning of the path design after the pre-generation verification run
+(`experiments/h04_paths.py`) showed that two of the 22 paths as literally written cannot be
+realised inside the released constraints.  No statistic, arm, generation count, scene
+assignment, threshold, control or success criterion changes.
+
+## 1. What "peak" means
+
+The requested peak is the peak **bank** (commanded roll magnitude) of the flatness attitude,
+for every family except `accel_brake`, whose requested peak is the peak **extra pitch** from
+the speed change.  The drag pitch at 2.8 m/s is 4.8 deg, so a 5 deg bank path peaks at about
+6.9 deg of total tilt.  Both numbers are recorded per path.
+
+## 2. The envelope and the profiles
+
+The ramp-in/out is a quintic smoothstep (value, first and second derivatives vanish at both
+ends), not a raised cosine: the required lean is a second derivative of position, and a
+raised cosine leaves a jump in its second derivative at the window edges that the
+Savitzky-Golay differentiation turns into attitude spikes.
+
+The bank profiles over the 3.0 s active window are:
+
+* `arc`: 0.5 cycle, `phi = P sin(pi x / 3)`
+* `s`: 1 cycle, `phi = P sin(2 pi x / 3)`
+* `slalom`: 1.5 cycles, `phi = P sin(3 pi x / 3)`
+* `fig8`: 1 cycle with a 0.6 : 1 lobe ratio, `phi = P sin(2 pi x / 3) (0.6 + 0.4 cos(2 pi x / 3))`
+  normalised to peak P
+* `climb_turn`: the `arc` bank plus a vertical bell whose peak vertical acceleration is
+  0.5 g tan(P/2)
+* `accel_brake`: speed `v = V0 (1 + m (sin^2(pi x / 3) - 0.5))` with `m` solved for peak pitch P
+
+The amplitude is solved by bisection so the achieved peak equals the requested peak within
+0.2 deg, with the drag and the vertical coupling included.
+
+## 3. Two substitutions
+
+* **`accel_brake_20` -> `accel_brake_12`.**  At 2.8 m/s, a 20 deg pitch change in a 1.5 s
+  half-window needs about 5.4 m/s of speed change, i.e. the flight would have to reverse; the
+  realised path needs 8.3 deg of attitude change per frame at 16 fps, over the design
+  ceiling.  12 deg is the largest value under the ceiling (3.85 deg/frame) and is kept.
+* **`fig8` is a figure-eight-like asymmetric S, not a closed eight.**  A closed eight at 20 deg
+  bank needs a turn radius of about 2.2 m at 2.8 m/s, so one loop is about 14 m of arc; the
+  clip covers 14 m in total.  The realised path keeps the two-lobe, asymmetric heading
+  signature and is named `fig8`, and the report states what it is.
+
+The path list is otherwise unchanged: 22 paths, `arc/s/slalom/fig8` at 5/10/20 deg, `arc/s/
+slalom/fig8` at 8 deg, `climb_turn` at 10/20, `accel_brake` at 10/12, `s/slalom` at 12.
+
+## 4. Design checks (all 22 pass)
+
+Achieved peak within 0.2 deg of the request; peak thrust-to-weight below 2.0 g (maximum 1.06);
+maximum first-frame-relative translation at most 16 m (maximum 14.7 m); maximum commanded
+attitude change at most 4.6 deg per frame at 16 fps (maximum 4.31, `slalom_20`).  The
+per-path numbers are in `results/h04/paths/paths_summary.json`.
+
+## 5. Pose input
+
+The commanded camera pose is `R_bw(t) @ camera_to_body_pitched(0)` with the translation
+`p(t)`; it needs no translation scaling because every path stays under 16 m.  Rotations are
+identical in the pose input and in the required lean; the two arms that are not physically
+consistent (`level`, `mirrored_roll`) differ only in the camera attitude.

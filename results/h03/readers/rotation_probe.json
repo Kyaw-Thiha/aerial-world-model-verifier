@@ -1,0 +1,74 @@
+[
+ {
+  "frame_id": "real_control/flight-01a-ellipse/000",
+  "rotation_deg": -10.0,
+  "reader_roll_deg": 11.322835647176964,
+  "pf_roll_deg": -4.942646503448486
+ },
+ {
+  "frame_id": "real_control/flight-01a-ellipse/000",
+  "rotation_deg": 0.0,
+  "reader_roll_deg": 0.012947690452557553,
+  "pf_roll_deg": 0.8374964594841003
+ },
+ {
+  "frame_id": "real_control/flight-01a-ellipse/000",
+  "rotation_deg": 10.0,
+  "reader_roll_deg": -9.632564623585534,
+  "pf_roll_deg": 8.158942222595215
+ },
+ {
+  "frame_id": "sim_control/i02_dev_000/000",
+  "rotation_deg": -10.0,
+  "reader_roll_deg": 9.397552206833554,
+  "pf_roll_deg": -7.346212387084961
+ },
+ {
+  "frame_id": "sim_control/i02_dev_000/000",
+  "rotation_deg": 0.0,
+  "reader_roll_deg": -0.36988262679149886,
+  "pf_roll_deg": -0.3253578245639801
+ },
+ {
+  "frame_id": "sim_control/i02_dev_000/000",
+  "rotation_deg": 10.0,
+  "reader_roll_deg": -9.274897140248532,
+  "pf_roll_deg": 11.538289070129395
+ },
+ {
+  "frame_id": "anwm/C_accel_brake_20_course_0_s1/000",
+  "rotation_deg": -10.0,
+  "reader_roll_deg": 10.128148115784228,
+  "pf_roll_deg": -10.93437671661377
+ },
+ {
+  "frame_id": "anwm/C_accel_brake_20_course_0_s1/000",
+  "rotation_deg": 0.0,
+  "reader_roll_deg": 0.9314798159848073,
+  "pf_roll_deg": -0.7445793747901917
+ },
+ {
+  "frame_id": "anwm/C_accel_brake_20_course_0_s1/000",
+  "rotation_deg": 10.0,
+  "reader_roll_deg": -8.891050673008936,
+  "pf_roll_deg": 11.324624061584473
+ },
+ {
+  "frame_id": "solarwm/grid_302OLP89E75X7MFPRR58QG7CJPZCA7_processed_015_slalom10_flatness/000",
+  "rotation_deg": -10.0,
+  "reader_roll_deg": 7.519705646680103,
+  "pf_roll_deg": -7.386772632598877
+ },
+ {
+  "frame_id": "solarwm/grid_302OLP89E75X7MFPRR58QG7CJPZCA7_processed_015_slalom10_flatness/000",
+  "rotation_deg": 0.0,
+  "reader_roll_deg": -1.4954658119526072,
+  "pf_roll_deg": 4.340963363647461
+ },
+ {
+  "frame_id": "solarwm/grid_302OLP89E75X7MFPRR58QG7CJPZCA7_processed_015_slalom10_flatness/000",
+  "rotation_deg": 10.0,
+  "reader_roll_deg": -12.320325132236947,
+  "pf_roll_deg": 15.019549369812012
+ }
+]

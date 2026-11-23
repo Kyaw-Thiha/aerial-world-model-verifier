@@ -115,6 +115,18 @@ Track G/G2 `GNN_`, Track H/H2 `HNN_`, Track J `JNN_`.
 | --- | --- | --- |
 | `H02_generator_coverage.md` | Generator coverage with path control: SolarWM, LingBot full precision, inventory | current; SolarWM follows changing attitude (ramp probes pass) but not a held bank (1/5 paths by tilt); best-of-3 is below the pre-registered bar; full-precision LingBot still shows no coherent roll |
 
+## Track H3 — reader validity on generated frames (branch `track-h3-reader-validity`, HEAD pending)
+
+| report | title | status |
+| --- | --- | --- |
+| `H03_reader_on_generated_frames.md` | Is the depicted-attitude reader valid on generated frames? | current; the pre-registered rule fails, carried by the non-learned estimator, and the LingBot eye-versus-reader case is resolved in the reader's favour |
+
+## Track H4 — SolarWM continuous-attitude campaign (branch `track-h3-reader-validity`)
+
+| report | title | status |
+| --- | --- | --- |
+| `H04_solarwm_continuous_attitude.md` | SolarWM-5B on continuously changing commanded attitude | current; two amendments before any clip existed (path realisation, and the forward-speed modulation forced by the frozen statistic's rank deficiency) |
+
 ## Track J — reader error anatomy and bias-robust verdicts (branch `track-j-reader`)
 
 | report | title | status |
