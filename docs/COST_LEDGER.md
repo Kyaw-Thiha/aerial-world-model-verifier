@@ -12,7 +12,8 @@ until it merges; this file records Track G3 only. Figures marked **billing** com
 | date | job | GPU | USD | running total | source |
 | --- | --- | --- | --- | --- | --- |
 | 2026-11-22 | engineering probes, dev reader (170 clips, 84,658 frames, stride 1), yaw render (12 clips), yaw reader (12 clips), diagnostics | L40S / A10 / A100 | **5.27** | **5.27** | **billing**: score 4.484, yaw 0.778, diag 0.004 |
-| 2026-11-22 | held-out pass (100 sim clips + 18 real clips), later, once | L40S | ~2.3 (projected) | ~7.6 | projected |
+| 2026-11-23 | batch 2: 30 dev clips scored at stride 1 (28 new + 2 re-scored) | L40S | **0.64** | **5.90** | **billing**: score apps now 5.120, yaw 0.778, diag 0.004 |
+| 2026-11-23 | held-out pass (100 sim clips + 18 real clips), later, once | L40S | ~2.3 (projected) | ~8.2 | projected |
 
 **No overrun occurred.** An earlier version of this file estimated the first batch at 9.4 USD from
 app wall time and called it a breach of the 8.00 ceiling. That was wrong: the containers were
