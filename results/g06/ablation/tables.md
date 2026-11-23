@@ -116,7 +116,7 @@
 
 | arm | family | defect | fraction | k/n | rate | IoU |
 | --- | --- | --- | --- | --- | --- | --- |
-| coh12_p1 | urban_checker | partial | 0.1 | 0/0 | — | — |
+| coh12_p1 | urban_checker | partial | 0.1 | 1/1 (100.0 %) | 1.000 | 0.73 |
 | coh12_p1 | urban_checker | partial | 0.25 | 0/0 | — | — |
 | coh12_p1 | urban_checker | partial | 0.5 | 1/1 (100.0 %) | 1.000 | 0.56 |
 | coh12_p1 | forest_ridge | partial | 0.1 | 0/1 (0.0 %) | 0.000 | 0.00 |
@@ -125,7 +125,7 @@
 | coh12_p1 | industrial | partial | 0.1 | 0/0 | — | — |
 | coh12_p1 | industrial | partial | 0.25 | 0/0 | — | — |
 | coh12_p1 | industrial | partial | 0.5 | 0/0 | — | — |
-| coh12_p2 | urban_checker | partial | 0.1 | 0/0 | — | — |
+| coh12_p2 | urban_checker | partial | 0.1 | 1/1 (100.0 %) | 1.000 | 0.73 |
 | coh12_p2 | urban_checker | partial | 0.25 | 0/0 | — | — |
 | coh12_p2 | urban_checker | partial | 0.5 | 1/1 (100.0 %) | 1.000 | 0.57 |
 | coh12_p2 | forest_ridge | partial | 0.1 | 0/1 (0.0 %) | 0.000 | 0.00 |
@@ -134,7 +134,7 @@
 | coh12_p2 | industrial | partial | 0.1 | 0/0 | — | — |
 | coh12_p2 | industrial | partial | 0.25 | 0/0 | — | — |
 | coh12_p2 | industrial | partial | 0.5 | 0/0 | — | — |
-| coh8_p1 | urban_checker | partial | 0.1 | 0/0 | — | — |
+| coh8_p1 | urban_checker | partial | 0.1 | 1/1 (100.0 %) | 1.000 | 0.47 |
 | coh8_p1 | urban_checker | partial | 0.25 | 0/0 | — | — |
 | coh8_p1 | urban_checker | partial | 0.5 | 1/1 (100.0 %) | 1.000 | 0.35 |
 | coh8_p1 | forest_ridge | partial | 0.1 | 0/1 (0.0 %) | 0.000 | 0.00 |
@@ -143,34 +143,34 @@
 | coh8_p1 | industrial | partial | 0.1 | 0/0 | — | — |
 | coh8_p1 | industrial | partial | 0.25 | 0/0 | — | — |
 | coh8_p1 | industrial | partial | 0.5 | 0/0 | — | — |
-| res12_p1 | urban_checker | partial | 0.1 | 0/2 (0.0 %) | 0.000 | 0.00 |
+| res12_p1 | urban_checker | partial | 0.1 | 1/3 (33.3 %) | 0.333 | 0.00 |
 | res12_p1 | urban_checker | partial | 0.25 | 0/1 (0.0 %) | 0.000 | 0.00 |
 | res12_p1 | urban_checker | partial | 0.5 | 1/2 (50.0 %) | 0.500 | 0.13 |
 | res12_p1 | forest_ridge | partial | 0.1 | 1/2 (50.0 %) | 0.500 | 0.05 |
 | res12_p1 | forest_ridge | partial | 0.25 | 0/2 (0.0 %) | 0.000 | 0.00 |
 | res12_p1 | forest_ridge | partial | 0.5 | 0/1 (0.0 %) | 0.000 | 0.00 |
-| res12_p1 | industrial | partial | 0.1 | 0/1 (0.0 %) | 0.000 | 0.00 |
+| res12_p1 | industrial | partial | 0.1 | 0/2 (0.0 %) | 0.000 | 0.00 |
 | res12_p1 | industrial | partial | 0.25 | 0/2 (0.0 %) | 0.000 | 0.00 |
 | res12_p1 | industrial | partial | 0.5 | 0/2 (0.0 %) | 0.000 | 0.00 |
-| res8_p1 | urban_checker | partial | 0.1 | 0/2 (0.0 %) | 0.000 | 0.00 |
+| res8_p1 | urban_checker | partial | 0.1 | 1/3 (33.3 %) | 0.333 | 0.00 |
 | res8_p1 | urban_checker | partial | 0.25 | 0/1 (0.0 %) | 0.000 | 0.00 |
 | res8_p1 | urban_checker | partial | 0.5 | 1/2 (50.0 %) | 0.500 | 0.09 |
 | res8_p1 | forest_ridge | partial | 0.1 | 1/2 (50.0 %) | 0.500 | 0.03 |
 | res8_p1 | forest_ridge | partial | 0.25 | 0/2 (0.0 %) | 0.000 | 0.00 |
 | res8_p1 | forest_ridge | partial | 0.5 | 0/1 (0.0 %) | 0.000 | 0.00 |
-| res8_p1 | industrial | partial | 0.1 | 0/1 (0.0 %) | 0.000 | 0.00 |
+| res8_p1 | industrial | partial | 0.1 | 0/2 (0.0 %) | 0.000 | 0.00 |
 | res8_p1 | industrial | partial | 0.25 | 0/2 (0.0 %) | 0.000 | 0.00 |
 | res8_p1 | industrial | partial | 0.5 | 0/2 (0.0 %) | 0.000 | 0.00 |
-| res8_p2 | urban_checker | partial | 0.1 | 0/2 (0.0 %) | 0.000 | 0.00 |
+| res8_p2 | urban_checker | partial | 0.1 | 1/3 (33.3 %) | 0.333 | 0.00 |
 | res8_p2 | urban_checker | partial | 0.25 | 0/1 (0.0 %) | 0.000 | 0.00 |
 | res8_p2 | urban_checker | partial | 0.5 | 1/2 (50.0 %) | 0.500 | 0.09 |
 | res8_p2 | forest_ridge | partial | 0.1 | 1/2 (50.0 %) | 0.500 | 0.03 |
 | res8_p2 | forest_ridge | partial | 0.25 | 0/2 (0.0 %) | 0.000 | 0.00 |
 | res8_p2 | forest_ridge | partial | 0.5 | 0/1 (0.0 %) | 0.000 | 0.00 |
-| res8_p2 | industrial | partial | 0.1 | 0/1 (0.0 %) | 0.000 | 0.00 |
+| res8_p2 | industrial | partial | 0.1 | 0/2 (0.0 %) | 0.000 | 0.00 |
 | res8_p2 | industrial | partial | 0.25 | 0/2 (0.0 %) | 0.000 | 0.00 |
 | res8_p2 | industrial | partial | 0.5 | 0/2 (0.0 %) | 0.000 | 0.00 |
-| sign12_p1 | urban_checker | partial | 0.1 | 0/0 | — | — |
+| sign12_p1 | urban_checker | partial | 0.1 | 0/1 (0.0 %) | 0.000 | 0.00 |
 | sign12_p1 | urban_checker | partial | 0.25 | 0/0 | — | — |
 | sign12_p1 | urban_checker | partial | 0.5 | 0/1 (0.0 %) | 0.000 | 0.00 |
 | sign12_p1 | forest_ridge | partial | 0.1 | 0/1 (0.0 %) | 0.000 | 0.00 |
@@ -179,13 +179,13 @@
 | sign12_p1 | industrial | partial | 0.1 | 0/0 | — | — |
 | sign12_p1 | industrial | partial | 0.25 | 0/0 | — | — |
 | sign12_p1 | industrial | partial | 0.5 | 0/0 | — | — |
-| median_baseline | urban_checker | partial | 0.1 | 0/2 (0.0 %) | 0.000 | 0.00 |
+| median_baseline | urban_checker | partial | 0.1 | 0/3 (0.0 %) | 0.000 | 0.00 |
 | median_baseline | urban_checker | partial | 0.25 | 0/2 (0.0 %) | 0.000 | 0.00 |
 | median_baseline | urban_checker | partial | 0.5 | 1/2 (50.0 %) | 0.500 | 0.25 |
 | median_baseline | forest_ridge | partial | 0.1 | 2/2 (100.0 %) | 1.000 | 0.10 |
 | median_baseline | forest_ridge | partial | 0.25 | 1/2 (50.0 %) | 0.500 | 0.13 |
 | median_baseline | forest_ridge | partial | 0.5 | 0/2 (0.0 %) | 0.000 | 0.00 |
-| median_baseline | industrial | partial | 0.1 | 0/2 (0.0 %) | 0.000 | 0.00 |
+| median_baseline | industrial | partial | 0.1 | 0/3 (0.0 %) | 0.000 | 0.00 |
 | median_baseline | industrial | partial | 0.25 | 0/2 (0.0 %) | 0.000 | 0.00 |
 | median_baseline | industrial | partial | 0.5 | 1/2 (50.0 %) | 0.500 | 0.25 |
 
@@ -261,18 +261,18 @@
 
 | arm | q | mode | FDP | windows flagged | false seg / min |
 | --- | --- | --- | --- | --- | --- |
-| coh12_p1 | 0.05 | per_clip | 0.000 | 2657 | 0.00 |
-| coh12_p1 | 0.05 | corpus | 0.000 | 2553 | 0.19 |
-| coh12_p1 | 0.1 | per_clip | 0.000 | 3261 | 0.00 |
-| coh12_p1 | 0.1 | corpus | 0.000 | 2737 | 0.48 |
-| coh12_p1 | 0.2 | per_clip | 0.003 | 3785 | 0.48 |
-| coh12_p1 | 0.2 | corpus | 0.004 | 3129 | 0.58 |
+| coh12_p1 | 0.05 | per_clip | 0.000 | 2701 | 0.00 |
+| coh12_p1 | 0.05 | corpus | 0.002 | 2609 | 0.19 |
+| coh12_p1 | 0.1 | per_clip | 0.000 | 3305 | 0.00 |
+| coh12_p1 | 0.1 | corpus | 0.010 | 2825 | 0.48 |
+| coh12_p1 | 0.2 | per_clip | 0.004 | 3837 | 0.48 |
+| coh12_p1 | 0.2 | corpus | 0.016 | 3229 | 0.53 |
 | res8_p1 | 0.05 | per_clip | 0.004 | 18960 | 0.63 |
-| res8_p1 | 0.05 | corpus | 0.008 | 11576 | 1.01 |
+| res8_p1 | 0.05 | corpus | 0.008 | 11568 | 1.01 |
 | res8_p1 | 0.1 | per_clip | 0.010 | 24711 | 1.68 |
-| res8_p1 | 0.1 | corpus | 0.022 | 22322 | 3.32 |
-| res8_p1 | 0.2 | per_clip | 0.027 | 29225 | 2.31 |
-| res8_p1 | 0.2 | corpus | 0.033 | 27047 | 7.60 |
+| res8_p1 | 0.1 | corpus | 0.022 | 22398 | 3.32 |
+| res8_p1 | 0.2 | per_clip | 0.027 | 29245 | 2.31 |
+| res8_p1 | 0.2 | corpus | 0.033 | 27079 | 7.60 |
 
 ## A2 detection
 
@@ -286,14 +286,14 @@
 | coh12_p1 | 0.05 | per_clip | forest_ridge | tilt_removed | 1.0 | 0/9 (0.0 %) | 0.000 |
 | coh12_p1 | 0.05 | per_clip | forest_ridge | tilt_scaled | 1.0 | 0/11 (0.0 %) | 0.000 |
 | coh12_p1 | 0.05 | per_clip | industrial | mirrored_roll | 1.0 | 2/9 (22.2 %) | 0.222 |
-| coh12_p1 | 0.05 | per_clip | industrial | partial | 0.1 | 0/2 (0.0 %) | 0.000 |
+| coh12_p1 | 0.05 | per_clip | industrial | partial | 0.1 | 0/3 (0.0 %) | 0.000 |
 | coh12_p1 | 0.05 | per_clip | industrial | partial | 0.25 | 0/2 (0.0 %) | 0.000 |
 | coh12_p1 | 0.05 | per_clip | industrial | partial | 0.5 | 0/2 (0.0 %) | 0.000 |
 | coh12_p1 | 0.05 | per_clip | industrial | thrust_limit | 1.0 | 0/4 (0.0 %) | 0.000 |
 | coh12_p1 | 0.05 | per_clip | industrial | tilt_removed | 1.0 | 0/9 (0.0 %) | 0.000 |
 | coh12_p1 | 0.05 | per_clip | industrial | tilt_scaled | 1.0 | 0/11 (0.0 %) | 0.000 |
 | coh12_p1 | 0.05 | per_clip | urban_checker | mirrored_roll | 1.0 | 3/9 (33.3 %) | 0.333 |
-| coh12_p1 | 0.05 | per_clip | urban_checker | partial | 0.1 | 0/2 (0.0 %) | 0.000 |
+| coh12_p1 | 0.05 | per_clip | urban_checker | partial | 0.1 | 1/3 (33.3 %) | 0.333 |
 | coh12_p1 | 0.05 | per_clip | urban_checker | partial | 0.25 | 0/2 (0.0 %) | 0.000 |
 | coh12_p1 | 0.05 | per_clip | urban_checker | partial | 0.5 | 1/2 (50.0 %) | 0.500 |
 | coh12_p1 | 0.05 | per_clip | urban_checker | thrust_limit | 1.0 | 0/4 (0.0 %) | 0.000 |
@@ -307,14 +307,14 @@
 | coh12_p1 | 0.05 | corpus | forest_ridge | tilt_removed | 1.0 | 0/9 (0.0 %) | 0.000 |
 | coh12_p1 | 0.05 | corpus | forest_ridge | tilt_scaled | 1.0 | 0/11 (0.0 %) | 0.000 |
 | coh12_p1 | 0.05 | corpus | industrial | mirrored_roll | 1.0 | 2/9 (22.2 %) | 0.222 |
-| coh12_p1 | 0.05 | corpus | industrial | partial | 0.1 | 0/2 (0.0 %) | 0.000 |
+| coh12_p1 | 0.05 | corpus | industrial | partial | 0.1 | 0/3 (0.0 %) | 0.000 |
 | coh12_p1 | 0.05 | corpus | industrial | partial | 0.25 | 0/2 (0.0 %) | 0.000 |
 | coh12_p1 | 0.05 | corpus | industrial | partial | 0.5 | 0/2 (0.0 %) | 0.000 |
 | coh12_p1 | 0.05 | corpus | industrial | thrust_limit | 1.0 | 0/4 (0.0 %) | 0.000 |
 | coh12_p1 | 0.05 | corpus | industrial | tilt_removed | 1.0 | 0/9 (0.0 %) | 0.000 |
 | coh12_p1 | 0.05 | corpus | industrial | tilt_scaled | 1.0 | 0/11 (0.0 %) | 0.000 |
 | coh12_p1 | 0.05 | corpus | urban_checker | mirrored_roll | 1.0 | 3/9 (33.3 %) | 0.333 |
-| coh12_p1 | 0.05 | corpus | urban_checker | partial | 0.1 | 0/2 (0.0 %) | 0.000 |
+| coh12_p1 | 0.05 | corpus | urban_checker | partial | 0.1 | 1/3 (33.3 %) | 0.333 |
 | coh12_p1 | 0.05 | corpus | urban_checker | partial | 0.25 | 0/2 (0.0 %) | 0.000 |
 | coh12_p1 | 0.05 | corpus | urban_checker | partial | 0.5 | 1/2 (50.0 %) | 0.500 |
 | coh12_p1 | 0.05 | corpus | urban_checker | thrust_limit | 1.0 | 0/4 (0.0 %) | 0.000 |
@@ -328,14 +328,14 @@
 | coh12_p1 | 0.1 | per_clip | forest_ridge | tilt_removed | 1.0 | 0/9 (0.0 %) | 0.000 |
 | coh12_p1 | 0.1 | per_clip | forest_ridge | tilt_scaled | 1.0 | 0/11 (0.0 %) | 0.000 |
 | coh12_p1 | 0.1 | per_clip | industrial | mirrored_roll | 1.0 | 2/9 (22.2 %) | 0.222 |
-| coh12_p1 | 0.1 | per_clip | industrial | partial | 0.1 | 0/2 (0.0 %) | 0.000 |
+| coh12_p1 | 0.1 | per_clip | industrial | partial | 0.1 | 0/3 (0.0 %) | 0.000 |
 | coh12_p1 | 0.1 | per_clip | industrial | partial | 0.25 | 0/2 (0.0 %) | 0.000 |
 | coh12_p1 | 0.1 | per_clip | industrial | partial | 0.5 | 0/2 (0.0 %) | 0.000 |
 | coh12_p1 | 0.1 | per_clip | industrial | thrust_limit | 1.0 | 0/4 (0.0 %) | 0.000 |
 | coh12_p1 | 0.1 | per_clip | industrial | tilt_removed | 1.0 | 1/9 (11.1 %) | 0.111 |
 | coh12_p1 | 0.1 | per_clip | industrial | tilt_scaled | 1.0 | 0/11 (0.0 %) | 0.000 |
 | coh12_p1 | 0.1 | per_clip | urban_checker | mirrored_roll | 1.0 | 3/9 (33.3 %) | 0.333 |
-| coh12_p1 | 0.1 | per_clip | urban_checker | partial | 0.1 | 0/2 (0.0 %) | 0.000 |
+| coh12_p1 | 0.1 | per_clip | urban_checker | partial | 0.1 | 1/3 (33.3 %) | 0.333 |
 | coh12_p1 | 0.1 | per_clip | urban_checker | partial | 0.25 | 0/2 (0.0 %) | 0.000 |
 | coh12_p1 | 0.1 | per_clip | urban_checker | partial | 0.5 | 1/2 (50.0 %) | 0.500 |
 | coh12_p1 | 0.1 | per_clip | urban_checker | thrust_limit | 1.0 | 0/4 (0.0 %) | 0.000 |
@@ -349,14 +349,14 @@
 | coh12_p1 | 0.1 | corpus | forest_ridge | tilt_removed | 1.0 | 0/9 (0.0 %) | 0.000 |
 | coh12_p1 | 0.1 | corpus | forest_ridge | tilt_scaled | 1.0 | 0/11 (0.0 %) | 0.000 |
 | coh12_p1 | 0.1 | corpus | industrial | mirrored_roll | 1.0 | 2/9 (22.2 %) | 0.222 |
-| coh12_p1 | 0.1 | corpus | industrial | partial | 0.1 | 0/2 (0.0 %) | 0.000 |
+| coh12_p1 | 0.1 | corpus | industrial | partial | 0.1 | 0/3 (0.0 %) | 0.000 |
 | coh12_p1 | 0.1 | corpus | industrial | partial | 0.25 | 0/2 (0.0 %) | 0.000 |
 | coh12_p1 | 0.1 | corpus | industrial | partial | 0.5 | 0/2 (0.0 %) | 0.000 |
 | coh12_p1 | 0.1 | corpus | industrial | thrust_limit | 1.0 | 0/4 (0.0 %) | 0.000 |
 | coh12_p1 | 0.1 | corpus | industrial | tilt_removed | 1.0 | 0/9 (0.0 %) | 0.000 |
 | coh12_p1 | 0.1 | corpus | industrial | tilt_scaled | 1.0 | 0/11 (0.0 %) | 0.000 |
 | coh12_p1 | 0.1 | corpus | urban_checker | mirrored_roll | 1.0 | 3/9 (33.3 %) | 0.333 |
-| coh12_p1 | 0.1 | corpus | urban_checker | partial | 0.1 | 0/2 (0.0 %) | 0.000 |
+| coh12_p1 | 0.1 | corpus | urban_checker | partial | 0.1 | 1/3 (33.3 %) | 0.333 |
 | coh12_p1 | 0.1 | corpus | urban_checker | partial | 0.25 | 0/2 (0.0 %) | 0.000 |
 | coh12_p1 | 0.1 | corpus | urban_checker | partial | 0.5 | 1/2 (50.0 %) | 0.500 |
 | coh12_p1 | 0.1 | corpus | urban_checker | thrust_limit | 1.0 | 0/4 (0.0 %) | 0.000 |
@@ -370,14 +370,14 @@
 | coh12_p1 | 0.2 | per_clip | forest_ridge | tilt_removed | 1.0 | 0/9 (0.0 %) | 0.000 |
 | coh12_p1 | 0.2 | per_clip | forest_ridge | tilt_scaled | 1.0 | 0/11 (0.0 %) | 0.000 |
 | coh12_p1 | 0.2 | per_clip | industrial | mirrored_roll | 1.0 | 2/9 (22.2 %) | 0.222 |
-| coh12_p1 | 0.2 | per_clip | industrial | partial | 0.1 | 0/2 (0.0 %) | 0.000 |
+| coh12_p1 | 0.2 | per_clip | industrial | partial | 0.1 | 0/3 (0.0 %) | 0.000 |
 | coh12_p1 | 0.2 | per_clip | industrial | partial | 0.25 | 0/2 (0.0 %) | 0.000 |
 | coh12_p1 | 0.2 | per_clip | industrial | partial | 0.5 | 0/2 (0.0 %) | 0.000 |
 | coh12_p1 | 0.2 | per_clip | industrial | thrust_limit | 1.0 | 0/4 (0.0 %) | 0.000 |
 | coh12_p1 | 0.2 | per_clip | industrial | tilt_removed | 1.0 | 2/9 (22.2 %) | 0.222 |
 | coh12_p1 | 0.2 | per_clip | industrial | tilt_scaled | 1.0 | 1/11 (9.1 %) | 0.091 |
 | coh12_p1 | 0.2 | per_clip | urban_checker | mirrored_roll | 1.0 | 3/9 (33.3 %) | 0.333 |
-| coh12_p1 | 0.2 | per_clip | urban_checker | partial | 0.1 | 0/2 (0.0 %) | 0.000 |
+| coh12_p1 | 0.2 | per_clip | urban_checker | partial | 0.1 | 1/3 (33.3 %) | 0.333 |
 | coh12_p1 | 0.2 | per_clip | urban_checker | partial | 0.25 | 0/2 (0.0 %) | 0.000 |
 | coh12_p1 | 0.2 | per_clip | urban_checker | partial | 0.5 | 1/2 (50.0 %) | 0.500 |
 | coh12_p1 | 0.2 | per_clip | urban_checker | thrust_limit | 1.0 | 0/4 (0.0 %) | 0.000 |
@@ -391,14 +391,14 @@
 | coh12_p1 | 0.2 | corpus | forest_ridge | tilt_removed | 1.0 | 0/9 (0.0 %) | 0.000 |
 | coh12_p1 | 0.2 | corpus | forest_ridge | tilt_scaled | 1.0 | 0/11 (0.0 %) | 0.000 |
 | coh12_p1 | 0.2 | corpus | industrial | mirrored_roll | 1.0 | 2/9 (22.2 %) | 0.222 |
-| coh12_p1 | 0.2 | corpus | industrial | partial | 0.1 | 0/2 (0.0 %) | 0.000 |
+| coh12_p1 | 0.2 | corpus | industrial | partial | 0.1 | 0/3 (0.0 %) | 0.000 |
 | coh12_p1 | 0.2 | corpus | industrial | partial | 0.25 | 0/2 (0.0 %) | 0.000 |
 | coh12_p1 | 0.2 | corpus | industrial | partial | 0.5 | 0/2 (0.0 %) | 0.000 |
 | coh12_p1 | 0.2 | corpus | industrial | thrust_limit | 1.0 | 0/4 (0.0 %) | 0.000 |
 | coh12_p1 | 0.2 | corpus | industrial | tilt_removed | 1.0 | 0/9 (0.0 %) | 0.000 |
 | coh12_p1 | 0.2 | corpus | industrial | tilt_scaled | 1.0 | 0/11 (0.0 %) | 0.000 |
 | coh12_p1 | 0.2 | corpus | urban_checker | mirrored_roll | 1.0 | 3/9 (33.3 %) | 0.333 |
-| coh12_p1 | 0.2 | corpus | urban_checker | partial | 0.1 | 0/2 (0.0 %) | 0.000 |
+| coh12_p1 | 0.2 | corpus | urban_checker | partial | 0.1 | 1/3 (33.3 %) | 0.333 |
 | coh12_p1 | 0.2 | corpus | urban_checker | partial | 0.25 | 0/2 (0.0 %) | 0.000 |
 | coh12_p1 | 0.2 | corpus | urban_checker | partial | 0.5 | 1/2 (50.0 %) | 0.500 |
 | coh12_p1 | 0.2 | corpus | urban_checker | thrust_limit | 1.0 | 0/4 (0.0 %) | 0.000 |
@@ -412,14 +412,14 @@
 | res8_p1 | 0.05 | per_clip | forest_ridge | tilt_removed | 1.0 | 4/9 (44.4 %) | 0.444 |
 | res8_p1 | 0.05 | per_clip | forest_ridge | tilt_scaled | 1.0 | 5/11 (45.5 %) | 0.455 |
 | res8_p1 | 0.05 | per_clip | industrial | mirrored_roll | 1.0 | 4/9 (44.4 %) | 0.444 |
-| res8_p1 | 0.05 | per_clip | industrial | partial | 0.1 | 0/2 (0.0 %) | 0.000 |
+| res8_p1 | 0.05 | per_clip | industrial | partial | 0.1 | 0/3 (0.0 %) | 0.000 |
 | res8_p1 | 0.05 | per_clip | industrial | partial | 0.25 | 1/2 (50.0 %) | 0.500 |
 | res8_p1 | 0.05 | per_clip | industrial | partial | 0.5 | 2/2 (100.0 %) | 1.000 |
 | res8_p1 | 0.05 | per_clip | industrial | thrust_limit | 1.0 | 4/4 (100.0 %) | 1.000 |
 | res8_p1 | 0.05 | per_clip | industrial | tilt_removed | 1.0 | 4/9 (44.4 %) | 0.444 |
 | res8_p1 | 0.05 | per_clip | industrial | tilt_scaled | 1.0 | 0/11 (0.0 %) | 0.000 |
 | res8_p1 | 0.05 | per_clip | urban_checker | mirrored_roll | 1.0 | 3/9 (33.3 %) | 0.333 |
-| res8_p1 | 0.05 | per_clip | urban_checker | partial | 0.1 | 0/2 (0.0 %) | 0.000 |
+| res8_p1 | 0.05 | per_clip | urban_checker | partial | 0.1 | 0/3 (0.0 %) | 0.000 |
 | res8_p1 | 0.05 | per_clip | urban_checker | partial | 0.25 | 0/2 (0.0 %) | 0.000 |
 | res8_p1 | 0.05 | per_clip | urban_checker | partial | 0.5 | 1/2 (50.0 %) | 0.500 |
 | res8_p1 | 0.05 | per_clip | urban_checker | thrust_limit | 1.0 | 4/4 (100.0 %) | 1.000 |
@@ -433,14 +433,14 @@
 | res8_p1 | 0.05 | corpus | forest_ridge | tilt_removed | 1.0 | 2/9 (22.2 %) | 0.222 |
 | res8_p1 | 0.05 | corpus | forest_ridge | tilt_scaled | 1.0 | 3/11 (27.3 %) | 0.273 |
 | res8_p1 | 0.05 | corpus | industrial | mirrored_roll | 1.0 | 2/9 (22.2 %) | 0.222 |
-| res8_p1 | 0.05 | corpus | industrial | partial | 0.1 | 0/2 (0.0 %) | 0.000 |
+| res8_p1 | 0.05 | corpus | industrial | partial | 0.1 | 0/3 (0.0 %) | 0.000 |
 | res8_p1 | 0.05 | corpus | industrial | partial | 0.25 | 1/2 (50.0 %) | 0.500 |
 | res8_p1 | 0.05 | corpus | industrial | partial | 0.5 | 1/2 (50.0 %) | 0.500 |
 | res8_p1 | 0.05 | corpus | industrial | thrust_limit | 1.0 | 4/4 (100.0 %) | 1.000 |
 | res8_p1 | 0.05 | corpus | industrial | tilt_removed | 1.0 | 0/9 (0.0 %) | 0.000 |
 | res8_p1 | 0.05 | corpus | industrial | tilt_scaled | 1.0 | 0/11 (0.0 %) | 0.000 |
 | res8_p1 | 0.05 | corpus | urban_checker | mirrored_roll | 1.0 | 3/9 (33.3 %) | 0.333 |
-| res8_p1 | 0.05 | corpus | urban_checker | partial | 0.1 | 0/2 (0.0 %) | 0.000 |
+| res8_p1 | 0.05 | corpus | urban_checker | partial | 0.1 | 1/3 (33.3 %) | 0.333 |
 | res8_p1 | 0.05 | corpus | urban_checker | partial | 0.25 | 0/2 (0.0 %) | 0.000 |
 | res8_p1 | 0.05 | corpus | urban_checker | partial | 0.5 | 2/2 (100.0 %) | 1.000 |
 | res8_p1 | 0.05 | corpus | urban_checker | thrust_limit | 1.0 | 4/4 (100.0 %) | 1.000 |
@@ -454,14 +454,14 @@
 | res8_p1 | 0.1 | per_clip | forest_ridge | tilt_removed | 1.0 | 9/9 (100.0 %) | 1.000 |
 | res8_p1 | 0.1 | per_clip | forest_ridge | tilt_scaled | 1.0 | 6/11 (54.5 %) | 0.545 |
 | res8_p1 | 0.1 | per_clip | industrial | mirrored_roll | 1.0 | 4/9 (44.4 %) | 0.444 |
-| res8_p1 | 0.1 | per_clip | industrial | partial | 0.1 | 0/2 (0.0 %) | 0.000 |
+| res8_p1 | 0.1 | per_clip | industrial | partial | 0.1 | 0/3 (0.0 %) | 0.000 |
 | res8_p1 | 0.1 | per_clip | industrial | partial | 0.25 | 1/2 (50.0 %) | 0.500 |
 | res8_p1 | 0.1 | per_clip | industrial | partial | 0.5 | 2/2 (100.0 %) | 1.000 |
 | res8_p1 | 0.1 | per_clip | industrial | thrust_limit | 1.0 | 4/4 (100.0 %) | 1.000 |
 | res8_p1 | 0.1 | per_clip | industrial | tilt_removed | 1.0 | 4/9 (44.4 %) | 0.444 |
 | res8_p1 | 0.1 | per_clip | industrial | tilt_scaled | 1.0 | 2/11 (18.2 %) | 0.182 |
 | res8_p1 | 0.1 | per_clip | urban_checker | mirrored_roll | 1.0 | 3/9 (33.3 %) | 0.333 |
-| res8_p1 | 0.1 | per_clip | urban_checker | partial | 0.1 | 1/2 (50.0 %) | 0.500 |
+| res8_p1 | 0.1 | per_clip | urban_checker | partial | 0.1 | 1/3 (33.3 %) | 0.333 |
 | res8_p1 | 0.1 | per_clip | urban_checker | partial | 0.25 | 0/2 (0.0 %) | 0.000 |
 | res8_p1 | 0.1 | per_clip | urban_checker | partial | 0.5 | 2/2 (100.0 %) | 1.000 |
 | res8_p1 | 0.1 | per_clip | urban_checker | thrust_limit | 1.0 | 4/4 (100.0 %) | 1.000 |
@@ -475,14 +475,14 @@
 | res8_p1 | 0.1 | corpus | forest_ridge | tilt_removed | 1.0 | 9/9 (100.0 %) | 1.000 |
 | res8_p1 | 0.1 | corpus | forest_ridge | tilt_scaled | 1.0 | 7/11 (63.6 %) | 0.636 |
 | res8_p1 | 0.1 | corpus | industrial | mirrored_roll | 1.0 | 4/9 (44.4 %) | 0.444 |
-| res8_p1 | 0.1 | corpus | industrial | partial | 0.1 | 0/2 (0.0 %) | 0.000 |
+| res8_p1 | 0.1 | corpus | industrial | partial | 0.1 | 1/3 (33.3 %) | 0.333 |
 | res8_p1 | 0.1 | corpus | industrial | partial | 0.25 | 1/2 (50.0 %) | 0.500 |
 | res8_p1 | 0.1 | corpus | industrial | partial | 0.5 | 2/2 (100.0 %) | 1.000 |
 | res8_p1 | 0.1 | corpus | industrial | thrust_limit | 1.0 | 4/4 (100.0 %) | 1.000 |
 | res8_p1 | 0.1 | corpus | industrial | tilt_removed | 1.0 | 4/9 (44.4 %) | 0.444 |
 | res8_p1 | 0.1 | corpus | industrial | tilt_scaled | 1.0 | 0/11 (0.0 %) | 0.000 |
 | res8_p1 | 0.1 | corpus | urban_checker | mirrored_roll | 1.0 | 5/9 (55.6 %) | 0.556 |
-| res8_p1 | 0.1 | corpus | urban_checker | partial | 0.1 | 1/2 (50.0 %) | 0.500 |
+| res8_p1 | 0.1 | corpus | urban_checker | partial | 0.1 | 2/3 (66.7 %) | 0.667 |
 | res8_p1 | 0.1 | corpus | urban_checker | partial | 0.25 | 0/2 (0.0 %) | 0.000 |
 | res8_p1 | 0.1 | corpus | urban_checker | partial | 0.5 | 2/2 (100.0 %) | 1.000 |
 | res8_p1 | 0.1 | corpus | urban_checker | thrust_limit | 1.0 | 4/4 (100.0 %) | 1.000 |
@@ -496,14 +496,14 @@
 | res8_p1 | 0.2 | per_clip | forest_ridge | tilt_removed | 1.0 | 9/9 (100.0 %) | 1.000 |
 | res8_p1 | 0.2 | per_clip | forest_ridge | tilt_scaled | 1.0 | 7/11 (63.6 %) | 0.636 |
 | res8_p1 | 0.2 | per_clip | industrial | mirrored_roll | 1.0 | 4/9 (44.4 %) | 0.444 |
-| res8_p1 | 0.2 | per_clip | industrial | partial | 0.1 | 0/2 (0.0 %) | 0.000 |
+| res8_p1 | 0.2 | per_clip | industrial | partial | 0.1 | 0/3 (0.0 %) | 0.000 |
 | res8_p1 | 0.2 | per_clip | industrial | partial | 0.25 | 1/2 (50.0 %) | 0.500 |
 | res8_p1 | 0.2 | per_clip | industrial | partial | 0.5 | 2/2 (100.0 %) | 1.000 |
 | res8_p1 | 0.2 | per_clip | industrial | thrust_limit | 1.0 | 4/4 (100.0 %) | 1.000 |
 | res8_p1 | 0.2 | per_clip | industrial | tilt_removed | 1.0 | 8/9 (88.9 %) | 0.889 |
 | res8_p1 | 0.2 | per_clip | industrial | tilt_scaled | 1.0 | 2/11 (18.2 %) | 0.182 |
 | res8_p1 | 0.2 | per_clip | urban_checker | mirrored_roll | 1.0 | 4/9 (44.4 %) | 0.444 |
-| res8_p1 | 0.2 | per_clip | urban_checker | partial | 0.1 | 1/2 (50.0 %) | 0.500 |
+| res8_p1 | 0.2 | per_clip | urban_checker | partial | 0.1 | 2/3 (66.7 %) | 0.667 |
 | res8_p1 | 0.2 | per_clip | urban_checker | partial | 0.25 | 0/2 (0.0 %) | 0.000 |
 | res8_p1 | 0.2 | per_clip | urban_checker | partial | 0.5 | 2/2 (100.0 %) | 1.000 |
 | res8_p1 | 0.2 | per_clip | urban_checker | thrust_limit | 1.0 | 4/4 (100.0 %) | 1.000 |
@@ -517,14 +517,14 @@
 | res8_p1 | 0.2 | corpus | forest_ridge | tilt_removed | 1.0 | 9/9 (100.0 %) | 1.000 |
 | res8_p1 | 0.2 | corpus | forest_ridge | tilt_scaled | 1.0 | 8/11 (72.7 %) | 0.727 |
 | res8_p1 | 0.2 | corpus | industrial | mirrored_roll | 1.0 | 4/9 (44.4 %) | 0.444 |
-| res8_p1 | 0.2 | corpus | industrial | partial | 0.1 | 0/2 (0.0 %) | 0.000 |
+| res8_p1 | 0.2 | corpus | industrial | partial | 0.1 | 1/3 (33.3 %) | 0.333 |
 | res8_p1 | 0.2 | corpus | industrial | partial | 0.25 | 1/2 (50.0 %) | 0.500 |
 | res8_p1 | 0.2 | corpus | industrial | partial | 0.5 | 2/2 (100.0 %) | 1.000 |
 | res8_p1 | 0.2 | corpus | industrial | thrust_limit | 1.0 | 4/4 (100.0 %) | 1.000 |
 | res8_p1 | 0.2 | corpus | industrial | tilt_removed | 1.0 | 4/9 (44.4 %) | 0.444 |
 | res8_p1 | 0.2 | corpus | industrial | tilt_scaled | 1.0 | 3/11 (27.3 %) | 0.273 |
 | res8_p1 | 0.2 | corpus | urban_checker | mirrored_roll | 1.0 | 6/9 (66.7 %) | 0.667 |
-| res8_p1 | 0.2 | corpus | urban_checker | partial | 0.1 | 1/2 (50.0 %) | 0.500 |
+| res8_p1 | 0.2 | corpus | urban_checker | partial | 0.1 | 2/3 (66.7 %) | 0.667 |
 | res8_p1 | 0.2 | corpus | urban_checker | partial | 0.25 | 0/2 (0.0 %) | 0.000 |
 | res8_p1 | 0.2 | corpus | urban_checker | partial | 0.5 | 2/2 (100.0 %) | 1.000 |
 | res8_p1 | 0.2 | corpus | urban_checker | thrust_limit | 1.0 | 4/4 (100.0 %) | 1.000 |
@@ -535,15 +535,15 @@
 
 | clips | median IoU before | median IoU after | mean ΔIoU | median ΔF1 | median onset before | after |
 | --- | --- | --- | --- | --- | --- | --- |
-| 9 | 0.67 | 0.88 | +0.11 | +0.11 | 16.0 | 12.0 |
+| 10 | 0.69 | 0.82 | +0.09 | +0.09 | 12.0 | 12.0 |
 
 ## A4 chosen lag by family
 
 | family | clips | median lag (ms) | IQR (ms) |
 | --- | --- | --- | --- |
 | forest_ridge | 66 | +0 | 0 |
-| industrial | 66 | +0 | 0 |
-| urban_checker | 66 | +0 | 25 |
+| industrial | 67 | +0 | 0 |
+| urban_checker | 67 | +0 | 25 |
 
 ## A4 alignment effect
 
@@ -557,21 +557,21 @@
 | no_lag | forest_ridge | tilt_removed | 1.0 | 0 | 9 | 0.000 |
 | no_lag | forest_ridge | tilt_scaled | 1.0 | 0 | 11 | 0.000 |
 | no_lag | industrial | mirrored_roll | 1.0 | 2 | 9 | 0.222 |
-| no_lag | industrial | partial | 0.1 | 0 | 2 | 0.000 |
+| no_lag | industrial | partial | 0.1 | 0 | 3 | 0.000 |
 | no_lag | industrial | partial | 0.25 | 0 | 2 | 0.000 |
 | no_lag | industrial | partial | 0.5 | 0 | 2 | 0.000 |
 | no_lag | industrial | thrust_limit | 1.0 | 0 | 4 | 0.000 |
 | no_lag | industrial | tilt_removed | 1.0 | 0 | 9 | 0.000 |
 | no_lag | industrial | tilt_scaled | 1.0 | 0 | 11 | 0.000 |
 | no_lag | urban_checker | mirrored_roll | 1.0 | 3 | 9 | 0.333 |
-| no_lag | urban_checker | partial | 0.1 | 0 | 2 | 0.000 |
+| no_lag | urban_checker | partial | 0.1 | 1 | 3 | 0.333 |
 | no_lag | urban_checker | partial | 0.25 | 0 | 2 | 0.000 |
 | no_lag | urban_checker | partial | 0.5 | 1 | 2 | 0.500 |
 | no_lag | urban_checker | thrust_limit | 1.0 | 0 | 4 | 0.000 |
 | no_lag | urban_checker | tilt_removed | 1.0 | 3 | 9 | 0.333 |
 | no_lag | urban_checker | tilt_scaled | 1.0 | 0 | 11 | 0.000 |
 | no_lag | ALL | false_segments | | 1.000 | 20.8 | — |
-| no_lag | ALL | mean_iou | | 0.042 | 118.0 | — |
+| no_lag | ALL | mean_iou | | 0.048 | 120.0 | — |
 | lag_removed | forest_ridge | mirrored_roll | 1.0 | 0 | 9 | 0.000 |
 | lag_removed | forest_ridge | partial | 0.1 | 0 | 2 | 0.000 |
 | lag_removed | forest_ridge | partial | 0.25 | 0 | 2 | 0.000 |
@@ -580,21 +580,21 @@
 | lag_removed | forest_ridge | tilt_removed | 1.0 | 0 | 9 | 0.000 |
 | lag_removed | forest_ridge | tilt_scaled | 1.0 | 0 | 11 | 0.000 |
 | lag_removed | industrial | mirrored_roll | 1.0 | 2 | 9 | 0.222 |
-| lag_removed | industrial | partial | 0.1 | 0 | 2 | 0.000 |
+| lag_removed | industrial | partial | 0.1 | 0 | 3 | 0.000 |
 | lag_removed | industrial | partial | 0.25 | 0 | 2 | 0.000 |
 | lag_removed | industrial | partial | 0.5 | 0 | 2 | 0.000 |
 | lag_removed | industrial | thrust_limit | 1.0 | 0 | 4 | 0.000 |
 | lag_removed | industrial | tilt_removed | 1.0 | 0 | 9 | 0.000 |
 | lag_removed | industrial | tilt_scaled | 1.0 | 0 | 11 | 0.000 |
 | lag_removed | urban_checker | mirrored_roll | 1.0 | 3 | 9 | 0.333 |
-| lag_removed | urban_checker | partial | 0.1 | 0 | 2 | 0.000 |
+| lag_removed | urban_checker | partial | 0.1 | 1 | 3 | 0.333 |
 | lag_removed | urban_checker | partial | 0.25 | 0 | 2 | 0.000 |
 | lag_removed | urban_checker | partial | 0.5 | 1 | 2 | 0.500 |
 | lag_removed | urban_checker | thrust_limit | 1.0 | 0 | 4 | 0.000 |
 | lag_removed | urban_checker | tilt_removed | 1.0 | 2 | 9 | 0.222 |
 | lag_removed | urban_checker | tilt_scaled | 1.0 | 0 | 11 | 0.000 |
 | lag_removed | ALL | false_segments | | 1.000 | 20.8 | — |
-| lag_removed | ALL | mean_iou | | 0.041 | 118.0 | — |
+| lag_removed | ALL | mean_iou | | 0.046 | 120.0 | — |
 
 ## A5 multi-scale
 
@@ -608,21 +608,21 @@
 | joint | forest_ridge | tilt_removed | 1.0 | 0 | 9 | 0.000 |
 | joint | forest_ridge | tilt_scaled | 1.0 | 0 | 11 | 0.000 |
 | joint | industrial | mirrored_roll | 1.0 | 0 | 9 | 0.000 |
-| joint | industrial | partial | 0.1 | 0 | 2 | 0.000 |
+| joint | industrial | partial | 0.1 | 0 | 3 | 0.000 |
 | joint | industrial | partial | 0.25 | 0 | 2 | 0.000 |
 | joint | industrial | partial | 0.5 | 0 | 2 | 0.000 |
 | joint | industrial | thrust_limit | 1.0 | 0 | 4 | 0.000 |
 | joint | industrial | tilt_removed | 1.0 | 0 | 9 | 0.000 |
 | joint | industrial | tilt_scaled | 1.0 | 0 | 11 | 0.000 |
 | joint | urban_checker | mirrored_roll | 1.0 | 0 | 9 | 0.000 |
-| joint | urban_checker | partial | 0.1 | 0 | 2 | 0.000 |
+| joint | urban_checker | partial | 0.1 | 0 | 3 | 0.000 |
 | joint | urban_checker | partial | 0.25 | 0 | 2 | 0.000 |
 | joint | urban_checker | partial | 0.5 | 0 | 2 | 0.000 |
 | joint | urban_checker | thrust_limit | 1.0 | 0 | 4 | 0.000 |
 | joint | urban_checker | tilt_removed | 1.0 | 0 | 9 | 0.000 |
 | joint | urban_checker | tilt_scaled | 1.0 | 0 | 11 | 0.000 |
 | joint | ALL | false_segments | | 1.000 | 20.8 | — |
-| joint | ALL | mean_iou | | 0.000 | 118.0 | — |
+| joint | ALL | mean_iou | | 0.000 | 120.0 | — |
 | coh8 | forest_ridge | mirrored_roll | 1.0 | 0 | 9 | 0.000 |
 | coh8 | forest_ridge | partial | 0.1 | 0 | 2 | 0.000 |
 | coh8 | forest_ridge | partial | 0.25 | 0 | 2 | 0.000 |
@@ -631,21 +631,21 @@
 | coh8 | forest_ridge | tilt_removed | 1.0 | 0 | 9 | 0.000 |
 | coh8 | forest_ridge | tilt_scaled | 1.0 | 0 | 11 | 0.000 |
 | coh8 | industrial | mirrored_roll | 1.0 | 2 | 9 | 0.222 |
-| coh8 | industrial | partial | 0.1 | 0 | 2 | 0.000 |
+| coh8 | industrial | partial | 0.1 | 0 | 3 | 0.000 |
 | coh8 | industrial | partial | 0.25 | 0 | 2 | 0.000 |
 | coh8 | industrial | partial | 0.5 | 0 | 2 | 0.000 |
 | coh8 | industrial | thrust_limit | 1.0 | 0 | 4 | 0.000 |
 | coh8 | industrial | tilt_removed | 1.0 | 0 | 9 | 0.000 |
 | coh8 | industrial | tilt_scaled | 1.0 | 0 | 11 | 0.000 |
 | coh8 | urban_checker | mirrored_roll | 1.0 | 3 | 9 | 0.333 |
-| coh8 | urban_checker | partial | 0.1 | 0 | 2 | 0.000 |
+| coh8 | urban_checker | partial | 0.1 | 1 | 3 | 0.333 |
 | coh8 | urban_checker | partial | 0.25 | 0 | 2 | 0.000 |
 | coh8 | urban_checker | partial | 0.5 | 1 | 2 | 0.500 |
 | coh8 | urban_checker | thrust_limit | 1.0 | 0 | 4 | 0.000 |
 | coh8 | urban_checker | tilt_removed | 1.0 | 2 | 9 | 0.222 |
 | coh8 | urban_checker | tilt_scaled | 1.0 | 0 | 11 | 0.000 |
 | coh8 | ALL | false_segments | | 3.000 | 20.8 | — |
-| coh8 | ALL | mean_iou | | 0.028 | 118.0 | — |
+| coh8 | ALL | mean_iou | | 0.031 | 120.0 | — |
 | coh12 | forest_ridge | mirrored_roll | 1.0 | 0 | 9 | 0.000 |
 | coh12 | forest_ridge | partial | 0.1 | 0 | 2 | 0.000 |
 | coh12 | forest_ridge | partial | 0.25 | 0 | 2 | 0.000 |
@@ -654,21 +654,21 @@
 | coh12 | forest_ridge | tilt_removed | 1.0 | 0 | 9 | 0.000 |
 | coh12 | forest_ridge | tilt_scaled | 1.0 | 0 | 11 | 0.000 |
 | coh12 | industrial | mirrored_roll | 1.0 | 2 | 9 | 0.222 |
-| coh12 | industrial | partial | 0.1 | 0 | 2 | 0.000 |
+| coh12 | industrial | partial | 0.1 | 0 | 3 | 0.000 |
 | coh12 | industrial | partial | 0.25 | 0 | 2 | 0.000 |
 | coh12 | industrial | partial | 0.5 | 0 | 2 | 0.000 |
 | coh12 | industrial | thrust_limit | 1.0 | 0 | 4 | 0.000 |
 | coh12 | industrial | tilt_removed | 1.0 | 0 | 9 | 0.000 |
 | coh12 | industrial | tilt_scaled | 1.0 | 0 | 11 | 0.000 |
 | coh12 | urban_checker | mirrored_roll | 1.0 | 3 | 9 | 0.333 |
-| coh12 | urban_checker | partial | 0.1 | 0 | 2 | 0.000 |
+| coh12 | urban_checker | partial | 0.1 | 1 | 3 | 0.333 |
 | coh12 | urban_checker | partial | 0.25 | 0 | 2 | 0.000 |
 | coh12 | urban_checker | partial | 0.5 | 1 | 2 | 0.500 |
 | coh12 | urban_checker | thrust_limit | 1.0 | 0 | 4 | 0.000 |
 | coh12 | urban_checker | tilt_removed | 1.0 | 3 | 9 | 0.333 |
 | coh12 | urban_checker | tilt_scaled | 1.0 | 0 | 11 | 0.000 |
 | coh12 | ALL | false_segments | | 1.000 | 20.8 | — |
-| coh12 | ALL | mean_iou | | 0.042 | 118.0 | — |
+| coh12 | ALL | mean_iou | | 0.048 | 120.0 | — |
 | coh16 | forest_ridge | mirrored_roll | 1.0 | 0 | 9 | 0.000 |
 | coh16 | forest_ridge | partial | 0.1 | 0 | 2 | 0.000 |
 | coh16 | forest_ridge | partial | 0.25 | 0 | 2 | 0.000 |
@@ -677,21 +677,21 @@
 | coh16 | forest_ridge | tilt_removed | 1.0 | 0 | 9 | 0.000 |
 | coh16 | forest_ridge | tilt_scaled | 1.0 | 0 | 11 | 0.000 |
 | coh16 | industrial | mirrored_roll | 1.0 | 2 | 9 | 0.222 |
-| coh16 | industrial | partial | 0.1 | 0 | 2 | 0.000 |
+| coh16 | industrial | partial | 0.1 | 0 | 3 | 0.000 |
 | coh16 | industrial | partial | 0.25 | 0 | 2 | 0.000 |
 | coh16 | industrial | partial | 0.5 | 0 | 2 | 0.000 |
 | coh16 | industrial | thrust_limit | 1.0 | 0 | 4 | 0.000 |
 | coh16 | industrial | tilt_removed | 1.0 | 0 | 9 | 0.000 |
 | coh16 | industrial | tilt_scaled | 1.0 | 0 | 11 | 0.000 |
 | coh16 | urban_checker | mirrored_roll | 1.0 | 4 | 9 | 0.444 |
-| coh16 | urban_checker | partial | 0.1 | 0 | 2 | 0.000 |
+| coh16 | urban_checker | partial | 0.1 | 1 | 3 | 0.333 |
 | coh16 | urban_checker | partial | 0.25 | 0 | 2 | 0.000 |
 | coh16 | urban_checker | partial | 0.5 | 1 | 2 | 0.500 |
 | coh16 | urban_checker | thrust_limit | 1.0 | 0 | 4 | 0.000 |
 | coh16 | urban_checker | tilt_removed | 1.0 | 2 | 9 | 0.222 |
 | coh16 | urban_checker | tilt_scaled | 1.0 | 0 | 11 | 0.000 |
 | coh16 | ALL | false_segments | | 2.000 | 20.8 | — |
-| coh16 | ALL | mean_iou | | 0.045 | 118.0 | — |
+| coh16 | ALL | mean_iou | | 0.051 | 120.0 | — |
 
 ## Minimum detectable step (synthetic, per arm)
 
