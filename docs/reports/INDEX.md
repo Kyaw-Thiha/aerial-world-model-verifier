@@ -103,6 +103,13 @@ Track G/G2 `GNN_`, Track H/H2 `HNN_`, Track J `JNN_`.
 | `G04_path_demand_segments.md` | Path-demand windows on real clips (item 1, preliminary) | current, preliminary; the every-window rule reproduces round 1 exactly, demand-window selection does not improve it, and the quiet test's real-clip false-reject is 25 % (4/16) |
 | `G05_segments_on_simulated_set.md` | Segments on the simulated set: blocked, with the design frozen | current; **not executed** (no I02 labelled set); the round-2 design is frozen unexecuted and one 3-clip pilot is exploratory |
 
+## Track G3 — segment detection on the simulated set (branch `track-g3-segments`, HEAD `e76411e`)
+
+| report | title | status |
+| --- | --- | --- |
+| `G06_segments_ablation_on_sim.md` | Segment detection on the simulated set: which of FDR, boundaries, alignment and multi-scale actually help | current; development pass closed on all 200 dev clips; FDR control is the one change that works, localisation below whole-clip coverage is not achieved, and the baseline fails on the forest |
+| `G07_segments_frozen_evaluation.md` | Frozen evaluation of the G3 segment design on the held-out set | current; run once with `configs/g06_eval_frozen.yaml` (unedited); only boundary refinement holds |
+
 ## Track H — generator pilot (branch `track-h-generator-pilot`)
 
 | report | title | status |
@@ -115,7 +122,7 @@ Track G/G2 `GNN_`, Track H/H2 `HNN_`, Track J `JNN_`.
 | --- | --- | --- |
 | `H02_generator_coverage.md` | Generator coverage with path control: SolarWM, LingBot full precision, inventory | current; SolarWM follows changing attitude (ramp probes pass) but not a held bank (1/5 paths by tilt); best-of-3 is below the pre-registered bar; full-precision LingBot still shows no coherent roll |
 
-## Track H3 — reader validity on generated frames (branch `track-h3-reader-validity`, HEAD pending)
+## Track H3 — reader validity on generated frames (branch `track-h3-reader-validity`, HEAD `20a93cb`)
 
 | report | title | status |
 | --- | --- | --- |
@@ -126,6 +133,13 @@ Track G/G2 `GNN_`, Track H/H2 `HNN_`, Track J `JNN_`.
 | report | title | status |
 | --- | --- | --- |
 | `H04_solarwm_continuous_attitude.md` | SolarWM-5B on continuously changing commanded attitude | current; two amendments before any clip existed (path realisation, and the forward-speed modulation forced by the frozen statistic's rank deficiency) |
+
+## Track I — simulated labelled flights (branch `track-i-simset`, HEAD `272bb93`)
+
+| report | title | status |
+| --- | --- | --- |
+| `I01_simulator_spike.md` | Simulator spike: four candidates for a labelled flight set | current; **recommended Blender + own dynamics**, EEVEE Next for the full set |
+| `I02_simulated_set.md` | The simulated labelled flight set: construction, splits and first batch | current; the full 300-clip set (200 development / 100 held-out) rendered, published and verified on R2 — 600 objects, 0 missing, 0 bad; held-out scenes not scored |
 
 ## Track J — reader error anatomy and bias-robust verdicts (branch `track-j-reader`)
 
@@ -150,6 +164,28 @@ Track G/G2 `GNN_`, Track H/H2 `HNN_`, Track J `JNN_`.
 | --- | --- | --- |
 | `L01_scene_stratified_reader_error.md` | Scene-stratified reader error on the simulated development set | current for the 80 feasible dev clips; held-out scenes deferred with I02 |
 | `L02_reader_finetune_sim_real.md` | Fine-tuning the reader on simulated scenes, with the real held-out flights | current when written; see its own status line |
+
+## Track M — abstention gates (branch `track-m-gates`, HEAD `d80abc5`)
+
+| report | title | status |
+| --- | --- | --- |
+| `M01_signal_strength_gate.md` | Gate A: is there enough required lean to give a verdict? | current; a path-side signal gate does not deliver the abstention guarantee |
+| `M02_reader_agreement_gate.md` | Gate B: do two independent tilt readers disagree where the verdict reader is wrong? | current; reader disagreement predicts the reader's error far better than the frozen signal; frozen at `tau = 4.5` deg **version 2** — v1 (`tau = 3.0`) was edited after its freeze, recorded in the round-2 consolidation report |
+| `M03_abstention_end_to_end.md` | Abstention end to end: four gate configurations against three verdict tiers | current; abstention buys detection and loses specificity on the real development clips |
+| `M04_sign_deadband.md` | The sign sub-tier with a reader-noise-tied dead-band | current; new pre-registered variant; the frozen sign tier is not usable as a detection tier at a 5 % budget |
+| `M05_dynamic_coverage.md` | Coverage restricted to dynamic clips | current; coverage is much worse where it matters; Gate B is the better gate on dynamic clips (40/85) |
+
+## Track N — attitude from video rotation (branch `track-n-rotation`, HEAD `8e280f3`)
+
+| report | title | status |
+| --- | --- | --- |
+| `N01_rotation_pretest.md` | Rotation-propagated gravity: the Part 0 pre-test | current; Part 0 **passes** (10 s drift 1.80 deg simulated, 0.43 deg real outdoor, against a reader of 8.4-8.5) |
+| `N02_initial_gravity_and_translation.md` | Initial gravity, drift, and the translation-direction addendum | current; a one-frame gravity start carries exactly its own error, and the translation-direction addendum fails its rule |
+| `N02b_propagated_lean_verdicts.md` | Verdict tiers on the rotation-propagated lean (UZH outdoor, descriptive) | current, descriptive; no tier detects edits better on the propagated lean than on the reader lean |
+| `N03_agreement_gate_and_coverage.md` | Reader-versus-propagation agreement gate and coverage (UZH, descriptive) | current, descriptive; the gate collapses coverage (5/35) and detects no violation |
+| `N04_generated_video_rotation.md` | Video rotation on generated clips (H04 SolarWM, H01 ANWM) | current; rotation works on all 234 SolarWM clips and follows the commanded attitude better than the reader at every horizon |
+| `N05_sim_propagated_verdicts.md` | C2 and coherence on the propagated lean over the 200 simulated dev clips | current; with a level-body start and no reader, C2 loses the verdict (0/27 removals against the reader's 16/27) |
+| `N06_mount_drift_diagnosis.md` | Diagnosing the 30/45 deg mount drift | current; the drift is run-to-run DPVO variance, not a stable bias |
 
 ## Notes
 

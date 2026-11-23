@@ -42,12 +42,22 @@ $ pixi run pytest -q
 221 passed, 3 skipped
 ```
 
-After round 2 (2026-11-22, Tracks F, F2, G, G2, H, H2 and J merged):
+After round 2, wave 1 (2026-11-22, Tracks F, F2, G, G2, H, H2 and J merged):
 
 ```
 $ pixi run pytest -q
 258 passed, 3 skipped
 ```
+
+After round 2, wave 2 (2026-11-23, Tracks I, H3/H4, K, L, G3, M and N added):
+
+```
+$ pixi run pytest -q
+328 passed, 4 skipped
+```
+
+Without the `third_party/anwm` clone the wave-2 suite reports 17 failed (only
+`tests/test_generation_paths.py`), 311 passed, 4 skipped.
 
 Reference points from before consolidation: Track D `142 passed`; `report-assets`
 `136 passed, 6 skipped` (it predates D's last commit); `main` alone `25 passed, 6 skipped`.

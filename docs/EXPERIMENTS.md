@@ -30,17 +30,31 @@ results; none of them runs an experiment.
 | E12 | pixel-path round 2: spline joint fit, lean-error scoring, feed-forward extractors | F2 | `track-f2-pixel-path` | `results/f04_spline/`, `f05_lean_error/`, `f06_feedforward/` | F04, F05, F06 (round 1: E11 on `track-f-pixel-path`) |
 | E13a | generator pilot: ANWM seed variance, LingBot-World, Wan 2.2 | H | `track-h-generator-pilot` | `results/h01_seed_specs/`, `h01_seed_variance/`, `h01_lingbot/`, `h01_lingbot_b/`, `h01_wan/`, `h01_tables/`, `h01_r2/` | H01 |
 | E13b | generator coverage with path control (H2) | H2 | `track-h2-generator-coverage` | `results/h02_inventory.json`, `h02_solarwm*`, `h02_lingbot_full*` | H02 |
+| E14 | reader validity on generated frames | H3 | `track-h3-reader-validity` | `results/h03/`, `results/h03_recompute/` | H03 |
+| E15 | SolarWM continuous-attitude campaign | H4 | `track-h3-reader-validity` | `results/h04/` | H04 |
 | G01 | segment-level detection: 8/12-frame windows, residual/coherence/sign tiers, max-over-windows and persistence scan, conformal LOFO calibration | G | `track-g-segments2` (`c189727`) | `results/g01_segments/` | G01 |
 | G02 | combined score: max of standardised tiers, LOFO conformal threshold, ROC, minimum-detectable-violation curve | G | `track-g-segments2` (`c189727`) | `results/g02_combined/` | G02 |
 | G03 | depicted-tilt reader fine-tune on 5,007 TII frames (8 folds) and 1,097 UZH frames (3 folds), plus the downstream verdict | G | `track-g-segments2` (`c189727`) | `results/g03_tilt_reader/` | G03 |
 | G04 | path-demand windows (item 1), preliminary against the track | G2 | `track-g2-segments` (`61401ae`) | `results/g04_path_demand/` | G04 |
 | G05 | segments on the simulated set (blocked; design frozen, one exploratory pilot) | G2 | `track-g2-segments` (`61401ae`) | `results/g05_spike_pilot/` | G05 |
+| G06 | segment detection on the simulated set: FDR, boundaries, alignment and multi-scale ablation on the 200 development clips | G3 | `track-g3-segments` (`e76411e`) | `results/g06/` | G06 |
+| G07 | frozen held-out evaluation of the G3 segment design (100 simulated + 18 real clips, run once) | G3 | `track-g3-segments` (`e76411e`) | `results/g07/` | G07 |
+| I01 | simulator spike: four candidates for a labelled flight set | I | `track-i-simset` (`272bb93`) | `results/i01_spike/` | I01 |
+| I02 | simulated labelled flight set: 300 clips (200 development / 100 held-out), rendered and published on R2 | I | `track-i-simset` (`272bb93`) | `results/i02/` | I02 |
 | J01 | reader error anatomy | J | `track-j-reader` | `results/j01_anatomy/` | J01 |
 | J02 | synthetic noise budget | J | `track-j-reader` | `results/j02_noise_budget/` | J02 |
 | J03 | per-clip calibration (1a) | J | `track-j-reader` | `results/j03_perclip/` | J03 |
 | J04 | learned reader confidence (1c) | J | `track-j-reader` | `results/j04_confidence/` | J04 |
-| E14 | reader validity on generated frames | H3 | `track-h3-reader-validity` | `results/h03/`, `results/h03_recompute/` | H03 |
-| E15 | SolarWM continuous-attitude campaign | H4 | `track-h3-reader-validity` | `results/h04/` | H04 |
+| K01 | calibration-mode reconciliation: A2's four modes, schema-v2 lean semantics, J's F0 under three readings, the floor mapping | K | `track-k-calibration` (`b4ddc9f`) | `results/k01/` | K01 |
+| K02 | airframe models M0-M5, schema-v3 required lean, F0/anchor recompute, edits at matched false-reject | K | `track-k-calibration` (`b4ddc9f`) | `results/k02_fit/`, `k02_downstream/` | K02 |
+| K03 | exact-semantics re-derivation of J03's absorption and J02's floor | K | `track-k-calibration` (`b4ddc9f`) | `results/k03/` | K03 |
+| L01 | frozen reader error on the 80 feasible simulated development clips, by scene family and mount | L | `track-l-reader-simreal` (`2fd64d8`) | `results/l01/` | L01 |
+| L02 | fine-tune arms (real-only, sim-only, mixed+DR), matched budget, held-out discipline, downstream tiers | L | `track-l-reader-simreal` (`2fd64d8`) | `results/l02/` | L02 |
+| M01 | Gate A: path-side signal strength, coverage/risk curves, yaw-control mechanism | M | `track-m-gates` (`d80abc5`) | `results/m01/` | M01 |
+| M02 | Gate B: reader agreement, AUROC against reader error, forest check, ensemble reader | M | `track-m-gates` (`d80abc5`) | `results/m02/` | M02 |
+| M03 | end to end: G0/GA/GB/GAB x R/F0/C2 on real, simulated and generated clips | M | `track-m-gates` (`d80abc5`) | `results/m03/` | M03 |
+| M04 | sign sub-tier with a reader-noise-tied dead-band (new pre-registered variant) | M | `track-m-gates` (`d80abc5`) | `results/m04/` | M04 |
+| M05 | coverage restricted to dynamic clips (peak required tilt >= 15 deg) | M | `track-m-gates` (`d80abc5`) | `results/m05/` | M05 |
 | N01 | rotation-propagated gravity, Part 0 (oracle start, 1/5/10/20 s) | N | `track-n-rotation` | `results/n01_pretest/` | N01 |
 | N02 | initial-gravity arms, translation-direction addendum, turn observability, generated-clip track noise | N | `track-n-rotation` | `results/n02/` | N02 |
 | N02b | verdict tiers on the rotation-propagated lean, UZH v3 edits (descriptive) | N | `track-n-rotation` | `results/n02b/` | N02b |

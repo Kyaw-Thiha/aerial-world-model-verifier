@@ -1,0 +1,15 @@
+track,ledger_usd,ledger_basis,billing_usd
+F,5.20,"sum of actual rows; no total row in the ledger",7.78
+F2,0.70,"actual rows; the 8.00 estimate was not spent",0.80
+G,10.23,"ledger total row; includes the 2.20 wasted run",5.48
+G2,0.00,"CPU only",0.00
+G3,8.02,"ledger: both passes, G07 actual 2.75",8.11
+H,13.00,"ledger estimate",17.52
+H2,5.00,"ledger estimate",7.73
+H3/H4,30.00,"ledger actual (about)",17.24
+I,25.20,"ledger planned total; render actual 7.55",23.27
+J,0.00,"CPU only",0.00
+K,0.00,"CPU only; no ledger of its own",0.00
+L,29.40,"ledger booked total",22.89
+M,2.95,"ledger total",4.37
+N,4.45,"sum of actual rows; no total row",6.08

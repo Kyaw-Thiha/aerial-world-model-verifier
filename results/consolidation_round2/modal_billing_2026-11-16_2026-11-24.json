@@ -1,0 +1,2039 @@
+[
+  {
+    "object_id": "ap-1xwZl8w7qvqyCuaukabiEy",
+    "description": "awmv-h-gate",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.01195632"
+  },
+  {
+    "object_id": "ap-2Oh6d4VYxCvBwKtBYdsxdF",
+    "description": "awmv-i-isaac",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.02401715"
+  },
+  {
+    "object_id": "ap-2l0YmEufDMBHXI5GYrJS4e",
+    "description": "awmv-i-blender",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.03316636"
+  },
+  {
+    "object_id": "ap-35wejvya5UV03nBYolvdLt",
+    "description": "awmv-h-gate",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.03442612"
+  },
+  {
+    "object_id": "ap-4BSI7KdD2DiZzf1zFB5BMP",
+    "description": "awmv-f-anwm",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.21651396"
+  },
+  {
+    "object_id": "ap-4JJIKFjrcXuZ913TlKh3zU",
+    "description": "awmv-h-voltest",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.00000384"
+  },
+  {
+    "object_id": "ap-4NUQi8yY1vKFlHTPOVSkYB",
+    "description": "awmv-f-mast3r",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.00799966"
+  },
+  {
+    "object_id": "ap-4ZAAnVtHqbVzfBWLmH6ANI",
+    "description": "awmv-h-lingbot-b",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "1.88980605"
+  },
+  {
+    "object_id": "ap-4ZMdEgA8EK9WxF8NC7zsZk",
+    "description": "awmv-h-anwm-b",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "2.89049044"
+  },
+  {
+    "object_id": "ap-4asPilVGI1f3vzfIC43gXw",
+    "description": "awmv-h-anwm",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.00001152"
+  },
+  {
+    "object_id": "ap-61HE1SAtWcBPPQ7kDf5GIq",
+    "description": "awmv-f-anwm",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.39235622"
+  },
+  {
+    "object_id": "ap-62By0Fy03oj3lYriRslK8g",
+    "description": "awmv-i-geocalib",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.00643142"
+  },
+  {
+    "object_id": "ap-6lVAdwTdbhnbvHyFaWoFyZ",
+    "description": "awmv-f-vipe",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.02179561"
+  },
+  {
+    "object_id": "ap-8lxCiFfoOqE4KJYCufPfaB",
+    "description": "awmv-g-tilt-reader",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.00649251"
+  },
+  {
+    "object_id": "ap-8r9OsLwEpofcK7rEvvl833",
+    "description": "awmv-h-wan",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.40692629"
+  },
+  {
+    "object_id": "ap-AjNbSt5D6LghK7ESKg8ga1",
+    "description": "awmv-h-anwm",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.04484220"
+  },
+  {
+    "object_id": "ap-BaJX4F88unOuWg0Xe5EigF",
+    "description": "awmv-h-gate",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.01895147"
+  },
+  {
+    "object_id": "ap-BrSFrZcywFZzj2R0bRc3xS",
+    "description": "awmv-g-tilt-reader",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.34398688"
+  },
+  {
+    "object_id": "ap-C3xZrm1WRWrEW6tQ8mqGVF",
+    "description": "awmv-h-gate",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.05154332"
+  },
+  {
+    "object_id": "ap-CwVBe9CymhgCR1HrHvccSH",
+    "description": "awmv-i-geocalib",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.01456879"
+  },
+  {
+    "object_id": "ap-EUfzWQkgTAIXeaIBVRr9Md",
+    "description": "awmv-i-isaac",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.01801114"
+  },
+  {
+    "object_id": "ap-EmAdSeUhWh0aUPHhsRIJvF",
+    "description": "awmv-h-gate",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.05407703"
+  },
+  {
+    "object_id": "ap-FXT3F3qPNBDtW5CpQA3CyU",
+    "description": "awmv-h-wan",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.09621485"
+  },
+  {
+    "object_id": "ap-FpztSKCv4PgkDurA0xomfI",
+    "description": "awmv-h-lingbot-b",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.00001152"
+  },
+  {
+    "object_id": "ap-GG1ZN0IFzw9HeDltoSp1ox",
+    "description": "awmv-i-blender",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.01379882"
+  },
+  {
+    "object_id": "ap-GbUe5Mzh9DJ5Y2Dy9Ugkzg",
+    "description": "awmv-h-gate",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.00940128"
+  },
+  {
+    "object_id": "ap-H4g9pG7HiKxa1B8cUBILtt",
+    "description": "awmv-h-gate",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.02011831"
+  },
+  {
+    "object_id": "ap-HHMIzBKCGXKiRmetQDVT42",
+    "description": "awmv-i-geocalib",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.01638492"
+  },
+  {
+    "object_id": "ap-Ia597yy0YCJ0uBUhVNC90p",
+    "description": "awmv-h-anwm",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.07764426"
+  },
+  {
+    "object_id": "ap-JurbuMbKpyCpV2GEGAlXTm",
+    "description": "awmv-f-mast3r",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.09028164"
+  },
+  {
+    "object_id": "ap-KO2CLu9hNOLC2gJNc46HDM",
+    "description": "awmv-i-blender",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.00434938"
+  },
+  {
+    "object_id": "ap-L7MqrodxdjbnTtmvId7Mbg",
+    "description": "awmv-h-gate",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.02065997"
+  },
+  {
+    "object_id": "ap-LB0oXL2bpin18Zt73wIyCe",
+    "description": "awmv-f-mast3r",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.09758044"
+  },
+  {
+    "object_id": "ap-LHBMVq3GPL6E0LtDy1nwDU",
+    "description": "awmv-f-mast3r",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.04894498"
+  },
+  {
+    "object_id": "ap-MfwS9IEPw0CBqZAj3mb9wt",
+    "description": "awmv-f-vipe",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "1.24419360"
+  },
+  {
+    "object_id": "ap-MjPfS8VbRWsqdzRAIjGtWB",
+    "description": "awmv-h-gate",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.01447740"
+  },
+  {
+    "object_id": "ap-MupZ7zX3MwX4NlOMJENY3B",
+    "description": "awmv-i-geocalib",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.01266425"
+  },
+  {
+    "object_id": "ap-NCtzcmvMMSiH7YODj8eQEg",
+    "description": "awmv-f-anwm",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.00005313"
+  },
+  {
+    "object_id": "ap-OEKniavyHHGh5MwZdcu5ep",
+    "description": "awmv-h-gate",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.01253156"
+  },
+  {
+    "object_id": "ap-PmKVavPdKz7ECUh0Go0Ab0",
+    "description": "awmv-i-blender",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.00120254"
+  },
+  {
+    "object_id": "ap-QTlFqiLy5WOkmPLpv8AO32",
+    "description": "awmv-f-anwm",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.08690932"
+  },
+  {
+    "object_id": "ap-QyprWZNMWKP17xkfqWKArk",
+    "description": "awmv-g-tilt-reader",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.36723741"
+  },
+  {
+    "object_id": "ap-RM9JZjetAkBfnNb8GErvCz",
+    "description": "awmv-f-anwm",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "2.99272317"
+  },
+  {
+    "object_id": "ap-SKoUMkKelRcFGP5u3hHCTH",
+    "description": "awmv-f-extractors",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.01605646"
+  },
+  {
+    "object_id": "ap-SMTzkS5mOH3pTmqIYabXBg",
+    "description": "awmv-g-tilt-reader",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "1.72252608"
+  },
+  {
+    "object_id": "ap-Tj0PZxW3aIMZnT2ER1CgoM",
+    "description": "awmv-f-mast3r",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.00422861"
+  },
+  {
+    "object_id": "ap-UTxpR2ZwmG0Ffteymn5GuV",
+    "description": "awmv-h-lingbot",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.51850615"
+  },
+  {
+    "object_id": "ap-VO1LEyD23GTWEEfDVpgIUL",
+    "description": "awmv-h-anwm",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "3.26037921"
+  },
+  {
+    "object_id": "ap-WtX9lmj0lXtxfijbYtzZeE",
+    "description": "awmv-g-tilt-reader",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.00642145"
+  },
+  {
+    "object_id": "ap-XJ2ZlwPKoT7jFMwZUfU48H",
+    "description": "awmv-h-gate",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.01500860"
+  },
+  {
+    "object_id": "ap-Y8GcRFNhuFMdSzg0166lRh",
+    "description": "awmv-f-mast3r",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.00159905"
+  },
+  {
+    "object_id": "ap-Yl7gDwgSJ0mxeTltXYQMGy",
+    "description": "awmv-h-gate",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.00251643"
+  },
+  {
+    "object_id": "ap-Yr0Jngp3A0GDQQYFUMeBMI",
+    "description": "awmv-f-vipe",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.18915099"
+  },
+  {
+    "object_id": "ap-Z2gptSIt6lu3LHFm2W3jo5",
+    "description": "awmv-h-gate",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.00266456"
+  },
+  {
+    "object_id": "ap-ZySjAWEj8me6kWGJ0mg5sT",
+    "description": "awmv-h-lingbot",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.84491856"
+  },
+  {
+    "object_id": "ap-aSohEftZZjdmZFm2hQjB7W",
+    "description": "awmv-i-blender",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.02649116"
+  },
+  {
+    "object_id": "ap-bBVpD5cJGKsYUdQx0SesNJ",
+    "description": "awmv-h-anwm",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.00840762"
+  },
+  {
+    "object_id": "ap-bYvu5aHnDo7tj3zgqPkBUE",
+    "description": "awmv-h-gate",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.02961603"
+  },
+  {
+    "object_id": "ap-cPMTF3TVRs3EWz4h8BBWe8",
+    "description": "awmv-h-gate",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.01665173"
+  },
+  {
+    "object_id": "ap-cWGxU6oVqS8aN6KSLO3Cks",
+    "description": "awmv-h-gate",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.01263473"
+  },
+  {
+    "object_id": "ap-dCzyHOImwyZMZ4tcAnYqHk",
+    "description": "awmv-i-flightmare",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.01482280"
+  },
+  {
+    "object_id": "ap-g5agbzqDQXEhn7DDC7vmji",
+    "description": "awmv-h-anwm",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.29124543"
+  },
+  {
+    "object_id": "ap-gB1rcf1cb3ncmMhYefsnOV",
+    "description": "awmv-h-anwm",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.00188163"
+  },
+  {
+    "object_id": "ap-h2u1vriXVozulSgpn15ekn",
+    "description": "awmv-i-blender",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.01920828"
+  },
+  {
+    "object_id": "ap-hEJcw9iNMUy2xNGTfjKOX2",
+    "description": "awmv-f-vipe",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.13333321"
+  },
+  {
+    "object_id": "ap-harGHkG1kSNCUdd4iQAEk9",
+    "description": "awmv-h-lingbot",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.07307834"
+  },
+  {
+    "object_id": "ap-j8SL1n3rzKJrsjCBlqejah",
+    "description": "awmv-g-tilt-reader",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.21297432"
+  },
+  {
+    "object_id": "ap-j9YtWrv6dotK3EKpqrrQ2e",
+    "description": "awmv-i-flightmare",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.00006780"
+  },
+  {
+    "object_id": "ap-jXrSyXtZbL1OKyDBfaDrG8",
+    "description": "awmv-f-anwm",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "1.60213024"
+  },
+  {
+    "object_id": "ap-jcBKoe3ZopKULq0dALBbaU",
+    "description": "awmv-h-wan",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.18891673"
+  },
+  {
+    "object_id": "ap-ksI1b4pXMzdw2eESMZEvJk",
+    "description": "awmv-h-lingbot",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "2.53662895"
+  },
+  {
+    "object_id": "ap-l0FEL0T4imlJEUhrXDveH2",
+    "description": "awmv-i-blender",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.00125643"
+  },
+  {
+    "object_id": "ap-l8wCbd62AnpMN0mf8q0MXB",
+    "description": "awmv-h-anwm-c",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "2.86790715"
+  },
+  {
+    "object_id": "ap-lW61QyTIxVfGuP7BCf2EjX",
+    "description": "awmv-h-wan",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.00647044"
+  },
+  {
+    "object_id": "ap-ntEZwItILfP6Rh3ABA8Zj1",
+    "description": "awmv-i-blender",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.00253776"
+  },
+  {
+    "object_id": "ap-o3KB1i3cHqK8k8uvjpeX61",
+    "description": "awmv-h-gate",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.00251908"
+  },
+  {
+    "object_id": "ap-oAZ3ADfUH6bkNTBI5UDQkI",
+    "description": "awmv-h-gate",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.00125471"
+  },
+  {
+    "object_id": "ap-oYX5nk53cep5tNjaE7IUps",
+    "description": "awmv-h-wan",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.02366435"
+  },
+  {
+    "object_id": "ap-oojE4oIm9QQzOhGni6devl",
+    "description": "awmv-g-tilt-reader",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.02812325"
+  },
+  {
+    "object_id": "ap-pF351bxZ4WQrnU9QYD0v80",
+    "description": "awmv-g-tilt-reader",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "2.48706523"
+  },
+  {
+    "object_id": "ap-rwm2tISDafyyUP4PjBFKJF",
+    "description": "awmv-g-tilt-reader",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.23333153"
+  },
+  {
+    "object_id": "ap-tcfq0siS8hfjzlfX1mzuwp",
+    "description": "awmv-h-gate",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.01195256"
+  },
+  {
+    "object_id": "ap-te9pf5b9iLodBUgIcfhnio",
+    "description": "awmv-h-gate",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.00251397"
+  },
+  {
+    "object_id": "ap-u8ofg0ZjMfTeJImkFZvyLJ",
+    "description": "awmv-i-geocalib",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.01718215"
+  },
+  {
+    "object_id": "ap-uaeamvnudiRaPy4lwl0lJv",
+    "description": "awmv-h-wan",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.06487346"
+  },
+  {
+    "object_id": "ap-vcVwsWBzIwzoUlB53SstPs",
+    "description": "awmv-h-lingbot",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.06848837"
+  },
+  {
+    "object_id": "ap-vqOV0yICCwdpEfDw7yaX4H",
+    "description": "awmv-h-gate",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.02903380"
+  },
+  {
+    "object_id": "ap-wy0Jhn2lY3Yp3BFONV3peO",
+    "description": "awmv-i-blender",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.00479003"
+  },
+  {
+    "object_id": "ap-xKcNtG0UqtIzRukCmjFpmG",
+    "description": "awmv-h-wan",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.16317061"
+  },
+  {
+    "object_id": "ap-xSiSYP7DsbxE2l0HvqWFPJ",
+    "description": "awmv-f-mast3r",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.01723704"
+  },
+  {
+    "object_id": "ap-xTg898BA3g3Os7lSy9aUsf",
+    "description": "awmv-g-tilt-reader",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.06778369"
+  },
+  {
+    "object_id": "ap-xkYr4dOsYlNb6UvnaOSJ0u",
+    "description": "awmv-h-lingbot",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.82337777"
+  },
+  {
+    "object_id": "ap-yk9Ee5npmLJRxzGoofVPBe",
+    "description": "awmv-f-vipe",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.00460845"
+  },
+  {
+    "object_id": "ap-z4Txu2tMDY4e9A7MKCiO4h",
+    "description": "awmv-i-isaac",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.04841884"
+  },
+  {
+    "object_id": "ap-zEhggWFgyKdWnxDMEBjkOw",
+    "description": "awmv-f-mast3r",
+    "environment": "main",
+    "interval_start": "2026-11-16T00:00:00",
+    "cost": "0.60953105"
+  },
+  {
+    "object_id": "ap-0D8SShOjEpgSjaSVOGAbgY",
+    "description": "awmv-i-dataset",
+    "environment": "main",
+    "interval_start": "2026-11-21T00:00:00",
+    "cost": "0.12082135"
+  },
+  {
+    "object_id": "ap-0Jcbs1vXp4WGeffnyV7iXe",
+    "description": "awmv-i-dataset",
+    "environment": "main",
+    "interval_start": "2026-11-21T00:00:00",
+    "cost": "0.11654808"
+  },
+  {
+    "object_id": "ap-0jQJqEP9sXYXYlrxi1r8HS",
+    "description": "awmv-i-dataset",
+    "environment": "main",
+    "interval_start": "2026-11-21T00:00:00",
+    "cost": "0.20612417"
+  },
+  {
+    "object_id": "ap-1tPjRwhvAFmeUP2NRqB1K4",
+    "description": "awmv-h2-solarwm",
+    "environment": "main",
+    "interval_start": "2026-11-21T00:00:00",
+    "cost": "0.73621380"
+  },
+  {
+    "object_id": "ap-38r2cZMtpTQeD0dafUMm8K",
+    "description": "awmv-h2-lingbot-full",
+    "environment": "main",
+    "interval_start": "2026-11-21T00:00:00",
+    "cost": "0.41413485"
+  },
+  {
+    "object_id": "ap-3laYPLJBquMWHGtGDVQwOu",
+    "description": "awmv-f2-extractors",
+    "environment": "main",
+    "interval_start": "2026-11-21T00:00:00",
+    "cost": "0.21228872"
+  },
+  {
+    "object_id": "ap-3s3CYhSnVtT1TlwRynTjHB",
+    "description": "awmv-h2-lingbot-full",
+    "environment": "main",
+    "interval_start": "2026-11-21T00:00:00",
+    "cost": "0.20552901"
+  },
+  {
+    "object_id": "ap-4oT2IYKqgKNrUaT6aJo4Hr",
+    "description": "awmv-h2-solarwm",
+    "environment": "main",
+    "interval_start": "2026-11-21T00:00:00",
+    "cost": "0.00620970"
+  },
+  {
+    "object_id": "ap-6LbvMmy4xZJh6EdHCHHinR",
+    "description": "awmv-h2-lingbot-full",
+    "environment": "main",
+    "interval_start": "2026-11-21T00:00:00",
+    "cost": "0.24172430"
+  },
+  {
+    "object_id": "ap-74CYetUAUqvcQ0oui96BUo",
+    "description": "awmv-i-dataset",
+    "environment": "main",
+    "interval_start": "2026-11-21T00:00:00",
+    "cost": "0.13031251"
+  },
+  {
+    "object_id": "ap-7ywI4HarTlOpoueeEccvUj",
+    "description": "awmv-h2-lingbot-full",
+    "environment": "main",
+    "interval_start": "2026-11-21T00:00:00",
+    "cost": "0.14765863"
+  },
+  {
+    "object_id": "ap-9EwKK75fnu0JSY2gHMnTeN",
+    "description": "awmv-i-dataset",
+    "environment": "main",
+    "interval_start": "2026-11-21T00:00:00",
+    "cost": "0.00279345"
+  },
+  {
+    "object_id": "ap-AoY4iE6aji3uHabzKvxfsp",
+    "description": "awmv-i-dataset",
+    "environment": "main",
+    "interval_start": "2026-11-21T00:00:00",
+    "cost": "0.00134369"
+  },
+  {
+    "object_id": "ap-EFhc0lW4Y4Tz91u8nKiG0H",
+    "description": "awmv-i-blender",
+    "environment": "main",
+    "interval_start": "2026-11-21T00:00:00",
+    "cost": "0.02822630"
+  },
+  {
+    "object_id": "ap-Kgj2ypAMzJBWanizUhVFau",
+    "description": "awmv-f2-extractors",
+    "environment": "main",
+    "interval_start": "2026-11-21T00:00:00",
+    "cost": "0.34453505"
+  },
+  {
+    "object_id": "ap-M208HLSISABNU3a2UF1P8A",
+    "description": "awmv-f2-extractors",
+    "environment": "main",
+    "interval_start": "2026-11-21T00:00:00",
+    "cost": "0.09818180"
+  },
+  {
+    "object_id": "ap-N36ygpy44G3hJGtEOYXqYX",
+    "description": "awmv-i-dataset",
+    "environment": "main",
+    "interval_start": "2026-11-21T00:00:00",
+    "cost": "0.89869994"
+  },
+  {
+    "object_id": "ap-QoKzil8m25TNzBjeuC46XP",
+    "description": "awmv-i-dataset",
+    "environment": "main",
+    "interval_start": "2026-11-21T00:00:00",
+    "cost": "0.05267685"
+  },
+  {
+    "object_id": "ap-RbwroFJbRHbXOhQTgQCPKQ",
+    "description": "awmv-i-score",
+    "environment": "main",
+    "interval_start": "2026-11-21T00:00:00",
+    "cost": "0.15058373"
+  },
+  {
+    "object_id": "ap-TOz9IM4aykM9q04CO1Xmn7",
+    "description": "awmv-i-dataset",
+    "environment": "main",
+    "interval_start": "2026-11-21T00:00:00",
+    "cost": "0.66923355"
+  },
+  {
+    "object_id": "ap-Ux4b2tJiRVkNkgaRnyzFnh",
+    "description": "awmv-h2-lingbot-full",
+    "environment": "main",
+    "interval_start": "2026-11-21T00:00:00",
+    "cost": "0.06592441"
+  },
+  {
+    "object_id": "ap-YrVcBgdGsHcLNWBhMsL7il",
+    "description": "awmv-f2-extractors",
+    "environment": "main",
+    "interval_start": "2026-11-21T00:00:00",
+    "cost": "0.06341159"
+  },
+  {
+    "object_id": "ap-ZPspRncqEVhVpuaK2JpKpI",
+    "description": "awmv-f2-extractors",
+    "environment": "main",
+    "interval_start": "2026-11-21T00:00:00",
+    "cost": "0.00320180"
+  },
+  {
+    "object_id": "ap-ZrCb4GCqX6X3KECnecDKSv",
+    "description": "awmv-i-score",
+    "environment": "main",
+    "interval_start": "2026-11-21T00:00:00",
+    "cost": "0.19057448"
+  },
+  {
+    "object_id": "ap-b4HNIJ6zg0eFOKaJveO0rj",
+    "description": "awmv-i-blender",
+    "environment": "main",
+    "interval_start": "2026-11-21T00:00:00",
+    "cost": "0.02021207"
+  },
+  {
+    "object_id": "ap-e8HeP9PoLMSvV6xykaAo6w",
+    "description": "awmv-f2-extractors",
+    "environment": "main",
+    "interval_start": "2026-11-21T00:00:00",
+    "cost": "0.05079163"
+  },
+  {
+    "object_id": "ap-mWvQZQb3pnvLLwI6yBiHSU",
+    "description": "awmv-f2-extractors",
+    "environment": "main",
+    "interval_start": "2026-11-21T00:00:00",
+    "cost": "0.03223112"
+  },
+  {
+    "object_id": "ap-oi4leD1wukV55jRWgDrHQY",
+    "description": "awmv-h2-lingbot-full",
+    "environment": "main",
+    "interval_start": "2026-11-21T00:00:00",
+    "cost": "0.29556277"
+  },
+  {
+    "object_id": "ap-uy2X9KZc5t1H7R3p7uKUTO",
+    "description": "awmv-i-dataset",
+    "environment": "main",
+    "interval_start": "2026-11-21T00:00:00",
+    "cost": "0.04942323"
+  },
+  {
+    "object_id": "ap-wPnbUoTXaTUQyKsSavfhUh",
+    "description": "awmv-h2-gate",
+    "environment": "main",
+    "interval_start": "2026-11-21T00:00:00",
+    "cost": "0.02909265"
+  },
+  {
+    "object_id": "ap-0A7jHtQgj2A2edDtBsTtGx",
+    "description": "awmv-h3-solarwm",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.37828475"
+  },
+  {
+    "object_id": "ap-0D8SShOjEpgSjaSVOGAbgY",
+    "description": "awmv-i-dataset",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.62649330"
+  },
+  {
+    "object_id": "ap-1tPjRwhvAFmeUP2NRqB1K4",
+    "description": "awmv-h2-solarwm",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "4.18049597"
+  },
+  {
+    "object_id": "ap-1yPmuR7ZH5lvNjYRRbQ85f",
+    "description": "awmv-m-readers",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.00730457"
+  },
+  {
+    "object_id": "ap-2GWHkz1QWMsXaNUK4YvDOD",
+    "description": "awmv-m-readers",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.14442125"
+  },
+  {
+    "object_id": "ap-3P0RMxyYoPvdeIf0Ck6a2d",
+    "description": "awmv-l-tilt-reader",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.02201444"
+  },
+  {
+    "object_id": "ap-3bqIM9uqpmreDbwUlyF2UD",
+    "description": "awmv-l-tilt-reader",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "1.07277305"
+  },
+  {
+    "object_id": "ap-3hU13tcKWMDdGMvrO78Lfi",
+    "description": "awmv-m-readers",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.14358712"
+  },
+  {
+    "object_id": "ap-4BFMQdXJ6TIaZakoh3dxv2",
+    "description": "awmv-h3-solarwm",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.32788145"
+  },
+  {
+    "object_id": "ap-5ogpYjVmvGj5YuavX3Wzp6",
+    "description": "awmv-m-readers",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.47051783"
+  },
+  {
+    "object_id": "ap-6HM3Bt5D77lBy25U15mDpb",
+    "description": "awmv-i-score",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.18099994"
+  },
+  {
+    "object_id": "ap-7orKQxYCUUYXF2jSb9Woz4",
+    "description": "awmv-h3-solarwm14b",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.66290905"
+  },
+  {
+    "object_id": "ap-8ExSGUP9RnjGw7tIwS9zXq",
+    "description": "awmv-m-readers",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.00731886"
+  },
+  {
+    "object_id": "ap-8ptGECRWPGBtanLMeE4aBC",
+    "description": "awmv-h3-recompute",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.14615804"
+  },
+  {
+    "object_id": "ap-9CgEwGveuj3R146g5vTy3B",
+    "description": "awmv-g3-score",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.37449545"
+  },
+  {
+    "object_id": "ap-9QLBP8ugBusdhrchLVa36M",
+    "description": "awmv-l-reader",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.01882827"
+  },
+  {
+    "object_id": "ap-AY8DL9HEVBCzSUoBTpOoIr",
+    "description": "awmv-g3-score",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.06392454"
+  },
+  {
+    "object_id": "ap-Afjv0Y1J2gp46V1VJjVFIb",
+    "description": "awmv-h3-recompute",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.19316734"
+  },
+  {
+    "object_id": "ap-Ai8umD4MYgm9S73QN4jF0D",
+    "description": "awmv-h3-post",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.57056924"
+  },
+  {
+    "object_id": "ap-B3uARkIr116LdFSNBZRsF9",
+    "description": "awmv-m-readers",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.41188956"
+  },
+  {
+    "object_id": "ap-BDq6hs8da9uJzKO1Bc8DKo",
+    "description": "awmv-g3-diag",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.00108705"
+  },
+  {
+    "object_id": "ap-BF0bZfKuwhSsXYbOUZmfMM",
+    "description": "awmv-l-edit-reader",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.02005826"
+  },
+  {
+    "object_id": "ap-BimHSbD4RwytN5GsqovNBi",
+    "description": "awmv-h3-solarwm",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.17087747"
+  },
+  {
+    "object_id": "ap-BnBvetbx2chwd8LhlEB4Pq",
+    "description": "awmv-i-score",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.06776313"
+  },
+  {
+    "object_id": "ap-Cc3G0d3mSJFZsfoBBE9DKS",
+    "description": "awmv-n-rotation",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.06306988"
+  },
+  {
+    "object_id": "ap-DJeZYCfAEgTuPQQep5OYWj",
+    "description": "awmv-m-readers",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.02777122"
+  },
+  {
+    "object_id": "ap-EFEhcI13brFRdDkSPKH8YG",
+    "description": "awmv-h3-post",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.25196288"
+  },
+  {
+    "object_id": "ap-EI1xWx1URdd2CfkMraVupx",
+    "description": "awmv-i-score",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.17544181"
+  },
+  {
+    "object_id": "ap-ErhVYd1624RTWnpjksY9oV",
+    "description": "awmv-h3-solarwm",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.04878661"
+  },
+  {
+    "object_id": "ap-F8YQV1hbKS8QrCBBv6loA6",
+    "description": "awmv-i-score",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.09595666"
+  },
+  {
+    "object_id": "ap-FLBnEGDs6icGeWOBUMqf95",
+    "description": "awmv-l-edit-reader",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.00641846"
+  },
+  {
+    "object_id": "ap-G2uEmyb8vCxrOoY1tJGhv4",
+    "description": "awmv-n-rotation",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.00812359"
+  },
+  {
+    "object_id": "ap-GLnjOz788KJrNw46p0LG99",
+    "description": "awmv-g3-score",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.03486893"
+  },
+  {
+    "object_id": "ap-GqLl8EwhbfHVZ7z64CoKkE",
+    "description": "awmv-g3-score",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.61627774"
+  },
+  {
+    "object_id": "ap-Gt1pABdKTgBdJItjHJvsXs",
+    "description": "awmv-h3-post",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.09148758"
+  },
+  {
+    "object_id": "ap-HJOiClx9XJ5xvXsMOG320a",
+    "description": "awmv-i-score",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.37255967"
+  },
+  {
+    "object_id": "ap-HLlComtQAQ6AZz1pdd1CVf",
+    "description": "awmv-m-readers",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.14423786"
+  },
+  {
+    "object_id": "ap-HUuWzmKM5V0g3dDDZ07ELV",
+    "description": "awmv-n-rotation",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.38582699"
+  },
+  {
+    "object_id": "ap-HsVEQWjQlrwOAIYVcRuh1i",
+    "description": "awmv-h3-post",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.12758031"
+  },
+  {
+    "object_id": "ap-JAAISSU9GkfTfeXvwsXAnN",
+    "description": "awmv-h3-post",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.48456027"
+  },
+  {
+    "object_id": "ap-JZqBEJAqgzctm7S6mW8toz",
+    "description": "awmv-h3-solarwm",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.10736339"
+  },
+  {
+    "object_id": "ap-JhQj0X1D3W8So00ScEUqB6",
+    "description": "awmv-h3-solarwm14b",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.03751582"
+  },
+  {
+    "object_id": "ap-Jm6w1X2Rks7XJNgPNO6zar",
+    "description": "awmv-h3-solarwm14b",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.00867205"
+  },
+  {
+    "object_id": "ap-K9yAtbJct52hRvpZPFQqEn",
+    "description": "awmv-l-reader",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.02551460"
+  },
+  {
+    "object_id": "ap-LEojOrU6tdv5VisJZubWAi",
+    "description": "awmv-h3-post",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.00021083"
+  },
+  {
+    "object_id": "ap-MBHveZX7jwBxlu4f9mMxYk",
+    "description": "awmv-g3-score",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.63403967"
+  },
+  {
+    "object_id": "ap-MDFBGrqSdkVATiX8pg58Ne",
+    "description": "awmv-i-score",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.35087337"
+  },
+  {
+    "object_id": "ap-N7rkCzgu6KJSKzFfA8b7Oc",
+    "description": "awmv-g3-score",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.03257819"
+  },
+  {
+    "object_id": "ap-Nig0V7xhJcUeMmoBrxtDrm",
+    "description": "awmv-l-reader",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.00714228"
+  },
+  {
+    "object_id": "ap-NkLWXhzhqlgEmr7yrKfoDO",
+    "description": "awmv-h3-readers",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.02930037"
+  },
+  {
+    "object_id": "ap-O1o0FzsfRtGHCukZusOPfN",
+    "description": "awmv-h3-solarwm",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.19207275"
+  },
+  {
+    "object_id": "ap-OdCSD3Z963FmAp1e2JHr0f",
+    "description": "awmv-h3-publish",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.07499939"
+  },
+  {
+    "object_id": "ap-OgghqDRpDSKJ8pCz6lb833",
+    "description": "awmv-h2-gate",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.00125406"
+  },
+  {
+    "object_id": "ap-OvdzCPJQooQmgmvHgvHCxi",
+    "description": "awmv-m-readers",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.00981146"
+  },
+  {
+    "object_id": "ap-PdbnmeI4onutaCiIWHLmCu",
+    "description": "awmv-g3-score",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.04659731"
+  },
+  {
+    "object_id": "ap-PzKr5IYLMwhiEyvVPln40Z",
+    "description": "awmv-l-edit-reader",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "1.82338966"
+  },
+  {
+    "object_id": "ap-QAeFRr1jYHFXKyAk7DBFhV",
+    "description": "awmv-m-readers",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.14493025"
+  },
+  {
+    "object_id": "ap-QMmmMUaXXdNHw4NVMVWHuy",
+    "description": "awmv-h3-solarwm",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.16993872"
+  },
+  {
+    "object_id": "ap-R5tWd2QqNZE9iIyzydMaYh",
+    "description": "awmv-m-readers",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.35730725"
+  },
+  {
+    "object_id": "ap-RBQkqVTjVmc4IvnEUf5Lps",
+    "description": "awmv-h2-gate",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "1.33678798"
+  },
+  {
+    "object_id": "ap-RIYVoi5U98aYtFSoqinDn0",
+    "description": "awmv-h3-solarwm14b",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.00355811"
+  },
+  {
+    "object_id": "ap-RpU8bMR7K5cqzOAn5ybbHC",
+    "description": "awmv-l-reader",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.65490251"
+  },
+  {
+    "object_id": "ap-S1M37qOEIy5thTcSoK5ALk",
+    "description": "awmv-g3-score",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.19798266"
+  },
+  {
+    "object_id": "ap-SaF5VhGU3gz7cTVugTnakP",
+    "description": "awmv-h3-post",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.05966211"
+  },
+  {
+    "object_id": "ap-TJEII1Fxn3hVewYwnFXtHT",
+    "description": "awmv-g3-score",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "1.16606591"
+  },
+  {
+    "object_id": "ap-TsqlNH0I4ZT3Fq7QYJq0Pk",
+    "description": "awmv-m-readers",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.34262371"
+  },
+  {
+    "object_id": "ap-TwHVk9tJlzNZ4lcd6a4Lrq",
+    "description": "awmv-l-tilt-reader",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.31307241"
+  },
+  {
+    "object_id": "ap-UDfzSNOvZTZozzvdxn0eYB",
+    "description": "awmv-h3-post",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.48993170"
+  },
+  {
+    "object_id": "ap-UMXVvDmYG02y3Rt2Wp4aJ8",
+    "description": "awmv-h3-solarwm",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.36185824"
+  },
+  {
+    "object_id": "ap-UQG8WSx38OXMVqENNNFGpa",
+    "description": "awmv-h3-solarwm",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "1.69412986"
+  },
+  {
+    "object_id": "ap-UhzgKAqgzWF1bxhsrs8DRd",
+    "description": "awmv-l-tilt-reader",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.72864912"
+  },
+  {
+    "object_id": "ap-UqI3DRDuxPeLGbxNyimxSj",
+    "description": "awmv-g3-score",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.02253431"
+  },
+  {
+    "object_id": "ap-UzgmYyovZFlvR7DU32Jgvk",
+    "description": "awmv-l-tilt-reader",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.00136557"
+  },
+  {
+    "object_id": "ap-VAUmqEgJnJeSQXeAw77kVH",
+    "description": "awmv-i-dataset",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.26019652"
+  },
+  {
+    "object_id": "ap-VIWDUV0IPoor4rcCLG8BNM",
+    "description": "awmv-h3-solarwm",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.00001152"
+  },
+  {
+    "object_id": "ap-VkCmEUXv9QpPdpJ6FUm6fo",
+    "description": "awmv-n-rotation",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.27684907"
+  },
+  {
+    "object_id": "ap-VkUL0s3w8BmZ68KQZyRShe",
+    "description": "awmv-h3-solarwm",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "1.80484547"
+  },
+  {
+    "object_id": "ap-VlhcXbdAp3wCXrmT2M3swk",
+    "description": "awmv-h3-solarwm14b",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.01422633"
+  },
+  {
+    "object_id": "ap-WIruNJXkuJmxmgf9LomNpF",
+    "description": "awmv-i-dataset",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "1.36570956"
+  },
+  {
+    "object_id": "ap-WOBnfxfTXGIiNyNuCvGFWj",
+    "description": "awmv-i-dataset",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "8.79181228"
+  },
+  {
+    "object_id": "ap-WimrpH56fe4SgymExyMF8n",
+    "description": "awmv-h3-solarwm14b",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.01177153"
+  },
+  {
+    "object_id": "ap-XtzOqgmh3KNCwRX6qED3Wy",
+    "description": "awmv-h3-post",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.02627787"
+  },
+  {
+    "object_id": "ap-XwTr0yvc6MCeS3qmwvKJjX",
+    "description": "awmv-i-dataset",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "1.90370699"
+  },
+  {
+    "object_id": "ap-ZRUiluLfFRl95PHlC2yXlR",
+    "description": "awmv-l-tilt-reader",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.02265397"
+  },
+  {
+    "object_id": "ap-aJBygh6FFbYpsoXPA7GgM3",
+    "description": "awmv-m-readers",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.14904224"
+  },
+  {
+    "object_id": "ap-apdbtw3gc4hr4njl1OUY1V",
+    "description": "awmv-h3-post",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.02271223"
+  },
+  {
+    "object_id": "ap-asrJp7XFyJWhW0GW3MZl1g",
+    "description": "awmv-h2-gate",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.07252691"
+  },
+  {
+    "object_id": "ap-avqZh0xr12U7pxUTNq4jSJ",
+    "description": "awmv-l-edit-reader",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.98721414"
+  },
+  {
+    "object_id": "ap-b0AH0nc94s3Mw3VXgOK5Je",
+    "description": "awmv-l-edit-reader",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.08498192"
+  },
+  {
+    "object_id": "ap-bG1z2vdx4ySSS36j2JFp5E",
+    "description": "awmv-m-readers",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.14047392"
+  },
+  {
+    "object_id": "ap-bJkKxlEigQFXG4IPSQn8B8",
+    "description": "awmv-g3-yaw",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.08070970"
+  },
+  {
+    "object_id": "ap-bXFdtPFoWuKlyTIkj6S7uP",
+    "description": "awmv-m-readers",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.43923220"
+  },
+  {
+    "object_id": "ap-bigeIVf1D89Xy75DCXROcG",
+    "description": "awmv-h3-readers",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.00792608"
+  },
+  {
+    "object_id": "ap-bmqJqfDl0JeyRTrlQ16aNv",
+    "description": "awmv-g3-score",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.04467207"
+  },
+  {
+    "object_id": "ap-bv5UgpCa3n7YSeQ6cuPXX4",
+    "description": "awmv-l-tilt-reader",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "3.51516489"
+  },
+  {
+    "object_id": "ap-cs8wfbta7LDYyLXRWOeEn0",
+    "description": "awmv-l-tilt-reader",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.16332121"
+  },
+  {
+    "object_id": "ap-dKhMM0Repj0EttSkeecZNM",
+    "description": "awmv-m-readers",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.00964315"
+  },
+  {
+    "object_id": "ap-dSfGK8xAP2KiDBpDUbX15O",
+    "description": "awmv-l-reader",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "1.59198203"
+  },
+  {
+    "object_id": "ap-dZnEW1EbRjLv25Mje1Cznl",
+    "description": "awmv-h3-solarwm",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "1.81872260"
+  },
+  {
+    "object_id": "ap-e655K585xs1gexMPFVfQwC",
+    "description": "awmv-m-readers",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.14856534"
+  },
+  {
+    "object_id": "ap-eIb7rd2riIW4zwnrCiTdWM",
+    "description": "awmv-l-tilt-reader",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "3.08613103"
+  },
+  {
+    "object_id": "ap-eNn5A1i2vMrUG6yZff7IDG",
+    "description": "awmv-h3-readers",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.00512909"
+  },
+  {
+    "object_id": "ap-elbwwj8sJdPQa9PMR21Osk",
+    "description": "awmv-l-edit-reader",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "1.97639329"
+  },
+  {
+    "object_id": "ap-gsJJ4daxv73vjR9fEZSIes",
+    "description": "awmv-h3-solarwm",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.63107068"
+  },
+  {
+    "object_id": "ap-htx9nm9cIaMwiehfmkMajV",
+    "description": "awmv-g3-diag",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.00145365"
+  },
+  {
+    "object_id": "ap-iDB6Ryhi1JR5EXMEj67ULi",
+    "description": "awmv-l-tilt-reader",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.04106551"
+  },
+  {
+    "object_id": "ap-jSKblJUcW9wLPIZxbaaAh7",
+    "description": "awmv-l-tilt-reader",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.78533501"
+  },
+  {
+    "object_id": "ap-jUafN9Irv93zMxjYOJ2m4g",
+    "description": "awmv-m-readers",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.01495757"
+  },
+  {
+    "object_id": "ap-jpJnsEtZUnuE6K2K3Ye6V0",
+    "description": "awmv-g3-score",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.09240906"
+  },
+  {
+    "object_id": "ap-juxi5gVdTiLPcPUKI05pOT",
+    "description": "awmv-h3-recompute",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.29509631"
+  },
+  {
+    "object_id": "ap-k32wRkNjCBTNreb7u3ebds",
+    "description": "awmv-l-edit-reader",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "1.64282091"
+  },
+  {
+    "object_id": "ap-kZ7S4kpXqDAcZQtMiCmWaq",
+    "description": "awmv-i-dataset",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "1.94002908"
+  },
+  {
+    "object_id": "ap-kfY2rFYCDWeU6BpRaKDRtz",
+    "description": "awmv-g3-yaw",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.69773172"
+  },
+  {
+    "object_id": "ap-kgzCdy8dWZrHkaWJtO57b0",
+    "description": "awmv-l-edit-reader",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "1.84047327"
+  },
+  {
+    "object_id": "ap-m81EK1m7RxrUr0xTGWpadY",
+    "description": "awmv-h3-post",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.39174886"
+  },
+  {
+    "object_id": "ap-mAD97bwLPU3o9KQG2GV3vu",
+    "description": "awmv-h3-solarwm",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.55408697"
+  },
+  {
+    "object_id": "ap-mR0UkxzvCRRHhpHFhTecD4",
+    "description": "awmv-i-dataset",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.22518729"
+  },
+  {
+    "object_id": "ap-maOOtiRGx5vR5wRrV2nZVj",
+    "description": "awmv-h3-solarwm14b",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.20971846"
+  },
+  {
+    "object_id": "ap-mdUnwULn7uWQFiDAzSBVrQ",
+    "description": "awmv-m-readers",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.34624246"
+  },
+  {
+    "object_id": "ap-nGqIiyp89IHHq82yW0LxEa",
+    "description": "awmv-g3-score",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.00139215"
+  },
+  {
+    "object_id": "ap-ncf6xhNTOE5Ez6kanD1Qr9",
+    "description": "awmv-h3-solarwm",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "2.10687718"
+  },
+  {
+    "object_id": "ap-oHdzxJD07e2fyY2oNzQ52d",
+    "description": "awmv-h3-recompute",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.00465642"
+  },
+  {
+    "object_id": "ap-pDsBAqYXwZK5R8QkxnfLAZ",
+    "description": "awmv-l-tilt-reader",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.00500301"
+  },
+  {
+    "object_id": "ap-pZZ6owy0XHmBwhGo47LP3q",
+    "description": "awmv-l-edit-reader",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "1.99263916"
+  },
+  {
+    "object_id": "ap-pzTVcMRzRDjZ3zOLEOiyVT",
+    "description": "awmv-n-rotation",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.00513271"
+  },
+  {
+    "object_id": "ap-qHBWclcx2e6Wk1wfzfW1w9",
+    "description": "awmv-l-edit-reader",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.01941052"
+  },
+  {
+    "object_id": "ap-qzqOGikjSlJHTY3t6sG4d0",
+    "description": "awmv-m-readers",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.29306877"
+  },
+  {
+    "object_id": "ap-rCTMWqPWHhJV0GnrfTqHl4",
+    "description": "awmv-g3-score",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.03589543"
+  },
+  {
+    "object_id": "ap-rOBYWzHcTnIRKX1zBesgm9",
+    "description": "awmv-g3-score",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.26678298"
+  },
+  {
+    "object_id": "ap-rsVo4l4pBv7dHFWGh5SaeZ",
+    "description": "awmv-h3-solarwm14b",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.01084033"
+  },
+  {
+    "object_id": "ap-s9dXC0u64tyqE8FPWvuUmy",
+    "description": "awmv-l-edit-reader",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.01941788"
+  },
+  {
+    "object_id": "ap-sND5nSpAtaWnVsD4HROzFX",
+    "description": "awmv-g3-score",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.04148737"
+  },
+  {
+    "object_id": "ap-sPpnAKVbP0QJYUv9KWIRvJ",
+    "description": "awmv-n-rotation",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.00061466"
+  },
+  {
+    "object_id": "ap-srRD5xTjmBkSo9YH81hECr",
+    "description": "awmv-l-edit-reader",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.03079949"
+  },
+  {
+    "object_id": "ap-t7gU7Gz370irSM1Ex1Vgk4",
+    "description": "awmv-l-tilt-reader",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.00575465"
+  },
+  {
+    "object_id": "ap-t8JaTuLeNHB5ZVwjDk96Le",
+    "description": "awmv-l-tilt-reader",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.01445453"
+  },
+  {
+    "object_id": "ap-tK2PcVfzKpQC5SRMnNKZ7n",
+    "description": "awmv-l-tilt-reader",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.36023815"
+  },
+  {
+    "object_id": "ap-tP0GZaOPEhULd25UgFQaRj",
+    "description": "awmv-m-readers",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.00758597"
+  },
+  {
+    "object_id": "ap-tYC8jBcYX2hjNfqjve3wyQ",
+    "description": "awmv-g3-score",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.08643434"
+  },
+  {
+    "object_id": "ap-vqJfeuJh7XP3jGedvMRTAj",
+    "description": "awmv-m-readers",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.45722882"
+  },
+  {
+    "object_id": "ap-w073ha0DprWsUqz2Ltixuv",
+    "description": "awmv-g3-diag",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.00118858"
+  },
+  {
+    "object_id": "ap-wVcaA6ctMfJKwON0LjlRNJ",
+    "description": "awmv-h3-solarwm14b",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.35124636"
+  },
+  {
+    "object_id": "ap-xSGnGrMq6NqAfuRKDGHOPQ",
+    "description": "awmv-h3-solarwm",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "2.28536815"
+  },
+  {
+    "object_id": "ap-xVjKgyxm0PQZBtGqvyhw7j",
+    "description": "awmv-i-dataset",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.28788713"
+  },
+  {
+    "object_id": "ap-xWeXJKfEqEgpnEGKDAJWIf",
+    "description": "awmv-h3-solarwm14b",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.00355735"
+  },
+  {
+    "object_id": "ap-y9JCOX1CQzr0wYsoSSfECd",
+    "description": "awmv-m-readers",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.14925065"
+  },
+  {
+    "object_id": "ap-y9l6lPZjYlUUZvKnAqkXaf",
+    "description": "awmv-l-tilt-reader",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.00839205"
+  },
+  {
+    "object_id": "ap-zoKF3kd25fVCOAB5tpKZn0",
+    "description": "awmv-g3-score",
+    "environment": "main",
+    "interval_start": "2026-11-22T00:00:00",
+    "cost": "0.72803072"
+  },
+  {
+    "object_id": "ap-95a9kMe224ZIsml7sqHCd9",
+    "description": "awmv-g3-score",
+    "environment": "main",
+    "interval_start": "2026-11-23T00:00:00",
+    "cost": "0.04241248"
+  },
+  {
+    "object_id": "ap-FLgGQvIFjCKqzeaRhoseYm",
+    "description": "awmv-n-rotation",
+    "environment": "main",
+    "interval_start": "2026-11-23T00:00:00",
+    "cost": "0.02947283"
+  },
+  {
+    "object_id": "ap-HFPp0MTZJrEjA8QnnapJuw",
+    "description": "awmv-g3-score",
+    "environment": "main",
+    "interval_start": "2026-11-23T00:00:00",
+    "cost": "0.49793014"
+  },
+  {
+    "object_id": "ap-HptDnOJFJL6nw1ADzSwgGJ",
+    "description": "awmv-g3-score",
+    "environment": "main",
+    "interval_start": "2026-11-23T00:00:00",
+    "cost": "0.59181793"
+  },
+  {
+    "object_id": "ap-K2wRcVj7WLyybNvBz93AUV",
+    "description": "awmv-n-rotation",
+    "environment": "main",
+    "interval_start": "2026-11-23T00:00:00",
+    "cost": "0.02265602"
+  },
+  {
+    "object_id": "ap-NVBLhRCmVtoK7mksdVcHMm",
+    "description": "awmv-n-rotation",
+    "environment": "main",
+    "interval_start": "2026-11-23T00:00:00",
+    "cost": "0.04846562"
+  },
+  {
+    "object_id": "ap-Orw1KYibjKINlbec4EIjvD",
+    "description": "awmv-g3-score",
+    "environment": "main",
+    "interval_start": "2026-11-23T00:00:00",
+    "cost": "0.64417630"
+  },
+  {
+    "object_id": "ap-P81qBiXyPjpvVPXnMRu7hy",
+    "description": "awmv-n-rotation",
+    "environment": "main",
+    "interval_start": "2026-11-23T00:00:00",
+    "cost": "0.25275263"
+  },
+  {
+    "object_id": "ap-QLQBPgnj1PzCcmczfcy76U",
+    "description": "awmv-n-rotation",
+    "environment": "main",
+    "interval_start": "2026-11-23T00:00:00",
+    "cost": "0.27177717"
+  },
+  {
+    "object_id": "ap-SV8fdVrg3JN4gUV6Nb89D3",
+    "description": "awmv-n-rotation",
+    "environment": "main",
+    "interval_start": "2026-11-23T00:00:00",
+    "cost": "0.25318822"
+  },
+  {
+    "object_id": "ap-WSHLjWHgPH88PEVoM5GaGX",
+    "description": "awmv-n-reader",
+    "environment": "main",
+    "interval_start": "2026-11-23T00:00:00",
+    "cost": "2.83871185"
+  },
+  {
+    "object_id": "ap-Wsmsi1aMGzkPB9aKhmTq0w",
+    "description": "awmv-g3-score",
+    "environment": "main",
+    "interval_start": "2026-11-23T00:00:00",
+    "cost": "0.46118227"
+  },
+  {
+    "object_id": "ap-XwTr0yvc6MCeS3qmwvKJjX",
+    "description": "awmv-i-dataset",
+    "environment": "main",
+    "interval_start": "2026-11-23T00:00:00",
+    "cost": "3.70744460"
+  },
+  {
+    "object_id": "ap-iFJ8fUXZ9xvJmz2hZZ1Pg4",
+    "description": "awmv-n-rotation",
+    "environment": "main",
+    "interval_start": "2026-11-23T00:00:00",
+    "cost": "0.79191818"
+  },
+  {
+    "object_id": "ap-lsCRiZ3Tal1QyjYbzeN2Is",
+    "description": "awmv-n-rotation",
+    "environment": "main",
+    "interval_start": "2026-11-23T00:00:00",
+    "cost": "0.75859196"
+  },
+  {
+    "object_id": "ap-mpkvvSJYDKzFrjNzpH1WnO",
+    "description": "awmv-n-rotation",
+    "environment": "main",
+    "interval_start": "2026-11-23T00:00:00",
+    "cost": "0.06893460"
+  },
+  {
+    "object_id": "ap-q1dpFQUqTL3napgQHNwXQG",
+    "description": "awmv-g3-score",
+    "environment": "main",
+    "interval_start": "2026-11-23T00:00:00",
+    "cost": "0.01561738"
+  },
+  {
+    "object_id": "ap-qkXYnVPYgEEIOSGF1WR5zI",
+    "description": "awmv-g3-score",
+    "environment": "main",
+    "interval_start": "2026-11-23T00:00:00",
+    "cost": "0.59147793"
+  }
+]

@@ -43,11 +43,12 @@ src/            flat package: datasets, physics, perception, fusion, depicted, s
 experiments/    one script per experiment/phase (phase0_floor.py ... e_window_rule.py)
 remote/         Modal apps (GPU batch jobs); nothing here runs locally
 scripts/        fetch_*.py, sync_r2*.py, export/pull helpers
-tests/          unit tests (258 passing on main; 17 need third_party/anwm)
+tests/          unit tests (328 passing, 4 skipped on main; 17 need third_party/anwm)
 docs/           decisions log, project structure, track reports index, experiments index,
                 data map, reproduction guide, handoffs, archive pointers
 reports/        the numbered track reports (A 01-05, A2 06-08, B b01-b06, C C01-C09,
-                D D01-D04, E E01-E05, F F01-F06, G G01-G05, H H01-H02, J J01-J04)
+                D D01-D04, E E01-E05, F F01-F06, G G01-G07, H H01-H04, I I01-I02,
+                J J01-J04, K K01-K03, L L01-L02, M M01-M05, N N01-N06)
                 — see docs/reports/INDEX.md
 results/        stored run outputs the report scripts read (small JSON/CSV/PNG only)
 report/         the built report assets: tables/, figures/, data/, scripts/, ASSETS.md,
@@ -93,8 +94,9 @@ Secrets live in `.env` (gitignored; names only in `.env.example`). Never commit 
 Local CPU for tests, the report build and analysis; **Modal** for GPU batches (weights cached on
 `awmv-*` volumes); **Cloudflare R2** (bucket `aerial-world-modal-verifier`) for large artefacts
 under the prefixes `track-a/`, `track-a/a2/`, `track-b/`, `track-c/` (empty), `track-d/`,
-`track-e/`, `track-f/`, `track-f2/`, `track-g/`, `track-h/`, `track-h2/` (see `docs/DATA.md`;
-not every track wrote objects). Nothing large is committed: `.gitignore` drops `data/`,
+`track-e/`, `track-f/`, `track-f2/`, `track-g/`, `track-g3/`, `track-h/`, `track-h2/`,
+`track-h3/`, `track-i/`, `track-l/`, `track-m/`, `track-n/` (see `docs/DATA.md`; not every
+track wrote objects). Nothing large is committed: `.gitignore` drops `data/`,
 `third_party/`, `.pixi/` and the large binary suffixes under `results/`.
 
 ## Repository state
@@ -104,11 +106,11 @@ merge commits and no history rewriting.
 
 * **Round 1 (2026-11-15):** A, A2, B, C, D, E and the report-assets branch. Tagged
   `consolidated-2026-11-15`; record in `docs/CONSOLIDATION_REPORT.md`.
-* **Round 2, wave 1 (2026-11-22):** F, F2, G, G2, H, H2 and J. Tagged `consolidated-round2-wave1`;
-  record in `docs/CONSOLIDATION_REPORT_ROUND2.md`.
+* **Round 2, wave 1 (2026-11-22):** F, F2, G, G2, H, H2 and J. Tagged `consolidated-round2-wave1`.
+* **Round 2, wave 2 (2026-11-23):** I, H3/H4, K, L, G3, M and N. Tagged `consolidated-round2-wave2`.
+  Both waves are recorded in `docs/CONSOLIDATION_REPORT_ROUND2.md`.
 
-Pre-change tips are tagged `archive/<branch>-pre-{consolidation,round2}` and bundled, with
-sha256, in `awmv-archive/backups/`. Not merged: Track I (`track-i-simset`, wave 2), the empty
-`track-h3-reader-validity` and `track-k-calibration` branches, and the stale `track-g-segments`
-(listed in the round-2 report). The LaTeX report sources are still not in the repository;
+Pre-change tips are tagged `archive/<branch>-pre-{consolidation,round2,round2-wave2}` and
+bundled, with sha256, in `awmv-archive/backups/`. Not merged: the stale `track-g-segments`
+line (listed in the round-2 report). The LaTeX report sources are still not in the repository;
 `report/assets_test.tex` is the only buildable document (see `docs/REPRODUCE.md`).
