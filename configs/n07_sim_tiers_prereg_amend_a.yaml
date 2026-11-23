@@ -1,0 +1,27 @@
+# Track N2, N07 -- amendment A, written and committed BEFORE any score is computed.
+#
+# Why: in `n07_sim_tiers_prereg.yaml` the primary matched point is "the reader arm's natural
+# feasible false-reject count, per tier". For the coherence tier R that count is 0 in N05 (the
+# statistic is discrete and its leave-one-seed-out 95th percentile lands on the ceiling), and a
+# cut at 0 flags nothing, so the per-tier matched point would be vacuous rather than matched.
+# This is the same discreteness M04 documented for the real clips.
+#
+# Amendment (only this; everything else in n07 stands):
+prereg_version: 1
+date: '2026-11-23'
+status: preregistered_amendment
+amends: configs/n07_sim_tiers_prereg.yaml
+changes:
+  k_ref_rule: >
+    k_ref(tier) = the reader arm's natural leave-one-seed-out feasible false-reject count, as
+    pre-registered, EXCEPT that if that count is 0 the tier's primary matched point is the
+    common 7/80 point N05 used (labelled "discrete-cut fallback" in every table). The per-tier
+    count is reported beside it either way.
+  reporting_addition: >
+    every census row also prints, per arm, the number of feasible clips on which the arm's
+    statistic is NaN (abstention), because R and S can abstain and a rate over a shrunken
+    denominator must be visible.
+notes:
+  - no success criterion changes: all four criteria in n07 are stated on differences, which the
+    fallback does not affect.
+  - this file was committed before `results/n2/n07/per_clip.csv` existed.
