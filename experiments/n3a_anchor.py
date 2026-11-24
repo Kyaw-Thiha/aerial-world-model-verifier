@@ -34,6 +34,9 @@ TII = ROOT / "data/raw/tii"
 E3 = np.array([0.0, 0.0, 1.0])
 TIERS = {"P1": (2.0, 1.0), "P2": (4.0, 1.0), "P3": (6.0, 1.0)}
 MIN_DUR = 1.0
+# the airborne filter is a REAL-footage rule: the simulated clips are rendered in mid-air and never
+# take off or land, so applying it there would throw away valid anchors for no physical reason
+AIRBORNE_FILTER_KINDS = ("uzh", "tii")
 SG = {"fs_hz": 100.0, "window": 31, "poly": 3}
 
 
@@ -70,6 +73,7 @@ def analyse_unit(kind: str, unit: str, t: np.ndarray, acc: np.ndarray, vel: np.n
     t_motion = first_sustained_motion(t, speed)
     t_motion_last = last_sustained_motion(t, speed)
     hover_only = not np.isfinite(t_motion)
+    use_filter = kind in AIRBORNE_FILTER_KINDS
     axis = implied_thrust_axis(acc, vel)
     inside = (t >= t_lo - 1e-9) & (t <= t_hi + 1e-9)
     # the true total tilt at a frame is angle(R_bw^T e3, e3) -- mount-free by construction
@@ -82,9 +86,8 @@ def analyse_unit(kind: str, unit: str, t: np.ndarray, acc: np.ndarray, vel: np.n
     rows = []
     for tier, (thr, dur) in TIERS.items():
         wins_raw = find_windows(theta, t, thr, dur, valid=inside)
-        wins = wins_raw if hover_only else [w for w in wins_raw
-                                           if t[w.start] >= t_motion
-                                           and t[w.stop - 1] <= t_motion_last]
+        wins = wins_raw if (hover_only or not use_filter) else [
+            w for w in wins_raw if t[w.start] >= t_motion and t[w.stop - 1] <= t_motion_last]
         best = select_anchor(wins)
         first = select_anchor_first(wins)
         rec = {"kind": kind, "unit": unit, "tier": tier, "thr_deg": thr, "min_dur_s": dur,
@@ -98,6 +101,20 @@ def analyse_unit(kind: str, unit: str, t: np.ndarray, acc: np.ndarray, vel: np.n
                                                  & (theta <= thr))),
                "t_lo_s": float(t_lo), "t_hi_s": float(t_hi),
                **{f"meta_{k}": v for k, v in meta.items() if not k.startswith("_")}}
+        raw_best = select_anchor(wins_raw)
+        if use_filter and raw_best is not None:
+            # the window the filter rejected: kept so the reason for the rejection is a stored
+            # number and not a claim (pre-takeoff / post-landing rests, amendment B)
+            ra = raw_best.argmin
+            rec["raw_anchor_t_s"] = float(t[ra])
+            rec["raw_anchor_err_deg"] = float(true_tilt[ra])
+            rec["raw_theta_imp_deg"] = float(theta[ra])
+            rec["raw_anchor_alt_above_min_m"] = (None if z is None else float(
+                np.median(z[raw_best.start:raw_best.stop]) - np.nanmin(z)))
+            rec["raw_anchor_before_first_motion"] = int(np.isfinite(t_motion)
+                                                        and t[ra] < t_motion)
+            rec["raw_anchor_after_last_motion"] = int(np.isfinite(t_motion_last)
+                                                     and t[ra] > t_motion_last)
         if best is not None:
             a = best.argmin
             rec.update({
@@ -182,7 +199,8 @@ SURFACE_THR = (2.0, 4.0, 6.0, 8.0, 10.0, 12.0, 15.0)
 SURFACE_DUR = (0.25, 0.5, 1.0)
 
 
-def availability_surface(u: dict) -> list[dict]:
+def availability_surface(edge_u: dict) -> list[dict]:
+    u = edge_u
     """Descriptive: coverage and quietest-window quality over a threshold x duration grid."""
     t = np.asarray(u["t"], float)
     theta = implied_tilt_deg(u["acc"], u["vel"])
@@ -190,14 +208,14 @@ def availability_surface(u: dict) -> list[dict]:
     t_motion = first_sustained_motion(t, speed)
     t_motion_last = last_sustained_motion(t, speed)
     hover_only = not np.isfinite(t_motion)
+    use_filter = edge_u["kind"] in AIRBORNE_FILTER_KINDS
     inside = (t >= u["t_lo"] - 1e-9) & (t <= u["t_hi"] + 1e-9)
     rows = []
     for thr in SURFACE_THR:
         for dur in SURFACE_DUR:
             wins = find_windows(theta, t, thr, dur, valid=inside)
-            air = wins if hover_only else [w for w in wins
-                                           if t[w.start] >= t_motion
-                                           and t[w.stop - 1] <= t_motion_last]
+            air = wins if (hover_only or not use_filter) else [
+                w for w in wins if t[w.start] >= t_motion and t[w.stop - 1] <= t_motion_last]
             rows.append({"kind": u["kind"], "unit": u["unit"], "thr_deg": thr,
                          "min_dur_s": dur, "n_windows": len(wins), "n_airborne": len(air),
                          "dynamic": u["meta"]["dynamic"]})

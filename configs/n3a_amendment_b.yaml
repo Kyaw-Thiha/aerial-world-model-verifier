@@ -1,0 +1,52 @@
+# Track N3, Part A -- amendment B: the airborne requirement, and why it applies only to real
+# footage.
+#
+# Written AFTER the first availability counts existed (they are what revealed the problem) and
+# BEFORE Part B's scores were recomputed. It is a correction of a violated assumption, not a
+# re-threshold: the anchor's physics needs the drone to be supported by thrust alone, and the
+# first count showed the real-footage anchors were pre-takeoff and post-landing rests on a
+# support. Thresholds, tiers, statistics and success criteria do not change; every number in the
+# report is printed both ways.
+amendment: B
+date: '2026-11-24'
+status: preregistered-before-recomputation
+parent: configs/n3a_anchor_prereg.yaml
+
+problem: >
+  The pre-registered anchor assumed "zero lean -> thrust axis vertical". While the drone rests on
+  the ground or on a support, a normal force replaces thrust, so the flatness equation does not
+  hold and a quiet window there does NOT pin the start. The first count showed this is the
+  dominant case on real footage: UZH's quietest 1 s window has a median max-implied-tilt of 0.73
+  deg and sits at 1-4 % of the sequence, i.e. the drone on its support before takeoff, where the
+  measured true tilt is 1-9 deg while the implied tilt is ~0.5 deg. TII's windows sit at 81-99 %
+  of the flight, after the drone has landed (altitude drops to the unit minimum, 0.05-0.07 m).
+
+rule:
+  airborne: >
+    a quiet window qualifies only if it lies strictly between the first and the last "sustained
+    motion" of the unit, defined as |v| >= 2.0 m/s held for >= 0.5 s. A unit whose path never
+    reaches that threshold (a pure hover) is treated as airborne throughout -- there is no takeoff
+    or landing to confuse it with.
+  why_only_real_footage: >
+    the simulated clips are rendered in mid-air: there is no ground contact anywhere in them, so
+    the filter has nothing to remove and applying it would discard a valid anchor whenever a
+    manoeuvre decelerates to a stop at the end of the clip (it removed exactly one, i02_dev_056).
+    The filter is therefore applied to UZH and TII only, and `coverage_raw` (no filter) is printed
+    beside `coverage` for every unit so nothing is hidden.
+  validation: >
+    the rule is checked against the truth, not assumed: on the UZH sequences the excluded windows
+    are the ones whose true tilt disagrees with the implied tilt by up to 9 deg (pre-takeoff), and
+    on TII the excluded windows sit at the minimum altitude of the flight (post-landing). Reported
+    per unit in the availability table.
+  residual_limitation: >
+    a mid-flight pause and a landing are not distinguished by this rule alone; where altitude is
+    available (UZH, TII) the two-sided motion rule covers it, but a unit that lands and takes off
+    again would keep only the windows between the motion runs. No such unit exists in this data.
+
+effects:
+  simulated: P1 coverage unchanged at 9/200 (the filter is not applied); dynamic 0/131.
+  uzh: P1 coverage 12/14 -> 0/14.
+  tii: P1 coverage 6/8 -> 0/8.
+  conclusion_unaffected: >
+    the pre-registered availability criterion fails on the simulated set with or without the
+    filter, and the real-footage rows only become more negative. No success criterion changes.

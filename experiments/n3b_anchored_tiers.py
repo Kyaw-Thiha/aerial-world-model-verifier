@@ -112,9 +112,8 @@ def anchors_for(gt, R_cb, fidx, tiers=TIERS_ANCHOR):
     inside = (t >= fidx[0] / 30.0 - 1e-9) & (t <= fidx[-1] / 30.0 + 1e-9)
     out = {}
     for tier, (thr, dur) in tiers.items():
+        # no airborne filter here: the simulated clips never take off or land (amendment B)
         wins = find_windows(theta, t, thr, dur, valid=inside)
-        wins = wins if hover_only else [w for w in wins if t[w.start] >= t_first
-                                        and t[w.stop - 1] <= t_last]
         best = select_anchor(wins)
         out[tier] = {"t_a": float(t[best.argmin]) if best else None,
                      "n_windows": len(wins),
@@ -476,7 +475,7 @@ def main() -> int:
         }
     summary["criteria"] = crit
     summary["criteria"]["B1_gate"] = {
-        "n3a_availability_P1": "8/200 clips, 0/131 dynamic, 2/26 forest feasible -> FAIL",
+        "n3a_availability_P1": "9/200 clips, 0/131 dynamic, 3/26 forest feasible -> FAIL",
         "consequence": "Part B is DESCRIPTIVE (pre-registered): every detection table carries its "
                        "coverage, and no B2-B5 pass is a confirmatory success.",
     }

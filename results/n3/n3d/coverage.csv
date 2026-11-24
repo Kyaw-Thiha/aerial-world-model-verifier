@@ -15,7 +15,7 @@ i02_dev_012,industrial,0.0,feasible,0,6.324369247920282,0,abstain,1,anchored,1,a
 i02_dev_013,urban_checker,15.0,feasible,1,15.107053776744294,0,abstain,0,abstain,0,abstain
 i02_dev_014,forest_ridge,30.0,feasible,1,33.957636751471355,0,abstain,0,abstain,0,abstain
 i02_dev_015,industrial,45.0,feasible,1,48.1815819425568,0,abstain,0,abstain,0,abstain
-i02_dev_016,urban_checker,0.0,feasible,0,11.749346841910054,0,abstain,0,abstain,0,abstain
+i02_dev_016,urban_checker,0.0,feasible,0,11.749346841910054,0,abstain,0,abstain,1,anchored
 i02_dev_017,forest_ridge,15.0,feasible,0,14.379450004981999,0,abstain,0,abstain,0,abstain
 i02_dev_018,industrial,30.0,feasible,1,28.398605810559804,0,abstain,0,abstain,0,abstain
 i02_dev_019,urban_checker,45.0,feasible,1,38.81400489234023,0,abstain,0,abstain,0,abstain
@@ -35,7 +35,7 @@ i02_dev_032,forest_ridge,0.0,feasible,0,6.923312008702714,0,abstain,1,anchored,1
 i02_dev_033,industrial,15.0,feasible,1,19.06457089544807,0,abstain,0,abstain,0,abstain
 i02_dev_034,urban_checker,30.0,feasible,1,24.025413681506368,0,abstain,0,abstain,0,abstain
 i02_dev_035,forest_ridge,45.0,feasible,1,45.49017280480646,0,abstain,0,abstain,0,abstain
-i02_dev_036,industrial,0.0,feasible,0,9.015001311233659,0,abstain,0,abstain,0,abstain
+i02_dev_036,industrial,0.0,feasible,0,9.015001311233659,0,abstain,1,anchored,1,anchored
 i02_dev_037,urban_checker,15.0,feasible,1,19.200995848551944,0,abstain,0,abstain,0,abstain
 i02_dev_038,forest_ridge,30.0,feasible,1,22.830655995102873,0,abstain,0,abstain,0,abstain
 i02_dev_039,industrial,45.0,feasible,1,38.653062157487724,0,abstain,0,abstain,0,abstain
@@ -55,7 +55,7 @@ i02_dev_052,urban_checker,0.0,feasible,0,7.199468927427341,0,abstain,1,anchored,
 i02_dev_053,forest_ridge,15.0,feasible,1,18.05733062308686,0,abstain,0,abstain,0,abstain
 i02_dev_054,industrial,30.0,feasible,1,36.740844790991936,0,abstain,0,abstain,0,abstain
 i02_dev_055,urban_checker,45.0,feasible,1,35.35555049137239,0,abstain,0,abstain,0,abstain
-i02_dev_056,forest_ridge,0.0,feasible,0,11.59104743914765,0,abstain,0,abstain,0,abstain
+i02_dev_056,forest_ridge,0.0,feasible,0,11.59104743914765,1,anchored,1,anchored,1,anchored
 i02_dev_057,industrial,15.0,feasible,1,17.18260234847158,0,abstain,0,abstain,0,abstain
 i02_dev_058,urban_checker,30.0,feasible,1,23.824216545020338,0,abstain,0,abstain,0,abstain
 i02_dev_059,forest_ridge,45.0,feasible,1,49.379259002892255,0,abstain,0,abstain,0,abstain
@@ -71,11 +71,11 @@ i02_dev_068,forest_ridge,0.0,feasible,0,9.417978674865736,0,abstain,0,abstain,0,
 i02_dev_069,industrial,15.0,feasible,1,16.020939274737017,0,abstain,0,abstain,0,abstain
 i02_dev_070,urban_checker,30.0,feasible,0,0.0,1,anchored,1,anchored,1,anchored
 i02_dev_071,forest_ridge,45.0,feasible,1,39.762109769119654,0,abstain,0,abstain,0,abstain
-i02_dev_072,industrial,0.0,feasible,0,5.895541387371711,0,abstain,1,anchored,0,abstain
+i02_dev_072,industrial,0.0,feasible,0,5.895541387371711,0,abstain,1,anchored,1,anchored
 i02_dev_073,urban_checker,15.0,feasible,1,19.568651954582236,0,abstain,0,abstain,0,abstain
 i02_dev_074,forest_ridge,30.0,feasible,1,27.28679021267087,0,abstain,0,abstain,0,abstain
 i02_dev_075,industrial,45.0,feasible,1,39.01465975765594,0,abstain,0,abstain,0,abstain
-i02_dev_076,urban_checker,0.0,feasible,0,11.408806928128568,0,abstain,0,abstain,0,abstain
+i02_dev_076,urban_checker,0.0,feasible,0,11.408806928128568,0,abstain,0,abstain,1,anchored
 i02_dev_077,forest_ridge,15.0,feasible,1,20.933386437400735,0,abstain,0,abstain,0,abstain
 i02_dev_078,industrial,30.0,feasible,1,26.877896196213662,0,abstain,0,abstain,0,abstain
 i02_dev_079,urban_checker,45.0,feasible,1,48.41899502090036,0,abstain,0,abstain,0,abstain
@@ -84,7 +84,7 @@ i02_dev_081,industrial,15.0,tilt_removed,0,10.139724901901515,0,abstain,1,anchor
 i02_dev_082,urban_checker,30.0,tilt_removed,1,28.6227392089148,0,abstain,0,abstain,0,abstain
 i02_dev_083,forest_ridge,45.0,tilt_removed,1,46.778098115940395,0,abstain,0,abstain,0,abstain
 i02_dev_084,industrial,0.0,tilt_removed,0,8.930221346006041,0,abstain,0,abstain,0,abstain
-i02_dev_085,urban_checker,15.0,tilt_removed,0,13.722432016591824,0,abstain,0,abstain,0,abstain
+i02_dev_085,urban_checker,15.0,tilt_removed,0,13.722432016591824,0,abstain,0,abstain,1,anchored
 i02_dev_086,forest_ridge,30.0,tilt_removed,1,34.83449414264393,0,abstain,0,abstain,0,abstain
 i02_dev_087,industrial,45.0,tilt_removed,1,31.115613728078685,0,abstain,0,abstain,0,abstain
 i02_dev_088,urban_checker,0.0,tilt_removed,0,6.746003485908503,0,abstain,1,anchored,1,anchored
@@ -111,7 +111,7 @@ i02_dev_108,industrial,0.0,mirrored_roll,0,7.913299460270822,0,abstain,1,anchore
 i02_dev_109,urban_checker,15.0,mirrored_roll,1,25.69664368655758,0,abstain,0,abstain,0,abstain
 i02_dev_110,forest_ridge,30.0,mirrored_roll,1,37.13883085134923,0,abstain,0,abstain,0,abstain
 i02_dev_111,industrial,45.0,mirrored_roll,0,11.267035852877472,0,abstain,0,abstain,0,abstain
-i02_dev_112,urban_checker,0.0,mirrored_roll,1,21.213914073405114,0,abstain,0,abstain,0,abstain
+i02_dev_112,urban_checker,0.0,mirrored_roll,1,21.213914073405114,0,abstain,0,abstain,1,anchored
 i02_dev_113,forest_ridge,15.0,mirrored_roll,1,35.01500107295397,0,abstain,0,abstain,0,abstain
 i02_dev_114,industrial,30.0,mirrored_roll,1,33.95815390151026,0,abstain,0,abstain,0,abstain
 i02_dev_115,urban_checker,45.0,mirrored_roll,0,9.997083815241709,0,abstain,0,abstain,1,anchored
@@ -138,7 +138,7 @@ i02_dev_135,industrial,45.0,tilt_scaled,0,12.741036168447845,0,abstain,0,abstain
 i02_dev_136,urban_checker,0.0,tilt_scaled,1,24.44036099123672,0,abstain,0,abstain,0,abstain
 i02_dev_137,forest_ridge,15.0,tilt_scaled,1,42.850067809543596,0,abstain,0,abstain,0,abstain
 i02_dev_138,industrial,30.0,tilt_scaled,0,11.760659790765756,0,abstain,0,abstain,0,abstain
-i02_dev_139,urban_checker,45.0,tilt_scaled,1,15.624960287130587,0,abstain,0,abstain,0,abstain
+i02_dev_139,urban_checker,45.0,tilt_scaled,1,15.624960287130587,0,abstain,0,abstain,1,anchored
 i02_dev_140,forest_ridge,0.0,tilt_scaled,1,32.48037394189065,0,abstain,0,abstain,0,abstain
 i02_dev_141,industrial,15.0,tilt_scaled,1,28.999900204587586,0,abstain,0,abstain,0,abstain
 i02_dev_142,urban_checker,30.0,tilt_scaled,0,8.74101828032178,0,abstain,1,anchored,1,anchored

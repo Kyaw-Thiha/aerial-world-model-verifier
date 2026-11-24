@@ -114,11 +114,17 @@ def matched_cut(scores: dict, feasible: list[str], k: int = 8) -> float | None:
     return vals[kk] if kk < len(vals) else vals[-1]
 
 
-def rates(scores: dict, rows: list[dict], cut: float, stratum, cond: str) -> str:
+def rates(scores: dict, rows: list[dict], cut: float, stratum, cond: str,
+          exclude: set | None = None) -> dict:
+    """Flags over a stratum. ``exclude`` is the abstain set: those clips get no verdict, so they
+    leave both the numerator and the denominator (and are counted in ``abstained``)."""
     sub = [r for r in rows if stratum(r) and r["condition"] == cond]
-    hit = sum(1 for r in sub if np.isfinite(scores.get(r["clip_id"], np.nan))
+    ex = exclude or set()
+    keep = [r for r in sub if r["clip_id"] not in ex]
+    hit = sum(1 for r in keep if np.isfinite(scores.get(r["clip_id"], np.nan))
               and scores[r["clip_id"]] > cut)
-    return f"{hit}/{len(sub)}"
+    return {"detected": hit, "scored": len(keep), "total": len(sub),
+            "abstained": len(sub) - len(keep), "rate": f"{hit}/{len(keep)}"}
 
 
 def main() -> int:
@@ -206,10 +212,11 @@ def main() -> int:
                 "high_mount_feasible": (lambda r: r["mount"] in (30.0, 45.0), "feasible")}
             before = {k: rates(scores, rows, cut_before, fn, cond)
                       for k, (fn, cond) in strat.items()}
-            after_ = {k: rates(scores, rows, cut_after, fn, cond)
+            after_ = {k: rates(scores, rows, cut_after, fn, cond, exclude=flagged)
                       for k, (fn, cond) in strat.items()}
             after[f"{label}|{key}"] = {
                 "cut_before_deg": cut_before, "cut_after_deg": cut_after,
+                "abstained_clips": sorted(flagged),
                 "n_feasible_before": int(sum(1 for c in feas if np.isfinite(scores.get(c["clip_id"], np.nan)))),
                 "n_feasible_after": len(feas_keep),
                 "flagged": f"{len(flagged)}/200",
@@ -246,8 +253,8 @@ def main() -> int:
     a = after[f"oracle|jit"]
     c2 = bool(a["cut_after_deg"] is not None and a["cut_before_deg"] is not None
               and a["cut_after_deg"] <= 12.0
-              and int(a["after"]["tilt_removed"].split("/")[0])
-              >= int(a["before"]["tilt_removed"].split("/")[0]) - 2)
+              and a["after"]["tilt_removed"]["detected"]
+              >= a["before"]["tilt_removed"]["detected"] - 2)
     forest_flagged = int(primary["forest_feasible_flagged"].split("/")[0])
     c3 = forest_flagged <= 8
     summary["criteria"] = {
