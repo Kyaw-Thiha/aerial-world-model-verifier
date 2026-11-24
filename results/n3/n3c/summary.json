@@ -1,0 +1,540 @@
+{
+ "config": {
+  "primary_budget": 0.1,
+  "budgets": [
+   0.05,
+   0.1,
+   0.2
+  ],
+  "tail_deg": 20.0,
+  "tail_deg_alt": 15.0,
+  "primary_flag": "jit"
+ },
+ "tail": {
+  "oracle": {
+   "n": 6,
+   "clips": [
+    "i02_dev_003",
+    "i02_dev_019",
+    "i02_dev_038",
+    "i02_dev_043",
+    "i02_dev_059",
+    "i02_dev_063"
+   ],
+   "mounts": [
+    30.0,
+    45.0
+   ]
+  },
+  "anchor_P3": {
+   "n": 0,
+   "clips": [],
+   "note": "0 or 1 because the anchored arm abstains on 171/200 clips; that is abstention, not a cured tail"
+  },
+  "reader_start": {
+   "n": 6
+  },
+  "fifteen_deg": {
+   "oracle": 9,
+   "reader_start": 14,
+   "anchor_P3": 0
+  }
+ },
+ "target": {
+  "name": "oracle_tail_fallback",
+  "n": 6,
+  "clips": [
+   "i02_dev_003",
+   "i02_dev_019",
+   "i02_dev_038",
+   "i02_dev_043",
+   "i02_dev_059",
+   "i02_dev_063"
+  ]
+ },
+ "after_abstaining": {
+  "oracle|jit": {
+   "cut_before_deg": 16.438485413952133,
+   "cut_after_deg": 10.91532565565101,
+   "n_feasible_before": 80,
+   "n_feasible_after": 74,
+   "flagged": "20/200",
+   "before": {
+    "feasible": "8/80",
+    "tilt_removed": "13/27",
+    "mirrored_roll": "19/27",
+    "forest_removed": "4/9",
+    "forest_feasible": "2/26",
+    "high_mount_feasible": "7/40"
+   },
+   "after": {
+    "feasible": "12/80",
+    "tilt_removed": "18/27",
+    "mirrored_roll": "20/27",
+    "forest_removed": "8/9",
+    "forest_feasible": "3/26",
+    "high_mount_feasible": "11/40"
+   }
+  },
+  "oracle|spike": {
+   "cut_before_deg": 16.438485413952133,
+   "cut_after_deg": 10.91532565565101,
+   "n_feasible_before": 80,
+   "n_feasible_after": 75,
+   "flagged": "20/200",
+   "before": {
+    "feasible": "8/80",
+    "tilt_removed": "13/27",
+    "mirrored_roll": "19/27",
+    "forest_removed": "4/9",
+    "forest_feasible": "2/26",
+    "high_mount_feasible": "7/40"
+   },
+   "after": {
+    "feasible": "12/80",
+    "tilt_removed": "18/27",
+    "mirrored_roll": "20/27",
+    "forest_removed": "8/9",
+    "forest_feasible": "3/26",
+    "high_mount_feasible": "11/40"
+   }
+  },
+  "oracle|rough": {
+   "cut_before_deg": 16.438485413952133,
+   "cut_after_deg": 16.438485413952133,
+   "n_feasible_before": 80,
+   "n_feasible_after": 77,
+   "flagged": "20/200",
+   "before": {
+    "feasible": "8/80",
+    "tilt_removed": "13/27",
+    "mirrored_roll": "19/27",
+    "forest_removed": "4/9",
+    "forest_feasible": "2/26",
+    "high_mount_feasible": "7/40"
+   },
+   "after": {
+    "feasible": "8/80",
+    "tilt_removed": "13/27",
+    "mirrored_roll": "19/27",
+    "forest_removed": "4/9",
+    "forest_feasible": "2/26",
+    "high_mount_feasible": "7/40"
+   }
+  },
+  "oracle|draw_dis": {
+   "cut_before_deg": 16.438485413952133,
+   "cut_after_deg": 16.438485413952133,
+   "n_feasible_before": 80,
+   "n_feasible_after": 78,
+   "flagged": "20/200",
+   "before": {
+    "feasible": "8/80",
+    "tilt_removed": "13/27",
+    "mirrored_roll": "19/27",
+    "forest_removed": "4/9",
+    "forest_feasible": "2/26",
+    "high_mount_feasible": "7/40"
+   },
+   "after": {
+    "feasible": "8/80",
+    "tilt_removed": "13/27",
+    "mirrored_roll": "19/27",
+    "forest_removed": "4/9",
+    "forest_feasible": "2/26",
+    "high_mount_feasible": "7/40"
+   }
+  },
+  "oracle|draw_dis_oracle": {
+   "cut_before_deg": 16.438485413952133,
+   "cut_after_deg": 9.806864410856964,
+   "n_feasible_before": 80,
+   "n_feasible_after": 73,
+   "flagged": "20/200",
+   "before": {
+    "feasible": "8/80",
+    "tilt_removed": "13/27",
+    "mirrored_roll": "19/27",
+    "forest_removed": "4/9",
+    "forest_feasible": "2/26",
+    "high_mount_feasible": "7/40"
+   },
+   "after": {
+    "feasible": "13/80",
+    "tilt_removed": "20/27",
+    "mirrored_roll": "20/27",
+    "forest_removed": "9/9",
+    "forest_feasible": "3/26",
+    "high_mount_feasible": "11/40"
+   }
+  },
+  "reader_start|jit": {
+   "cut_before_deg": 17.981578281069876,
+   "cut_after_deg": 13.443374357928734,
+   "n_feasible_before": 80,
+   "n_feasible_after": 74,
+   "flagged": "20/200",
+   "before": {
+    "feasible": "8/80",
+    "tilt_removed": "13/27",
+    "mirrored_roll": "16/27",
+    "forest_removed": "4/9",
+    "forest_feasible": "3/26",
+    "high_mount_feasible": "8/40"
+   },
+   "after": {
+    "feasible": "14/80",
+    "tilt_removed": "16/27",
+    "mirrored_roll": "20/27",
+    "forest_removed": "7/9",
+    "forest_feasible": "7/26",
+    "high_mount_feasible": "13/40"
+   }
+  },
+  "reader_start|spike": {
+   "cut_before_deg": 17.981578281069876,
+   "cut_after_deg": 15.794599365433903,
+   "n_feasible_before": 80,
+   "n_feasible_after": 75,
+   "flagged": "20/200",
+   "before": {
+    "feasible": "8/80",
+    "tilt_removed": "13/27",
+    "mirrored_roll": "16/27",
+    "forest_removed": "4/9",
+    "forest_feasible": "3/26",
+    "high_mount_feasible": "8/40"
+   },
+   "after": {
+    "feasible": "12/80",
+    "tilt_removed": "13/27",
+    "mirrored_roll": "18/27",
+    "forest_removed": "4/9",
+    "forest_feasible": "5/26",
+    "high_mount_feasible": "11/40"
+   }
+  },
+  "reader_start|rough": {
+   "cut_before_deg": 17.981578281069876,
+   "cut_after_deg": 17.355434308325705,
+   "n_feasible_before": 80,
+   "n_feasible_after": 77,
+   "flagged": "20/200",
+   "before": {
+    "feasible": "8/80",
+    "tilt_removed": "13/27",
+    "mirrored_roll": "16/27",
+    "forest_removed": "4/9",
+    "forest_feasible": "3/26",
+    "high_mount_feasible": "8/40"
+   },
+   "after": {
+    "feasible": "9/80",
+    "tilt_removed": "13/27",
+    "mirrored_roll": "17/27",
+    "forest_removed": "4/9",
+    "forest_feasible": "4/26",
+    "high_mount_feasible": "9/40"
+   }
+  },
+  "reader_start|draw_dis": {
+   "cut_before_deg": 17.981578281069876,
+   "cut_after_deg": 17.981578281069876,
+   "n_feasible_before": 80,
+   "n_feasible_after": 78,
+   "flagged": "20/200",
+   "before": {
+    "feasible": "8/80",
+    "tilt_removed": "13/27",
+    "mirrored_roll": "16/27",
+    "forest_removed": "4/9",
+    "forest_feasible": "3/26",
+    "high_mount_feasible": "8/40"
+   },
+   "after": {
+    "feasible": "8/80",
+    "tilt_removed": "13/27",
+    "mirrored_roll": "16/27",
+    "forest_removed": "4/9",
+    "forest_feasible": "3/26",
+    "high_mount_feasible": "8/40"
+   }
+  },
+  "reader_start|draw_dis_oracle": {
+   "cut_before_deg": 17.981578281069876,
+   "cut_after_deg": 15.567752457590927,
+   "n_feasible_before": 80,
+   "n_feasible_after": 73,
+   "flagged": "20/200",
+   "before": {
+    "feasible": "8/80",
+    "tilt_removed": "13/27",
+    "mirrored_roll": "16/27",
+    "forest_removed": "4/9",
+    "forest_feasible": "3/26",
+    "high_mount_feasible": "8/40"
+   },
+   "after": {
+    "feasible": "13/80",
+    "tilt_removed": "13/27",
+    "mirrored_roll": "19/27",
+    "forest_removed": "4/9",
+    "forest_feasible": "6/26",
+    "high_mount_feasible": "12/40"
+   }
+  },
+  "anchor1_P3|jit": {
+   "cut_before_deg": 0.0,
+   "cut_after_deg": 0.0,
+   "n_feasible_before": 11,
+   "n_feasible_after": 74,
+   "flagged": "20/200",
+   "before": {
+    "feasible": "3/80",
+    "tilt_removed": "5/27",
+    "mirrored_roll": "5/27",
+    "forest_removed": "0/9",
+    "forest_feasible": "1/26",
+    "high_mount_feasible": "0/40"
+   },
+   "after": {
+    "feasible": "3/80",
+    "tilt_removed": "5/27",
+    "mirrored_roll": "5/27",
+    "forest_removed": "0/9",
+    "forest_feasible": "1/26",
+    "high_mount_feasible": "0/40"
+   }
+  },
+  "anchor1_P3|spike": {
+   "cut_before_deg": 0.0,
+   "cut_after_deg": 0.0,
+   "n_feasible_before": 11,
+   "n_feasible_after": 75,
+   "flagged": "20/200",
+   "before": {
+    "feasible": "3/80",
+    "tilt_removed": "5/27",
+    "mirrored_roll": "5/27",
+    "forest_removed": "0/9",
+    "forest_feasible": "1/26",
+    "high_mount_feasible": "0/40"
+   },
+   "after": {
+    "feasible": "3/80",
+    "tilt_removed": "5/27",
+    "mirrored_roll": "5/27",
+    "forest_removed": "0/9",
+    "forest_feasible": "1/26",
+    "high_mount_feasible": "0/40"
+   }
+  },
+  "anchor1_P3|rough": {
+   "cut_before_deg": 0.0,
+   "cut_after_deg": 0.0,
+   "n_feasible_before": 11,
+   "n_feasible_after": 77,
+   "flagged": "20/200",
+   "before": {
+    "feasible": "3/80",
+    "tilt_removed": "5/27",
+    "mirrored_roll": "5/27",
+    "forest_removed": "0/9",
+    "forest_feasible": "1/26",
+    "high_mount_feasible": "0/40"
+   },
+   "after": {
+    "feasible": "3/80",
+    "tilt_removed": "5/27",
+    "mirrored_roll": "5/27",
+    "forest_removed": "0/9",
+    "forest_feasible": "1/26",
+    "high_mount_feasible": "0/40"
+   }
+  },
+  "anchor1_P3|draw_dis": {
+   "cut_before_deg": 0.0,
+   "cut_after_deg": 0.0,
+   "n_feasible_before": 11,
+   "n_feasible_after": 78,
+   "flagged": "20/200",
+   "before": {
+    "feasible": "3/80",
+    "tilt_removed": "5/27",
+    "mirrored_roll": "5/27",
+    "forest_removed": "0/9",
+    "forest_feasible": "1/26",
+    "high_mount_feasible": "0/40"
+   },
+   "after": {
+    "feasible": "3/80",
+    "tilt_removed": "5/27",
+    "mirrored_roll": "5/27",
+    "forest_removed": "0/9",
+    "forest_feasible": "1/26",
+    "high_mount_feasible": "0/40"
+   }
+  },
+  "anchor1_P3|draw_dis_oracle": {
+   "cut_before_deg": 0.0,
+   "cut_after_deg": 0.0,
+   "n_feasible_before": 11,
+   "n_feasible_after": 73,
+   "flagged": "20/200",
+   "before": {
+    "feasible": "3/80",
+    "tilt_removed": "5/27",
+    "mirrored_roll": "5/27",
+    "forest_removed": "0/9",
+    "forest_feasible": "1/26",
+    "high_mount_feasible": "0/40"
+   },
+   "after": {
+    "feasible": "3/80",
+    "tilt_removed": "5/27",
+    "mirrored_roll": "5/27",
+    "forest_removed": "0/9",
+    "forest_feasible": "1/26",
+    "high_mount_feasible": "0/40"
+   }
+  }
+ },
+ "flag_distribution": {
+  "jit": {
+   "p50": 0.5515046214734741,
+   "p75": 1.3064623736389311,
+   "p90": 1.696096757550188,
+   "p95": 1.96377766861081,
+   "p99": 3.1361277359188877
+  },
+  "spike": {
+   "p50": 6.550084266566835,
+   "p75": 12.177509127917562,
+   "p90": 16.241357796326433,
+   "p95": 21.68322347564666,
+   "p99": 36.516451054353375
+  },
+  "rough": {
+   "p50": 9.063883138332372,
+   "p75": 12.017570459029876,
+   "p90": 15.75187665728437,
+   "p95": 19.452507650379815,
+   "p99": 27.34327931589163
+  },
+  "cover": {
+   "p50": 0.0,
+   "p75": 0.0,
+   "p90": 0.0,
+   "p95": 0.0,
+   "p99": 0.0
+  },
+  "draw_dis": {
+   "p50": 0.30041020447827815,
+   "p75": 1.1646763493078596,
+   "p90": 3.550364307547208,
+   "p95": 11.221969140069724,
+   "p99": 31.883232913430216
+  },
+  "draw_dis_oracle": {
+   "p50": 0.8848799343766018,
+   "p75": 3.4526901372052867,
+   "p90": 10.190624200400267,
+   "p95": 16.229378934015187,
+   "p99": 31.13871189945012
+  }
+ },
+ "criteria": {
+  "C1_recall": {
+   "criterion": "jit at the 10 % budget flags >= 2/3 of the target set",
+   "value": "3/6",
+   "pass": false
+  },
+  "C2_operating_point": {
+   "criterion": "after abstaining, oracle matched cut <= 12 deg and removals fall by <= 2",
+   "cut_before": 16.438485413952133,
+   "cut_after": 10.91532565565101,
+   "removals_before": "13/27",
+   "removals_after": "18/27",
+   "pass": true
+  },
+  "C3_forest_cost": {
+   "criterion": "<= 8 of 26 forest feasible clips abstained",
+   "value": "3/26",
+   "pass": true
+  },
+  "all_flags": {
+   "jit|0.05": {
+    "recall": "3/6",
+    "precision": "3/10"
+   },
+   "jit|0.1": {
+    "recall": "3/6",
+    "precision": "3/20"
+   },
+   "jit|0.2": {
+    "recall": "4/6",
+    "precision": "4/40"
+   },
+   "spike|0.05": {
+    "recall": "0/6",
+    "precision": "0/10"
+   },
+   "spike|0.1": {
+    "recall": "3/6",
+    "precision": "3/20"
+   },
+   "spike|0.2": {
+    "recall": "3/6",
+    "precision": "3/40"
+   },
+   "rough|0.05": {
+    "recall": "0/6",
+    "precision": "0/10"
+   },
+   "rough|0.1": {
+    "recall": "0/6",
+    "precision": "0/20"
+   },
+   "rough|0.2": {
+    "recall": "0/6",
+    "precision": "0/40"
+   },
+   "cover|0.05": {
+    "recall": "0/6",
+    "precision": "0/10"
+   },
+   "cover|0.1": {
+    "recall": "0/6",
+    "precision": "0/20"
+   },
+   "cover|0.2": {
+    "recall": "0/6",
+    "precision": "0/40"
+   },
+   "draw_dis|0.05": {
+    "recall": "0/6",
+    "precision": "0/10"
+   },
+   "draw_dis|0.1": {
+    "recall": "0/6",
+    "precision": "0/20"
+   },
+   "draw_dis|0.2": {
+    "recall": "0/6",
+    "precision": "0/29"
+   },
+   "draw_dis_oracle|0.05": {
+    "recall": "1/6",
+    "precision": "1/10"
+   },
+   "draw_dis_oracle|0.1": {
+    "recall": "3/6",
+    "precision": "3/20"
+   },
+   "draw_dis_oracle|0.2": {
+    "recall": "5/6",
+    "precision": "5/40"
+   }
+  }
+ }
+}

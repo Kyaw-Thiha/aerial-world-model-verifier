@@ -1,0 +1,48 @@
+# Track N3, Part A -- amendment A: the derivative pipeline for the real footage.
+#
+# Written and committed AFTER n3a_anchor_prereg.yaml and BEFORE the first anchor count exists on
+# any clip. It fills one gap the parent pre-registration left open: the simulated clips carry
+# `acc` and `vel` directly, the real footage carries position only, so the anchor statistic needs
+# a stated differentiation rule. No threshold, no criterion and no arm changes.
+amendment: A
+date: '2026-11-24'
+status: preregistered
+parent: configs/n3a_anchor_prereg.yaml
+
+accelerations:
+  simulated:
+    source: data/n05/gt/<clip>.npz fields `acc` (m/s^2) and `vel` (m/s), 250 Hz -- the same arrays
+      the frozen required side is built from. Used as the primary reading.
+    sensitivity: >
+      the same clip positions differentiated with the rule below, so the report can say whether
+      the availability numbers depend on the more accurate analytic derivatives.
+  uzh:
+    source: data/uzh/<seq>/truth.npz field `gt` (N, 8): column 0 unix seconds, columns 1:4 position
+      (m), 4:8 body-to-world quaternion, 500 Hz.
+    rule: >
+      sample the position onto a uniform 100 Hz grid by linear interpolation over the truth's own
+      time base, then velocity and acceleration from a single Savitzky-Golay filter with deriv=2,
+      window 31 samples (0.31 s), polyorder 3 (scipy.signal.savgol_filter, mode="interp").
+      Velocity for the drag term comes from the same filter with deriv=1 and the same window.
+  tii:
+    source: data/raw/tii/{autonomous,piloted}/mocap_*.csv via src.datasets.tii.load_tii
+      (274.73 Hz, positions verified against the released rotation matrices by that module).
+    rule: identical (100 Hz grid, deriv=2/deriv=1, window 31, polyorder 3).
+  why_0p31_s: >
+    short enough to keep a 1 s hover inside one window, long enough that a degree-3 fit is
+    well-determined and that handheld/mocap position noise is suppressed before the second
+    derivative. Fixed before any anchor count was computed.
+
+intervals:
+  simulated: the first to the last scored frame of the stride-2 reader grid (t = frame / 30).
+  uzh: the full 450-frame prepared interval, [t_unix[0] - gt_t0, t_unix[-1] - gt_t0].
+  tii: the full flight.
+
+mount_sensitivity:
+  rule: >
+    reported for the simulated set only, where the mount is known exactly: err with `R_cb` and with
+    `R_cb` rotated by +2 and +5 deg about body x. Because the anchor error equals the clip's true
+    tilt (see src/verdict/anchor.py), the mount does not change it; what changes is the direction
+    of the implied world-up in the camera, and that consequence is measured in Part B, not here.
+    The number reported in Part A is therefore the angle between the two implied anchor
+    directions, `angle(R_cb^T e3, R_cb_hat^T e3)`, which is exactly the perturbation size.
