@@ -21,10 +21,8 @@ import numpy as np
 
 from src.perception.frames import camera_to_body_pitched
 from src.verdict.anchor import (E3, angle_between_deg, find_windows,
-                                first_sustained_motion, implied_thrust_axis,
-                                implied_tilt_deg, last_sustained_motion,
-                                propagate_from, propagate_from_nearest, select_anchor,
-                                snap_to_grid, up_cam_at_anchor)
+                                implied_tilt_deg, propagate_from, propagate_from_nearest,
+                                select_anchor, snap_to_grid, up_cam_at_anchor)
 from src.depicted.clips import up_body_from_lean
 from src.physics.flatness import angle_between_deg as axis_angle_deg
 from src.verdict.lean import depicted_lean_from_gravity
@@ -106,9 +104,6 @@ def anchors_for(gt, R_cb, fidx, tiers=TIERS_ANCHOR):
     t = np.asarray(gt["t"], float)
     theta = implied_tilt_deg(np.asarray(gt["acc"], float), np.asarray(gt["vel"], float))
     speed = np.linalg.norm(np.asarray(gt["vel"], float), axis=1)
-    t_first = first_sustained_motion(t, speed)
-    t_last = last_sustained_motion(t, speed)
-    hover_only = not np.isfinite(t_first)
     inside = (t >= fidx[0] / 30.0 - 1e-9) & (t <= fidx[-1] / 30.0 + 1e-9)
     out = {}
     for tier, (thr, dur) in tiers.items():
