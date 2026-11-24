@@ -1,0 +1,108 @@
+% Track N3 — candidate section for the report.
+% Numbers from results/n3/{n3a,n3b,n3c,n3d}/summary.json at the commits in docs/N3_STATE.md.
+% Pre-registrations: configs/n3a_anchor_prereg.yaml (+ amendments A and B),
+% configs/n3b_anchored_tiers_prereg.yaml, configs/n3c_drift_flag_prereg.yaml.
+% Do not edit the main LaTeX files from this branch.
+
+\section{Can the start attitude come from the path instead of the pixels?}
+\label{sec:n3-anchored-start}
+
+\paragraph{Decision.}
+\textbf{No: the anchor is the most accurate start in the study and it is almost never available.}
+A quiet window in the trajectory pins the start by physics, and where one exists the anchored lean
+is accurate to a median $0.03^\circ$ on feasible clips --- within $0.01^\circ$ of an oracle start and
+about a degree better than the reader --- but the window exists in \textbf{9 of 200} simulated
+development clips ($4.5\,\%$), in \textbf{0 of 131} dynamic clips, and in \textbf{0 of 14} UZH
+sequences and \textbf{0 of 8} TII flights once rests on a support are excluded. The pre-registered
+availability gate fails, the anchored arm detects 6/27 tilt removals at a matched 8/80 pooled
+false-reject against the reader's 22/27, and no forest removal and none of the six drift-tail clips
+has an anchor at any threshold up to $6^\circ$.
+
+\paragraph{Question.}
+Track N and N2 established that attitude propagates accurately from video rotation given a start
+good to about $2^\circ$, and that the reader's start imports a scene bias of $8$--$10^\circ$ in the
+simulated forest. The start was therefore the whole problem. This section tests a start that needs
+no pixels: when acceleration and velocity are near zero, differential flatness forces a zero lean,
+so the thrust axis is vertical and the world-up in the camera is the known mount rotation applied to
+vertical, $u_{\mathrm{cam}}(t_a) = R_{cb}^{\top}e_3$; the existing propagation then runs forward and
+backward from that frame.
+
+\paragraph{Setup.}
+The anchor statistic is the implied tilt of the thrust axis,
+$\theta_{\mathrm{imp}}(t) = \angle(a + g e_3 + k_d v,\; e_3)$, with the frozen values
+$g = 9.80665$ and $k_d = 0.295\,\mathrm{s}^{-1}$; on the simulated truth it reproduces the stored
+required tilt to $0.005^\circ$. Three tiers were pre-registered from the physics ---
+$\theta_{\mathrm{imp}} \le 2^\circ$ held for $1\,\mathrm{s}$ (primary), $\le 4^\circ$, $\le 6^\circ$ ---
+together with a selection rule (smallest mean implied tilt, ties earliest) and a definition of the
+anchor error. Part A uses truth trajectories only: the 200 development clips at $250\,\mathrm{Hz}$,
+the 14 UZH-FPV sequences at $500\,\mathrm{Hz}$ and the eight TII development flights at
+$274.73\,\mathrm{Hz}$. Part B propagates DPVO rotation from the anchor and runs $F_0$, $C_2$ and the
+coherence tier against the reader at a matched pooled false-reject with abstentions counted as
+non-detections. Part C pre-registers a label-free reliability flag for the $20^\circ$ drift tail.
+No held-out clip was read; compute was CPU only and cost nothing.
+
+\paragraph{Anchor availability and accuracy (Part A).}
+Table~\ref{tab:n3-availability} is the central result. A $2^\circ$, $1\,\mathrm{s}$ anchor exists in
+the eight hover clips plus one accel-brake clip and in nothing else: every manoeuvring family
+(ellipse, turn, slalom, lemniscate, climb-turn, accel-brake) is at zero. The full availability
+surface shows the trade-off is not gentle: reaching a third of the clips needs a $10^\circ$
+allowance at $1\,\mathrm{s}$, and a $10^\circ$ start error is the size of the forest bias the reader
+already has. The quietest $1\,\mathrm{s}$ window of a development clip has a maximum implied tilt of
+$3.6^\circ$ at the 10th percentile and $15.4^\circ$ at the median.
+
+\begin{table}[t]
+\centering
+\caption{Anchor availability ($k/n$) and anchor error by tier. ``Dynamic'' is the Track I
+definition, peak required tilt $\ge 15^\circ$ (131 of 200 clips). The anchor error is the angle
+between the true world-up in the camera at the anchor frame and $R_{cb}^{\top}e_3$, which equals the
+clip's true tilt there and contains no mount term.}
+\label{tab:n3-availability}
+\begin{tabular}{lrrrrr}
+\hline
+tier & all 200 & dynamic 131 & forest feas.\ 26 & err.\ median & err.\ p90 \\
+\hline
+$2^\circ$, $1\,\mathrm{s}$ & 9/200 & \textbf{0/131} & 3/26 & $0.00^\circ$ & $0.00^\circ$ \\
+$4^\circ$, $1\,\mathrm{s}$ & 25/200 & 0/131 & 4/26 & $2.24^\circ$ & $2.81^\circ$ \\
+$6^\circ$, $1\,\mathrm{s}$ & 37/200 & 2/131 & 4/26 & $2.30^\circ$ & $3.54^\circ$ \\
+\hline
+UZH, 14 sequences, $2^\circ$ & 0/14 & 0/14 & --- & --- & --- \\
+TII, 8 flights, $2^\circ$ & 0/8 & 0/8 & --- & --- & --- \\
+\hline
+\end{tabular}
+\end{table}
+
+On real footage the physics needs one correction that the simulated set does not: while the drone
+rests on a support a normal force replaces thrust, so a quiet window there does not pin the start.
+All twelve raw UZH anchors sit before the first sustained motion, with a true tilt of
+$0.33$--$9.24^\circ$ while the implied tilt is at most $0.12^\circ$, and the raw TII anchors are
+pre-start rests or windows after the last sustained motion. Requiring the window to lie between the
+first and the last $|v| \ge 2\,\mathrm{m\,s^{-1}}$ removes them all.
+
+\paragraph{Verdict tiers from the anchor (Part B, descriptive because the availability gate fails).}
+At the matched pooled $8/80$ feasible false-reject the anchored arm flags 8 of the 16 feasible clips
+it can score and detects 6/27 tilt removals (reader 22/27), 6/27 mirrored rolls (15/27) and 0/9
+forest removals (9/9); the six drift-tail clips and all nine forest removal clips have no anchor at
+any tier, so those cells are fixed by coverage, not by the statistic. The informative reading is on
+the clips that do have an anchor: there the anchored $F_0$ is a median $0.03^\circ$ on feasible
+clips against the reader's $1.17^\circ$ (maximum $9.08^\circ$) and a reader start's $1.08^\circ$, and
+a cut at the worst anchored feasible residual separates $0/16$ feasible from 6/6 removals, 5/6
+mirrors and 6/6 scale edits. Those cells hold 16 and 21 clips and their null is a simulated hover
+with exactly zero lean, so they are a mechanism check rather than a performance claim.
+
+\paragraph{The drift tail is half predictable (Part C).}
+The tail $F_0$ cut is set by six feasible clips above $20^\circ$, all at $30$ or $45^\circ$ mount. A
+single-draw rotation-increment roughness (the 90th percentile of $|w_k - w_{k-1}|$ on the per-frame
+rotation increments) flags three of the six at a pre-registered $10\,\%$ abstention budget; abstaining
+on those twenty clips lets the oracle-start cut fall from $16.44^\circ$ to $10.92^\circ$ and raises its
+removals from 13/27 to 15/24 at an unchanged false-reject count (8 of 74). The pre-registered recall
+criterion ($\ge 2/3$) fails, and the two-draw disagreement is the better flag ($8/8$ forest removals
+after abstaining) at twice the pose cost.
+
+\paragraph{What this establishes.}
+The obstacle to a pixel-free start is coverage, not accuracy: the simulated manoeuvres and the real
+flights analysed here never stop in the air, so the trajectory almost never pins the vertical where
+the reader is biased. A generator or a dataset that includes genuine hovers --- delivery, inspection,
+a policy that pauses --- would give the anchored lean the accuracy measured here; it would not give
+it reach over the dynamic clips that the verifier exists to check. The practical reading is that the
+start remains a sensor or conditioning-input question (a $2^\circ$ external attitude, as N2A priced),
+not a trajectory-processing one.

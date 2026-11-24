@@ -148,7 +148,7 @@ def last_sustained_motion(t: np.ndarray, speed: np.ndarray, thr: float = 2.0,
     for i in range(len(above) - 1, -1, -1):
         run = run + 1 if above[i] else 0
         if run >= n_need:
-            return float(t[i])
+            return float(t[i + n_need - 1])  # the last sample of the last qualifying run
     return float("-inf")
 
 

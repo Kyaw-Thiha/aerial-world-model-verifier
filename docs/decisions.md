@@ -814,3 +814,44 @@ Every row below was read from the project's own repo/HF card on 2026-11-10. "ver
   does reproduce N05's published draw-2 C2 values exactly (median |diff| 0.0 over 200 clips) and is
   the second draw N08 uses. N06's published numbers stand as reported, unrecomputed. No file was
   modified; the observation is recorded here and in N2B/N_STATE.
+
+## Track N3 — path-anchored start (2026-11-24, branch `track-n3-anchored-start`)
+
+- [N3-a] **The anchor route fails on availability, not on accuracy.** With the pre-registered
+  definition (implied thrust-axis tilt `theta_imp = angle(a + g e3 + k_d v, e3) <= 2 deg` held for
+  1 s inside the scored interval) **9 of the 200 simulated development clips** have an anchor
+  (4.5 %), **0 of 131** dynamic clips, and 3 of 26 feasible forest clips. The anchors that exist
+  are exactly the eight hover clips plus one accel-brake clip. On real footage, after excluding
+  rests on a support, UZH gives 0/14 and TII 0/8 at the same tier. The pre-registered
+  `availability_P1` criterion is recorded as FAIL and Part B is descriptive, as pre-registered.
+- [N3-b] **A quiet window cannot be told from a drone on a support without a takeoff test.**
+  UZH's quietest 1 s window has a median max-implied tilt of 0.73 deg and sits at 1-4 % of the
+  sequence; all 12 raw UZH anchors are before the first sustained motion, with a true tilt of
+  0.33-9.24 deg against an implied tilt of <= 0.12 deg, because a normal force replaces thrust
+  while the drone waits. TII's raw anchors are 4 pre-start rests and 2 windows after the last
+  sustained motion. Amendment B adds the rule "the window must lie strictly between the first and
+  the last |v| >= 2 m/s for 0.5 s; a unit that never reaches that speed is airborne throughout",
+  and it is applied to real footage only — the simulated clips are rendered in mid-air and the
+  filter would only discard a valid anchor (exactly one: `i02_dev_056`). Recorded because the
+  criterion was fixed before this problem was visible.
+- [N3-c] **Where an anchor exists the anchored lean is the most accurate lean in the study, and it
+  still detects nothing.** On the 16 feasible clips with a 6 deg anchor, F0 is a median 0.03 deg
+  (max 2.54) against the reader's 1.17 deg (max 9.08) and a reader start's 1.08 deg (max 9.14),
+  i.e. within 0.01 deg of an oracle start. At the matched pooled 8/80 the anchored arm detects
+  6/27 removals and 6/27 mirrors (reader 22/27 and 15/27) because it scores only 16 feasible and 21
+  defect clips; **no forest tilt-removal clip and none of the six drift-tail clips has an anchor at
+  any tier up to 6 deg**, so the forest ceiling is 0/9 by coverage. All five behavioural criteria
+  fail (B4's drift pass is vacuous: the tail clips abstain).
+- [N3-d] **Pre-registered UZH verdict table not identifiable, and it is not printed.** The
+  pre-registration promised a descriptive anchored UZH comparison. After the airborne filter the
+  anchored arm has 0/14 sequences at P1/P2 and 1/14 at P3, so no condition-wise table exists; the
+  substitution of a reader start for the missing anchors is explicitly forbidden, and a table of
+  n = 1 is not printed. The reader reference stays N02b's. This is a narrowing of the promised
+  analysis, recorded rather than silently dropped.
+- [N3-e] **The drift tail is half predictable from one pose draw.** A rotation-increment roughness
+  (`jit`, p90 of |w_k - w_{k-1}|) flags 3 of the 6 oracle-start tail clips at a label-free 10 %
+  budget (20/200 clips; 14 of them at 45 deg mount). Abstaining on those 20 drops the oracle arm's
+  matched cut from 16.44 to 10.92 deg and raises removals from 13/27 to 15/24, at an unchanged
+  8 false-rejects among 74 surviving feasible clips. The pre-registered recall criterion (>= 2/3)
+  fails. The two-draw disagreement is the better flag (8/8 forest removals after abstaining) at
+  double the pose cost, and `cover` and the polynomial rotation residual are uninformative.

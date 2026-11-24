@@ -172,3 +172,20 @@ H04 reader/path data.
 
 **N2 spend: 0.00 USD.** Track N total after N2: **4.45 USD** of its 30 USD ceiling; the 25 USD
 ceiling of this handoff is untouched (24.94 USD unspent).
+
+## Track N3 — path-anchored start (2026-11-24)
+
+Ceiling for this track: **15 USD** (handoff 29). Nothing was estimated above 5 USD because nothing
+needed a GPU: every N3 number is a CPU reanalysis of the stored Track N truth, reader scores and
+DPVO poses, the UZH mocap truth and the TII mocap CSVs. No Modal app, volume or R2 write was
+created, and no long job was run detached.
+
+| date | track | job | GPU | hours | USD | notes |
+| --- | --- | --- | --- | --- | --- | --- |
+| 2026-11-24 | N3 | N3A anchor availability (200 clips + 14 UZH + 8 TII) | — | 0 (CPU ~20 s) | **0.00** | local CPU |
+| 2026-11-24 | N3 | N3B anchored tiers (10 arms × 2 draws × 200 clips) | — | 0 (CPU ~12 s) | **0.00** | local CPU |
+| 2026-11-24 | N3 | N3C drift flag (2 draws, 200 clips) | — | 0 (CPU ~17 s) | **0.00** | local CPU |
+| 2026-11-24 | N3 | N3D fallback coverage | — | 0 (CPU ~2 s) | **0.00** | local CPU |
+
+**N3 spend: 0.00 USD.** No billing check was needed (`modal billing report` covers only Modal
+spend, and no Modal resource was created or used). Track N total across N, N2 and N3: **4.45 USD**.

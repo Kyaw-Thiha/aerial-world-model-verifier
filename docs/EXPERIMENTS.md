@@ -462,3 +462,36 @@ that the reader does not have. A reader start imports the forest bias (forest fe
 against 8.7°); a 2° external attitude behaves like the oracle (2.5° vs 1.7°) and matches the
 reader's forest curve. The M04 sign tier is bimodal (feasible scores 0 or 1) and cannot run at a
 5–10 % budget. Two-draw averaging does not meet its pre-registered reduction. Part D is gated off.
+
+## Track N3 — path-anchored start for the propagated lean (branch `track-n3-anchored-start`)
+
+Extends Track N2. The question: can the start attitude come from the path instead of the pixels?
+A quiet window in the trajectory forces a near-zero lean, so the thrust axis is vertical and the
+world-up in the camera is `R_cb^T e3`; the existing propagation then runs forward and backward from
+that frame. CPU reanalysis of the Track N truth, reader scores and DPVO poses; **no GPU job, no new
+reader run, zero spend**. Held-out clips never read.
+
+| ID | experiment | stored results | report | configs |
+| --- | --- | --- | --- | --- |
+| N3A | anchor availability and accuracy from ground truth alone (no video): implied-tilt windows at 2/4/6 deg x 1 s, selection, anchor error, model check, 200 dev clips + 14 UZH sequences + 8 TII flights | `results/n3/n3a/{windows.csv,surface.csv,summary.json}` | `reports/N3A_anchor_availability.md` | `n3a_anchor_prereg.yaml`, `n3a_amendment_a.yaml` (derivative pipeline), `n3a_amendment_b.yaml` (airborne requirement) |
+| N3B | F0 / C2 / R on the anchor-propagated lean over the 200 dev clips; `anchor1`/`_P2`/`_P3`/`anchor_multi` plus oracle-window and the N2A reference arms; matched 8/80, 5/7/10 curve; pre-registered criteria | `results/n3/n3b/{per_clip.csv,per_clip_draw2.csv,summary.json}` | `reports/N3B_anchored_tiers.md` | `n3b_anchored_tiers_prereg.yaml` |
+| N3C | label-free reliability flag for the 20 deg drift tail (`jit`, `spike`, `rough`, `cover`, two-draw disagreement) at 5/10/20 % budgets, with the after-abstaining operating point | `results/n3/n3c/{flags.csv,sensitivity.csv,summary.json}` | `reports/N3C_drift_flag.md` | `n3c_drift_flag_prereg.yaml` |
+| N3D | Part D fallbacks: what the verdict is for a clip with no anchor (abstain), coverage cost by family/mount/condition | `results/n3/n3d/{coverage.csv,summary.json}` | `reports/N3B_anchored_tiers.md` §Part D | — (rule in the N3A/N3B pre-registrations) |
+
+Regenerate (all CPU, under a minute total, zero spend):
+
+```
+PYTHONPATH=. pixi run python experiments/n3a_anchor.py
+PYTHONPATH=. pixi run python experiments/n3b_anchored_tiers.py
+PYTHONPATH=. pixi run python experiments/n3c_drift_flag.py
+PYTHONPATH=. pixi run python experiments/n3d_fallbacks.py
+```
+
+Headline: the anchor gate **fails on availability** — 9/200 dev clips, 0/131 dynamic clips, 3/26
+feasible forest clips at 2 deg / 1 s (0/14 UZH and 0/8 TII once rests on a support are excluded) —
+so Part B is descriptive. Where an anchor exists it is the most accurate lean in the study (F0
+0.03 deg on the 16 anchored feasible clips against the reader's 1.17 and a reader start's 1.08,
+within 0.01 deg of an oracle start), yet it detects 6/27 removals at the matched 8/80 because no
+forest removal and none of the six drift-tail clips has an anchor. The drift tail is half
+predictable from one pose draw (3/6 at a 10 % abstention budget), which lets the oracle arm's cut
+fall from 16.4 to 10.9 deg.

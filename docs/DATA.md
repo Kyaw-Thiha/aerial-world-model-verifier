@@ -222,3 +222,21 @@ paths/paths.npz}`. The 100 held-out simulated clips are not present and were nev
 reported as "run 2": it now duplicates draw 1 on 188/200 clips. `data/n05/poses/sim200/scale1_rep2`
 does reproduce N05's draw-2 C2 values exactly and is the second draw N08 uses. N06's published
 run-2 numbers are not recomputed. Recorded in `docs/decisions.md`.
+
+## 12. Track N3 artefacts (2026-11-24)
+
+Branch `track-n3-anchored-start` (off `track-n2-sim-tiers`). CPU reanalysis only: no new reader
+run, no new DPVO run, no Modal app, no volume, no R2 write.
+
+| path | size | what | rebuild |
+| --- | --- | --- | --- |
+| `results/n3/n3a/` | < 700 KB | every number in N3A: per-unit window rows, the threshold × duration surface, the summary | `experiments/n3a_anchor.py` |
+| `results/n3/n3b/` | < 300 KB | per-clip tier scores for 10 arms × 2 draws, the matched/curve/criteria summary | `experiments/n3b_anchored_tiers.py` |
+| `results/n3/n3c/` | < 100 KB | per-clip flag statistics, the budget sensitivity table, the after-abstaining operating point | `experiments/n3c_drift_flag.py` |
+| `results/n3/n3d/` | < 50 KB | the no-anchor coverage table | `experiments/n3d_fallbacks.py` |
+
+Inputs are the Track N caches read through the shared gitignored `data/` tree:
+`data/n05/{gt,scores,poses/sim200/scale1,scale1_rep2}`, `data/uzh/<seq>/{truth.npz,meta.json}`,
+`data/raw/tii/{autonomous,piloted}/mocap_*.csv`, and the staged Track I manifest
+`results/n2/inputs/manifest.csv` (sha256 `50aacbb2…ce6794`). This worktree's `data/` is a symlink to
+`~/Documents/Projects/aerial-world-model-verifier/data`; nothing under `data/` was written.
