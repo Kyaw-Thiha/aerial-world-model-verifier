@@ -21,7 +21,7 @@ nothing under `data/` was written.
 | **Part A** — anchor availability and accuracy from truth (no video) | **done** | `reports/N3A_anchor_availability.md` |
 | **Part B** — F0/C2/R on the anchor-propagated lean, 200 dev clips | **done**, descriptive (B1 gate fails) | `reports/N3B_anchored_tiers.md` |
 | **Part C** — label-free drift flag | **done** | `reports/N3C_drift_flag.md` |
-| **Part D** — fallbacks for clips with no anchor | **done** (was required: P1 dynamic coverage 0/131) | `reports/N3B_anchored_tiers.md` §Part D |
+| **Part D** — fallbacks for clips with no anchor | **done** (was required: P1 dynamic coverage 0/131) | `reports/N3D_no_anchor_fallbacks.md` (summary also in N3B §Part D) |
 | Docs, ledger, tests, LaTeX candidate | done | `report_candidates/n3_anchored_start.tex` |
 
 ## Decisions in one line each
