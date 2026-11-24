@@ -1,0 +1,154 @@
+# Track N3, Part A -- anchor availability and accuracy from ground truth only (no video).
+#
+# NEW pre-registration, written and committed BEFORE any anchor availability or anchor error is
+# computed on any clip. Thresholds below are chosen from the physics of the flatness equation
+# (what a quiet window guarantees about the thrust axis), not from any outcome. No frozen config
+# is edited (configs/sim_splits_frozen.json cdf66e28..., configs/sim_prereg.yaml 245b68bf...).
+prereg_version: 1
+date: '2026-11-24'
+status: preregistered
+track: N3
+owner_branch: track-n3-anchored-start
+extends: [N05, N06, N2A]
+
+question: >
+  A quiet window pins the start attitude by physics: when the acceleration and velocity are near
+  zero, differential flatness forces a (near) zero lean, so the thrust axis is (near) vertical and
+  the world-up direction in the camera is the known mount rotation applied to vertical. How often
+  is such a window available inside a scored clip, where does it sit, and how large is the anchor
+  error (true world-up in the camera at the window against the physics-implied one)?
+
+# --------------------------------------------------------------------------------- population
+population:
+  simulated:
+    clips: the 200 development clips of Track I's frozen split (i02_dev_*), manifest staged
+      read-only at results/n2/inputs/manifest.csv (sha256 50aacbb2...ce6794). The 100 held-out
+      clips (split field_settlement / coastal_cliff) are filtered out BEFORE any file is opened.
+    truth: data/n05/gt/<clip>.npz at 250 Hz -- pos, vel, acc, yaw, R_bw, R_cb, lean_req,
+      tilt_req (degrees, verified equal to the flatness prediction to 0.005 deg on a spot check).
+    posed_frames: data/n05/poses/sim200/scale1/<clip>.npz (DPVO draw 1), 30 fps, whole clip.
+    scored_frames: data/n05/scores/<clip>.npz `frame` (stride 2, 179 frames at 15 Hz).
+  uzh:
+    clips: the 14 UZH-FPV sequences in data/uzh/<seq>/{meta.json,truth.npz}, 500 Hz mocap truth
+      (pos + quat) as used by N02b. Read-only. These are development footage; no held-out real
+      flight is read.
+    mount: published_mount(meta) (Kolff et al. / the released drone_to_camera matrix).
+  tii:
+    clips: the 8 development flights whose mocap is local (data/raw/tii/{autonomous,piloted}/
+      mocap_*.csv, 274.73 Hz), loaded by src/datasets/tii.py. TII is EXCLUDED from every verdict
+      number by instruction (racing rotation is too fast for propagation); it is included here
+      only because Part A needs no video, and it is reported as its own row and never pooled with
+      the simulated set.
+
+# --------------------------------------------------------------------------------- the anchor
+# Physics.  q(t) = a(t) + g e3 + k_d v(t); the thrust axis is q/|q| and the lean is zero iff q is
+# vertical. So the ONLY quantity that decides whether a window pins the start is the angle between
+# q and e3 -- no outcome, no reader, no video.
+anchor:
+  g_m_s2: 9.80665            # the value the N07 required side uses
+  k_d_per_s: 0.295           # the project's frozen fitted drag (schema v3 exact)
+  implied_tilt_deg: >
+    theta_imp(t) = degrees(arccos( (q(t)/|q(t)|) . e3 )), q = a + g e3 + k_d v. Rows where
+    |q| < 1e-6 are excluded (free fall carries no thrust direction; none expected).
+  tiers:
+    P1: {theta_thr_deg: 2.0, min_duration_s: 1.0, status: primary}
+    P2: {theta_thr_deg: 4.0, min_duration_s: 1.0, status: secondary}
+    P3: {theta_thr_deg: 6.0, min_duration_s: 1.0, status: secondary}
+  tier_rationale: >
+    P1 is set by the requirement the start be good to about 2 deg, because N2A showed a 2 deg
+    start error costs only 0.8 deg on the propagated F0 of feasible clips while the 8-10 deg
+    reader start imports the forest bias. The 1.0 s duration is long enough (15-30 samples) that
+    the window is a hover/pause rather than a single sample crossing zero. P2 and P3 price the
+    availability cost of relaxing the requirement; they are not the primary arm.
+  window: >
+    a maximal contiguous run of frames with theta_imp <= theta_thr, kept iff its duration is
+    >= min_duration_s. Windows are searched INSIDE the scored interval only (sim: the first to the
+    last scored frame; UZH: the clip's frame range), because an anchor outside the interval cannot
+    start a propagation that covers it.
+  selection:
+    single: >
+      among qualifying windows, the one with the smallest MEAN theta_imp; ties (within 1e-9 deg)
+      go to the earliest. The anchor frame is the frame of minimum theta_imp inside that window
+      (ties: earliest), snapped to the nearest posed frame. This is arm `anchor1`, the primary arm.
+    multi: >
+      every qualifying window contributes its own minimum-theta_imp frame; each scored frame is
+      propagated from the NEAREST such anchor frame (backward or forward). This is arm
+      `anchor_multi`, secondary: it is the drift-minimising reading of the same physics, and it
+      costs nothing extra.
+    no_anchor: >
+      a clip with no qualifying window has no anchor. It is NOT given a substitute start (no
+      reader start, no level start); it abstains from every anchored arm and is counted as such.
+  derived_start: >
+    the anchor supplies u_cam(t_a) = R_cb^T e3; the propagation is the existing Track N form
+    up_k = (R_est(k)^T R_est(t_a)) u_cam(t_a), lean = depicted_lean_from_gravity(up_k, R_cb).
+  accuracy_statistic: >
+    err = angle between the TRUE world-up in the camera at the anchor frame,
+    u_true = R_cb^T R_bw(t_a)^T e3, and the physics-implied R_cb^T e3. With the mount exact this is
+    the clip's true total tilt at the anchor frame; a mount error enters as a rotation, not as a
+    constant offset, and is priced separately below.
+  model_check: >
+    beside err, the angle between the implied thrust axis q/|q| and the TRUE body z axis
+    R_bw(t_a) e3. This is the flatness model's own residual (zero by construction on sim up to the
+    g value; non-zero on real footage where drag is not exactly k_d v) and separates "the anchor
+    is quiet" from "the physics model is wrong".
+  mount_error_sensitivity:
+    rule: >
+      exploratory, not gating: rebuild the anchor start (and only the start) with the mount
+      rotated by 2 deg and by 5 deg about body x and about body y, and report the resulting anchor
+      error and (Part B) the F0 shift. A mount error gives u_cam = R_cb_hat^T e3, whose error is a
+      rotation of the anchor, not of the body-lean frame; Part B states the measured consequence.
+
+# --------------------------------------------------------------------------------- statistics
+reporting:
+  availability:
+    denominators: >
+      fraction of clips with an anchor, k/n, printed per scene family, per mount (sim), per
+      flight type (the manifest `maneuver` field), and overall; separately for ALL clips and for
+      the DYNAMIC subset (manifest peak_tilt_req_deg >= 15, the M05 definition, 131 of 200).
+    position: >
+      the anchor time as a fraction of the scored interval, and the fraction of scored frames
+      reachable from the anchor by propagation (informational; every frame is reachable, the
+      question is the lever arm). Report the median |t_scored - t_anchor| in seconds.
+  accuracy:
+    per stratum: median, p90 and max of err in degrees, over clips with an anchor.
+    observation-level: the per-frame theta_imp distribution inside the chosen window (max, p90).
+  intervals: >
+    scene-seeded clusters: the sim scene_seed (six) and, for UZH, the sequence (14). Intervals are
+    cluster bootstraps (5,000 replicates, numpy.random.default_rng(1)) where at least 10 clusters
+    exist; otherwise descriptive only. Every rate is printed k/n with its denominator. Cells with
+    n < 10 are daggered.
+  independent_of_outcome: >
+    Part A never touches a reader score, a pose file's rotation, or any verdict tier. It uses the
+    truth trajectory only. Its thresholds are physics thresholds and are fixed above.
+
+# --------------------------------------------------------------------------------- success criteria
+# Fixed before the first availability count exists.
+success_criteria:
+  availability_P1:
+    criterion: >
+      SUCCESS iff, on the simulated development set with the P1 anchor (2 deg / 1 s):
+      (a) coverage >= 70 % of the 200 clips; (b) coverage >= 60 % of the 131 dynamic clips;
+      (c) forest coverage >= 60 % of the 26 feasible forest clips.
+  accuracy_P1:
+    criterion: >
+      SUCCESS iff the median anchor error over clips with a P1 anchor is <= 2.0 deg, its p90
+      <= 3.0 deg, and the flatness model check is <= 0.5 deg (median).
+  real_footage:
+    criterion: >
+      reported, not gating: the same two criteria on UZH (14 sequences) and TII (8 flights). The
+      gate that matters for the project is the simulated one; real footage is what says whether the
+      route could ever be deployed, and a low TII coverage is an expected, reportable negative.
+  downstream_contract: >
+    Part B is confirmatory only if availability_P1 holds. If it fails, Part B is run on the
+    highest tier that does meet (a)-(c) and is labelled descriptive, with the coverage printed
+    beside every detection rate. Part D (fallbacks) is run iff P1 coverage of the dynamic clips is
+    below 60 %.
+
+# --------------------------------------------------------------------------------- compute
+compute:
+  plan: CPU only, seconds; reads data/n05/gt, data/uzh, data/raw/tii. No Modal app, no R2 write.
+  estimate_usd: 0.00
+
+outputs:
+  - results/n3/n3a/availability.csv, accuracy.csv, windows.csv, summary.json
+  - reports/N3A_anchor_availability.md

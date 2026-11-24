@@ -1,0 +1,155 @@
+# Track N3, Part B -- verdict tiers on the lean propagated from a path anchor, simulated set (and
+# UZH where truth exists), against the reader at a matched feasible false-reject.
+#
+# NEW pre-registration, written and committed BEFORE any anchored F0/C2/R score exists on any
+# clip. Everything reused from N07/N05 is named as reused and is not re-fitted. Frozen configs are
+# not edited. The 100 held-out simulated clips and the held-out real flights are never read.
+prereg_version: 1
+date: '2026-11-24'
+status: preregistered
+track: N3
+owner_branch: track-n3-anchored-start
+extends: [N05, N2A, N3A]
+
+question: >
+  At a matched feasible false-reject, does F0 on the lean propagated from a physics anchor beat
+  the reader's lean in forest and on the 30/45 degree mounts -- now that the start comes from the
+  path instead of from pixels?
+
+# --------------------------------------------------------------------------------- population
+population:
+  simulated: the 200 development clips (i02_dev_*). Held-out clips filtered before any file opens.
+  uzh: the 9 real clips x 7 conditions of the Track E v3 edit set (data/clips_v3, results/n02b/
+    clips.csv: real / null_edit / yaw_control / tilt_removal / scale_0.5 / scale_1.5 /
+    mirror_roll, 9 each over 3 outdoor_forward sequences). Descriptive only: 3 sequence clusters.
+  not_read: the 100 held-out simulated clips; the real held-out flights.
+
+# --------------------------------------------------------------------------------- arms
+# All arms are listed with their start so no table can hide a start behind a tier.
+arms:
+  anchor1:      {start: "the P1 anchor frame (N3A, single best window)", deployable: true,
+                 status: confirmatory, primary: true}
+  anchor_multi: {start: "per frame, the nearest P1 anchor frame (N3A selection.multi)",
+                 deployable: true, status: secondary}
+  anchor_first: {start: >
+                   the P1 anchor of the FIRST qualifying window in time (an availability-driven
+                   variant: a system takes the first hover it gets, not the best one), deployable:
+                   true, status: exploratory}
+  oracle_window: {start: "the TRUE world-up in the camera at the anchor1 frame",
+                  deployable: false, status: exploratory upper bound (separates anchor theta error
+                  from rotation drift)}
+  oracle:       {start: "the true attitude at scored frame 0 (N2A's arm)", deployable: false,
+                 status: upper bound, reused definition}
+  oracle_2deg:  {start: "oracle start rotated by exactly 2.0 deg, 8 draws, median (N2A's arm)",
+                 deployable: false, status: upper bound, reused definition}
+  reader_start: {start: "the reader's up at scored frame 0 (N2A's arm)", deployable: true,
+                 status: reference}
+  level:        {start: "R_cb^T e3 at scored frame 0 (N05's arm)", deployable: true,
+                 status: reference}
+  reader:       {start: "none -- the per-frame reader lean", deployable: true, status: reference}
+  anchor1_mount2: {start: "anchor1 with the mount rotated by 2 deg about body x", deployable: true,
+                   status: exploratory robustness}
+draws:
+  primary: DPVO draw 1 (data/n05/poses/sim200/scale1).
+  robustness: anchor1 and anchor_multi recomputed on draw 2 (data/n05/poses/sim200/scale1_rep2).
+propagation: >
+  up_k = (R_est(k)^T R_est(t_a)) u_cam(t_a); lean = depicted_lean_from_gravity(up_k, R_cb). Reused
+  from N07/N05 unchanged. The required side, the scored frame grid and the reader scores are the
+  N05/N07 caches; nothing is re-read from video.
+
+# --------------------------------------------------------------------------------- tiers
+tiers:
+  F0: {status: confirmatory, primary: true, provenance: "N07's exact thrust-axis angle, no nuisance"}
+  C2: {status: secondary comparison, provenance: "reused byte-identically from N05/N07"}
+  R:  {status: secondary comparison, provenance: "reused byte-identically from N05/N07"}
+  S:  {status: not run, reason: >
+         N2A found the M04 sign sub-tier unusable at a 5-10 % budget on sim (feasible scores
+         bimodal at the ceiling). Re-running it on a new start cannot change that, so it is not
+         scored again; the N2A numbers stand.}
+
+# --------------------------------------------------------------------------------- thresholds
+thresholds_and_matching:
+  matched_point:
+    rule: >
+      every arm and tier is cut at its own (k+1)-th largest POOLED FEASIBLE score with k = 8, so
+      every arm has exactly 8/80 pooled feasible false-rejects (the reader's natural F0 count in
+      N07). The cut is the value of that (k+1)-th score; a clip is flagged iff its score is
+      strictly greater. Where an arm abstains on feasible clips the cut is taken on the clips that
+      have a finite score and the effective denominator (<= 80) is printed beside the count.
+  curve: 5/80, 7/80, 10/80 pooled feasible false-rejects (N07's continuity points).
+  within_stratum:
+    rule: >
+      descriptive only: the threshold fitted on a stratum's own feasible clips, reported as a curve
+      (0..10 false-rejects) so the reader and each arm can be compared at equal within-stratum
+      false-reject. Never used to replace the pre-registered matched point.
+  abstentions:
+    rule: >
+      an arm that cannot score a clip (no anchor, or a NaN statistic) abstains. Detection rates are
+      printed over ALL clips of the condition with the abstention counted as a NON-detection, and
+      again over scored clips only, both with k/n. The first is the headline; the second is printed
+      so the cost of abstaining is visible and is never used to make an arm look better.
+  uzh_thresholds: leave-one-sequence-out over the 3 sequences, 95th percentile of the other
+    sequences' `real` clips (N02b's construction); detections compared at equal real-clip
+    false-reject over the pooled 27 real clips.
+
+# --------------------------------------------------------------------------------- success criteria
+# Fixed now. B1 is the gate: if N3A's P1 availability criterion fails, B is descriptive.
+success_criteria:
+  B1_gate: >
+    Part B is confirmatory iff N3A `availability_P1` holds (>= 70 % of 200 clips, >= 60 % of the
+    131 dynamic clips, >= 60 % of the 26 feasible forest clips) AND its anchor error median is
+    <= 2.0 deg. Otherwise B is labelled DESCRIPTIVE and run on the tier that does meet the
+    coverage numbers, with coverage printed in every table.
+  B2_forest_F0: {arm: anchor1, tier: F0, status: confirmatory, criterion: >
+    SUCCESS iff at the matched pooled 8/80 BOTH hold on the forest stratum:
+    (a) tilt_removed detections >= 8/9 (the reader is 9/9; at most one clip may be lost);
+    (b) feasible false-rejects <= 4/26 (at most half the reader's 8/26).}
+  B3_overall_F0: {arm: anchor1, tier: F0, status: confirmatory, criterion: >
+    SUCCESS iff at the matched pooled 8/80 BOTH hold over all families:
+    (a) tilt_removed detections >= 18/27 (reader 22/27, reader_start 13/27, so the anchor must
+    recover at least 5 of the 9 removals a reader start loses);
+    (b) mirrored_roll detections >= 15/27 (the reader's count).}
+  B4_drift_F0: {arm: anchor1, tier: F0, status: confirmatory, criterion: >
+    SUCCESS iff among the 80 feasible clips at most 3 have an anchored F0 residual above 20 deg
+    (reader 0, oracle start 6, reader start 6 in N2A) AND the matched cut is <= 12.0 deg (N2A:
+    reader 9.33, reader start 17.98, oracle 16.44).}
+  B5_beats_reader_start: {arm: anchor1, tier: F0, status: confirmatory, criterion: >
+    SUCCESS iff on the forest stratum at the matched pooled 8/80 anchor1 detects at least 3 more
+    of 9 removals than reader_start (N2A: 4/9) OR at least 2 fewer of 26 false-rejects, i.e. the
+    anchor must be measurably better than the deployable alternative it replaces.}
+  upper_bound: {arm: oracle_window, status: reported, not gating, note: >
+    if oracle_window meets B2 and anchor1 does not, the anchor's angular error (not the
+    propagation) is the limiter; if neither does, the drift is.}
+  C2_R: {status: reported, not gating, note: >
+    N05/N2A pre-registered these as negative for a reader start; they are re-checked with the
+    anchor and the delta is reported with denominators. No new success criterion is claimed.}
+  direction_of_failure:
+    - If the anchor meets B2/B5, the start -- not the propagation -- was the deployable problem,
+      and N2A's 2 deg prediction is confirmed by a start that needs no external attitude.
+    - If the anchor does not improve forest removals but does cut forest false-rejects, the
+      reading is specificity-only, the same shape N2A found for a 2 deg start below 10/80 pooled.
+    - If B4 fails, the drift tail -- not the start -- still sets the operating point and the
+      honest verdict is that anchoring is necessary but not sufficient.
+
+# --------------------------------------------------------------------------------- reporting
+reporting:
+  - every detection table prints the feasible (null) rate beside it as k/n, and the number of
+    abstentions.
+  - family strata: all / forest / urban / industrial; mount strata: 0 / 15 / 30 / 45 / high(30+45);
+    forest x mount printed because the 30/45 mounts are the pre-registered weak point.
+  - the N2A reader, oracle and reader_start numbers are recomputed in this run and printed beside
+    the published ones so a cache change would be visible.
+  - yaw control: the UZH yaw_control condition (9 clips) beside every UZH detection rate; on sim
+    there is no yaw-warp family and a world-yaw warp is analytically invisible to the propagated
+    lean -- stated, not measured (N2A's position, unchanged).
+  - null: the 80 feasible sim clips; the 9 UZH `real` clips.
+  - clustered intervals (scene seed for sim, sequence for UZH; 5,000 replicates, default_rng(1))
+    where >= 10 clusters; otherwise descriptive and daggered. Cells with n < 10 are k/n only.
+
+compute:
+  plan: CPU reanalysis, about a minute. No Modal app, no R2 write.
+  estimate_usd: 0.00
+
+outputs:
+  - results/n3/n3b/per_clip.csv, summary.json, census.csv, curve.csv
+  - reports/N3B_anchored_tiers.md

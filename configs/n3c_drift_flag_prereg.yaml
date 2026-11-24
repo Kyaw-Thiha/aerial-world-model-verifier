@@ -1,0 +1,117 @@
+# Track N3, Part C -- a label-free reliability flag that predicts the high-mount drift tail.
+#
+# NEW pre-registration, written and committed BEFORE any flag statistic is computed on any clip
+# and before the anchored F0 scores of Part B exist. Definitions below are fixed now.
+prereg_version: 1
+date: '2026-11-24'
+status: preregistered
+track: N3
+owner_branch: track-n3-anchored-start
+extends: [N06, N2A, N3B]
+
+question: >
+  The verdict's F0 operating point is set by a handful of feasible clips whose propagated lean
+  drifts past 20 deg (5-6 of 80, all 30/45 degree mounts in N2A). Can a statistic computed from
+  the SAME tracking run -- with no ground truth and no second draw -- identify those clips, so the
+  verdict can abstain on them and use a tighter cut on the rest?
+
+# --------------------------------------------------------------------------------- target set
+target:
+  primary: >
+    the feasible (null) development clips whose anchored F0 residual (Part B arm `anchor1`, draw 1)
+    exceeds 20.0 deg, i.e. exactly the tail that forces the loose matched cut. Recomputing it here
+    is the point: N2A's 6-clip tail was measured on the oracle start.
+  fallback_rule: >
+    if fewer than 3 feasible clips have an anchored F0 above 20 deg (the anchor removed the tail),
+    the primary question is answered by construction -- there is no tail to catch for the deployed
+    arm -- and the flag is evaluated DESCRIPTIVELY against the oracle-start tail
+    (F0_oracle > 20 deg) so the flag's mechanism is still reported. The fallback is decided by the
+    count, never by the flag's performance.
+  secondary_target: the same two counts for feasible clips above 15 deg, reported beside.
+
+# --------------------------------------------------------------------------------- flag candidates
+# All are computed from DPVO draw 1's rotation sequence R_k (camera-to-world) on the posed frame
+# grid, plus the run metadata (n_input, n_pose). No truth, no reader, no second draw for the
+# primary candidates. Rotation increments are w_k = degrees(angle(R_k^T R_{k+1})).
+flags:
+  jit:
+    definition: p90 over frames of |w_k - w_{k-1}| (deg) -- rotation-increment roughness.
+    status: PRIMARY. One draw, no truth, no extra compute; it is the direct analogue of a
+      reprojection-residual statistic for a rotation-only readout.
+  spike:
+    definition: max over frames of |w_k - median(w)| (deg) -- the single worst increment.
+    status: secondary candidate.
+  rough:
+    definition: >
+      RMS over frames of the residual of a degree-3 local polynomial fit (9-frame window,
+      centred, reflected at the ends) to each component of the rotation vector
+      log(R_0^T R_k), taken as a vector norm (deg) -- a smoothed-trajectory rotation residual.
+    status: secondary candidate.
+  cover:
+    definition: 1 - n_pose/n_input from the run metadata (track length / coverage).
+    status: secondary candidate; expected to be uninformative because every run here completes.
+  draw_dis:
+    definition: >
+      |F0_anchor1(draw 1) - F0_anchor1(draw 2)| on the same clip (deg). A legitimate deployment
+      option (run the pose estimator twice) but it doubles the pose cost, so it is reported as a
+      reference upper bound for how well ANY single-draw statistic could do, not as the answer.
+    status: reference.
+  combination: no combination is fitted. Each candidate is reported alone; a combination would be
+    a second chance and is explicitly out of scope for this pre-registration.
+
+# --------------------------------------------------------------------------------- threshold rule
+threshold_rule:
+  per_flag: >
+    the flag fires iff the statistic is <= its 10th percentile (for cover) or >= its 90th
+    percentile (for jit, spike, rough) over ALL 200 development clips -- label-free, so the
+    abstention budget is 10 % = 20 clips without ever consulting a label or a score. Ties are
+    resolved by clipping the count to exactly 20 flagged clips (the 21st-largest value is the cut,
+    strictly greater fires).
+  not_tuned: the percentile is fixed at 90 (budget 10 %) before any statistic exists. A 5 % and a
+    20 % budget are reported beside it as a sensitivity curve, labelled exploratory.
+
+# --------------------------------------------------------------------------------- evaluation
+evaluation:
+  metrics:
+    recall: flagged clips among the target set, k/n, with n printed.
+    precision: target clips among flagged clips, k/n.
+    coverage_cost: flagged clips / 200 (the abstention rate), and the same for the 26 forest
+      feasible clips, because the flag must not spend the forest specificity gain.
+    after_abstaining: >
+      recompute the matched-8/80 F0 point on the non-abstained feasible clips (cut at the 9th
+      largest of the remaining feasible scores so the effective false-reject is still 8 per the
+      surviving denominator), and report (i) the cut in degrees before and after, (ii) removals
+      over all 27 tilt-removed clips with abstentions counted as non-detections, (iii) forest
+      removals and forest false-rejects. Abstentions are ALWAYS counted against coverage, in the
+      headline, never only in a footnote.
+  intervals: scene-seeded cluster bootstrap where >= 10 clusters; otherwise descriptive.
+  gate: Part C is confirmatory only if Part B's B1 gate holds. Otherwise it is descriptive.
+
+# --------------------------------------------------------------------------------- success criteria
+success_criteria:
+  C1_recall: {criterion: >
+    the primary flag (`jit`, 10 % budget) flags >= 2/3 of the primary target set (>= 4 of 6 if
+    the tail is 6, >= 3 of 5 if it is 5).}
+  C2_operating_point: {criterion: >
+    after abstaining on the flagged clips, the matched-8/80 F0 cut falls to <= 12.0 deg AND
+    removals over all 27 tilt-removed clips fall by <= 2 relative to the flag-free anchor1 arm.}
+  C3_forest_cost: {criterion: >
+    at most 8 of the 26 forest feasible clips are abstained on (the flag may not spend more than
+    roughly a third of the forest denominator).}
+  C4_precision_reported: {criterion: >
+    precision is reported whatever it is; a flag that catches the tail only by abstaining on a
+    third of the set fails C3 and the report says so plainly.}
+  outcome_reading:
+    - If C1-C3 pass, the drift tail is identifiable from one tracking run and the verdict can
+      abstain on it; the report states the resulting operating point and the coverage cost.
+    - If C1 fails, the drift is smooth in a way the increments do not show (the N06 reading:
+      run-to-run variance), and the report states that no single-draw tracking statistic predicts
+      it -- a negative result about the reliability flag, not about anchoring.
+
+compute:
+  plan: CPU, seconds, reads the two stored DPVO draws. No Modal app, no R2 write.
+  estimate_usd: 0.00
+
+outputs:
+  - results/n3/n3c/flags.csv, summary.json, sensitivity.csv
+  - reports/N3C_drift_flag.md
