@@ -128,6 +128,7 @@ predictor, as N06/N08 would lead one to expect, and it costs a second pose run.
 * Pre-registration `configs/n3c_drift_flag_prereg.yaml`; decisions `[N3-c]`.
 * Inputs: `data/n05/poses/sim200/{scale1,scale1_rep2}` (rotation sequences and run metadata only),
   `results/n3/n3b/{per_clip.csv,per_clip_draw2.csv}` (F0 by arm), `results/n2/inputs/manifest.csv`.
-* Code `experiments/n3c_drift_flag.py` (about 17 s); results `results/n3/n3c/{flags.csv,
+* Code `experiments/n3c_drift_flag.py` (about 17 s); headline numbers re-checked by
+  `experiments/n3_checks.py`; results `results/n3/n3c/{flags.csv,
   sensitivity.csv,summary.json}`.
 * Compute: local CPU, **USD 0.00**. No Modal app, no volume, no R2 write.

@@ -59,6 +59,10 @@ def main() -> int:
                                  "substitute of any kind (pre-registered)"}
     for tier in TIERS:
         block = {"all": frac(rows, tier),
+                 "no_anchor_all": f"{len(rows) - sum(r[f'anchor_{tier}'] for r in rows)}/{len(rows)}",
+                 "no_anchor_dynamic":
+                     f"{sum(1 for r in rows if r['dynamic'] and not r[f'anchor_{tier}'])}"
+                     f"/{sum(1 for r in rows if r['dynamic'])}",
                  "dynamic": frac([r for r in rows if r["dynamic"]], tier),
                  "static": frac([r for r in rows if not r["dynamic"]], tier),
                  "by_family": {}, "by_mount": {}, "by_condition": {},

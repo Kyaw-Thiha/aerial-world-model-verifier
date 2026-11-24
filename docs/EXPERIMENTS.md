@@ -477,6 +477,7 @@ reader run, zero spend**. Held-out clips never read.
 | N3B | F0 / C2 / R on the anchor-propagated lean over the 200 dev clips; `anchor1`/`_P2`/`_P3`/`anchor_multi` plus oracle-window and the N2A reference arms; matched 8/80, 5/7/10 curve; pre-registered criteria | `results/n3/n3b/{per_clip.csv,per_clip_draw2.csv,summary.json}` | `reports/N3B_anchored_tiers.md` | `n3b_anchored_tiers_prereg.yaml` |
 | N3C | label-free reliability flag for the 20 deg drift tail (`jit`, `spike`, `rough`, `cover`, two-draw disagreement) at 5/10/20 % budgets, with the after-abstaining operating point | `results/n3/n3c/{flags.csv,sensitivity.csv,summary.json}` | `reports/N3C_drift_flag.md` | `n3c_drift_flag_prereg.yaml` |
 | N3D | Part D fallbacks: what the verdict is for a clip with no anchor (abstain), coverage cost by family/mount/condition | `results/n3/n3d/{coverage.csv,summary.json}` | `reports/N3B_anchored_tiers.md` §Part D | — (rule in the N3A/N3B pre-registrations) |
+| N3-chk | machine checks of every headline report number against the stored results (107 checks) | — | — | — |
 
 Regenerate (all CPU, under a minute total, zero spend):
 
@@ -485,6 +486,7 @@ PYTHONPATH=. pixi run python experiments/n3a_anchor.py
 PYTHONPATH=. pixi run python experiments/n3b_anchored_tiers.py
 PYTHONPATH=. pixi run python experiments/n3c_drift_flag.py
 PYTHONPATH=. pixi run python experiments/n3d_fallbacks.py
+PYTHONPATH=. pixi run python experiments/n3_checks.py   # 107 checks against the report numbers
 ```
 
 Headline: the anchor gate **fails on availability** — 9/200 dev clips, 0/131 dynamic clips, 3/26

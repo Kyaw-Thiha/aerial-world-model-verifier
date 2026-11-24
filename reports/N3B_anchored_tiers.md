@@ -218,7 +218,8 @@ reader is biased.
 * Methods reused unchanged: F0 = K03 thrust-axis angle via `up_body_from_lean` and
   `src.physics.flatness.angle_between_deg`; C2/R = `experiments/n07_sim_tiers.tier_scores`;
   propagation = `src/verdict/anchor.propagate_from`.
-* Code `experiments/n3b_anchored_tiers.py` (about 12 s), `experiments/n3d_fallbacks.py` (2 s).
+* Code `experiments/n3b_anchored_tiers.py` (about 12 s), `experiments/n3d_fallbacks.py` (2 s);
+  every headline number is re-checked by `experiments/n3_checks.py`.
   Results `results/n3/n3b/{per_clip.csv,per_clip_draw2.csv,summary.json}`,
   `results/n3/n3d/{coverage.csv,summary.json}`.
 * Compute: local CPU, **USD 0.00**. No Modal app, no volume, no R2 write.

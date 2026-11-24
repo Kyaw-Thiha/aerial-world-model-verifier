@@ -55,6 +55,7 @@ PYTHONPATH=. pixi run python experiments/n3b_anchored_tiers.py  # ~12 s (asserts
 PYTHONPATH=. pixi run python experiments/n3c_drift_flag.py    # ~17 s
 PYTHONPATH=. pixi run python experiments/n3d_fallbacks.py     # ~2 s
 PYTHONPATH=. pixi run pytest -q tests/test_anchor.py          # 15 tests
+PYTHONPATH=. pixi run python experiments/n3_checks.py          # 107 report-number checks, expect 0 failed
 ```
 
 `experiments/n3b_anchored_tiers.py` fails loudly if the reader/level/reader-start/oracle F0 values
