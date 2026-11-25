@@ -497,3 +497,29 @@ within 0.01 deg of an oracle start), yet it detects 6/27 removals at the matched
 forest removal and none of the six drift-tail clips has an anchor. The drift tail is half
 predictable from one pose draw (3/6 at a 10 % abstention budget), which lets the oracle arm's cut
 fall from 16.4 to 10.9 deg.
+
+## Track P — rate consistency and thrust envelope (2026-11-25, branch `track-p-rate-envelope`)
+
+| id | what | results | report | pre-registration |
+| --- | --- | --- | --- | --- |
+| P0 | error budget for the body-rate check on ground truth + synthetic noise matched to the measured DPVO step error; required-rate distribution; minimum detectable rate error; the stop rule | `results/p/p0/{budget.csv,stop_rule.csv,scale_sweep.csv,summary.json}` | `reports/P0_error_budget.md` | `p0_error_budget_prereg.yaml` |
+| P1 | Check B on video rotation: 200 dev sim clips (draw 1), the null edit (draw 2), the yaw control, the four outdoor UZH sequences leave-one-out, the six TII development flights, and the 234 SolarWM clips | `results/p/p1/{per_clip.csv,windows.csv,summary.json}` | `reports/P1_rate_consistency.md` | `p1_rate_consistency_prereg.yaml` |
+| P2 | Check C: thrust-envelope admissibility of the commanded path (physics + leave-one-flight-out data envelope), 20 real flights, 200 sim paths, 22 H04 paths, the 13 thrust-limit defects | `results/p/p2/{real_flights.csv,paths.csv,summary.json}` | `reports/P2_envelope_gate.md` | `p2_envelope_prereg.yaml` |
+
+Regenerate (CPU, about 4 minutes total, zero spend):
+
+```
+PYTHONPATH=. pixi run python experiments/p0_error_budget.py
+PYTHONPATH=. pixi run python experiments/p1_rate_consistency.py
+PYTHONPATH=. pixi run python experiments/p2_envelope_gate.py
+PYTHONPATH=. pixi run python experiments/p_checks.py
+```
+
+Headline: the body-rate check has signal on real and simulated flight wherever the rotation
+extractor is stable — at the 0°/15° simulated mounts it detects 6/6 removals, 4/10 mirrors and
+16/16 scale defects at a 1/21 false-reject, and no outdoor forward UZH sequence is rejected — but
+the pre-registered pooled 5 % operating point is set by the 30°/45° mount DPVO drift (feasible
+median 10.2 and 16.5 deg/s, threshold 40.2 deg/s), where detection collapses to 2/19, 1/16 and
+0/22. The mirrored roll is invisible to a rate check even with a perfect extractor. The
+path-envelope check detects 13/13 path-side defects at 0/80 false positives but its 60°/2.0 g
+physics bound rejects 11/20 real flights, i.e. it is a dataset design envelope, not a physical one.

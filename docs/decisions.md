@@ -888,3 +888,26 @@ Every row below was read from the project's own repo/HF card on 2026-11-10. "ver
 - [P-d] **"UZH-FPV (4 sequences)" is read as the four outdoor sequences** (`outdoor_forward_1`,
   `_3`, `_5`, `outdoor_45_1`); they are exactly four and are the dynamic outdoor stratum. The ten
   indoor sequences are reported descriptively.
+- [P-e] **The rate statistic is not robust to a drifting rotation estimate, and that is measured,
+  not fixed.** DPVO's *increments* on the 30°/45° simulated mounts stay accurate but its
+  orientation drifts 10-60° over a clip (30° mount: median 0.49 deg/step, 36° trajectory
+  residual); because `omega x b3` is a vector, an orientation error rotates it without changing
+  its length, so the rate magnitudes agree (22.7 vs 22.1 deg/s on `i02_dev_018`) and the
+  directions do not (median cosine 0.22). The pre-registered pooled 5 % threshold is therefore
+  40.2 deg/s and detection collapses; the within-mount numbers (0°/15°: 6/6 removals, 16/16
+  scales, 1/21 false-reject) are reported as exploratory because choosing a mount-conditional
+  operating point after seeing the pooled failure is not a pre-registered decision.
+- [P-f] **Mirrored roll is invisible to a rate-magnitude check.** A reflection of a planar lean
+  trajectory is a rotation, and the per-clip gauge fit absorbs it. Measured on the video:
+  mirrored-roll clips score a median 4.3 deg/s against 5.8 for feasible clips and 25.2 for
+  removals — below the null. The coherence tier cannot see it either (0/16) because a mirror
+  preserves the correlation between the required and depicted rate directions.
+- [P-g] **The 60°/2.0 g physics envelope is a dataset design bound, not a physical one.** Real
+  development flight reaches 122.5° of required tilt, 6.05 g thrust ratio, 781 deg/s and
+  457 m/s³; two autonomous TII racing flights sustain 6.3 g and 91°. Applying Track I's frozen
+  limits to real flight rejects 11/20 flights, so C1 fails and the gate is reported as a
+  set-membership test for the simulated design envelope.
+- [P-h] **The generated-clip arm test is uninformative on SolarWM.** All three commanded arms
+  (physical / level / mirrored) score 14-26 deg/s, against 0.97-1.25 deg/s for feasible simulated
+  clips at the 0°/15° mounts; the generator's own rotation drift (N04: 6.7° at 5 s) is larger than
+  the arm effect. Nothing was tuned on these clips.

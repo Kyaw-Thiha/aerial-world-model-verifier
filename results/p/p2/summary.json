@@ -1,0 +1,390 @@
+{
+ "prereg": "configs/p2_envelope_prereg.yaml",
+ "physics": {
+  "tilt": 60.0,
+  "twr": 2.0,
+  "rate": 720.0
+ },
+ "filter": {
+  "window_s": 0.31,
+  "fs_hz": 100.0,
+  "poly": 3,
+  "cutoff_3db_hz": 4.047701925481371
+ },
+ "real_envelope_max": {
+  "tilt": 122.52699272360132,
+  "twr": 6.049694693871959,
+  "rate": 780.5700337574602,
+  "jerk": 457.1228198225474,
+  "acc": 58.59327389439705
+ },
+ "real_loo": {
+  "tilt": {
+   "rejected": "1/20",
+   "failing": [
+    "flight-16p-trackRATM"
+   ],
+   "max_threshold": 122.52699272360132
+  },
+  "twr": {
+   "rejected": "1/20",
+   "failing": [
+    "flight-01a-ellipse"
+   ],
+   "max_threshold": 6.049694693871959
+  },
+  "rate": {
+   "rejected": "1/20",
+   "failing": [
+    "flight-16p-trackRATM"
+   ],
+   "max_threshold": 780.5700337574602
+  },
+  "jerk": {
+   "rejected": "1/20",
+   "failing": [
+    "flight-16p-trackRATM"
+   ],
+   "max_threshold": 457.1228198225474
+  },
+  "acc": {
+   "rejected": "1/20",
+   "failing": [
+    "flight-01a-ellipse"
+   ],
+   "max_threshold": 58.59327389439705
+  }
+ },
+ "real_per_flight": {
+  "indoor_45_13": {
+   "tilt": 42.36893539057898,
+   "twr": 1.4390808793982433,
+   "rate": 107.32571217784599,
+   "jerk": 21.482345321682374,
+   "acc": 8.200296486422225
+  },
+  "indoor_45_2": {
+   "tilt": 39.84942280304466,
+   "twr": 1.526021577367033,
+   "rate": 136.67203610182779,
+   "jerk": 41.48642763296688,
+   "acc": 7.731784734876807
+  },
+  "indoor_45_4": {
+   "tilt": 35.27007417447868,
+   "twr": 1.2791316501266679,
+   "rate": 83.54873310795494,
+   "jerk": 19.408345532482794,
+   "acc": 6.6473809916278235
+  },
+  "indoor_45_9": {
+   "tilt": 85.86674225259152,
+   "twr": 1.8653014745399088,
+   "rate": 193.16336371008737,
+   "jerk": 65.48024794267644,
+   "acc": 15.182706652582679
+  },
+  "indoor_forward_10": {
+   "tilt": 48.232873334556274,
+   "twr": 1.5162423402012928,
+   "rate": 93.99192643040557,
+   "jerk": 25.82249181434065,
+   "acc": 11.740005194594383
+  },
+  "indoor_forward_3": {
+   "tilt": 56.22961206172522,
+   "twr": 1.7116423367120837,
+   "rate": 183.0951246478423,
+   "jerk": 46.31418259579857,
+   "acc": 12.991817502210768
+  },
+  "indoor_forward_5": {
+   "tilt": 18.24457124963629,
+   "twr": 1.1372093263803005,
+   "rate": 66.44921843510892,
+   "jerk": 13.380044250043342,
+   "acc": 3.419770886184107
+  },
+  "indoor_forward_6": {
+   "tilt": 80.52419920938523,
+   "twr": 2.3120781750586628,
+   "rate": 264.8341258059833,
+   "jerk": 91.6853541324591,
+   "acc": 20.642624701231178
+  },
+  "indoor_forward_7": {
+   "tilt": 70.86710893610848,
+   "twr": 2.3783723598240067,
+   "rate": 243.00909984191296,
+   "jerk": 71.43802623464683,
+   "acc": 17.422559299066585
+  },
+  "indoor_forward_9": {
+   "tilt": 45.36692463648822,
+   "twr": 1.3301281453883014,
+   "rate": 88.585763541413,
+   "jerk": 17.11271520892254,
+   "acc": 8.079049037266483
+  },
+  "outdoor_45_1": {
+   "tilt": 49.00535860392121,
+   "twr": 1.5929652111779564,
+   "rate": 104.25751610508902,
+   "jerk": 20.886423644403962,
+   "acc": 11.682363832657277
+  },
+  "outdoor_forward_1": {
+   "tilt": 45.78808484935985,
+   "twr": 1.3805633562266575,
+   "rate": 63.356747330258166,
+   "jerk": 16.50615745889998,
+   "acc": 8.957196944560792
+  },
+  "outdoor_forward_3": {
+   "tilt": 54.760731616995855,
+   "twr": 1.6316002972890005,
+   "rate": 94.13612860691333,
+   "jerk": 21.826222870829675,
+   "acc": 12.706343332303293
+  },
+  "outdoor_forward_5": {
+   "tilt": 49.04033633464825,
+   "twr": 1.9759933485169705,
+   "rate": 55.64518268242772,
+   "jerk": 35.64990917806086,
+   "acc": 12.147818104204868
+  },
+  "flight-01a-ellipse": {
+   "tilt": 89.73953646299995,
+   "twr": 6.049694693871959,
+   "rate": 351.0984001910314,
+   "jerk": 241.34205426707058,
+   "acc": 58.59327389439705
+  },
+  "flight-04a-ellipse": {
+   "tilt": 88.8789124020883,
+   "twr": 5.933127410205135,
+   "rate": 351.6791573176336,
+   "jerk": 236.59752908525363,
+   "acc": 57.364931017180744
+  },
+  "flight-13a-trackRATM": {
+   "tilt": 118.39129911276797,
+   "twr": 3.767137009413387,
+   "rate": 629.042870665546,
+   "jerk": 313.68624225173295,
+   "acc": 40.00229671438344
+  },
+  "flight-01p-ellipse": {
+   "tilt": 55.466152752988755,
+   "twr": 1.8929670225519335,
+   "rate": 177.9464445556223,
+   "jerk": 80.71531536617121,
+   "acc": 14.144672564368552
+  },
+  "flight-07p-lemniscate": {
+   "tilt": 46.34243589743834,
+   "twr": 1.7925684484618347,
+   "rate": 127.19218218857449,
+   "jerk": 66.10192817853466,
+   "acc": 12.277266930274427
+  },
+  "flight-16p-trackRATM": {
+   "tilt": 122.52699272360132,
+   "twr": 5.844930049190666,
+   "rate": 780.5700337574602,
+   "jerk": 457.1228198225474,
+   "acc": 57.66481640530697
+  }
+ },
+ "physics_gate_real": {
+  "rejected": "11/20",
+  "by_flight": {
+   "indoor_45_13": {
+    "tilt": false,
+    "twr": false,
+    "rate": false
+   },
+   "indoor_45_2": {
+    "tilt": false,
+    "twr": false,
+    "rate": false
+   },
+   "indoor_45_4": {
+    "tilt": false,
+    "twr": false,
+    "rate": false
+   },
+   "indoor_45_9": {
+    "tilt": true,
+    "twr": false,
+    "rate": false
+   },
+   "indoor_forward_10": {
+    "tilt": false,
+    "twr": false,
+    "rate": false
+   },
+   "indoor_forward_3": {
+    "tilt": true,
+    "twr": false,
+    "rate": false
+   },
+   "indoor_forward_5": {
+    "tilt": false,
+    "twr": false,
+    "rate": false
+   },
+   "indoor_forward_6": {
+    "tilt": true,
+    "twr": true,
+    "rate": false
+   },
+   "indoor_forward_7": {
+    "tilt": true,
+    "twr": true,
+    "rate": false
+   },
+   "indoor_forward_9": {
+    "tilt": false,
+    "twr": false,
+    "rate": false
+   },
+   "outdoor_45_1": {
+    "tilt": false,
+    "twr": false,
+    "rate": false
+   },
+   "outdoor_forward_1": {
+    "tilt": false,
+    "twr": false,
+    "rate": false
+   },
+   "outdoor_forward_3": {
+    "tilt": false,
+    "twr": false,
+    "rate": false
+   },
+   "outdoor_forward_5": {
+    "tilt": false,
+    "twr": true,
+    "rate": false
+   },
+   "flight-01a-ellipse": {
+    "tilt": true,
+    "twr": true,
+    "rate": false
+   },
+   "flight-04a-ellipse": {
+    "tilt": true,
+    "twr": true,
+    "rate": false
+   },
+   "flight-13a-trackRATM": {
+    "tilt": true,
+    "twr": true,
+    "rate": false
+   },
+   "flight-01p-ellipse": {
+    "tilt": false,
+    "twr": true,
+    "rate": false
+   },
+   "flight-07p-lemniscate": {
+    "tilt": false,
+    "twr": true,
+    "rate": false
+   },
+   "flight-16p-trackRATM": {
+    "tilt": true,
+    "twr": true,
+    "rate": true
+   }
+  },
+  "tilt_rejected": "8/20",
+  "twr_rejected": "9/20",
+  "rate_rejected": "1/20"
+ },
+ "conjunction_real": {
+  "pass": "9/20",
+  "failing": [
+   "indoor_45_9",
+   "indoor_forward_3",
+   "indoor_forward_6",
+   "indoor_forward_7",
+   "outdoor_forward_5",
+   "flight-01a-ellipse",
+   "flight-04a-ellipse",
+   "flight-13a-trackRATM",
+   "flight-01p-ellipse",
+   "flight-07p-lemniscate",
+   "flight-16p-trackRATM"
+  ]
+ },
+ "path_defects": {
+  "n": 13,
+  "detected_by_physics_gate": "13/13",
+  "failing_clips": [
+   "i02_dev_167",
+   "i02_dev_168",
+   "i02_dev_169",
+   "i02_dev_170",
+   "i02_dev_171",
+   "i02_dev_172",
+   "i02_dev_173",
+   "i02_dev_174",
+   "i02_dev_175",
+   "i02_dev_176",
+   "i02_dev_177",
+   "i02_dev_178",
+   "i02_dev_179"
+  ],
+  "feasible_flagged": "0/80",
+  "peak_tilt_range_feasible": [
+   0.0,
+   50.41465428505584
+  ],
+  "peak_twr_range_feasible": [
+   1.0000000000056575,
+   1.5692997311688237
+  ],
+  "manifest_vs_recomputed_peak_tilt_max_abs_diff": 0.1820175867935916
+ },
+ "outside_envelope_sim_dev": {
+  "tilt": "0/200",
+  "twr": "0/200",
+  "rate": "0/200",
+  "jerk": "0/200",
+  "physics_tilt": "13/200",
+  "physics_twr": "13/200"
+ },
+ "outside_envelope_sim_feasible": {
+  "tilt": "0/80",
+  "twr": "0/80",
+  "rate": "0/80",
+  "jerk": "0/80",
+  "physics_tilt": "0/80",
+  "physics_twr": "0/80"
+ },
+ "outside_envelope_gen_h04": {
+  "tilt": "0/22",
+  "twr": "0/22",
+  "rate": "0/22",
+  "jerk": "0/22",
+  "physics_tilt": "0/22",
+  "physics_twr": "0/22"
+ },
+ "sim_in_out": {
+  "outside": "13/200",
+  "outside_by_family": {
+   "feasible": "0/80",
+   "mirrored_roll": "0/27",
+   "partial": "0/20",
+   "thrust_limit": "13/13",
+   "tilt_removed": "0/27",
+   "tilt_scaled": "0/33"
+  },
+  "peak_tilt_median_outside": 66.53421025211432,
+  "peak_tilt_median_inside": 19.450770696423636
+ }
+}

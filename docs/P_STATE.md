@@ -20,9 +20,9 @@ Data note: this worktree's `data/` is a symlink to the shared gitignored tree
 | item | state |
 | --- | --- |
 | P0 error budget + stop-rule verdict | **done** — verdict: proceed. `reports/P0_error_budget.md` |
-| P1 rate consistency (Check B) | pre-registered, not run |
-| P2 thrust envelope (Check C) | not started |
-| docs / ledger / LaTeX / checks | not started |
+| P1 rate consistency (Check B) | **done** — pre-registered criteria C1-C3 FAIL, C4 PASS; stratified exploratory result. `reports/P1_rate_consistency.md` |
+| P2 thrust envelope (Check C) | **done** — C1 FAIL (11/20 real flights), C2 PASS (13/13, 0/80). `reports/P2_envelope_gate.md` |
+| docs / ledger / LaTeX / checks | **done** — 56/56 number checks pass |
 
 P0 in one line: the 5 % floor is 3.0 deg/s (sim) and 1.8 deg/s (UZH) against required rates of
 9.1 and 29 deg/s; 11 of 53 dynamic camera-defect clips are below it (all mirrored roll, 11/16),
@@ -43,9 +43,22 @@ ground truth and is replaced by a per-clip gauge fit (0.0008 deg/s noiseless).
 3. **TII held-out flights.** `13p` and `07a` are held out and are never opened here; the six
    development flights are `01a, 04a, 13a, 01p, 07p, 16p`.
 
+P1 in one line: at the matched 4/80 the pooled threshold is 40.2 deg/s (set by the 30/45 deg
+mount DPVO drift) and detection is 2/19 removals, 1/16 mirrors, 0/22 scale; at the 0/15 deg
+mounts (exploratory) 6/6, 4/10, 16/16 at 1/21. Real outdoor forward UZH passes (0/107, 0/109,
+1/54); the 45-down rig fails (54/58); TII not evaluable; SolarWM arms indistinguishable.
+
+P2 in one line: the physics gate (60 deg / 2.0 g / 720 deg/s) detects 13/13 thrust-limit paths
+with 0/80 false positives but rejects 11/20 real flights; the real envelope is 122.5 deg / 6.05 g
+/ 781 deg/s / 457 m/s^3 and nothing simulated or generated exceeds it.
+
 ## Spend
 
-Ceiling 3 USD. Spend: 0.00 USD (CPU only; no Modal app, no volume, no R2 write).
+Ceiling 3 USD. Spend: **0.00 USD** (CPU only; no Modal app, no volume, no R2 write).
+
+## Checks
+
+`experiments/p_checks.py` — 56/56 pass. `tests/test_rate.py` — 10/10 pass.
 
 ## Resume
 
@@ -54,4 +67,11 @@ cd ~/Documents/Projects/awmv-p
 PYTHONPATH=. pixi run python experiments/p0_error_budget.py
 PYTHONPATH=. pixi run python experiments/p1_rate_consistency.py
 PYTHONPATH=. pixi run python experiments/p2_envelope_gate.py
+PYTHONPATH=. pixi run python experiments/p_checks.py
 ```
+
+Open items: (1) the rate check needs a stable rotation estimate — an alternative extractor on the
+30/45 deg mounts would be the single measurement that changes the conclusion; (2) a per-window or
+drift-robust gauge was not pre-registered and was not run; (3) ANWM/LingBot rotations do not exist
+locally, so the generated-clip arm test is SolarWM only; (4) held-out sim clips and TII 13p/07a
+were never opened.

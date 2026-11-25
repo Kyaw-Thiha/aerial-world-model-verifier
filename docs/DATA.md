@@ -240,3 +240,23 @@ Inputs are the Track N caches read through the shared gitignored `data/` tree:
 `data/raw/tii/{autonomous,piloted}/mocap_*.csv`, and the staged Track I manifest
 `results/n2/inputs/manifest.csv` (sha256 `50aacbb2…ce6794`). This worktree's `data/` is a symlink to
 `~/Documents/Projects/aerial-world-model-verifier/data`; nothing under `data/` was written.
+
+## 13. Track P artefacts (2026-11-25)
+
+Branch `track-p-rate-envelope` (off `track-n3-anchored-start`). CPU only: no new reader run, no
+new DPVO run, no Modal app or volume, no R2 write.
+
+| path | size | what | rebuild |
+| --- | --- | --- | --- |
+| `results/p/p0/` | 320 KB | error budget: per-unit and per-window floors, the stop-rule rows, the scale-detection curve | `experiments/p0_error_budget.py` |
+| `results/p/p1/` | 6 MB | per-clip scores, 38k window rows, summary | `experiments/p1_rate_consistency.py` |
+| `results/p/p2/` | 60 KB | per-flight peaks, per-path peaks, summary | `experiments/p2_envelope_gate.py` |
+
+Inputs, all read through the shared gitignored `data/` tree (a symlink to
+`~/Documents/Projects/aerial-world-model-verifier/data`, read-only):
+`data/n05/{gt,scores,poses/sim200/{scale1,scale1_rep2}}` (200 dev clips, 30 fps poses),
+`data/n01/poses/uzh` (14 sequences, 450/223 frames at 15.07 fps), `data/uzh/<seq>/{truth.npz,meta.json}`,
+`data/raw/tii/{autonomous,piloted}/mocap_*.csv` + `data/raw/dpvo/<flight>_stride8_fov100_s0.5/poses.npz`
+(the six development flights only), `data/n04/poses/gen/fov90` (234 SolarWM clips), and read-only
+from `awmv-h3` `results/h04/paths/paths.npz`. The 100 held-out simulated clips and TII 13p/07a
+were never opened.

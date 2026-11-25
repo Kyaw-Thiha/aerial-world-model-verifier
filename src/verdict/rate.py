@@ -282,7 +282,13 @@ def residuals(rb: np.ndarray, rd: np.ndarray) -> dict:
         cos[idx] = np.sum(rb[idx] * rd[idx], axis=1) / (a[d] * b[d])
     speed = np.full(len(rb), np.nan)
     speed[good] = np.degrees(np.linalg.norm(rb[good], axis=1))
-    return {"err_deg_s": e, "cos": cos, "req_deg_s": speed, "ok": good}
+    dep = np.full(len(rb), np.nan)
+    if len(idx):
+        dep[idx] = np.degrees(b[d])
+    evec = np.full((len(rb), 3), np.nan)
+    evec[good] = rb[good] - rd[good]
+    return {"err_deg_s": e, "cos": cos, "req_deg_s": speed, "dep_deg_s": dep,
+            "err_vec": evec, "ok": good}
 
 
 def windows(n: int, seconds: float, fps: float, hop_fraction: float = 0.5) -> list[tuple[int, int]]:

@@ -189,3 +189,17 @@ created, and no long job was run detached.
 
 **N3 spend: 0.00 USD.** No billing check was needed (`modal billing report` covers only Modal
 spend, and no Modal resource was created or used). Track N total across N, N2 and N3: **4.45 USD**.
+
+## Track P — rate consistency and thrust envelope (2026-11-25)
+
+Ceiling for this track: **3 USD** (handoff 30). Nothing was estimated above 5 USD because nothing
+needed a GPU: P0, P1 and P2 are CPU reanalyses of stored truth paths, stored DPVO rotations and
+the sim manifest. No Modal app, volume or R2 write was created and no detached job was run.
+
+| date | track | job | GPU | hours | USD | notes |
+| --- | --- | --- | --- | --- | --- | --- |
+| 2026-11-25 | P | P0 error budget (220 units, 8 noise draws) | — | 0 (CPU ~160 s) | **0.00** | local CPU |
+| 2026-11-25 | P | P1 Check B (454 units incl. 234 generated) | — | 0 (CPU ~50 s) | **0.00** | local CPU |
+| 2026-11-25 | P | P2 envelope (20 real flights, 222 paths) | — | 0 (CPU ~11 s) | **0.00** | local CPU |
+
+**P spend: 0.00 USD** of the 3 USD ceiling. No billing check was needed.

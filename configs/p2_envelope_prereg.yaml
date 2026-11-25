@@ -1,0 +1,67 @@
+# Track P, Part 2: the thrust-envelope admissibility gate (Check C), path only, no video.
+#
+# Committed before any envelope or detection number was computed.
+prereg_version: 1
+date: 2026-11-25
+owner: track-p
+handoff: "30, Check C"
+status: committed_before_scoring
+
+question: >
+  Given only the commanded path, is the flight admissible for a quadrotor -- and does the
+  envelope separate the sim set's path-side (thrust-limit) defects from feasible flight without
+  rejecting any real drone flight?
+
+quantities_per_path:
+  - "peak required tilt deg: max over the path of angle((a + g e3 + k_d v), e3)"
+  - "peak thrust ratio: max |a + g e3 + k_d v| / g"
+  - "peak specific acceleration |a| m/s^2"
+  - "peak required body rate deg/s: max |d b3/dt| (the same 0.31 s Savitzky-Golay derivative as P0)"
+  - "peak jerk m/s^3: max |d^3 p/dt^3| from the same 100 Hz grid, poly 3"
+
+envelopes:
+  physics:
+    tilt_max_deg: 60
+    thrust_ratio_max: 2.0
+    rate_max_deg_s: 720
+    source: >
+      Track I's frozen simulated-set pre-registration (`configs/sim_prereg.yaml`,
+      thrust_to_weight_max 2.0 = 60 deg of tilt, rate_limit_deg_s 720), the set the sim clips
+      were built to. There is no physics bound on jerk; that quantity is data-only.
+  data:
+    statistic: "the per-flight 99.5th percentile of the frame values of each quantity"
+    threshold: "the maximum, over the OTHER development flights, of that per-flight statistic"
+    quantile_note: >
+      99.5 % of a 30 s flight is 11,000 frames, so one bad mocap frame cannot define the
+      envelope; with 20 flights the maximum of the others' 99.5th percentiles is in practice the
+      maximum, which is what a gate that must not reject real flight needs. Leave-one-flight-out
+      is therefore reported as a false-reject COUNT (k/n flights), and it is descriptive: 20
+      clusters is enough for a count, not for a 95 % interval on a 5 % tail.
+    population: "14 UZH sequences + the 6 TII development flights (13p and 07a never opened)"
+  gate: "admissible = inside the physics envelope AND inside the data envelope"
+
+parts:
+  1_real_flights: "every real feasible flight must pass; report the leave-one-flight-out false-reject count per quantity and for the conjunction"
+  2_commanded_paths: >
+    the fraction of the 200 simulated dev paths and of the H04 generated path set outside each
+    envelope; and whether the tilt-side and rate-side verdicts differ between in-envelope and
+    out-of-envelope paths
+  3_path_defects: >
+    the 13 simulated `thrust_limit` dev clips (path-side, camera honest) detected from the path
+    alone; the false-positive rate on the 80 feasible dev paths; and the sim feasible paths
+    reported against the real-flight envelope
+
+criteria_confirmatory:
+  C1_real: "no real development flight is rejected by the physics gate; leave-one-out false-reject 0/20 or the failing flights are named and explained"
+  C2_path_defects: "the physics gate detects at least 12 of the 13 thrust-limit dev paths, with 0 of the 80 feasible dev paths flagged"
+  failing_any: "recorded as a failure"
+
+exploratory:
+  - "the H04 generated path set before and after the 0.31 s filter"
+  - "the relation between the real-flights envelope and the sim design limits (45 deg peak tilt, 2.0 g)"
+
+outputs:
+  - results/p/p2/real_flights.csv
+  - results/p/p2/paths.csv
+  - results/p/p2/summary.json
+  - reports/P2_envelope_gate.md

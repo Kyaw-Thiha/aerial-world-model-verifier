@@ -1,0 +1,50 @@
+% Track P candidate section: rate consistency and thrust envelope.
+% Numbers are checked by experiments/p_checks.py against results/p/.
+
+\section{Body-rate consistency and thrust-envelope admissibility}
+\label{sec:rate-envelope}
+
+Differential flatness fixes not only the thrust axis $\hat b_3 = (a + g\hat e_3 + k_d v)/\|\cdot\|$
+but also its rotation, $\dot{\hat b}_3 = \omega \times \hat b_3$, in which the body yaw rate drops
+out. We test the \emph{rate} the path demands against the rate the video depicts, without a start
+attitude, and separately test whether the commanded path is inside a real flight envelope.
+
+\paragraph{Estimator.} The required rate $\dot{\hat b}_3^{\mathrm{req}}$ comes from the truth or
+mocap path (100\,Hz, Savitzky--Golay $0.31$\,s, poly 3; measured $-3$\,dB at $4.05$\,Hz). The
+depicted rate is $\hat R_{wb}(\omega_b \times e_3)$ with $\omega_b = R_{cb}\omega_{\mathrm{cam}}$
+from the video rotation. The unknown attitude is a single constant rotation $G$, fitted per clip
+by Kabsch between the video-frame thrust axis and $\hat b_3^{\mathrm{req}}$. The literal
+substitution of $\hat b_3^{\mathrm{req}}$ into the cross product is not invariant to the
+unconstrained yaw about the thrust axis and leaves $8.74^\circ$/s of median residual on perfectly
+feasible ground truth, against $0.0008^\circ$/s for the gauge fit. Both rates use the same
+three-point stencil so that no filter mismatch enters the residual.
+
+\paragraph{Error budget.} With synthetic rotation noise matched to the measured DPVO step error
+($0.134^\circ$ sim, $0.118^\circ$ UZH, $2.56^\circ$ TII), the $5\%$ minimum detectable rate error
+at $0.5$\,s windows is $3.0^\circ$/s on the simulated development set and $1.8^\circ$/s on the
+outdoor UZH sequences, against required rates of $9.1$ and $29^\circ$/s. $11$ of the $53$ dynamic
+camera-defect clips have a defect rate error below that floor, all mirrored rolls.
+
+\paragraph{Detection.} At the pre-registered matched $4/80$ false-reject the pooled threshold is
+$40.2^\circ$/s --- set by feasible clips at the $30^\circ$ and $45^\circ$ camera mounts, whose DPVO
+orientation drifts by $10$--$16^\circ$/s while its increments stay accurate --- and detection is
+$2/19$ tilt removals, $1/16$ mirrors, $0/22$ scale defects. Restricted to the $0^\circ$ and
+$15^\circ$ mounts (exploratory), the same statistic at a $1/21$ false-reject detects $6/6$
+removals, $4/10$ mirrors and $16/16$ scale defects. Mirrored roll is not a rate defect at all
+when the lean trajectory is planar: a reflection is a rotation, and the gauge fit absorbs it.
+
+\paragraph{Real flight.} Leave-one-sequence-out on the three outdoor forward UZH sequences, the
+window false-reject is $0/107$, $0/109$ and $1/54$; the $45^\circ$-down rig is rejected wholesale
+($54/58$), reproducing the extractor failure reported for the reader. TII is not evaluable: its
+stride-8 rotations have a $2.56^\circ$ step error and a $60^\circ$/s noise floor against a
+$13.6^\circ$/s required rate. On the 234 generated SolarWM clips the statistic does not separate
+the physically consistent arm from the level and mirrored arms (medians $14.2$, $25.9$ and
+$22.2^\circ$/s; the generator's own rotation drift is larger than the manipulation).
+
+\paragraph{Thrust envelope.} A path-only gate on the frozen design limits ($60^\circ$ tilt,
+$2.0g$ thrust ratio, $720^\circ$/s) detects $13/13$ path-side over-thrust defects with $0/80$
+feasible simulated paths flagged, reproducing the manifest's peak tilt to $0.18^\circ$. Applied to
+real flight it rejects $11/20$ development flights: racing airframes reach $122.5^\circ$ of
+required tilt, $6.05g$, $781^\circ$/s and $457$\,m/s$^3$. The bound is therefore a dataset design
+envelope, not a physical feasibility bound, and the simulated set and the generator's commanded
+paths sit entirely inside the real-flight envelope.
