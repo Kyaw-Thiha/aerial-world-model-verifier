@@ -46,6 +46,7 @@ def unit_rows(unit: dict, data: dict) -> tuple[list[dict], list[dict]]:
 def main() -> int:
     OUT.mkdir(parents=True, exist_ok=True)
     units = json.loads(UNITS.read_text())["units"]
+    by_index = {u["unit"]: u for u in units}
     by_unit: dict[str, list[dict]] = {}
     diags: dict[str, list[dict]] = {}
     meta = {}
@@ -124,6 +125,8 @@ def main() -> int:
                            and np.isfinite(reversed_bar[u]) and real_median > reversed_bar[u]))
 
     boot = bootstrap_real(by_unit, real_units)
+    chan = {u: chunk_diagnostics(load_unit(by_index[u]), by_index[u])
+            for u in by_unit}
 
     out = {
         "prereg": "configs/v00_feasibility_prereg.yaml + amend1 + amend2",
@@ -160,6 +163,7 @@ def main() -> int:
                                  "coverage_real": float(np.mean(cov_real)) if cov_real else None}},
         "meta": meta,
         "diags": {u: diags[u][:5] for u in diags},
+        "chunk_diagnostics": chan,
     }
     (OUT / "summary.json").write_text(json.dumps(out, indent=1))
 
@@ -181,6 +185,44 @@ def main() -> int:
     print(f"\nreal median |e| = {real_median:.3f}; STOP={stop} (A={cond_a}, B={cond_b}, "
           f"{n_exceed}/{len(climb)})")
     return 0
+
+
+def chunk_diagnostics(data: dict, unit: dict) -> list[dict]:
+    """Per chunk: does the depicted height follow the truth altitude, and how well is the
+    ground normal oriented? ``tilt_equivalent_deg`` is the angle by which the fitted plane
+    would have to be wrong to explain the observed dependence of h on horizontal position,
+    assuming the truth altitude is right. Reported as a mechanism diagnostic, not scored."""
+    truth = unit["truth"]
+    tt = np.asarray(truth["t"], float)
+    pp = np.asarray(truth["pos"], float)
+    out = []
+    for k, ch in sorted(data["chunks"].items()):
+        t = ch["t"]
+        c = ch["c2w"][:, :3, 3]
+        w = min(data["meta"]["windows"],
+                key=lambda w: abs(0.5 * (w["t1"] + w["t2"]) - 0.5 * (t[0] + t[-1])))
+        if not w.get("plane"):
+            out.append({"chunk": int(k), "ok": False})
+            continue
+        n = np.asarray(w["plane"]["n"], float)
+        d = float(w["plane"]["d"])
+        h = c @ n - d
+        pos = np.column_stack([np.interp(t, tt, pp[:, i]) for i in range(3)])
+        L_true = float(np.sum(np.linalg.norm(np.diff(pos, axis=0), axis=1)))
+        L_dep = float(np.sum(np.linalg.norm(np.diff(c, axis=0), axis=1)))
+        pc = pos - pos.mean(axis=0)
+        A = np.column_stack([pc[:, 2], pc[:, 0], pc[:, 1], np.ones(len(t))])
+        coef, *_ = np.linalg.lstsq(A, h, rcond=None)
+        a, bx, by, _ = coef
+        corr = float(np.corrcoef(h, pos[:, 2])[0, 1]) if np.std(pos[:, 2]) > 1e-9 else None
+        tilt = (float(np.degrees(np.arctan(np.hypot(bx, by) / abs(a))))
+                if abs(a) > 1e-9 else None)
+        out.append({"chunk": int(k), "ok": True, "t_range": [float(t[0]), float(t[-1])],
+                    "corr_h_z": corr, "dh_dz": float(a), "tilt_equivalent_deg": tilt,
+                    "L_dep_over_L_true": L_dep / max(L_true, 1e-9),
+                    "h_min": float(h.min()), "h_max": float(h.max()),
+                    "inlier_frac": float(w["plane"]["inlier_frac"])})
+    return out
 
 
 def _f(x):
