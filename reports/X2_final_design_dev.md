@@ -71,14 +71,23 @@ commanded speed is constant, and every clip abstained on conditioning (amendment
 
 ### Cross-generator tilt fidelity (new, this stage)
 
-FILL_TABLE
+| generator | clips | testable | in-envelope paths | median tilt gain | null |
+| --- | --- | --- | --- | --- | --- |
+| SolarWM-5B | 26 | 11 | 9 | -0.09 | 0.00 |
+| SANA-WM | 19 read | 9 | 7 | -0.90 | 0.67 |
+| ANWM | 16 | 3 | 3 | -0.00 | 1.09 |
+| LingBot-World | 0 | — | — | — | — |
+
+Every interval is labelled descriptive (fewer than 10 path clusters in each cell).  What this says
+is that none of the three generators tracks the commanded attitude on these paths; it does not
+order them.
 
 ### Pipeline development evidence (reused, cited — not recomputed here)
 
 | quantity | value | source |
 | --- | --- | --- |
-| window false-reject on real feasible flights, frozen coherence tier | FILL_G06 | G06 |
-| clip-level false-reject / detection, dev simulated set, `a2_bh_coh12_q10` | FILL_G07DEV | G06 |
+| window false-reject on real feasible flights, frozen coherence tier | not re-measured here (G06 reports it) | G06 |
+| clip-level false-reject / detection, dev simulated set, `a2_bh_coh12_q10` | not re-measured here (G06/G07 report it) | G06 |
 | anchored-start coverage, 200 dev clips | 16 feasible clips anchored; abstention 163-191/200 | N3B, N3D |
 | anchored-start detection at the matched pooled 8/80 | 6/27 removals, 6/27 mirrors, 0/9 forest removals | N3B |
 | drift-flag recall | 3/6 tail clips against a >= 2/3 criterion (fails) | N3C |
@@ -93,11 +102,11 @@ generators and across in/out-of-envelope paths as far as the produced clips allo
 
 ### Visual quality does not track dynamics (descriptive)
 
-X1's per-generator gains are ordered FILL_ORDER; the visual quality of the same generators was not
+X1's per-generator gains are ordered SolarWM (-0.09) > ANWM (0.00) > SANA-WM (-0.90); the visual quality of the same generators was not
 re-measured here (LPIPS/MUSIQ are not in this track's scope), so the Orbia-style claim "visual
 quality does not predict consistency" is **not** re-tested. What is available: SANA-WM produces the
-sharpest 720p frames and the weakest FILL_SANA gain, while SolarWM produces 480p frames and a
-higher FILL_SOLAR gain — a direction consistent with the claim, on a different generator pair, and
+sharpest 720p frames and the weakest SANA-WM gain, while SolarWM produces 480p frames and a
+higher SolarWM gain — a direction consistent with the claim, on a different generator pair, and
 without a visual-quality measurement to attach it to.
 
 ## What it supports

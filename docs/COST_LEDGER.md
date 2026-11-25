@@ -378,10 +378,10 @@ cap, readers 1.0).
 | 2026-11-25 | X | frozen readers: SolarWM 26+8, SANA 5, ANWM 17 clips | A10 | 0.55 | 0.60 | 0.009-0.03 USD per 81-frame clip |
 | 2026-11-25 | X | contact sheets (40-clip kit) | CPU 4 | 0.05 | 0.01 | 24 sheets written |
 
-**Track X Stage-1 total (actual): USD 12.56**, from `modal billing report --start 2026-11-25
---end 2026-11-26 --json` by app: SANA-WM 5.47, LingBot 3.44, SolarWM 1.85, ANWM 1.23, readers 0.57.
-That is 42 % of the 30 USD Stage-1 cap and 36 % of the 35 USD track ceiling. The wall-time estimate
+**Track X Stage-1 total (actual): USD 12.82**, from `modal billing report --start 2026-11-25
+--end 2026-11-26 --json` by app: SANA-WM 5.55, LingBot 3.53, SolarWM 1.85, ANWM 1.26, readers 0.63.
+That is 43 % of the 30 USD Stage-1 cap and 37 % of the 35 USD track ceiling. The wall-time estimate
 above (18.4 USD) overstated the billing by 1.5x, consistent with the project's note that wall-time
-arithmetic overstates real spend. LingBot's 3.44 USD bought no clip; that is recorded rather than
+arithmetic overstates real spend. LingBot's 3.53 USD bought no clip; that is recorded rather than
 absorbed. Stage 4 (5 USD) was not spent because the held-out pass was not run
 (`reports/X3_heldout_frozen_evaluation.md`).

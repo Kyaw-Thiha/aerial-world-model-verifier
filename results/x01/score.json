@@ -372,35 +372,62 @@
    ]
   },
   "sana": {
-   "n_clips_produced": 5,
-   "n_clips_testable": 2,
-   "n_clips_in_envelope": 2,
+   "n_clips_produced": 19,
+   "n_clips_testable": 9,
+   "n_clips_in_envelope": 7,
    "tilt_fidelity": {
-    "median": -1.5333326709370012,
-    "lo": null,
-    "hi": null,
-    "n_clusters": 2,
+    "median": -0.90410708351191,
+    "lo": -7.086576885759693,
+    "hi": 0.803404787585145,
+    "n_clusters": 7,
     "descriptive": true,
-    "median_ratio": 0.6026042949108716,
-    "median_r2": 0.5070660548642287
+    "median_ratio": 0.5194022853034034,
+    "median_r2": 0.5124171666742507
    },
    "frac_in_band": {
-    "k": 0,
-    "n": 2,
-    "value": 0.0
+    "k": 1,
+    "n": 7,
+    "value": 0.14285714285714285
    },
    "null_gain": {
-    "median": 0.6924041584222748,
-    "n": 2
+    "median": 0.6731409350836628,
+    "n": 7
    },
    "by_path_class": {
-    "arc": {
-     "k": 2,
-     "n_paths": 2,
-     "median": -1.5333326709370012,
+    "accel_brake": {
+     "k": 1,
+     "n_paths": 1,
+     "median": 0.3342481627346256,
      "lo": null,
      "hi": null,
-     "n_clusters": 2,
+     "n_clusters": 1,
+     "descriptive": true
+    },
+    "arc": {
+     "k": 4,
+     "n_paths": 4,
+     "median": -6.353482430504641,
+     "lo": -9.366541513310144,
+     "hi": 2.5537226333755862,
+     "n_clusters": 4,
+     "descriptive": true
+    },
+    "climb_turn": {
+     "k": 1,
+     "n_paths": 1,
+     "median": -0.90410708351191,
+     "lo": null,
+     "hi": null,
+     "n_clusters": 1,
+     "descriptive": true
+    },
+    "real": {
+     "k": 1,
+     "n_paths": 1,
+     "median": 0.803404787585145,
+     "lo": null,
+     "hi": null,
+     "n_clusters": 1,
      "descriptive": true
     }
    },
@@ -427,6 +454,25 @@
      "n_frames_clip": 81
     },
     {
+     "n_frames": 69,
+     "gain": 0.3342481627346256,
+     "r2": 0.6327925940946105,
+     "ratio": 0.5194022853034034,
+     "gx": 0.6684963254692512,
+     "gy": 0.0,
+     "excitation_deg": 8.749851496522943,
+     "testable": true,
+     "abstain": [],
+     "stat": "x01_slope_gain",
+     "clip_id": "accel_brake_20__S1",
+     "path": "accel_brake_20",
+     "family": "accel_brake",
+     "in_envelope": true,
+     "requested_peak_deg": 20.0,
+     "peak_tilt_req_deg": 20.0000000038745,
+     "n_frames_clip": 81
+    },
+    {
      "n_frames": 77,
      "gain": NaN,
      "r2": NaN,
@@ -449,6 +495,25 @@
     },
     {
      "n_frames": 77,
+     "gain": -9.366541513310144,
+     "r2": 0.5124171666742507,
+     "ratio": 0.6990991135031864,
+     "gx": -19.382919820806475,
+     "gy": 0.6498367941861865,
+     "excitation_deg": 5.986714549361355,
+     "testable": true,
+     "abstain": [],
+     "stat": "x01_slope_gain",
+     "clip_id": "arc_15__S1",
+     "path": "arc_15",
+     "family": "arc",
+     "in_envelope": true,
+     "requested_peak_deg": 15.0,
+     "peak_tilt_req_deg": 15.736363207581451,
+     "n_frames_clip": 81
+    },
+    {
+     "n_frames": 77,
      "gain": -5.620387975249589,
      "r2": 0.5863803529917113,
      "ratio": 0.32636564834669873,
@@ -460,6 +525,25 @@
      "stat": "x01_slope_gain",
      "clip_id": "arc_20__S1",
      "path": "arc_20",
+     "family": "arc",
+     "in_envelope": true,
+     "requested_peak_deg": 20.0,
+     "peak_tilt_req_deg": 20.547906341518225,
+     "n_frames_clip": 81
+    },
+    {
+     "n_frames": 77,
+     "gain": -7.086576885759693,
+     "r2": 0.6781789533451147,
+     "ratio": 0.40466298271570805,
+     "gx": -14.657696635089229,
+     "gy": 0.4845428635698423,
+     "excitation_deg": 7.9263138675672815,
+     "testable": true,
+     "abstain": [],
+     "stat": "x01_slope_gain",
+     "clip_id": "arc_20__S2",
+     "path": "arc_20__S2",
      "family": "arc",
      "in_envelope": true,
      "requested_peak_deg": 20.0,
@@ -487,6 +571,25 @@
     },
     {
      "n_frames": 77,
+     "gain": 0.39968676016277793,
+     "r2": 0.30690149048418724,
+     "ratio": 0.383041457759611,
+     "gx": 0.07297652998267123,
+     "gy": 0.7263969903428846,
+     "excitation_deg": 13.416949003785396,
+     "testable": true,
+     "abstain": [],
+     "stat": "x01_slope_gain",
+     "clip_id": "arc_35__S1",
+     "path": "arc_35",
+     "family": "arc",
+     "in_envelope": false,
+     "requested_peak_deg": 35.0,
+     "peak_tilt_req_deg": 35.2875224028247,
+     "n_frames_clip": 81
+    },
+    {
+     "n_frames": 77,
      "gain": NaN,
      "r2": NaN,
      "ratio": 0.3770807923512746,
@@ -505,6 +608,210 @@
      "requested_peak_deg": null,
      "peak_tilt_req_deg": 6.007013314933106,
      "n_frames_clip": 81
+    },
+    {
+     "n_frames": 75,
+     "gain": NaN,
+     "r2": NaN,
+     "ratio": 0.35714074903534015,
+     "gx": NaN,
+     "gy": NaN,
+     "excitation_deg": 1.2697033222881307,
+     "testable": false,
+     "abstain": [
+      "excitation 1.27 < 2.0"
+     ],
+     "stat": "x01_slope_gain",
+     "clip_id": "climb_04__S1",
+     "path": "climb_04",
+     "family": "climb",
+     "in_envelope": true,
+     "requested_peak_deg": null,
+     "peak_tilt_req_deg": 7.983977937851504,
+     "n_frames_clip": 81
+    },
+    {
+     "n_frames": 77,
+     "gain": NaN,
+     "r2": NaN,
+     "ratio": 0.8325120622384461,
+     "gx": NaN,
+     "gy": NaN,
+     "excitation_deg": 3.9584366476033463,
+     "testable": false,
+     "abstain": [
+      "signal_frames 15 < 12 or fraction < 0.2"
+     ],
+     "stat": "x01_slope_gain",
+     "clip_id": "climb_turn_10__S1",
+     "path": "climb_turn_10",
+     "family": "climb_turn",
+     "in_envelope": true,
+     "requested_peak_deg": 10.0,
+     "peak_tilt_req_deg": 11.178658533839656,
+     "n_frames_clip": 81
+    },
+    {
+     "n_frames": 77,
+     "gain": -0.90410708351191,
+     "r2": 0.40283941286754954,
+     "ratio": 0.3274124230965513,
+     "gx": -2.656678504479079,
+     "gy": 0.8484643374552587,
+     "excitation_deg": 7.7367332086419225,
+     "testable": true,
+     "abstain": [],
+     "stat": "x01_slope_gain",
+     "clip_id": "climb_turn_20__S1",
+     "path": "climb_turn_20",
+     "family": "climb_turn",
+     "in_envelope": true,
+     "requested_peak_deg": 20.0,
+     "peak_tilt_req_deg": 20.647034366412957,
+     "n_frames_clip": 81
+    },
+    {
+     "n_frames": 77,
+     "gain": -2.3450683021226046,
+     "r2": 0.41896560839643726,
+     "ratio": 0.7859516245970268,
+     "gx": -5.4425277003052015,
+     "gy": 0.7523910960599925,
+     "excitation_deg": 11.285858843693308,
+     "testable": true,
+     "abstain": [],
+     "stat": "x01_slope_gain",
+     "clip_id": "climb_turn_30__S1",
+     "path": "climb_turn_30",
+     "family": "climb_turn",
+     "in_envelope": false,
+     "requested_peak_deg": 30.0,
+     "peak_tilt_req_deg": 30.44827402994966,
+     "n_frames_clip": 81
+    },
+    {
+     "n_frames": 77,
+     "gain": NaN,
+     "r2": NaN,
+     "ratio": 0.4564162753845914,
+     "gx": NaN,
+     "gy": NaN,
+     "excitation_deg": 3.9092277364839625e-09,
+     "testable": false,
+     "abstain": [
+      "excitation 0.00 < 2.0"
+     ],
+     "stat": "x01_slope_gain",
+     "clip_id": "cruise_00__S1",
+     "path": "cruise_00",
+     "family": "cruise",
+     "in_envelope": true,
+     "requested_peak_deg": 0.0,
+     "peak_tilt_req_deg": 4.812940424848173,
+     "n_frames_clip": 81
+    },
+    {
+     "n_frames": 77,
+     "gain": NaN,
+     "r2": NaN,
+     "ratio": 0.42887900011923197,
+     "gx": NaN,
+     "gy": NaN,
+     "excitation_deg": 0.7126050741437734,
+     "testable": false,
+     "abstain": [
+      "excitation 0.71 < 2.0"
+     ],
+     "stat": "x01_slope_gain",
+     "clip_id": "descend_02__S1",
+     "path": "descend_02",
+     "family": "descend",
+     "in_envelope": true,
+     "requested_peak_deg": null,
+     "peak_tilt_req_deg": 7.436331397415599,
+     "n_frames_clip": 81
+    },
+    {
+     "n_frames": 77,
+     "gain": NaN,
+     "r2": NaN,
+     "ratio": 0.4063914110632673,
+     "gx": NaN,
+     "gy": NaN,
+     "excitation_deg": 2.277155944770158,
+     "testable": false,
+     "abstain": [
+      "signal_frames 5 < 12 or fraction < 0.2"
+     ],
+     "stat": "x01_slope_gain",
+     "clip_id": "descend_04__S1",
+     "path": "descend_04",
+     "family": "descend",
+     "in_envelope": true,
+     "requested_peak_deg": null,
+     "peak_tilt_req_deg": 16.179818660054345,
+     "n_frames_clip": 81
+    },
+    {
+     "n_frames": 0,
+     "gain": NaN,
+     "ratio": NaN,
+     "r2": NaN,
+     "gx": NaN,
+     "gy": NaN,
+     "excitation_deg": 0.0,
+     "testable": false,
+     "abstain": [
+      "excitation 0.00 < 2.0"
+     ],
+     "stat": "x01_slope_gain",
+     "clip_id": "hover_00__S1",
+     "path": "hover_00",
+     "family": "hover",
+     "in_envelope": true,
+     "requested_peak_deg": 0.0,
+     "peak_tilt_req_deg": 0.0,
+     "n_frames_clip": 81
+    },
+    {
+     "n_frames": 66,
+     "gain": 0.803404787585145,
+     "r2": 0.4141027156535122,
+     "ratio": 1.1033775839744742,
+     "gx": 0.8957421328745531,
+     "gy": 0.7110674422957369,
+     "excitation_deg": 6.3582858864975105,
+     "testable": true,
+     "abstain": [],
+     "stat": "x01_slope_gain",
+     "clip_id": "real_uzh_of3__S1",
+     "path": "real_uzh_of3",
+     "family": "real",
+     "in_envelope": true,
+     "requested_peak_deg": null,
+     "peak_tilt_req_deg": 20.304362030446338,
+     "n_frames_clip": 81
+    },
+    {
+     "n_frames": 34,
+     "gain": NaN,
+     "r2": NaN,
+     "ratio": 0.47523334853768096,
+     "gx": NaN,
+     "gy": NaN,
+     "excitation_deg": 4.322781387604402,
+     "testable": false,
+     "abstain": [
+      "signal_frames 4 < 12 or fraction < 0.2"
+     ],
+     "stat": "x01_slope_gain",
+     "clip_id": "slalom_10__S1",
+     "path": "slalom_10",
+     "family": "slalom",
+     "in_envelope": true,
+     "requested_peak_deg": 10.0,
+     "peak_tilt_req_deg": 11.087439289370767,
+     "n_frames_clip": 37
     }
    ]
   },
@@ -1106,11 +1413,23 @@
   }
  },
  "pairwise": {
+  "anwm-sana": {
+   "n_paths": 3,
+   "median_diff": 5.619430616498548,
+   "lo": -2.5481539781375693,
+   "hi": 9.344673170117316
+  },
   "anwm-solarwm": {
    "n_paths": 3,
    "median_diff": 4.7033969915575975,
    "lo": 3.076027078360444,
    "hi": 4.898823133922334
+  },
+  "sana-solarwm": {
+   "n_paths": 7,
+   "median_diff": -2.543403538138104,
+   "lo": -4.641276178559719,
+   "hi": -0.014926569954187452
   }
  }
 }

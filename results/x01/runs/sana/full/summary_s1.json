@@ -6,7 +6,7 @@
  "num_frames": 81,
  "n_clips": 7,
  "n_ok": 7,
- "seconds_total": 603.6048409938812,
+ "seconds_total": 142.69863891601562,
  "clips": {
   "accel_brake_20__S1": {
    "ok": true,
@@ -47,7 +47,7 @@
   "cruise_00__S1": {
    "ok": true,
    "frames": 81,
-   "seconds": 115.04718446731567,
+   "seconds": 103.80746603012085,
    "step": 20,
    "num_frames": 81,
    "seed": 42,
@@ -83,14 +83,14 @@
   "slalom_5__S1": {
    "ok": true,
    "frames": 81,
-   "seconds": 102.32136130332947,
+   "seconds": 140.5467493534088,
    "step": 20,
    "num_frames": 81,
    "seed": 42,
    "path": "slalom_5",
    "family": "slalom",
    "in_envelope": true,
-   "mp4_bytes": 1337621
+   "mp4_bytes": 1337192
   }
  }
 }

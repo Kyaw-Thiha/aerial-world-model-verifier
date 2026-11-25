@@ -1,0 +1,20 @@
+{
+ "id": "arc_10__S1",
+ "pose_dir": "arc_10__S1",
+ "image": "arc_10__S1/image.png",
+ "path": "arc_10",
+ "family": "arc",
+ "in_envelope": true,
+ "seed": 0,
+ "prompt": "Aerial drone footage over a sunlit city with a river, tall buildings and a hazy horizon, photorealistic, camera moving over the city.",
+ "seconds": 1296.3591578006744,
+ "seconds_per_frame": 16.004434046921908,
+ "frames": 81,
+ "vram_peak_gb": 27.520128,
+ "vram_reserved_gb": 30.341595136,
+ "gpu": "NVIDIA A100-SXM4-80GB",
+ "sampling_steps": 40,
+ "frame_num": 81,
+ "max_area": 399360,
+ "hf_repo": "cahlen/lingbot-world-base-cam-nf4"
+}
