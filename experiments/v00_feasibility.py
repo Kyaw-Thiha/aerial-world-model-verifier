@@ -132,6 +132,7 @@ def main() -> int:
     boot = bootstrap_real(by_unit, real_units)
     chan = {u: chunk_diagnostics(load_unit(by_index[u]), by_index[u])
             for u in by_unit}
+    leverage = {u: leverage_stats(by_unit[u], by_index[u]) for u in by_unit}
 
     out = {
         "prereg": "configs/v00_feasibility_prereg.yaml + amend1 + amend2",
@@ -170,6 +171,7 @@ def main() -> int:
         "meta": meta,
         "diags": {u: diags[u][:5] for u in diags},
         "chunk_diagnostics": chan,
+        "leverage": leverage,
     }
     (OUT / "summary.json").write_text(json.dumps(out, indent=1))
 
@@ -191,6 +193,35 @@ def main() -> int:
     print(f"\nreal median |e| = {real_median:.3f}; STOP={stop} (A={cond_a}, B={cond_b}, "
           f"{n_exceed}/{len(truth_bars)})")
     return 0
+
+
+def leverage_stats(rows: list[dict], unit: dict) -> dict:
+    """The geometric ratio that turns a plane-orientation error into a ratio error.
+
+    A ground-normal error delta gives ratio error ~ delta * L / h1, so the same delta hurts more
+    the lower the camera flies relative to its horizontal travel. ``implied_delta_deg`` solves
+    |e| = delta * L / h1 for delta, per window; it should be roughly constant across
+    populations if the planefit quality is.
+    """
+    ok = [r for r in rows if r.get("ok")]
+    if not ok:
+        return {"n": 0}
+    sim = unit["kind"] == "sim"
+    tt = np.asarray(unit["truth"]["t"], float)
+    z = np.asarray(unit["truth"]["pos"], float)[:, 2]
+    vals, lev = [], []
+    for r in ok:
+        h1_m = float(np.interp(r["t1"], tt, z)) if sim else float(
+            r.get("scale_s", np.nan) * r["h1"])
+        if not np.isfinite(h1_m) or h1_m <= 0 or r["L_truth"] <= 0:
+            continue
+        lev.append(r["L_truth"] / h1_m)
+        vals.append(float(np.degrees(abs(r["e"]) * h1_m / r["L_truth"])))
+    if not vals:
+        return {"n": 0}
+    return {"n": len(vals), "median_L_over_h": float(np.median(lev)),
+            "median_implied_delta_deg": float(np.median(vals)),
+            "p90_implied_delta_deg": float(np.percentile(vals, 90))}
 
 
 def truth_defect_table(unit: dict) -> dict:
