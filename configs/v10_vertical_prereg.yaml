@@ -1,0 +1,141 @@
+# Track V, V1 pre-registration: the commanded-vertical-motion check.
+#
+# WRITTEN AND COMMITTED BEFORE any Part 0 feasibility number exists and before a single defect
+# render was reconstructed or any real-flight or generated-clip ratio was computed. If Part 0's
+# stop rule fires this file is never used; if it does not, every V1 number below is scored
+# against the rules written here, with no threshold, population or edit changed afterwards.
+prereg_version: 1
+date: 2026-11-25
+owner: track-v
+handoff: "31 (track V)"
+status: committed_before_any_score
+depends_on: configs/v00_feasibility_prereg.yaml (+ amendments 1, 2)
+method_baseline: >
+  EyeHeight, arXiv 2611.21782. Theirs: scale-free multi-view height measurement with Pi3 on
+  every fourth frame, a ground-plane fit, and the within-clip terminal height ratio, validated
+  on constant-height renders and against VGGT / MoGe-2 / floor homographies. Ours: the
+  *commanded* vertical motion. EyeHeight holds height constant and asks whether it is retained;
+  this check asks whether a commanded climb or descent is depicted with the commanded ratio,
+  and it is validated for false positives on real drone flights.
+
+# ------------------------------------------------------------------ statistic
+statistic:
+  window: "3 s, stride 0.5 s (Track V Part 0 protocol, unchanged)"
+  primary:
+    per_window: "e = log(h(t2)/h(t1)) - log(ratio_cmd), |e| compared with the threshold"
+    ratio_cmd_sim: "z(t2)/z(t1) from the 250 Hz truth, ground at z = 0"
+    ratio_cmd_real: "1 + (z(t2)-z(t1)) / (s h(t1)), s one scale per 8 s chunk"
+    sign: "e < 0 means the depicted height changed less than commanded (under-climb / removal);
+           e > 0 means more than commanded"
+    clip: "the clip statistic is max over its windows of |e|"
+  secondary_exploratory:
+    per_window: "q = (rho_dep - rho_cmd) / (|rho_cmd| + 0.05), rho = dz/L (scale-free)"
+    clip: "max over windows of |q|"
+    use: "the only form usable on generated clips, and a reported sensitivity everywhere"
+  abstention: >
+    a window without a reconstructable ground plane is an abstention; a clip with fewer than
+    half its windows reconstructable is not scored and counts against coverage. Denominators
+    are printed beside every rate.
+
+# ------------------------------------------------------------------ thresholds
+thresholds:
+  source: "leave-one-sequence-out (LOFO) conformal on the UZH-FPV development sequences"
+  alpha: 0.05                     # primary operating point
+  rule: >
+    For each real sequence j, tau_j = the 95th percentile of the window-level |e| over every
+    OTHER sequence's windows (empirical quantile, linear interpolation). A clip is flagged when
+    its max-over-windows |e| exceeds tau_j. Every detection and false-reject rate is reported
+    per fold j and pooled over folds; tau_j is printed per fold.
+  sensitivity: "alpha = 0.10 reported as exploratory below the confirmatory 0.05 table"
+  no_tuning: >
+    no threshold is moved after any score is seen. If a fold's threshold is undefined (too few
+    windows) that fold is reported as undefined and excluded, with the count printed.
+
+# ------------------------------------------------------------------ populations
+part1_sim_detection:
+  base_population: >
+    the 8 feasible climb_turn development clips (the frozen set's only feasible maneuver with
+    commanded vertical motion). They are identified by rule, not by choice: every dev clip with
+    maneuver == climb_turn and label == feasible in results/i02/manifest.csv.
+  defects: [removed, scaled_0.5, scaled_1.5, reversed]
+  renders: "one EEVEE render (640x360, 16 spp, H.264 CRF 18) per (clip, defect): 32 clips"
+  vertical_edit: >
+    camera altitude only, over the whole clip: removed -> z(t)=z0; scaled_s -> z0 + s(z-z0);
+    reversed -> z0 - m(z-z0) with m = min(1, (z0-1.5)/(z_max-z0)), recorded per clip. Camera
+    attitude stays the commanded path's flatness attitude, so the tilt check sees a feasible
+    clip and only a vertical check can react.
+  controls:
+    null: "2 re-renders with no edit (the same clip again)"
+    yaw: "4 renders with the camera rotated 25 deg about world up (z unchanged)"
+  sim_false_reject: "the 8 base clips' own Part 0 reconstructions + the 2 constant-altitude controls"
+  split: development only (no held-out clip is read)
+
+part2_real_false_positives:
+  population: >
+    all 14 UZH-FPV development sequences: the 3 outdoor forward rigs and the 11 indoor rigs
+    (6 forward, 5 at 45 deg down), each at 7.5 Hz with Leica truth.
+  why_all: >
+    the Part 0 pilot used only the 3 outdoor sequences; a false-reject rate needs more
+    sequence clusters than three, so the V1 real population is widened *before* any score is
+    seen. 14 clusters: the LOFO interval is descriptive below 10 clusters and reported as a
+    range here, not as a 95 % interval.
+  heldout_prohibition: "the real held-out TII flights (13p, 07a) are not read"
+
+part3_generated:
+  anwm:
+    clips: "the 20 H01 ANWM climb_turn clips (5 designed paths x seeds 1-4) on the volume
+            awmv-h-anwm-results/clips/C/"
+    commanded_vertical_motion: "about 22.5 m over the 16-step clip (from the conditioning path)"
+    statistic: "q only (the primary needs a start height the generator's frame does not have)"
+  solarwm:
+    clips: "the 18 H04 SolarWM climb_turn clips (2 paths x 3 arms x 3 draws) on
+            awmv-h3-results/solarwm/main/"
+    commanded_vertical_motion: "0.196 m (climb_turn_10) and 0.394 m (climb_turn_20) over 4 s"
+    statistic: "q only, reported descriptively; the commanded signal is expected to be below
+               the estimator's resolution and this arm is the check's floor, not a test"
+  controls: >
+    none available (generation is not repeated). Part 3 carries no yaw control and no null
+    edit, and says so; it is descriptive, not confirmatory.
+
+# ------------------------------------------------------------------ success criteria (numeric)
+success:
+  part1:
+    removal: "at least 7/8 clips flagged"
+    reversed: "at least 7/8 clips flagged"
+    scaled_0.5_and_1.5: "at least 5/8 flagged in each magnitude"
+    controls: "at most 1/4 yaw clips and 0/2 null clips flagged"
+    sim_false_reject: "at most 1/8 base clips flagged"
+    direction: "median e is negative for removed and scaled_0.5, positive for scaled_1.5"
+  part2:
+    false_reject: "at most 2/14 sequences flagged at the LOFO threshold; the per-window rate is
+                   reported beside it and is expected near alpha by construction"
+  part3:
+    "descriptive only; no pass/fail. The report states rho_cmd per generator and the sign and
+     magnitude of q, with the caveat that no control exists."
+
+# ------------------------------------------------------------------ stop and void rules
+void_rules:
+  - "if either null render is flagged, the render/estimator pipeline itself produces apparent
+     vertical motion and Parts 1-3 are not interpreted; the report says so."
+  - "if the two nulls' |e| differ from the base clip's |e| by more than the smallest defect bar
+     (x0.5 or x1.5), the same conclusion applies."
+  - "if a defect arm's measured |e| does not have the predicted sign in at least 6 of its 8
+     clips, the estimator is not measuring the commanded quantity and the arm is reported as
+     void rather than as a detection rate."
+  - "no held-out data is read at all in V1."
+
+# ------------------------------------------------------------------ cost
+budget:
+  ceiling_usd: 15.0
+  v1_estimate_usd: 4.0
+  basis: >
+    38 EEVEE renders (about 20,000 frames at 0.19 s/frame on an L40S, about 2.0 USD), 50
+    Pi3X reconstructions of 3-4 chunks each (about 2.0 USD), and the 11 extra UZH sequences
+    (about 0.8 USD).
+
+# ------------------------------------------------------------------ prohibitions
+prohibitions:
+  - "no threshold, window, plane rule or edit magnitude is changed after a score is seen"
+  - "abstentions are counted, never dropped"
+  - "every detection rate is printed beside the yaw control, the null edit and its denominator"
+  - "Part 3 is never pooled with Parts 1-2"
