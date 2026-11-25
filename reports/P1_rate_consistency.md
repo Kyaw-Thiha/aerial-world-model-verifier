@@ -62,7 +62,9 @@ the same 30°/45° drift N01 and N06 reported, seen in a new statistic.
 | feasible, dynamic | 53 | 50 | 4/50 | 4/50 | 4/50 |
 | tilt removed | 27 | 19 | **2/19** | 0/19 | 14/16 |
 | mirrored roll | 27 | 16 | **1/16** | 3/16 | 0/16 |
-| tilt scaled | 33 | 22 | **0/22** | 3/22 | 2/22 |
+| tilt scaled x0.5 | 17 | 8 | 0/8 | 0/8 | 0/8 |
+| tilt scaled x1.5 | 16 | 14 | 0/14 | 3/14 | 2/14 |
+| tilt scaled, pooled | 33 | 22 | **0/22** | 3/22 | 2/22 |
 | partial interval | 20 | 12 | 0/12 | 2/12 | 3/12 |
 | thrust limit (path side) | 13 | 13 | 3/13 | 0/13 | 3/13 |
 
@@ -84,6 +86,23 @@ B_abs sees neither at this threshold. B_rel is the same as B_abs because its thr
 
 Removal detection only becomes real above a 7 % false-reject, and the threshold falls from 40 to
 23 deg/s — i.e. the whole curve is being dragged by the same handful of high-mount clips.
+
+**By family and mount (pre-registered stratification, descriptive):** defect flags / testable and,
+in brackets, feasible flags / testable —
+
+| family | 0° | 15° | 30° | 45° |
+| --- | --- | --- | --- | --- |
+| urban_checker | 0/5 [0/2] | 0/7 [0/7] | 0/5 [0/4] | 0/5 [1/7] |
+| industrial | 0/2 [0/1] | 0/7 [0/5] | 1/4 [0/6] | 0/3 [1/7] |
+| forest_ridge | 0/4 [0/1] | 0/7 [0/5] | 0/4 [0/6] | 2/4 [2/6] |
+
+The only whole-clip detections outside that stratum are one industrial clip at 30°; everywhere
+else the 40 deg/s threshold sits above both the defect and the feasible scores.
+
+The `thrust_limit` row is a **false positive on the camera side**: those clips' cameras are
+honest by construction, but their paths demand 66-68° of tilt, and at those rates the extractor
+itself fails (step error 2.8-3.1 deg against a 0.13 deg global median), so the three flags at
+89-98 deg/s are extraction failures, not a rate violation.
 
 ### Partial intervals
 
