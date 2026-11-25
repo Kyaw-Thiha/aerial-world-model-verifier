@@ -1,0 +1,201 @@
+# Track V, Part 0 pre-registration: feasibility of a commanded-vertical-motion check.
+#
+# Handoff 31. Committed BEFORE any reconstruction output exists. Everything that decides
+# whether this track continues (population, estimator, ground-plane rule, coverage definition,
+# statistic, stop rule) is fixed here. The V1 detection pre-registration is a separate file,
+# written after Part 0's estimator numbers are known and before any defect clip is scored.
+#
+# The method is the baseline set by EyeHeight (arXiv 2611.21782): scale-free multi-view
+# reconstruction (Pi3), floor/ground segmentation or plane fit, and a within-clip camera-height
+# ratio. What is ours is the *commanded* vertical motion: EyeHeight holds height constant; we
+# ask whether a commanded climb/descent is depicted with the commanded ratio.
+prereg_version: 1
+date: 2026-11-25
+owner: track-v
+handoff: "31 (track V, vertical-motion fidelity)"
+status: committed_before_any_reconstruction_output
+
+# ------------------------------------------------------------------ what Part 0 decides
+question: >
+  Can an EyeHeight-style camera-height estimator recover the *change* of camera height above
+  the ground from the rendered/generated video well enough that a commanded-vertical-motion
+  defect (removed, x0.5 / x1.5, sign reversed) is larger than the estimator's error on real,
+  feasible drone footage? Ground-plane coverage must also be high enough for the check to be
+  applicable.
+decision_use: >
+  If the stop rule below fires, the track stops: reports/V0_feasibility.md is written and no
+  defect clips are rendered or scored. If it does not fire, V1 proceeds with a new
+  pre-registration (configs/v10_vertical_prereg.yaml) written before any defect score exists.
+
+# ------------------------------------------------------------------ populations
+populations:
+  sim_pilot:
+    source: "results/i02/manifest.csv, split == dev, and the local gt copy data/n05/gt/"
+    rule: >
+      every dev clip whose maneuver is climb_turn (all 28), because the frozen set's only
+      maneuver with commanded vertical motion; plus two constant-altitude controls chosen by
+      a rule fixed here: the lowest clip_id among dev feasible hover clips (i02_dev_000) and
+      the lowest clip_id among dev feasible ellipse clips (i02_dev_001).
+    n_expected: 30
+    why_controls: >
+      a constant-altitude clip must read a height ratio near 1. If it does not, the estimator
+      is broken and every ratio number below is void; reported as a diagnostic, not a stop rule.
+  real_pilot:
+    source: "UZH-FPV, the three outdoor forward sequences prepared at 15.07 Hz (450/450/223 frames)"
+    sequences: [outdoor_forward_1, outdoor_forward_3, outdoor_forward_5]
+    split: development            # UZH has no held-out flight in this project's protocol
+    why: "outdoor, over ground, pinhole, 500 Hz Leica truth; the only real footage with both a
+          pinhole camera and continuous altitude truth that is already local."
+    not_available: >
+      TII "Race Against the Machine" has 500 Hz mocap but a fisheye camera at 640x480 with
+      unknown per-frame distortion model in the reader's feed; it is NOT in the pilot. It may
+      be reported later only as an exploratory arm, with the fisheye caveat stated.
+    heldout_prohibition: >
+      the real held-out flights (TII 13p, 07a) and the 100 held-out simulated clips are not
+      read in Part 0 or V1.
+
+# ------------------------------------------------------------------ estimator (frozen here)
+estimator:
+  name: pi3x
+  weights: "yyfz233/Pi3X"
+  rationale: >
+    Pi3 is EyeHeight's primary estimator; Pi3X is its successor, ungated, and already used in
+    this project (Track F2, remote/f2_extractors.py). VGGT is the pre-registered cross-check
+    only if Pi3X fails its own control clips; the cross-check is reported, never substituted
+    silently.
+  frames:
+    source_stride: 4              # every 4th source frame, EyeHeight's convention
+    max_frames: 64                # then evenly subsampled to at most 64
+    rule: >
+      Keep source frames 0, 4, 8, ... of the clip. If more than 64 remain, keep an even
+      subsample of exactly 64 (np.linspace over the indices, rounded). Frame times are the
+      source timestamps of the kept frames.
+  intrinsics:
+    sim: "exact: 640x360, hfov 90 deg -> fx=fy=320, cx=319.5, cy=179.5 (the render's own K)"
+    uzh: "Kalibr pinhole from data/uzh/<seq>/meta.json -> intrinsics_pinhole, 640x480"
+    supplied: true               # conditioned, as Pi3X accepts
+  precision: "bfloat16 autocast, no gradient, one forward pass per clip (Pi3/EyeHeight protocol)"
+
+# ------------------------------------------------------------------ ground plane (frozen here)
+ground_plane:
+  pixel_filter: "Pi3X confidence >= 0.5 (if the field is present) and finite coordinates"
+  scene_scale: "median distance of the pooled points to the nearest camera centre; all length
+                thresholds below are fractions of this scale"
+  pool: "at most 20,000 points per frame, uniformly subsampled; at most 200,000 points per clip"
+  ransac:
+    trials: 2000
+    inlier_frac: 0.01            # of scene scale
+    seed: 1
+    n_candidates: 3              # three best, mutually distinct planes (normal angle > 20 deg
+                                 # or offset > 0.05 scene scale)
+  orientation: "n oriented so the mean camera centre has positive signed distance"
+  feasibility:                   # a candidate plane is admissible only if ALL hold
+    cameras_above: ">= 95 % of camera centres at signed distance > 0.005 scene scale"
+    height_band: "mean camera height in [0.01, 1.0] scene scale"
+    facing: "angle(n, mean camera-down axis) < 70 deg, where camera-down = -R_c2w[:,1]
+             (OpenCV RDF y axis points image-down)"
+  selection: "the admissible candidate with the most inliers; ties by smaller facing angle"
+  clip_coverage: >
+    A clip is reconstructable when a plane is admissible AND its inlier fraction is >= 0.10 of
+    the pooled points. Coverage is the fraction of clips in a population that are
+    reconstructable; a non-reconstructable clip is an abstention and is counted as such.
+  height: "h_dep(t) = n . c(t) - d, the camera centre's signed distance to the chosen plane,
+           in reconstruction units"
+
+# ------------------------------------------------------------------ metric (frozen here)
+geometry:
+  up: "the chosen plane normal n (oriented as above)"
+  vertical_displacement: "dz_dep(t1,t2) = n . (c(t2) - c(t1))"
+  horizontal_length: "L_dep(t1,t2) = path length of the component of c(t) perpendicular to n"
+  note: "everything above is scale-free; no metric scale enters these two quantities"
+
+windows:
+  length_s: 3.0                  # the defect scale in the handoff (2-10 m over 3-5 s)
+  stride_s: 0.5
+  min_frames: 6                  # windows with fewer reconstructed frames are skipped
+  shorter_clips: "clip < 4 s: length 2.0 s, same stride"
+
+primary_metric:                  # the height-ratio check, EyeHeight's r = h(T)/h(0)
+  sim:
+    ratio_dep: "h_dep(t2) / h_dep(t1)"
+    ratio_cmd: "z(t2) / z(t1), z from the 250 Hz truth and the scene ground plane at z = 0"
+    # scene ground is z = 0 for every Track I scene (flat ground plane, start height 12 m);
+    # this is checked once against the procedural scene code and recorded in the report.
+  real:
+    scale_s: >
+      one similarity scale per sequence: s = argmin ||s * c(t) - p_truth(t)||^2 over all
+      reconstructed frames, i.e. the least-squares scale of the camera-centre cloud to the
+      Leica positions after centring both (no rotation fitted: the reconstruction's own
+      orientation is arbitrary, so the vector norms are aligned instead, as a ratio of
+      RMS distances from the centroid).
+    ratio_cmd: "1 + (z_truth(t2) - z_truth(t1)) / z0_hat, z0_hat = s * h_dep(t1)"
+    why: "z0 (height above ground at the window start) is not measured on real footage; it is
+          estimated from the reconstruction's own height and one clip-level scale. Stated as
+          the metric's weak point in the report."
+  error: "e = log(ratio_dep) - log(ratio_cmd)   (natural log; |e| is the reported error)"
+  clip_summary: "per clip: median and p90 of |e| over its windows"
+
+scale_free_secondary:            # pre-registered as exploratory, reported beside the primary
+  definition: "rho_dep = dz_dep / max(L_dep, eps); rho_cmd = dz_truth / L_truth"
+  normalised_error: "q = (rho_dep - rho_cmd) / (|rho_cmd| + 0.05)"
+  why: >
+    needs neither z0 nor a metric scale, so it is the only form usable on generated clips whose
+    conditioning path is not in the reconstruction's frame. Exploratory everywhere.
+
+# ------------------------------------------------------------------ defect magnitudes for the stop rule
+defect_reference:                # computed analytically from the sim truth paths, no scoring
+  families:
+    removed:   "ratio_dep = 1"
+    scaled_0.5: "ratio_dep = 1 + 0.5 * (ratio_cmd - 1)"
+    reversed:  "ratio_dep = 1 - (ratio_cmd - 1), admissible only when positive"
+    scaled_1.5: "ratio_dep = 1 + 1.5 * (ratio_cmd - 1)"
+  defect_log_change: "log(ratio_defect) - log(ratio_cmd) for each window and clip"
+  clip_value: "median |defect_log_change| over the clip's 3 s windows"
+  purpose: >
+    the stop rule compares the estimator's real error with the size of the effect the check
+    would need to see; the x0.5 / x1.5 edits are the smallest effects and therefore the ones
+    that set the bar.
+
+# ------------------------------------------------------------------ stop rule (frozen here)
+stop_rule:
+  condition_a:
+    statement: >
+      STOP if the median |ratio error| on the three real outdoor sequences (pooled over their
+      3 s windows) EXCEEDS the clip's own |defect log change| for x0.5 or x1.5 on more than
+      half of the 28 vertical-motion sim clips (>= 15/28). The stricter of the two magnitudes
+      (x0.5 vs x1.5) is used per clip; the other is reported.
+    rationale: "a check whose real error is larger than the smallest defect it must catch has
+                 no useful operating point on real footage."
+  condition_b:
+    statement: >
+      STOP if ground-plane coverage is below 50 % on (i) the 28 vertical-motion sim clips or
+      (ii) the three real outdoor sequences (a sequence counts as covered when at least half of
+      its 3 s windows are reconstructable AND the sequence clip is reconstructable).
+    rationale: "below half the population the check cannot be reported with denominators that
+                 mean anything for a verifier."
+  evaluator: "both conditions computed by experiments/v00_feasibility.py from the stored npz;
+              the rule is applied as written, no threshold is moved after seeing the numbers."
+  on_fire: >
+    write reports/V0_feasibility.md with the numbers, update the state file, and stop: no
+    render, no detection experiment, no generated-clip arm.
+
+# ------------------------------------------------------------------ not pre-registered here
+not_registered:
+  - "any detection threshold (V1's, from real feasible flights by leave-one-sequence-out
+     conformal, fixed in configs/v10_vertical_prereg.yaml)"
+  - "the defect render population and the edit intervals (V1)"
+  - "any generated-clip arm (V1 Part 3, descriptive only)"
+
+# ------------------------------------------------------------------ cost
+budget:
+  ceiling_usd: 15.0
+  part0_estimate_usd: 1.5
+  basis: "about 35 Pi3X forward passes at <= 64 frames per clip on an L40S (1.95 USD/h) plus
+          one cached image build; Frame staging is local CPU. Billing is checked after the run."
+
+# ------------------------------------------------------------------ prohibitions
+prohibitions:
+  - "no held-out simulated clip and no held-out real flight is read"
+  - "no threshold, window or plane rule is changed after seeing an estimate"
+  - "a clip without a reconstructable plane is an abstention, never a silent drop"
+  - "this file is immutable after commit; a needed change is a new file stating the reason"
