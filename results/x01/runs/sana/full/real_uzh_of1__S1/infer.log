@@ -1,0 +1,76 @@
+[LTX2VAE_diffusers] Loading model from /w/hf/hub/models--Efficient-Large-Model--SANA-WM_bidirectional/snapshots/e96271d77398def8ebb9fc595e7c0056dc625ab7
+Failed to load null embed from None....'NoneType' object has no attribute 'seek'. You can only torch.load from a file that is seekable. Please pre-load the data into a buffer like io.BytesIO and try to load from it instead.. Ignore the error during inference
+use pe: True, pos embed type: wan_rope, position embed interpolation: 1.0, base size: 22
+attention type: BidirectionalGDNTriton; ffn type: GLUMBConvTemp; self-attn head dim: 112; self-attn qk norm: True; cross-attn type: flash;  cross-attn qk norm: True; autocast linear attn: False
+Hybrid attention (softmax_every_n=4):
+  attn_type_list = ['BidirectionalGDNTriton', 'BidirectionalGDNTriton', 'BidirectionalGDNTriton', 'BidirectionalGDNTriton', 'BidirectionalGDNTriton', 'BidirectionalGDNTriton', 'BidirectionalGDNTriton', 'BidirectionalGDNTriton', 'BidirectionalGDNTriton', 'BidirectionalGDNTriton', 'BidirectionalGDNTriton', 'BidirectionalGDNTriton', 'BidirectionalGDNTriton', 'BidirectionalGDNTriton', 'BidirectionalGDNTriton', 'BidirectionalGDNTriton', 'BidirectionalGDNTriton', 'BidirectionalGDNTriton', 'BidirectionalGDNTriton', 'BidirectionalGDNTriton']
+  camctrl_cls_list = ['BidirectionalGDNUCPESinglePathLiteLABothTriton', 'BidirectionalGDNUCPESinglePathLiteLABothTriton', 'BidirectionalGDNUCPESinglePathLiteLABothTriton', '_SoftmaxUCPESinglePathLiteLA', 'BidirectionalGDNUCPESinglePathLiteLABothTriton', 'BidirectionalGDNUCPESinglePathLiteLABothTriton', 'BidirectionalGDNUCPESinglePathLiteLABothTriton', '_SoftmaxUCPESinglePathLiteLA', 'BidirectionalGDNUCPESinglePathLiteLABothTriton', 'BidirectionalGDNUCPESinglePathLiteLABothTriton', 'BidirectionalGDNUCPESinglePathLiteLABothTriton', '_SoftmaxUCPESinglePathLiteLA', 'BidirectionalGDNUCPESinglePathLiteLABothTriton', 'BidirectionalGDNUCPESinglePathLiteLABothTriton', 'BidirectionalGDNUCPESinglePathLiteLABothTriton', '_SoftmaxUCPESinglePathLiteLA', 'BidirectionalGDNUCPESinglePathLiteLABothTriton', 'BidirectionalGDNUCPESinglePathLiteLABothTriton', 'BidirectionalGDNUCPESinglePathLiteLABothTriton', '_SoftmaxUCPESinglePathLiteLA']
+GLUMBConvTemp Temporal kernal: 3
+Failed to load null embed from None....'NoneType' object has no attribute 'seek'. You can only torch.load from a file that is seekable. Please pre-load the data into a buffer like io.BytesIO and try to load from it instead.. Ignore the error during inference
+Initializing camera branch QKV from base model QKV for BidirectionalGDNUCPESinglePathLiteLABothTriton
+Initializing camera branch QKV from base model QKV for BidirectionalGDNUCPESinglePathLiteLABothTriton
+Initializing camera branch QKV from base model QKV for BidirectionalGDNUCPESinglePathLiteLABothTriton
+Initializing camera branch QKV from base model QKV for _SoftmaxUCPESinglePathLiteLA
+Initializing camera branch QKV from base model QKV for BidirectionalGDNUCPESinglePathLiteLABothTriton
+Initializing camera branch QKV from base model QKV for BidirectionalGDNUCPESinglePathLiteLABothTriton
+Initializing camera branch QKV from base model QKV for BidirectionalGDNUCPESinglePathLiteLABothTriton
+Initializing camera branch QKV from base model QKV for _SoftmaxUCPESinglePathLiteLA
+Initializing camera branch QKV from base model QKV for BidirectionalGDNUCPESinglePathLiteLABothTriton
+Initializing camera branch QKV from base model QKV for BidirectionalGDNUCPESinglePathLiteLABothTriton
+Initializing camera branch QKV from base model QKV for BidirectionalGDNUCPESinglePathLiteLABothTriton
+Initializing camera branch QKV from base model QKV for _SoftmaxUCPESinglePathLiteLA
+Initializing camera branch QKV from base model QKV for BidirectionalGDNUCPESinglePathLiteLABothTriton
+Initializing camera branch QKV from base model QKV for BidirectionalGDNUCPESinglePathLiteLABothTriton
+Initializing camera branch QKV from base model QKV for BidirectionalGDNUCPESinglePathLiteLABothTriton
+Initializing camera branch QKV from base model QKV for _SoftmaxUCPESinglePathLiteLA
+Initializing camera branch QKV from base model QKV for BidirectionalGDNUCPESinglePathLiteLABothTriton
+Initializing camera branch QKV from base model QKV for BidirectionalGDNUCPESinglePathLiteLABothTriton
+Initializing camera branch QKV from base model QKV for BidirectionalGDNUCPESinglePathLiteLABothTriton
+Initializing camera branch QKV from base model QKV for _SoftmaxUCPESinglePathLiteLA
+[Sana] Loading model from /w/sana/dit/sana_wm_1600m_720p.safetensors
+[Sana] Loaded model from /w/sana/dit/sana_wm_1600m_720p.safetensors
+
+---STDERR---
+/usr/local/lib/python3.11/site-packages/mmcv/__init__.py:20: UserWarning: On January 1, 2023, MMCV will release v2.0.0, in which it will remove components related to the training process and add a data transformation module. In addition, it will rename the package names mmcv to mmcv-lite and mmcv-full to mmcv. See https://github.com/open-mmlab/mmcv/blob/master/docs/en/compatibility.md for more details.
+  warnings.warn(
+/sana/diffusion/model/wan/model.py:124: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  @amp.autocast(enabled=False)
+/sana/diffusion/model/wan/model.py:134: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  @amp.autocast(enabled=False)
+/sana/diffusion/model/nets/fastlinear/modules/nn/norm.py:186: UserWarning: Cannot import apex RMSNorm, switch to vanilla implementation
+  warnings.warn("Cannot import apex RMSNorm, switch to vanilla implementation")
+
+Fetching 33 files:   0%|          | 0/33 [00:00<?, ?it/s]
+Fetching 33 files: 100%|██████████| 33/33 [00:00<00:00, 3525.52it/s]
+
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]
+Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00, 64.43it/s]
+2026-11-25 14:56:06 - [Sana] - INFO - Loaded SanaMSVideoCamCtrl_1600M_P1_D20 (2,661,800,448 params)
+2026-11-25 14:56:09 - [Sana] - WARNING - Missing keys: ['pos_embed']
+
+  0%|          | 0/20 [00:00<?, ?it/s]
+  5%|▌         | 1/20 [00:04<01:31,  4.82s/it]
+ 10%|█         | 2/20 [00:06<00:48,  2.68s/it]
+ 15%|█▌        | 3/20 [00:07<00:34,  2.05s/it]
+ 20%|██        | 4/20 [00:08<00:28,  1.75s/it]
+ 25%|██▌       | 5/20 [00:09<00:23,  1.59s/it]
+ 30%|███       | 6/20 [00:11<00:20,  1.49s/it]
+ 35%|███▌      | 7/20 [00:12<00:18,  1.43s/it]
+ 40%|████      | 8/20 [00:13<00:16,  1.39s/it]
+ 45%|████▌     | 9/20 [00:15<00:14,  1.36s/it]
+ 50%|█████     | 10/20 [00:16<00:13,  1.34s/it]
+ 55%|█████▌    | 11/20 [00:17<00:11,  1.33s/it]
+ 60%|██████    | 12/20 [00:18<00:10,  1.32s/it]
+ 65%|██████▌   | 13/20 [00:20<00:09,  1.31s/it]
+ 70%|███████   | 14/20 [00:21<00:07,  1.31s/it]
+ 75%|███████▌  | 15/20 [00:22<00:06,  1.30s/it]
+ 80%|████████  | 16/20 [00:24<00:05,  1.30s/it]
+ 85%|████████▌ | 17/20 [00:25<00:03,  1.30s/it]
+ 90%|█████████ | 18/20 [00:26<00:02,  1.30s/it]
+ 95%|█████████▌| 19/20 [00:28<00:01,  1.30s/it]
+100%|██████████| 20/20 [00:29<00:00,  1.30s/it]
+100%|██████████| 20/20 [00:29<00:00,  1.47s/it]
+2026-11-25 14:56:40 - [Sana] - INFO - [timing] stage1 sample: 29.487s (latent shape (1, 128, 11, 22, 40))
+2026-11-25 14:56:40 - [Sana] - INFO - [sana-vae] decoding 11 latent frames
+2026-11-25 14:56:43 - [Sana] - INFO - [timing] vae decode: 2.594s (latent T=11 -> pixels (1, 3, 81, 704, 1280))
+2026-11-25 14:56:45 - [Sana] - INFO - Saved /tmp/sana_full_real_uzh_of1__S1/real_uzh_of1__S1_generated.mp4

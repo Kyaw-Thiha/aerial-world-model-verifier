@@ -114,3 +114,86 @@ def collect(prefixes: str = "depicted,solarwm,anwm,lingbot,sana") -> dict:
                     continue
                 out[str(p.relative_to(root))] = p.read_text(errors="replace")
     return out
+
+
+PANEL = ["arc_10", "arc_20", "s_10", "climb_02", "accel_brake_10", "arc_25", "climb_turn_20",
+         "real_uzh_of1", "arc_35", "climb_turn_30", "real_uzh_of3"]
+
+
+@app.function(image=image, cpu=4, memory=8192, timeout=3600, volumes={"/r": vol})
+def sheets(max_clips: int = 40, per_clip: int = 6) -> dict:
+    """Side-by-side contact sheets for the human-judgement check (Stage 3c).
+
+    One sheet per clip: ``per_clip`` frames evenly spaced over the clip, each labelled with its
+    frame index, and a header carrying the generator, the path and the peak tilt the path
+    requires.  No verdict is drawn on the sheet: the reader is asked for a judgement, not shown
+    one.  A labels CSV is written beside the sheets.
+    """
+    import cv2
+    import numpy as np
+
+    root = Path("/r/x01")
+    out = root / "human"
+    out.mkdir(parents=True, exist_ok=True)
+    groups = [("solarwm", "d42"), ("solarwm", "d43"), ("anwm", "C"), ("sana", "full"),
+              ("lingbot", "x01")]
+    rows = []
+    for model, tag in groups:
+        base = root / model / tag
+        if not base.exists():
+            continue
+        if model == "anwm":
+            base = base / "C"
+        for d in sorted(p for p in base.glob("*") if (p / "frames").is_dir()):
+            sid = d.name
+            path = sid[4:].rsplit("_", 1)[0] if sid.startswith("x01_") else \
+                (sid[:-4] if sid.endswith("__S1") else sid)
+            if path not in PANEL and sid not in PANEL:
+                continue
+            if model == "solarwm" and tag == "d42":
+                pass
+            elif model == "solarwm" and tag == "d43":
+                pass
+            elif "S2" in sid:
+                pass
+            rows.append((model, tag, sid, path, d))
+    rows = rows[:max_clips]
+    labels = []
+    for k, (model, tag, sid, path, d) in enumerate(rows):
+        frames = sorted((d / "frames").glob("*.png"))
+        if not frames:
+            continue
+        idx = np.linspace(0, len(frames) - 1, per_clip).round().astype(int)
+        tiles = []
+        for i in idx:
+            im = cv2.imread(str(frames[i]))
+            if im is None:
+                continue
+            h, w = im.shape[:2]
+            s = 320.0 / max(h, w)
+            im = cv2.resize(im, (int(w * s), int(h * s)))
+            cv2.putText(im, f"f{i}", (6, 22), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255),
+                        2)
+            tiles.append(im)
+        if not tiles:
+            continue
+        hh = max(t.shape[0] for t in tiles)
+        tiles = [cv2.copyMakeBorder(t, 0, hh - t.shape[0], 0, 2, cv2.BORDER_CONSTANT,
+                                    value=(40, 40, 40)) for t in tiles]
+        sheet = np.concatenate(tiles, axis=1)
+        head = np.full((46, sheet.shape[1], 3), 30, np.uint8)
+        cv2.putText(head, f"{model}/{tag}  {path}", (8, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.6,
+                    (240, 240, 240), 1)
+        cv2.putText(head, f"clip {sid}", (8, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
+                    (200, 200, 200), 1)
+        sheet = np.concatenate([head, sheet], axis=0)
+        name = f"{k:02d}_{model}_{path}".replace("/", "_")
+        cv2.imwrite(str(out / f"{name}.png"), sheet)
+        labels.append({"sheet": f"{name}.png", "model": model, "tag": tag, "clip_id": sid,
+                       "path": path})
+    (out / "labels.csv").write_text(
+        "sheet,model,draw,clip_id,path,plausible_1_to_5,comment\n"
+        + "\n".join(f"{r['sheet']},{r['model']},{r['tag']},{r['clip_id']},{r['path']},," for r in labels)
+        + "\n")
+    vol.commit()
+    return {"n_sheets": len(labels), "out": str(out), "labels": labels}

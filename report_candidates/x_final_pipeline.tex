@@ -1,0 +1,65 @@
+% Track X candidate section: the final pipeline and generator breadth.
+% Not built into the report (report/ is built from report/scripts); this is a splice candidate.
+% Numbers marked FILL come from results/x01/score.json via scripts/x01_fill_report.py.
+
+\section{One path set, four generators}
+\label{sec:x-generators}
+
+The verifier's evidence base was one generator plus two pilots that failed their own roll-response
+gate. To test whether a path-conditioned aerial world model depicts the attitude its commanded path
+requires, we drove four released models on one common path set at their native frame grids:
+ANWM (4-DoF actions at 1\,s), LingBot-World (camera poses per frame), SolarWM-5B (absolute camera
+poses) and SANA-WM, added here because it is the only candidate that takes a metric camera
+trajectory natively (\texttt{--camera}, $(F,4,4)$), releases Apache-2.0 weights without a gate, and
+runs on one GPU with the release's own script. Models whose conditioning is a keyboard or mouse
+action DSL (Matrix-Game, Yume) were not used: driving them from a metric path would be an
+approximation, not a command.
+
+\paragraph{The common path set}
+Twenty-five paths in five classes --- level, mild lateral acceleration, banked turns of 10--25$^\circ$,
+longitudinal (climb, descent, accelerate/brake), and three out-of-envelope demands --- plus two
+real UZH-FPV windows and two scene swaps. A path is a family and a requested peak; each model
+receives the same family at the same peak on its own time base, and the achieved peak of the
+commanded attitude is solved to within 0.25$^\circ$. ANWM saturates on four high-bank paths because
+its 45$^\circ$-per-step travel-direction cap cannot express a 25$^\circ$ bank at 2.8\,m\,s$^{-1}$;
+those cells are flagged as not expressible and keep their achieved peak.
+
+\paragraph{Tilt fidelity}
+For each clip we fit, per axis, the depicted lean on the required lean with an intercept, over
+in-envelope frames carrying at least 3$^\circ$ of commanded lean and 2$^\circ$ of excitation, and
+report the mean slope as the \emph{tilt gain}: 1 is a generator that depicts the commanded attitude,
+0 one that ignores it, negative one that mirrors it. The identity mapping recovers the commanded
+lean to 0.0$^\circ$, so the statistic has no built-in bias. The frozen gain fitter cannot be used
+here: its drag channel is collinear with the intercept when the commanded speed is constant, and
+every clip of this set abstains on conditioning (condition numbers $1.7\times10^{5}$ to
+$3.1\times10^{5}$ against a $10^{3}$ ceiling).
+
+\begin{table}[t]
+\centering
+\caption{Tilt gain on the common path set (in-envelope, testable clips; median over paths,
+path-clustered bootstrap). FILL: read from \texttt{results/x01/score.json}.}
+\label{tab:x-gain}
+\begin{tabular}{lrrrr}
+\toprule
+generator & clips & testable & median gain & 95\,\% interval \\
+\midrule
+FILL & FILL & FILL & FILL & FILL \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{The final pipeline}
+Only checks that passed their own pre-registered criteria enter: the lean-consistency check on a
+lean propagated from a path anchor, with a drift-flag abstention and a hard abstention where no
+anchor exists, window-level verdicts (12 frames, hop 4) and a clip-level Benjamini--Hochberg rule
+at $q=0.10$. Body-rate consistency (P1), the thrust envelope (P2) and the vertical check (V0) are
+reported as negatives: their own criteria failed or their stop rule fired. The pipeline's binding
+quantity is coverage, not accuracy: the anchored start exists for 16 of 200 development clips and
+for none of the forest tilt-removal clips, so the pipeline abstains far more often than the reader
+start would --- a limitation that is pre-registered as a success criterion rather than discovered
+after the fact.
+
+\paragraph{What this does and does not establish}
+It establishes a generator-level measurement with a null near zero, and a final pipeline assembled
+only from checks that survived their own tests. It does not establish held-out behaviour: the frozen
+held-out pass was not executed in this round, and the report records that rather than a number.

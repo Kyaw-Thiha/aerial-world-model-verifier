@@ -1,0 +1,96 @@
+{
+ "tag": "full",
+ "shard": 1,
+ "shards": 4,
+ "step": 20,
+ "num_frames": 81,
+ "n_clips": 7,
+ "n_ok": 7,
+ "seconds_total": 603.6048409938812,
+ "clips": {
+  "accel_brake_20__S1": {
+   "ok": true,
+   "frames": 81,
+   "seconds": 119.52398228645325,
+   "step": 20,
+   "num_frames": 81,
+   "seed": 42,
+   "path": "accel_brake_20",
+   "family": "accel_brake",
+   "in_envelope": true,
+   "mp4_bytes": 1702297
+  },
+  "arc_20__S2": {
+   "ok": true,
+   "frames": 81,
+   "seconds": 106.03890299797058,
+   "step": 20,
+   "num_frames": 81,
+   "seed": 42,
+   "path": "arc_20__S2",
+   "family": "arc",
+   "in_envelope": true,
+   "mp4_bytes": 5210380
+  },
+  "climb_04__S1": {
+   "ok": true,
+   "frames": 81,
+   "seconds": 139.09813141822815,
+   "step": 20,
+   "num_frames": 81,
+   "seed": 42,
+   "path": "climb_04",
+   "family": "climb",
+   "in_envelope": true,
+   "mp4_bytes": 908110
+  },
+  "cruise_00__S1": {
+   "ok": true,
+   "frames": 81,
+   "seconds": 115.04718446731567,
+   "step": 20,
+   "num_frames": 81,
+   "seed": 42,
+   "path": "cruise_00",
+   "family": "cruise",
+   "in_envelope": true,
+   "mp4_bytes": 784591
+  },
+  "hover_00__S1": {
+   "ok": true,
+   "frames": 81,
+   "seconds": 107.5895607471466,
+   "step": 20,
+   "num_frames": 81,
+   "seed": 42,
+   "path": "hover_00",
+   "family": "hover",
+   "in_envelope": true,
+   "mp4_bytes": 359196
+  },
+  "s_5__S1": {
+   "ok": true,
+   "frames": 81,
+   "seconds": 103.12944889068604,
+   "step": 20,
+   "num_frames": 81,
+   "seed": 42,
+   "path": "s_5",
+   "family": "s",
+   "in_envelope": true,
+   "mp4_bytes": 1527194
+  },
+  "slalom_5__S1": {
+   "ok": true,
+   "frames": 81,
+   "seconds": 102.32136130332947,
+   "step": 20,
+   "num_frames": 81,
+   "seed": 42,
+   "path": "slalom_5",
+   "family": "slalom",
+   "in_envelope": true,
+   "mp4_bytes": 1337621
+  }
+ }
+}

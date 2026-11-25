@@ -83,7 +83,7 @@ def _build_data(sample_ids: list[str], out_root: Path) -> Path:
 
     release = out_root / "releases-v1"
     raw_dir = release / "raw" / "h04"
-    recipe_dir = release / "recipes" / "h04"
+    recipe_dir = release / "recipes" / "x01"
     raw_dir.mkdir(parents=True, exist_ok=True)
     recipe_dir.mkdir(parents=True, exist_ok=True)
     shard = raw_dir / "shard.tar"

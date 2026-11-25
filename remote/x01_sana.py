@@ -24,6 +24,7 @@ import modal
 
 ROOT = Path(__file__).resolve().parents[1]
 INPUTS = ROOT / "data/x01/sana"
+IN_CONTAINER = Path("/inputs")
 SANA_COMMIT = "3c6650a6f47d41de2fd50a216cd138951d7cbafa"
 
 vol_w = modal.Volume.from_name("awmv-x-weights", create_if_missing=True)
@@ -49,10 +50,13 @@ image = (
         "regex omegaconf pyyaml tqdm 'imageio[ffmpeg]' pyrallis 'accelerate>=1.3' "
         "transformers==4.57.3 'diffusers>=0.37.0' timm==0.6.13 safetensors "
         "huggingface_hub==0.36.0 sentencepiece protobuf termcolor matplotlib "
-        "'flash-linear-attention>=0.4.2' liger_kernel",
+        "'flash-linear-attention>=0.4.2' liger_kernel pytz psutil absl-py ml_collections lmdb "
+        "webdataset termcolor fire imagesize open_clip_torch easydict qwen-vl-utils",
         "cd /sana && python -c \"import torch, mmcv, diffusers, transformers; "
         "print('torch', torch.__version__, 'mmcv', mmcv.__version__)\"",
     )
+    .add_local_dir(str(INPUTS), "/inputs", copy=True,
+                   ignore=["**/__pycache__", "**/*.pyc"])
 )
 
 app = modal.App("awmv-x-sana", image=image)
@@ -80,7 +84,7 @@ def download() -> dict:
 
 
 def _clips(ids: list[str] | None, shard: int, shards: int) -> list[Path]:
-    dirs = sorted(p for p in INPUTS.iterdir() if (p / "camera.npy").exists())
+    dirs = sorted(p for p in IN_CONTAINER.iterdir() if (p / "camera.npy").exists())
     if ids:
         keep = set(ids)
         dirs = [p for p in dirs if p.name.split("__")[0] in keep or p.name in keep]
@@ -132,7 +136,10 @@ def _generate(ids: list[str] | None, tag: str, shard: int, shards: int, step: in
         proc = subprocess.run(cmd, cwd="/sana", env=env, capture_output=True, text=True)
         (dst / "infer.log").write_text((proc.stdout or "")[-200000:]
                                        + "\n---STDERR---\n" + (proc.stderr or "")[-100000:])
-        mp4 = work / f"{sid}.mp4"
+        mp4 = work / f"{sid}_generated.mp4"
+        if not mp4.exists():
+            cands = sorted(work.glob("*.mp4"))
+            mp4 = cands[0] if cands else mp4
         if proc.returncode != 0 or not mp4.exists():
             clips[sid] = {"ok": False, "returncode": proc.returncode,
                           "seconds": time.time() - t0,

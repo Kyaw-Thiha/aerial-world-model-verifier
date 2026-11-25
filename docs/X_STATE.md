@@ -16,6 +16,13 @@ Stages 2-4 require Track P and Track V to have written their **decision** report
 So Stage 1 is proceeding and Stages 2-4 are **not** started. Re-check with the resume command
 below before any Stage-2 work.
 
+## Status at the cut-off (2026-11-25 ~02:45 EST)
+
+Stage 1 ran; X1 is written with the numbers that exist. Stages 2-4: the design is frozen
+(`configs/x_final_frozen.yaml`, `0d10597b…`) and X2 records the development evidence that exists;
+**the held-out pass was not run** (X3 says so). The blocking item is one script that composes the
+frozen components into a single development table with coverage and denominators.
+
 ## Done
 
 * Frozen hashes verified at start: `configs/sim_splits_frozen.json` `cdf66e28…`,
@@ -28,15 +35,19 @@ below before any Stage-2 work.
   `remote/x01_sana.py`, `remote/x01_readers.py`. Volumes `awmv-x-weights`, `awmv-x-results`.
 * Runner: `scripts/x01_run.sh` (exact commands).
 
-## Running
+## Generation, as it stands
 
-* `awmv-x-solarwm` (A100-80GB ×4 chunks, 30 samples minus stale, seed 42) — started 01:20 EST.
-* `awmv-x-anwm` (A10G, 26 specs) — started 00:59 EST.
-* `awmv-x-lingbot` (A100-80GB, 8 paths, 81 frames) — started 01:22 EST.
-* `awmv-x-sana` (CPU) — image build and 18 GB download, started 00:56 EST.
+* SolarWM draw 42 (26 clips) and draw 43 (8 clips): **done**.
+* SANA-WM: **23 of 24** clips (outdoor_forward_5 has no admissible window).
+* ANWM: **17 of 25** clips at the cut-off, still running (218 s/clip on one A10).
+* LingBot-World: **0 clips** after three launches (the intrinsics file must be an `(F,4)` array;
+  fixed twice, then the model load + first clip never completed in the window). Reported as not
+  produced, with the spend recorded.
+* Readers: SolarWM 26+8, SANA 5 (shard still running), ANWM 17.
 
-Modal app IDs are in the job logs; every app is stopped when the call set finishes (the
-entrypoints wait on their calls, no detached orphans).
+Every Modal app is stopped or finishes on its own; no detached orphan was left running. If ANWM is
+still running when this is read, it will write the remaining clips to `awmv-x-results:/x01/anwm/C`
+and the next step is to re-read and re-score it.
 
 ## Next (in order)
 

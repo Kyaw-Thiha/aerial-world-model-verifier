@@ -42,7 +42,10 @@ fraction of paths whose gain lies in [0.5, 1.5].
 
 ## What is labelled exploratory
 
-* The ANWM frame minimum of 10 (its clips are 16 frames) and therefore ANWM's whole gain column.
+* The ANWM frame minimum of 10 (its clips are 16 frames) and the ANWM signal-frame count of 4
+  (the frozen 12 is calibrated for 81-frame clips and cannot be met by a 16-frame clip); ANWM's
+  whole gain column is therefore exploratory, and in the event only 3 of its paths are testable at
+  all, so no claim is made from it.
 * The magnitude ratio and R2 columns, kept because H04 used the ratio form and a reader of that
   report needs the link; they are not the score.
 * Nothing about the populations, the models or the success criteria changes.

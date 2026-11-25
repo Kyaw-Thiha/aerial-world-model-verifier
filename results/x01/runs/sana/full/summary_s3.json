@@ -1,0 +1,84 @@
+{
+ "tag": "full",
+ "shard": 3,
+ "shards": 4,
+ "step": 20,
+ "num_frames": 81,
+ "n_clips": 6,
+ "n_ok": 6,
+ "seconds_total": 487.6755623817444,
+ "clips": {
+  "arc_15__S1": {
+   "ok": true,
+   "frames": 81,
+   "seconds": 107.62648606300354,
+   "step": 20,
+   "num_frames": 81,
+   "seed": 42,
+   "path": "arc_15",
+   "family": "arc",
+   "in_envelope": true,
+   "mp4_bytes": 4082485
+  },
+  "arc_35__S1": {
+   "ok": true,
+   "frames": 81,
+   "seconds": 106.95056915283203,
+   "step": 20,
+   "num_frames": 81,
+   "seed": 42,
+   "path": "arc_35",
+   "family": "arc",
+   "in_envelope": false,
+   "mp4_bytes": 4391378
+  },
+  "climb_turn_20__S1": {
+   "ok": true,
+   "frames": 81,
+   "seconds": 147.29619455337524,
+   "step": 20,
+   "num_frames": 81,
+   "seed": 42,
+   "path": "climb_turn_20",
+   "family": "climb_turn",
+   "in_envelope": true,
+   "mp4_bytes": 5490991
+  },
+  "descend_04__S1": {
+   "ok": true,
+   "frames": 81,
+   "seconds": 118.28899574279785,
+   "step": 20,
+   "num_frames": 81,
+   "seed": 42,
+   "path": "descend_04",
+   "family": "descend",
+   "in_envelope": true,
+   "mp4_bytes": 852760
+  },
+  "real_uzh_of3__S1": {
+   "ok": true,
+   "frames": 81,
+   "seconds": 108.89219069480896,
+   "step": 20,
+   "num_frames": 81,
+   "seed": 42,
+   "path": "real_uzh_of3",
+   "family": "real",
+   "in_envelope": true,
+   "mp4_bytes": 3936107
+  },
+  "slalom_10__S2": {
+   "ok": true,
+   "frames": 81,
+   "seconds": 108.61932110786438,
+   "step": 20,
+   "num_frames": 81,
+   "seed": 42,
+   "path": "slalom_10__S2",
+   "family": "slalom",
+   "in_envelope": true,
+   "mp4_bytes": 2962654
+  }
+ }
+}

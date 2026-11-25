@@ -85,6 +85,12 @@ SCENES = {
     "S2": "33J5JKFMLEW1H2QNNURTNDINLEQ3QX_processed",
 }
 ANWM_START_TIME = 39
+# ANWM takes context frames from its own released trajectories, which are the only five whose
+# ``traj_data.pkl`` is on the native volume.  38RHUL is the one trajectory that is also in the
+# downloaded frame set, but H01 verified 3KA7 at start_time 39, so 3KA7 is S1 here and 30EMX is
+# S2; the scene is therefore not shared with the camera models and that is reported, not hidden.
+ANWM_TRAJ = {"S1": "3KA7IJSNXE3LKLTL2ARA5RQP4ACBP0_processed",
+             "S2": "30EMX9PEWSHJQGD7048XZZEQ9SBSK3_processed"}
 REAL_FLIGHTS = {"real_uzh_of1": "outdoor_forward_1", "real_uzh_of3": "outdoor_forward_3",
                 "real_uzh_of5": "outdoor_forward_5"}
 
@@ -556,9 +562,14 @@ def main() -> int:
         np.save(d / "poses.npy", poses.astype(np.float32))
         if model == "sana":
             np.save(d / "camera.npy", poses.astype(np.float32))
-        if model in ("sana", "lingbot"):
+        if model == "sana":
             np.save(d / "intrinsics.npy", np.array([c["f_px"], c["f_px"], W / 2.0, H / 2.0],
                                                    np.float32))
+        if model == "lingbot":
+            # LingBot's get_Ks_transformed does ``Ks.chunk(4, dim=-1)`` on a (F, 4) tensor of
+            # [fx, fy, cx, cy]; a 1-D vector fails the [:, 0:1] index and a 3x3 fails the chunk.
+            K = np.array([[c["f_px"], c["f_px"], W / 2.0, H / 2.0]], np.float32)
+            np.save(d / "intrinsics.npy", K)
         (d / "prompt.txt").write_text(PROMPT)
         meta = next(s for s in summary if s["model"] == model and s["path"] == name
                     and s.get("scene") == scene)
@@ -570,7 +581,7 @@ def main() -> int:
                 write_camera(model, f"{name}__S1", name, "S1")
         for swap_name, _ in SCENE_SWAPS:
             if f"{model}__{swap_name}__pos" in arrays:
-                write_camera(model, f"{swap_name}__S2", swap_name, "S2")
+                write_camera(model, swap_name, swap_name, "S2")
 
     specs = []
     for name, family, _ in PATHS + [(s, "", None) for s, _ in SCENE_SWAPS]:
@@ -584,7 +595,7 @@ def main() -> int:
             "regime": "C",
             "positions": np.asarray(arrays[f"{key}__pos"]).tolist(),
             "yaw": np.asarray(arrays[f"{key}__yaw"]).tolist(),
-            "start_traj": SCENES[scene],
+            "start_traj": ANWM_TRAJ[scene],
             "start_time": ANWM_START_TIME,
             "seed": 0,
             "designed_tilt_deg": info["peak_tilt_deg"],

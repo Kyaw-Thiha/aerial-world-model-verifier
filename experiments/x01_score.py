@@ -109,7 +109,7 @@ def clip_stats(lean_dep: np.ndarray, lean_req: np.ndarray, tilt_req: np.ndarray,
 
 
 def fitted_gain(t, pos, yaw, dep_lean, dep_conf, lean_req, vel_req, tilt_req,
-                min_frames: int) -> dict:
+                min_frames: int, min_signal: int = 12) -> dict:
     """X01 tilt gain: per-axis OLS slope of depicted on required lean, with an intercept.
 
     The project's frozen gain fitter (``configs/gain_frozen.yaml``) adds a drag regressor and an
@@ -136,6 +136,12 @@ def fitted_gain(t, pos, yaw, dep_lean, dep_conf, lean_req, vel_req, tilt_req,
         return out
     if out["excitation_deg"] < 2.0:
         out["abstain"] = [f"excitation {out['excitation_deg']:.2f} < 2.0"]
+        return out
+    # the frozen excitation rule: enough frames whose required tilt is a real signal
+    tr = np.asarray(tilt_req, float)[:n][ok]
+    n_sig = int(np.sum(tr >= 10.0))
+    if n_sig < int(min_signal) or n_sig / max(len(tr), 1) < 0.2:
+        out["abstain"] = [f"signal_frames {n_sig} < {min_signal} or fraction < 0.2"]
         return out
     slopes, preds = [], []
     for k in range(2):
@@ -232,7 +238,8 @@ def main() -> int:
             try:
                 fit = fitted_gain(np.arange(n) / 16.0, pos, yaw, lean_dep, conf, lean_req,
                                   vel_req, tilt_req,
-                                  min_frames=10 if model == "anwm" else 24)
+                                  min_frames=10 if model == "anwm" else 24,
+                                  min_signal=4 if model == "anwm" else 12)
             except Exception as exc:                      # noqa: BLE001
                 fit = {"gain": float("nan"), "gx": float("nan"), "gy": float("nan"),
                        "lag_ms": float("nan"), "n_frames": int(n), "error": str(exc)}
