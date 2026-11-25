@@ -1,0 +1,257 @@
+# X01 — Pre-registration: the common path set and the generator-breadth campaign
+#
+# Committed BEFORE any X01 clip is generated, in the state Scenes S1/S2 are fixed and before the
+# Stage-1 inputs are built.  Every population, model choice, path family, envelope rule, cost
+# estimate, control and success criterion below is fixed.  A change after an outcome is an
+# amendment commit with a stated reason and is labelled exploratory in
+# reports/X1_generator_breadth.md.
+prereg_version: 1
+date: 2026-11-25
+tag: "[X1]"
+track: X1
+branch: track-x-final-pipeline
+handoff: "32 (Stage 1: generator breadth)"
+depends_on:
+  - "H01 (track-h-generator-pilot): ANWM and LingBot routes, pose conventions, clip costs"
+  - "H02 (track-h2-generator-coverage): SolarWM-5B app and the camera-length pipeline"
+  - "H04 (track-h3-reader-validity): continuous-attitude path design, 81-frame 16 fps clip
+     geometry, the frozen reader feed (224 centre crop, pinhole, f = 112 px)"
+  - "N01/N04 (track-n-rotation): which real flights are rotation-trackable (UZH outdoor yes,
+     TII racing no)"
+  - "Stage 2/3 of this track depend on Track P (rate envelope) and Track V (vertical); neither
+     has written a decision report when this file is committed, so the envelope used here is
+     provisional (below) and is NOT the final pipeline's envelope."
+
+# ------------------------------------------------------------------ scope of Stage 1
+goal: >
+  Put three to four path-conditioned generators on ONE common path set so that the paper's
+  cross-generator claim does not rest on one model.  Stage 1 measures whether each generator
+  can be driven on the same commanded paths, at what cost, and (descriptively) what fraction of
+  the required tilt it depicts.  It does not run any frozen verdict, does not touch held-out
+  data and does not choose the final pipeline.
+
+# ------------------------------------------------------------------ model selection
+models_present:
+  ANWM:
+    checkpoint: "EmbodiedCity/ANWM.code 657a802, slim checkpoint 0200000_ema.pth.tar"
+    conditioning: "4-DoF actions (dx, dy, dz, dyaw) per 1 s step; pitch and roll are ignored by
+                  construction"
+    route: "H01's app, one A10G, 250 sampling steps, 16 steps / 17 frames"
+  LingBot-World:
+    checkpoint: "cahlen/lingbot-world-base-cam-nf4 (33 GB NF4), H01's route"
+    conditioning: "OpenCV camera-to-world poses per frame (48 frames plus the start frame)"
+    route: "A100-80GB, 40 sampling steps, 49 frames at 16 fps"
+  SolarWM-5B:
+    checkpoint: "junchaoh-cs/SolarWM-Wan2.2-5B, SolarWM-5B-sgf-stage2-81f (gated; accepted)"
+    conditioning: "absolute OpenCV c2w [F,4,4] plus per-frame intrinsics"
+    route: "H04's app, one A100-80GB, 4-step SGF, 81 frames at 16 fps, 480x864"
+models_added:
+  SANA-WM:
+    checkpoint: "Efficient-Large-Model/SANA-WM_bidirectional (2.6 B DiT, 10 GB) with the
+                bundled LTX-2 VAE; the LTX-2 refiner and the Gemma text encoder are the
+                release's own optional stage 2"
+    licence: "Apache-2.0 (code and weights); the bundled LTX-2 VAE inherits the LTX-2 upstream
+              licence; the Gemma-2-2B-IT encoder is fetched from the release's public mirror"
+    conditioning: "native 6-DoF camera control: --camera a (F,4,4) camera-to-world numpy array
+                  plus intrinsics; the release's own camera branch, no action-DSL approximation"
+    route: "NVlabs/Sana inference_video_scripts/wm/inference_sana_wm.py, 704x1280 at 16 fps,
+            stage 1 only (--no_refiner) so the download is the DiT + VAE and not the 87 GB
+            refiner + Gemma pair"
+    why_this_one: >
+      It is the only candidate of the four named in the handoff that (a) takes a metric
+      camera trajectory natively, (b) releases weights under a permissive licence without a
+      gate, and (c) fits one GPU with the release's own inference script.
+models_rejected:
+  HY-WorldPlay:
+    reason: >
+      Would have been the second addition.  The action checkpoints are 34 GB each and are useless
+      without the HunyuanVideo-1.5 backbone (189 GB total); the documented route is
+      torchrun over 4 GPUs for 125 frames; the licence is the Tencent HY-WorldPlay community
+      licence, which needs its own terms review.  Under the 30 USD Stage-1 ceiling and an
+      unattended run, one addition was delivered properly instead of two badly.  Recorded as a
+      candidate for a later round.
+  Matrix-Game-3.0 / 4.0:
+    reason: "keyboard/mouse action DSL, not a metric camera path; driving it from a path would
+             be an approximation, which the handoff forbids."
+  Yume-1.5:
+    reason: "keyboard action DSL (forward/back/turn), same objection as Matrix-Game."
+
+# ------------------------------------------------------------------ the common path set
+# A path is a FAMILY plus a request: the same geometric family and the same requested peak is
+# instantiated on each model's own native frame grid and frame rate, and the per-instantiation
+# achieved peak is checked against the request (tolerance 0.2 deg).  This is a common path set
+# in the sense in which the generators are actually conditioned: ANWM consumes 1 s action
+# steps, the three camera models consume per-frame poses at 16 fps.  Sharing a single
+# wall-clock trajectory across all four would command ANWM a 10x larger acceleration than the
+# camera models for the same shape and would confound the cross-generator comparison.
+geometry:
+  clip_frames_camera: 81
+  fps_camera: 16
+  clip_seconds_camera: 5.0625
+  active_window_s: [1.0, 4.0]
+  ramp_s: 0.5
+  speed_v0_ms: 2.8
+  drag_k_d: 0.295
+  anwm_steps: 16
+  anwm_frames: 17
+  anwm_nominal_dt_s: 1.0
+  lingbot_frames: 81
+  path_design:
+    turn: "bank profile phi(t) = peak * sin(pi x / span) * envelope; omega = -(g/v) tan(phi)"
+    s: "phi(t) = peak * sin(2 pi x / span) * envelope"
+    slalom: "phi(t) = peak * sin(k pi x / span) * envelope, k = 3 for the standard slalom and
+             k = 4 with a 1.6 s span for the fast variant"
+    fig8: "phi(t) = peak * sin(2 pi x / span) * (0.6 + 0.4 cos(2 pi x / span)) * envelope"
+    climb: "vertical z(t) = +amp * sin(pi x / span)^2 * envelope (climb) or -amp (descend), with
+            amp set so the peak vertical acceleration is the requested 0.2 g or 0.4 g; the
+            requested number for these two families is an acceleration in g, not an angle,
+            because Track V's vertical probe design is not available at this freeze.  The
+            achieved pitch and thrust ratio are measured and reported, not requested."
+    climb_turn: "turn plus a vertical profile whose peak acceleration is
+                 0.5 g tan(bank/2), the H04 relation"
+    accel_brake: "forward speed v(t) = v0 (1 + m (sin(pi x/span)^2 - 0.5) * envelope), m solved
+                  so the peak pitch equals the request"
+    hover: "constant position, zero commanded acceleration"
+    cruise: "constant forward speed, no lateral acceleration"
+    real: "a window of a real UZH-FPV outdoor mocap flight, with the flatness attitude of its
+           own 1 s-smoothed acceleration and yaw from its own velocity direction.  Window rule:
+           the admissible window with the largest peak required tilt, admissible meaning
+           endpoint displacement <= 15 m (camera models) or <= 120 m (ANWM's 17 s base) and
+           peak tilt in [10, 45] deg (camera) or [10, 60] deg (ANWM).  ANWM's window is then
+           scaled so its largest 1 s step is 4.5 m (its action envelope), and the scale is
+           recorded per path.  No window is admissible in outdoor_forward_5 for the camera
+           models, so two real paths are built, not three; ANWM cannot host a 17 s window in
+           that flight at all (223 samples)."
+paths:
+  # name, family, requested peak (deg of bank, or pitch for accel_brake/climb), envelope class
+  list:
+    - [hover_00, hover, 0, in]
+    - [cruise_00, cruise, 0, in]
+    - [s_5, s, 5, in]
+    - [slalom_5, slalom, 5, in]
+    - [fig8_5, fig8, 5, in]
+    - [s_10, s, 10, in]
+    - [slalom_10, slalom, 10, in]
+    - [arc_10, arc, 10, in]
+    - [arc_15, arc, 15, in]
+    - [arc_20, arc, 20, in]
+    - [arc_25, arc, 25, in]
+    - [climb_02, climb, 0.2, in]        # requested peak VERTICAL acceleration, in g
+    - [climb_04, climb, 0.4, in]
+    - [descend_02, descend, 0.2, in]
+    - [descend_04, descend, 0.4, in]
+    - [climb_turn_10, climb_turn, 10, in]
+    - [climb_turn_20, climb_turn, 20, in]
+    - [accel_brake_10, accel_brake, 10, in]
+    - [accel_brake_20, accel_brake, 20, in]
+    - [arc_35, arc, 35, out]
+    - [slalom_25_fast, slalom_fast, 25, out]
+    - [climb_turn_30, climb_turn, 30, out]
+    - [real_uzh_of1, real, null, in]
+    - [real_uzh_of3, real, null, in]
+    - [real_uzh_of5, real, null, in]
+  count: 25
+  scene_swaps:
+    # the same path on a second first frame, to separate path effects from scene effects
+    - [arc_20__S2, arc_20]
+    - [slalom_10__S2, slalom_10]
+provisional_envelope:
+  why: >
+    Track P's rate-envelope definition is not available when this file is committed.  The
+    classification below is therefore a physics placeholder used for stratum labels in Stage 1
+    only; Stage 2 re-derives the envelope from P's report before any pre-registered claim is
+    made, and re-labels these paths at that point (the Stage-1 numbers stand as descriptive).
+  rule: "a commanded path is IN when peak tilt <= 30 deg AND peak thrust ratio
+         |a + g e3 + k_d v| / g <= 1.8 AND peak commanded tilt rate <= 200 deg/s; else OUT.
+         The rate limit is deliberately loose: P is the track that will define the airframe's
+         rate envelope, and 200 deg/s is a camera-drone ceiling, not a racing one."
+  expected: "arc_35 (35.3 deg) and climb_turn_30 (30.5 deg) are OUT on tilt.  No path in this
+             set is expected to be OUT on rate at a 200 deg/s limit; if one is, it is reported."
+scenes:
+  S1: >
+    ANWM release trajectory 302OLP89E75X7MFPRR58QG7CJPZCA7_processed, smallest recorded frame
+    index, the image H04 used as F1: a downward-looking aerial scene.  Each model receives it in
+    its own native geometry (ANWM 256x448, LingBot 480x832 edge-padded, SolarWM 480x864
+    edge-padded, SANA-WM 704x1280 centre-crop), all from the same source pixels.
+  S2: "H04's F4 (ANWM release trajectory 4, smallest frame), same four native geometries."
+  why_perspective: "a pinhole or near-pinhole start frame; the TII fisheye is never used as a
+                    start frame because the three camera models assume a perspective camera."
+
+# ------------------------------------------------------------------ sampling
+seeds:
+  SolarWM: "one draw (noise_seed 42) on all 25 paths, and a second draw (noise_seed 43) on the
+            8 reference paths of the LingBot panel.  The release exposes one noise_seed, so the
+            two are a seed knob, not validation draws."
+  ANWM: "one release seed per path; H01's seed-variance result (spread across seeds) is the
+         published statement on ANWM sampling, not repeated here"
+  LingBot: "one draw (the clip loop is deterministic under the sampler's fixed seed)"
+  SANA-WM: "one seed (42), 81 frames, stage 1 only (--no_refiner), 20 denoising steps"
+lingbot_subset:
+  why: "the NF4 route costs about 0.45 USD per 49-frame clip; the panel is the smallest that
+        covers every family once."
+  paths: [arc_10, arc_20, s_10, slalom_10, climb_02, climb_turn_10, accel_brake_10,
+          real_uzh_of1]
+anwm_expressibility: >
+  ANWM's action envelope (5 m/s horizontal, 2 m/s vertical, 45 deg of travel-direction change
+  per 1 s step) does not admit a 25 deg-bank arc at 2.8 m/s: the continuous design turns through
+  93 deg per second and aliases on the 1 s grid.  The bisection then saturates.  Saturating
+  paths are kept, flagged ``expressible: false``, and their achieved peak (not the request) is
+  used in every comparison.  This is a property of the generator, reported rather than fixed by
+  changing the path.
+
+# ------------------------------------------------------------------ spend
+cost_estimate:
+  posted_before_any_job: true
+  SolarWM: "33 clips (25 paths x 1 draw + 8 reference paths x 1 second draw) at ~0.10 USD
+            = 3.3 USD"
+  ANWM: "25 clips (one per path; of5 real is impossible) at ~0.07 USD = 1.8 USD"
+  LingBot: "8 clips at ~0.45 USD = 3.6 USD"
+  SANA-WM: "image build + 18 GB download ~0.6 USD; 25 clips at an unknown per-clip cost,
+            capped at 8.0 USD by the probe rule below"
+  readers: "about 90 clips at the H04 rate (about 0.010 USD per 81-frame clip) = 1.0 USD"
+  total_cap_usd: 20.5
+  ceiling_usd: 35
+  stop_rule: >
+    If the SANA-WM probe costs more than 0.30 USD per clip, its panel is cut to the 12 reference
+    paths (arc_10, arc_20, arc_25, s_10, slalom_10, climb_turn_10, accel_brake_10,
+    climb_02, hover_00, cruise_00, real_uzh_of1, fig8_5).  If the image cannot be built or the model cannot produce a clip after two attempts,
+    SANA-WM is reported as not run and the campaign proceeds with three generators.
+
+# ------------------------------------------------------------------ what is measured
+statistics:
+  generation_success: "clips written / clips requested, per generator and path, with the failure
+                       reason"
+  cost_per_clip: "measured wall time x the GPU list price, including model load apportioned per
+                  call, taken from the run JSON and checked against modal billing report"
+  depicted_tilt:
+    reader: "GeoCalib 1dedb29 pinhole, 224 px centre crop, f = 112 px, the frozen reader feed
+             of H03/H04/G06"
+    required: "flatness lean of the commanded path at the clip's frame times, k_d = 0.295,
+               differentiated at the frozen 0.37 s window"
+    statistic: "tilt-fidelity score = median over in-envelope frames of |lean_dep| / |lean_req|
+                (frames with |lean_req| >= 3 deg), and the fraction of in-envelope paths whose
+                median ratio is in [0.5, 1.5]"
+  controls: "the same-frame null (depicted lean of path A scored against required lean of path B)
+             and the yaw control (frames rotated about world up, which must leave the tilt
+             unchanged) on two reference paths per generator"
+  units_and_intervals: "scene- or path-clustered bootstrap (5,000 replicates, default_rng(1));
+                        fewer than 10 clusters is descriptive and says so"
+success_criteria:
+  S1a: "at least three generators produce at least 90 % of their requested clips"
+  S1b: "at least three generators produce a clip on at least 18 of the 25 paths"
+  S1c: "every produced clip has a recorded per-clip cost and wall time"
+  S1d: "the tilt-fidelity score is reported per generator and per path class with a
+        denominator, and at least one generator is separated from another by a bootstrap
+        interval that excludes zero"
+  stop: "if fewer than three generators reach S1a-S1b, Stage 1 is reported as a negative on
+         generator breadth and no cross-generator claim is made."
+
+# ------------------------------------------------------------------ data and publication
+outputs:
+  paths: "results/x01/paths.npz and results/x01/paths_summary.json (committed)"
+  per_model_inputs: "data/x01/<model>/ (gitignored, rebuilt by experiments/x01_common_paths.py)"
+  clips: "Modal volume awmv-x-results:/x01/<model>/<clip>/clip.mp4 + frames/; R2 prefix
+          track-x/x01/<model>/ as the publication target"
+  reader_rows: "results/x01/depicted/<model>.jsonl (committed, small)"
+split_hygiene: "no held-out simulated clip and no held-out real flight (TII 13p, 07a) is read at
+                any point in Stage 1."
