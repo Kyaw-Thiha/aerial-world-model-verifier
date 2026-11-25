@@ -1102,3 +1102,18 @@ Every row below was read from the project's own repo/HF card on 2026-11-10. "ver
   on 2026-11-25 (list and read), so Track V read every input from local copies or from Modal
   volumes and wrote nothing to R2. Generated clips were pulled from `awmv-h-anwm-results` and
   `awmv-h3-results`, not from `track-h/` or `track-h3/`.
+- [V] **The confidence floor had to become relative (amendment 4).** Pi3X's log-confidence field
+  moves by more than five log units between clips (chunk 99th percentiles +0.1 to -4.6), so an
+  absolute floor abstains on the clips whose field sits low — five of the first fifteen
+  simulated clips stored empty point clouds. The pilot was re-run once with a per-chunk 75th
+  percentile floor, which keeps a quarter of each chunk's pixels. The change was made before any
+  sim-pilot aggregate existed and does not touch the stop rule; the real-sequence error it
+  produces is reported from the same re-run, so nothing is stitched across code versions.
+- [V] **The estimator's plane-orientation error is roughly constant; the leverage is not.** The
+  ratio error a ground-normal error delta produces is about delta * L / h. Over the pilot the
+  implied delta is 2-4 deg on the real sequences and 2.6-8.1 deg on the simulated clips, but the
+  horizontal travel per window divided by the camera height is 7.8-11.9 on the real flights and
+  0.35-1.25 on the rendered ones, so the same plane error costs an order of magnitude more
+  where the camera flies low. This is the mechanism behind the stop, and it is the reason a
+  downward-looking or high-altitude population is the natural next test rather than a longer
+  window or a different threshold.
