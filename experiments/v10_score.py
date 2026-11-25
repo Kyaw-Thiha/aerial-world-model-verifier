@@ -127,7 +127,7 @@ def detect(rows: list[dict], taus: list[float]) -> dict:
 def main() -> int:
     OUT.mkdir(parents=True, exist_ok=True)
     units = {u["unit"]: u for u in json.loads(UNITS.read_text())["units"]}
-    have = {u for u in units if (RECON / f"{u}.json").exists()}
+    have = {u for u in units if RIO.complete(RECON, u)}
     missing = sorted(set(units) - have)
     if missing:
         print(f"NOTE: {len(missing)} units without recon: {missing[:10]}"

@@ -13,6 +13,19 @@ import numpy as np
 from src.vertical import metrics as M
 
 
+def complete(recon_dir: Path, unit: str) -> bool:
+    """True when the unit's window table and every chunk file it names are present."""
+    js = recon_dir / f"{unit}.json"
+    if not js.exists():
+        return False
+    try:
+        meta = json.loads(js.read_text())
+    except Exception:
+        return False
+    return all((recon_dir / f"{unit}__c{c['chunk']}.npz").exists()
+               for c in meta.get("chunks", []))
+
+
 def load_unit(recon_dir: Path, unit: str) -> dict:
     js = json.loads((recon_dir / f"{unit}.json").read_text())
     chunks = {}

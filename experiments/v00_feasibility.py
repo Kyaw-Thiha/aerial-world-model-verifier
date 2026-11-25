@@ -56,7 +56,7 @@ def main() -> int:
             continue
         if u["kind"] == "uzh" and u.get("population", "pilot") != "pilot":
             continue
-        if not (RECON / f"{u['unit']}.json").exists():
+        if not RIO.complete(RECON, u["unit"]):
             print(f"MISSING recon for {u['unit']}")
             continue
         data = load_unit(u)

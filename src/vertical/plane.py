@@ -104,33 +104,38 @@ def _fit(pts: np.ndarray, cams_mean: np.ndarray) -> tuple[np.ndarray, float] | N
 
 def _ransac(pts: np.ndarray, thr: float, rng: np.random.Generator,
             trials: int = TRIALS) -> tuple[np.ndarray, float, np.ndarray] | None:
+    """Vectorised RANSAC: the same rule as the loop (trials, band), batched over trials."""
     n_pts = len(pts)
     if n_pts < 3:
         return None
-    best = None
-    best_count = -1
-    for _ in range(trials):
-        idx = rng.choice(n_pts, 3, replace=False)
-        a, b, c = pts[idx]
-        n = np.cross(b - a, c - a)
-        norm = float(np.linalg.norm(n))
-        if norm < 1e-12:
-            continue
-        n = n / norm
-        d = float(n @ a)
-        count = int(np.count_nonzero(np.abs(pts @ n - d) < thr))
-        if count > best_count:
-            best_count = count
-            best = (n, d)
-    if best is None:
+    idx = rng.choice(n_pts, size=(trials, 3), replace=True)
+    a, b, c = pts[idx[:, 0]], pts[idx[:, 1]], pts[idx[:, 2]]
+    n = np.cross(b - a, c - a)
+    norm = np.linalg.norm(n, axis=1)
+    good = norm > 1e-12
+    if not np.any(good):
         return None
-    n, d = best
-    inl = np.abs(pts @ n - d) < thr
+    n[good] /= norm[good, None]
+    d = np.einsum("ij,ij->i", n[good], a[good])
+    ng = n[good]
+    best_count, best_n, best_d = -1, None, None
+    p32 = pts.astype(np.float32)
+    for i in range(0, len(ng), 256):
+        nb, db = ng[i:i + 256], d[i:i + 256]
+        dist = np.abs(p32 @ nb.T.astype(np.float32) - db.astype(np.float32))
+        counts = np.count_nonzero(dist < thr, axis=0)
+        k = int(np.argmax(counts))
+        if counts[k] > best_count:
+            best_count = int(counts[k])
+            best_n, best_d = nb[k].astype(np.float64), float(db[k])
+    if best_n is None:
+        return None
+    inl = np.abs(pts @ best_n - best_d) < thr
     refit = _fit(pts[inl], pts.mean(axis=0))
     if refit is not None:
-        n, d = refit
-        inl = np.abs(pts @ n - d) < thr
-    return n, d, inl
+        best_n, best_d = refit
+        inl = np.abs(pts @ best_n - best_d) < thr
+    return best_n, best_d, inl
 
 
 def fit_ground_plane(points: np.ndarray, cams: np.ndarray, rng: np.random.Generator | None = None,

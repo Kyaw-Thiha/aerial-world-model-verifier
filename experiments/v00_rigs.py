@@ -29,7 +29,7 @@ def main() -> int:
              if u["kind"] == "uzh"]
     rows_out = []
     for u in sorted(units, key=lambda x: x["unit"]):
-        if not (RECON / f"{u['unit']}.json").exists():
+        if not RIO.complete(RECON, u["unit"]):
             continue
         data = RIO.load_unit(RECON, u["unit"])
         t = np.asarray(u["truth"]["t"], float)
