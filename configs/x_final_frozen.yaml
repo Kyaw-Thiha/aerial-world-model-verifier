@@ -1,0 +1,133 @@
+# X — the final pipeline, frozen before any held-out read
+#
+# Written 2026-11-25 after Tracks P and V wrote their decision reports and after X01 was
+# scored on development data only.  No held-out simulated clip and no held-out TII flight
+# (13p, 07a) was read before this file was committed; the sha256 below is recorded in
+# docs/decisions.md in the same commit.
+prereg_version: 1
+date: 2026-11-25
+track: X2/X3
+branch: track-x-final-pipeline
+handoff: "32 (Stages 2-4)"
+status: frozen_before_heldout
+
+# ------------------------------------------------------------------ what the checks decided
+check_selection:
+  rule: "a check enters the pipeline only if its own report passes its pre-registered criteria;
+         a check that stopped at a pre-registered stop rule is reported negative and left out."
+  A_lean_consistency:
+    verdict: IN
+    evidence: >
+      The primary verdict of rounds 1-3 (configs/coherence_frozen.yaml, configs/g06_eval_frozen.yaml;
+      G06 dev pass, G07 held-out pass at the clip level).  The statistic compares the depicted
+      lean with the lean the depicted motion requires; it is scale-free (correlation and sign),
+      so a constant scene bias does not enter.
+    start: "known-start propagation, NOT the reader start"
+    start_evidence: >
+      The reader start inherits the scene's gravity bias (N02, N03; the reader's own start error
+      is 1.08-1.17 deg median but with a 9 deg tail), and the agreement gates that tried to
+      repair it are closed (J04, M02).  Propagation from an attitude start is accurate (UZH
+      outdoor 0.43 deg at 10 s, simulated forest 1.80 deg with an oracle start) and is the route
+      the handoff names.  With a *path anchor* (N3B) the residual is 0.03 deg median on the 16
+      feasible clips that have one, but no anchor exists for the forest removals or the drift
+      tail, so coverage is the limiting quantity.
+  B_rate_consistency:
+    verdict: OUT
+    evidence: >
+      P1: pre-registered pooled criteria C1-C3 FAIL (2/19 removals, 1/16 mirrors, 0/22 scale at a
+      matched 4/80 false-reject; the threshold is set by DPVO drift on the 30/45 deg mounts), C4
+      PASS.  The mount-stratified result (6/6, 4/10, 16/16 at 0/15 deg) is exploratory only.
+  C_thrust_envelope:
+    verdict: OUT
+    evidence: >
+      P2: C1 FAILS — the physics envelope rejects 11 of 20 real development flights (8 on tilt,
+      9 on thrust).  C2 passes (13/13 path-side defects, 0/80 achievable-path false positives),
+      and the measured real-flight envelope (122.5 deg / 6.05 g / 781 deg/s / 457 m/s^3) is
+      reported as a descriptive admissibility check, not as a detector.
+  V_vertical_fidelity:
+    verdict: OUT
+    evidence: >
+      V0: the pre-registered stop rule fires on condition A — the height-ratio estimator's error
+      on real UZH outdoor footage (median |log ratio| 0.495) is 4-8x the smallest labelled
+      vertical defect it would have to catch (0.079).  No defect arm, no real false-reject table,
+      no generated-clip arm.
+
+# ------------------------------------------------------------------ the pipeline
+pipeline:
+  verdict_unit: window
+  window:
+    length_frames: 12
+    hop_frames: 4
+    persistence: 1
+    why: "G06's dev-selected primary arm (coh12_p1); unchanged."
+  window_statistic:
+    tier: coherence
+    rule: "flag a window when 1 - min(r_x, r_y) > 0.619653015661502"
+    second_tier: "sign, flag when 1 - min(s_x, s_y) > 0.2921099290780138 (reported beside it)"
+    thresholds_from: "configs/coherence_frozen.yaml (dev fits, 57 real clips, frozen 2026-11-14)"
+    no_recalibration: true
+  clip_verdict:
+    rule: "Benjamini-Hochberg within the clip over the window p-values, q = 0.10; a clip is
+           flagged when BH rejects and at least one window survives the persistence rule"
+    source: "configs/g06_eval_frozen.yaml (a2_bh_coh12_q10)"
+  start:
+    rule: "path-anchored propagation where a 6 deg anchor exists (N3B's anchor definition);
+           otherwise ABSTAIN — never substitute the reader start"
+    drift_flag: >
+      the single-draw increment roughness jit (90th percentile of |w_k - w_{k-1}|), abstaining on
+      the top 10 % of jit within the source.  N3C failed its recall criterion (3 of 6 tail clips,
+      >= 2/3 required); it is used as an abstention signal with that weakness stated, not as a
+      gate that makes the verdict valid.
+  coverage:
+    definition: "the fraction of clip time, among clips with a defined verdict, for which at
+                 least one window verdict exists; reported for every population"
+    abstention_reasons: ["no_anchor", "drift_flag", "short_clip", "no_signal"]
+  tilt_fidelity:
+    statistic: "X01 two-parameter per-axis slope of depicted on required lean (configs/x01_common_paths_amend1.yaml)"
+    population: "in-envelope paths only, |lean_req| >= 3 deg, excitation >= 2 deg"
+    reported_for: "every generator on the common path set"
+
+# ------------------------------------------------------------------ populations
+populations:
+  dev_sim: "the 200 development clips of results/i02/manifest.csv (100 feasible, 100 defect: 27
+            tilt_removed, 27 mirrored_roll, 33 tilt_scaled, 13 thrust_limit, 20 partial)"
+  dev_real: "6 TII development flights (01a, 04a, 13a, 01p, 07p, 16p) and the 4 UZH outdoor
+             sequences (3 forward + 45-down); both feasibility and detection populations"
+  heldout_sim: "the 100 held-out clips (field_settlement, coastal_cliff), read ONCE"
+  heldout_real: "TII flight-13p-trackRATM and flight-07a-lemniscate, read ONCE"
+  never: "nothing else; TII held-out flights are never used for a threshold"
+
+# ------------------------------------------------------------------ success criteria (numeric)
+success_criteria:
+  D1_false_reject:
+    rule: "on testable feasible development clips, the clip-level false-reject rate is <= 10 %;
+           on real feasible flights, <= 1 of the 6 TII development flights and <= 1 of the 4 UZH
+           outdoor sequences are rejected"
+  D2_detection:
+    rule: "at that operating point, detection of tilt_removed >= 1/3 and of mirrored_roll >= 1/5
+           of testable development defect clips"
+  D3_coverage:
+    rule: "coverage >= 50 % of clip time on testable development feasible clips and >= 25 % on
+           real development flights"
+  D4_tilt_fidelity:
+    rule: "at least one generator's X01 gain interval excludes 0 and at least one generator's
+           excludes 1, so the score separates 'no response' from 'perfect response'"
+  H1_heldout:
+    rule: "every D1-D4 criterion is reported on the held-out populations exactly as written,
+           development beside held-out, with the yaw control and the null beside every rate.
+           No rerun to improve a number; infrastructure failures are logged and resumed."
+  stop: "if D1 or D2 fails on development, the held-out run is still executed once and reported
+         (the point of a frozen held-out pass is that the criteria are not renegotiated)."
+
+# ------------------------------------------------------------------ controls
+controls:
+  yaw: "the same frames rotated about world up by +20 deg, which leaves the tilt unchanged; a
+        flag there is a reader artefact"
+  null: "the same-clip null (depicted lean of the same clip with a different window's required
+         lean) and the cross-path null of X01"
+  denominators: "k/n beside every rate; fewer than 10 clusters is descriptive"
+
+# ------------------------------------------------------------------ what this file does NOT cover
+scope:
+  - "the human-judgement labelling kit is a Stage-3 deliverable, not a criterion"
+  - "no threshold in this file was derived from a held-out number"

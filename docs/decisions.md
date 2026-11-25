@@ -1054,3 +1054,34 @@ Every row below was read from the project's own repo/HF card on 2026-11-10. "ver
 - [consolidation-round2-wave2] **Modal billing checked against the ledgers.** `modal billing report --start 2026-11-16 --end 2026-11-24 --json` totals **USD 121.27** by app name; per track the billing is F 7.78, F2 0.80, G 5.48, G2 0.00, G3 8.11, H 17.52, H2 7.73, H3/H4 17.24, I 23.27, J 0.00, K 0.00, L 22.89, M 4.37, N 6.08. The ledgers state F 5.20 (sum of actual rows), F2 0.70, G 10.23, G3 8.02, H ~13, H2 ~5, H3/H4 ~30, I ~25.2 planned (render actual 7.55), L 29.40, M 2.95, N 4.45 (sum), and 0 for the CPU-only tracks. The differences (largest: H3/H4 −12.8, L −6.5, H +4.5) are accounting, not science: the ledgers mix estimates and wall-clock arithmetic, the billing export is charge by app in a fixed window. Recorded in `results/consolidation_round2/billing_vs_ledger.csv` and the report; not reconciled.
 - [consolidation-round2-wave2] **No science was re-analysed and no job was run.** No GPU spend, no Modal app started, no R2 object written. The report assets rebuild to the same 103 checks; the suite is 328 passed, 4 skipped with the ANWM clone and 17 failed (the known dependency), 311 passed otherwise. Two commit hashes cited in the trees remain unreachable (`3fe20cc`, `cdfdbf3`, the stale `track-g-segments` line); the Track I citations are now reachable.
 - [consolidation-round2-wave2] **Editorial moves.** `docs/DATA.md` gains sections 10-16 for the new tracks (their branch-local numbers 5/7/9/10 collided with wave 1; the Track I generated block moves from under section 6 to section 10 with its generator markers intact). `docs/reports/INDEX.md` gains I, G3, M and N sections and orders H3/H4 with the H family; `docs/EXPERIMENTS.md` gains summary rows for G06-G07, I, K, L, M and N. No report text, result file or config was changed.
+
+## Track X — final pipeline (2026-11-25) — tag [X]
+
+- [X] **Frozen hashes verified before any work.** `configs/sim_splits_frozen.json` `cdf66e28…` and
+  `configs/sim_prereg.yaml` `245b68bf…` match the handoff; neither was read from or written to.
+- [X] **The Stage-1 pre-registration is `configs/x01_common_paths_prereg.yaml` (`b360667c…`),
+  committed at `2b306c4` before any clip existed**, with the model choice, the 25 paths, the
+  provisional envelope, the sampling and the cost estimate. It was amended once
+  (`configs/x01_common_paths_amend1.yaml`) for the *statistic* after the frozen gain fitter was
+  found to abstain on every clip of this path set: its drag channel is collinear with the
+  intercept because the common paths hold speed constant outside the accel/brake family
+  (condition numbers 1.7e5-3.1e5 against the fitter's 1e3 ceiling), and the median magnitude ratio
+  is not a gain (observed 0.39 against a 0.38 cross-path null). The amendment is a measurement
+  choice, made before any per-generator gain was reported; populations, models and criteria are
+  unchanged.
+- [X] **SANA-WM is the one generator added.** It is the only candidate of the four named in the
+  handoff that takes a metric camera trajectory natively (`--camera`, `(F,4,4)`), releases
+  Apache-2.0 weights without a gate, and runs on one GPU with the release's own script.
+  HY-WorldPlay was rejected on cost and licence (189 GB with the HunyuanVideo-1.5 backbone, a
+  four-GPU documented route, Tencent community licence); Matrix-Game-3.0/4.0 and Yume-1.5 were
+  rejected because their conditioning is a keyboard/mouse DSL and approximating a metric path with
+  keystrokes is what the handoff forbids.
+- [X] **The checks that failed are left out, not reinterpreted.** Check B (P1: C1-C3 fail), Check
+  C (P2: C1 fails, 11/20 real flights rejected by the physics envelope) and the vertical check
+  (V0: stop rule fires) are all OUT of the final pipeline and stay reported as negatives in their
+  own tracks' reports. The final pipeline is Check A on a propagated lean with a path anchor and a
+  drift-flag abstention, window-level verdicts (coh12_p1), clip-level BH q = 0.10 — frozen in
+  `configs/x_final_frozen.yaml` (`0d10597b…`), committed before any held-out read.
+- [X] **ANWM cannot be commanded the whole path set.** Its 45 deg/step travel-direction cap makes a
+  25 deg-bank arc at 2.8 m/s aliasing on its 1 s grid; four paths saturate and are flagged
+  `expressible: false` with the achieved peak reported. The generator is not re-scaled to hide it.
