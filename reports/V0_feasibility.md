@@ -1,166 +1,178 @@
 # V0 — Commanded vertical motion: feasibility
 
-**Decision.** The check stops at feasibility: the pre-registered stop rule fires on condition A,
-because the EyeHeight-style height-ratio estimator's error on real UZH-FPV outdoor footage
-(median |log ratio error| 0.495 over 97 windows from three sequences) is 4-8 times the effect of
-the smallest labelled vertical defect it would have to catch (median 0.079 over the 28
-simulated climb clips), on 28 of 28 such clips. On the same estimator the rendered clips behave
-as specified (median |log ratio error| SIM_MED over SIM_N windows), so the failure is the
-geometry of real low-altitude footage, not the statistic; no defect render, no real
-false-reject table and no generated-clip arm is reported.
+**Decision.** The check stops at feasibility. The pre-registered stop rule fires on condition A:
+the EyeHeight-style height-ratio estimator's error on real UZH-FPV outdoor footage (median
+|log ratio error| 0.480 over 95 windows from three sequences) exceeds the effect of the smallest
+labelled vertical defect on 28 of 28 simulated climb clips (median bar 0.077), so no defect was
+rendered and no detection rate is claimed. The estimator itself behaves as specified on the
+rendered clips (median 0.094 over 761 windows, 27/28 clips covered), so the failure is the
+geometry of low-altitude flight, not the statistic — and it is quantified below.
 
-Run directory: `results/v/v00/` (summary.json, table.md, per-unit window tables,
-`fig_depicted_vs_truth__outdoor_forward_1.png`). Code at the commit that adds this report;
-pre-registration `configs/v00_feasibility_prereg.yaml` (`2e948fa`) plus amendments 1-3.
+Run directory `results/v/v00/` (`summary.json`, `table.md`, `rigs.md`, per-unit window tables,
+`fig_depicted_vs_truth__outdoor_forward_1.png`). Pre-registration
+`configs/v00_feasibility_prereg.yaml` (`2e948fa`) and amendments 1-4; the V1 pre-registration
+(`configs/v10_vertical_prereg.yaml` + amendment 1) stays **unrun**.
 
 ## Question
 
-EyeHeight (arXiv 2611.21782) shows that a scale-free multi-view reconstruction can measure a
-world model's camera height above the floor, and that six models drift it toward human eye level
-on constant-height indoor paths. Aerial world models take altitude as an action. The question
-here is whether the same measurement can decide that a commanded climb or descent was or was not
-depicted with the commanded ratio — and first, whether it can do so accurately enough that real,
-feasible drone flights are not rejected.
+EyeHeight (arXiv 2611.21782) measures whether a world model *keeps* a camera's height above the
+floor on constant-height indoor trajectories, with a scale-free multi-view reconstruction. Aerial
+world models take altitude as an action, so the complementary question is whether a commanded
+climb or descent from `z0` to `z0+dz` is *depicted* with the commanded ratio `(z0+dz)/z0`. Before
+any detection rate can mean anything, the measurement must be good enough that real, feasible
+drone flights are not rejected; that is what this report measures.
 
 ## Setup
 
-Populations (frozen before any output; amendment 1-2):
+**Populations** (frozen before any output; amendments 1-2). *Simulated pilot*: every development
+clip of the frozen Track I set whose manoeuvre is `climb_turn` — 28 of 200, the only manoeuvre
+with commanded vertical motion — plus two constant-altitude controls (`i02_dev_000` hover,
+`i02_dev_001` ellipse). Peak |dz| is 9.3-48.4 m (median 21.7 m) from a 12 m start; 8 of the 28 are
+feasible clips and 20 carry an attitude defect, which does not change the camera's altitude.
+*Real pilot*: UZH-FPV's three outdoor forward sequences (29.7/29.7/14.7 s; 3 s |dz| medians
+0.80/1.60/0.80 m, maxima 4.0/3.8/3.0 m; vertical speed to 3.8 m/s; altitude range 4.3-4.8 m).
+TII is **not** used: its 640x480 fisheye distortion model is not carried by the reader feeds, so
+a reconstruction there would measure the estimator's fisheye failure. The held-out simulated
+clips and the held-out TII flights (13p, 07a) are not read.
 
-* **Simulated pilot**: every development clip of the frozen Track I set whose manoeuvre is
-  `climb_turn` (28 of 200 — the only manoeuvre with commanded vertical motion; peak |dz|
-  9.3-48.4 m, median 21.7 m, from a 12 m start; 8 of the 28 are feasible clips and 20 carry an
-  attitude defect, which does not change the camera's altitude) plus two constant-altitude
-  controls (`i02_dev_000` hover, `i02_dev_001` ellipse).
-* **Real pilot**: UZH-FPV's three outdoor forward sequences (29.7/29.7/14.7 s at 15.07 Hz, Leica
-  truth): 3 s |dz| of 0.80/1.60/0.80 m (medians) and up to 4 m, vertical speed up to 3.8 m/s,
-  altitude range 4.3-4.8 m. TII is **not** used: its camera is a fisheye whose distortion model
-  the reader feeds do not carry, so a reconstruction there would measure the estimator's fisheye
-  failure. The held-out simulated clips and the held-out TII flights are not read.
+**Estimator** (frozen; amendments 1-4). Pi3X, every 4th frame at 7.5 Hz (simulator: every 4th
+30 fps frame; UZH: every 2nd prepared 15.07 Hz frame), reconstructed in overlapping 8 s chunks of
+60 frames with a 4 s stride, so the reconstruction density does not fall with clip length; exact
+intrinsics. The ground plane is fitted per 3 s window from the window's own chunk, using points
+from frames in the window ±0.5 s, by RANSAC over the chunk's most confident quartile of pixels
+(2000 trials, 1 % of scene scale, three candidates). A plane is admissible when ≥95 % of camera
+centres are above it, its mean camera height exceeds 0.01 scene scale, it is not parallel to the
+flight (|n·v̂| ≤ 0.6), and it holds ≥10 % of the points. A window without an admissible plane is
+an abstention and is counted.
 
-Estimator (frozen; amendments 1-3): Pi3X, every 4th frame (7.5 Hz: simulator every 4th 30 fps
-frame, UZH every 2nd prepared 15.07 Hz frame), reconstructed in overlapping 8 s chunks of 60
-frames with 4 s stride so the reconstruction density does not fall with clip length; exact
-intrinsics (simulator: the render's own K; UZH: Kalibr pinhole). The ground plane is fitted per
-3 s window from that chunk's points in the window ± 0.5 s, by RANSAC (2000 trials, 1 % of scene
-scale, three candidates), admitting a plane when ≥ 95 % of camera centres are above it, its mean
-camera height exceeds 0.01 scene scale, it is not parallel to the flight, and it holds ≥ 10 % of
-the points. A window without an admissible plane is an abstention.
-
-Statistic: e = log(h(t2)/h(t1)) − log(ratio_cmd) per window, 3 s with 0.5 s stride;
-ratio_cmd = z(t2)/z(t1) on the simulator (scene ground at z = 0, exact truth) and
-1 + (z(t2)−z(t1))/(s·h(t1)) on real footage, with one similarity scale s per chunk (ratio of RMS
+**Statistic**. `e = log(h(t2)/h(t1)) − log(ratio_cmd)` over 3 s windows with a 0.5 s stride,
+where `h` is the camera's signed distance to the window's plane. On the simulator
+`ratio_cmd = z(t2)/z(t1)` (scene ground at z = 0, exact truth); on real footage
+`ratio_cmd = 1 + (z(t2)−z(t1))/(s·h(t1))` with one similarity scale `s` per chunk (ratio of RMS
 radii of the camera-centre cloud to the Leica track). A scale-free alternative,
-q = (ρ_dep − ρ_cmd)/(|ρ_cmd| + 0.05) with ρ = Δz/L, is reported beside it.
+`q = (ρ_dep − ρ_cmd)/(|ρ_cmd| + 0.05)`, is reported beside it.
 
-Stop rule (frozen): **STOP** if the real median |e| exceeds the clip's own |defect log change|
-for ×0.5 or ×1.5 on more than half of the 28 vertical-motion clips (the defect change is
-computed analytically from the truth path, so it needs no reconstruction), or if ground-plane
-coverage is below 50 % on the vertical-motion clips or on the real sequences.
+**Stop rule** (frozen): STOP if the real median |e| exceeds a clip's own |defect log change| for
+×0.5 or ×1.5 on more than half of the 28 clips, or if ground-plane coverage is below 50 %. The
+defect change is computed analytically from the truth path, so it needs no reconstruction.
 
 ## Results
 
-### Part 0a — where vertical motion exists
+### Part 0a — where commanded vertical motion exists
 
-Simulated development set: 28/200 clips, all `climb_turn`. By scene family and camera mount
-(uptilt): industrial 4/3/5/4 at 0°/15°/30°/45°, urban checker 3/2/2/2, forest ridge 0/2/1/0
-(forest has too few clips to cover all mounts). Peak |dz| 9.3-48.4 m from a 12 m start; the
-per-3 s commanded ratio is 1.13-1.31 (median 1.20).
-
-Real: the three UZH outdoor sequences have continuous vertical motion (|dz| over 3 s: medians
-0.80/1.60/0.80 m, maxima 4.0/3.8/3.0 m). Their per-3 s commanded ratio has median 1.18, i.e. the
-estimated camera height at the window start is about 2 m — the flights are low and fast.
+Within 200 development clips: 28, all `climb_turn`. By scene family and camera mount (uptilt):
+industrial 4/3/5/4 at 0°/15°/30°/45°, urban checker 3/2/2/2, forest ridge 0/2/1/0 (forest has too
+few clips to cover every mount). The three UZH outdoor sequences have continuous vertical motion
+throughout, which is why they are the real pilot.
 
 ### Part 0b — the estimator on the rendered clips
 
-SIM_SECTION
+28 clips, 761 of 782 windows reconstructable (97.3 %), 27 of 28 clips covered (the abstaining
+clip has 48 % of its windows). Pooled median |e| = **0.094**, p90 = 0.227; per-clip medians have
+median 0.093 and maximum 0.214. The two constant-altitude controls read 0.00008 (hover) and 0.107
+(ellipse): no systematic bias, but a 10 % false signal on a moving constant-altitude clip, which
+is the estimator's own noise level.
+
+Power at these numbers: the labelled defects change a per-window ratio of about 1.16 by
+|log| 0.077 (×0.5), 0.175 (removal) and 0.388 (sign reversal) at the clip median. The estimator's
+own error (0.094) is therefore of the same size as the ×0.5/×1.5 effect even on rendered clips,
+twice smaller than removal, and four times smaller than reversal. In other words the check would
+have been marginal for the smallest magnitude even where the estimator works.
 
 ### Part 0c — the estimator on real outdoor footage
 
-| sequence | windows ok/window | coverage | median \|e\| | p90 \|e\| | median \|q\| |
+| sequence | windows ok/all | coverage | median \|e\| | p90 \|e\| | median \|q\| |
 | --- | --- | --- | --- | --- | --- |
-| outdoor_forward_1 | 45/54 | 0.83 | 0.555 | 1.361 | 0.627 |
-| outdoor_forward_3 | 35/54 | 0.65 | 0.373 | 1.912 | 0.344 |
-| outdoor_forward_5 | 17/24 | 0.71 | 0.495 | 1.376 | 0.504 |
-| **pooled** | **97/132** | 0.73 | **0.495** | **1.539** | **0.499** |
+| outdoor_forward_1 | 45/54 | 0.83 | 0.618 | 1.453 | 0.569 |
+| outdoor_forward_3 | 33/54 | 0.61 | 0.502 | 1.816 | 0.377 |
+| outdoor_forward_5 | 17/24 | 0.71 | 0.433 | 1.600 | 0.498 |
+| pooled | 95/132 | 0.72 | **0.480** | 1.653 | 0.511 |
 
-Sequence-clustered bootstrap over three clusters: median 0.495, range [0.373, 0.555] — three
-clusters is descriptive, not a 95 % interval. Coverage passes the 50 % bar (all three sequences
-covered); the abstentions are windows where the plane was inadmissible or the window ends fell
-outside the reconstructed span.
+Sequence-clustered bootstrap over three clusters: 0.480 in [0.433, 0.618] — three clusters is
+descriptive, not a 95 % interval. Coverage passes (all three sequences covered); the abstentions
+are windows whose plane was inadmissible or whose ends fell outside the reconstructed span.
 
-The error is not a scale mistake: the reconstruction's *horizontal* path length matches the
-truth per chunk to 0.96-1.46×, so the camera trajectory is reconstructed approximately. The
-failure is in the height above the plane. Per chunk, the correlation between the depicted height
-and the truth altitude is +1.00 in the first chunk of `outdoor_forward_1` and then 0.04, 0.35,
-−0.55, 0.03, −0.71, −0.92; the implied ground-normal error (the tilt that would explain how
-strongly the depicted height depends on horizontal position, with the truth altitude as the
-reference) has a median of 6.9° (range 1.3-52°) on that sequence and 11.1° on
-`outdoor_forward_3`. At a camera height of 1-3 m and 15-45 m of horizontal travel per chunk, a
-normal error of a few degrees is larger than the height itself, and the ratio statistic then
-divides by a number comparable to its own error: ratio_cmd reaches 0.07 and 3.6 in the worst
-windows.
+**Why it fails — the mechanism, measured.** The error is not a scale mistake: per chunk the
+reconstruction's horizontal path length matches the truth to 0.96-1.46×, so the camera trajectory
+is approximately right. What fails is the *height above the fitted plane*. The implied
+ground-normal error, obtained by solving |e| = δ·L/h for δ per window, is 1.8-3.7° on the real
+sequences (medians) and 6.6° on the rendered ones (median, range 1.0-28.5°) — the plane is fitted
+about equally badly in both. What differs by an order of magnitude is the **leverage** L/h: 7.9-12.0
+on the real flights (camera 1-2 m up, 15-45 m of travel per window) against 0.23-1.63 on the
+rendered clips (12-60 m up). The same 2-7° normal error that costs ~0.5 in log ratio at 2 m costs
+~0.05-0.1 at 12-60 m. The per-chunk correlation between depicted height and truth altitude is
+consistent with this: −0.93…+1.00 across the three sequences, i.e. no stable relation at the
+scale of a chunk (figure).
 
 ### The stop rule
 
-Real median |e| = 0.495. The per-clip strictest ×0.5/×1.5 defect bar has median 0.079 (range
-0.057-0.112); the "removed" bar has median 0.179 and the "reversed" bar 0.398. 0.495 exceeds the
-strictest bar on **28/28** clips, so condition A fires. Condition B does not (climb-clip coverage
-SIM_COV%, real coverage 100 % of sequences). **STOP**: per the pre-registration no defect clip is
-rendered and Parts 1-3 are not run.
+Real median |e| = 0.480. Per-clip strictest ×0.5/×1.5 bar: median 0.077, range 0.057-0.112. The
+real error exceeds it on **28/28** clips, so condition A fires. Condition B does not (climb
+coverage 96 %, real coverage 100 %). **STOP**: per the pre-registration, no defect clip is
+rendered and Parts 1-3 (simulated detection by family and mount, real false-reject table,
+generated-clip arm) are not run.
 
-### Exploratory (not confirmatory): the rest of UZH
+### Exploratory (not confirmatory): every UZH rig
 
-EXPLORATORY_SECTION
+`results/v/v00/rigs.md` runs the same statistic on all 14 UZH development sequences. Median |e|
+is 0.136-0.618 across rigs; the two 45°-down camera families do **not** do better than the
+forward ones (indoor 45°: 0.366-0.445; indoor forward: 0.136-0.578; outdoor 45°: 0.220), because
+their L/h is still 6-7 — the flights are low, not because the view is forward. `outdoor_45_1`
+flies higher (8.9 m, L/h 1.6) and has the lowest error of the 45° group (0.220) with an implied
+normal error of 8.0°. So no UZH rig sits in the regime where this estimator works.
 
 ## What it supports
 
 1. EyeHeight's measurement transfers to *commanded* vertical motion on rendered aerial clips at
-   12-60 m: on the frozen simulator the depicted height ratio follows the commanded ratio to a
-   few per cent, with full coverage (numbers above).
-2. The check as specified is not certifiable on real low-altitude forward-camera drone footage.
-   The estimator's real error is 4-8× the smallest defect it must catch, on every clip.
-3. The mechanism is geometric and quantified: a ground-plane normal error of several degrees,
-   multiplied by the horizontal travel per chunk, swamps a 1-3 m camera height. This is a
-   property of the viewing geometry, not of the window length, the threshold or the model.
+   12-60 m: the depicted height ratio follows the commanded ratio to a median 9 %, with 97 %
+   window coverage and no bias on a hover.
+2. The check as specified cannot be certified on real drone footage of this kind. The real error
+   is 4-8× the smallest defect it must catch, on every one of 28 clips, in all 14 rigs tried.
+3. The mechanism is geometric and quantified: the ground-normal error is 2-7° in both domains and
+   the ratio error scales as δ·L/h, so the same plane error is an order of magnitude worse where
+   the camera flies low.
 
 ## What it does not show
 
-* No detection rate is claimed. The pre-registered stop fired before any vertical-motion defect
-  was rendered, so the check's power on simulated defects and on generated clips is unmeasured.
-  From the estimator's own sim error (SIM_MED) and the analytic defect bars (0.06-0.11 for ×0.5
-  and ×1.5, 0.18 for removal, 0.40 for reversal) the removal and reversal arms would be expected
-  to separate and the ×0.5/×1.5 arms to be marginal at a 3 s window; that is an expectation, not
-  a measurement.
-* Nothing is claimed about any generator's vertical fidelity. ANWM's conditioning paths do carry
-  a 22.5 m climb in 16 of its H01 clips and SolarWM's "climb turn" is a 0.19/0.37 m excursion, but
-  neither was reconstructed for a score (the inputs are staged: `data/v/gen/`).
-* The failure is *not* shown to be unavoidable. Three untested alternatives change the geometry:
-  a downward-looking rig (UZH's 45°-down indoor sequences are the natural first test), a
-  near-field-only plane fit, or a gravity-referenced height from inertial-aligned visual odometry.
+* No detection rate. The pre-registered stop fired before any vertical defect was rendered, so
+  the check's power on simulated defects and on generated clips is unmeasured. From the
+  measured error (0.094) and the analytic bars (0.077/0.175/0.388), removal and reversal would be
+  expected to separate on rendered clips and ×0.5/×1.5 to be marginal — an expectation, not a
+  measurement.
+* Nothing about any generator. ANWM's conditioning paths do carry a 22.5 m climb (16 H01 clips)
+  and SolarWM's "climb turn" is a 0.19/0.37 m excursion rather than a climb, but neither was
+  reconstructed for a score; the inputs are staged in `data/v/gen/` if the route is reopened.
+* Not shown that no vertical-motion check is possible. The untested alternatives change the
+  geometry or the estimator: a near-field-only plane fit (the ground points nearest the camera),
+  a gravity-referenced height from inertial-aligned visual odometry, or a plane-free formulation
+  that compares *depicted* vertical velocity against a metrically scaled path. What would have to
+  improve is concrete: to hold a 0.08 log-ratio tolerance at h ≈ 2 m and L ≈ 20 m, the ground
+  normal must be known to about 0.5°, and the estimate is 2-7°.
 
 ## Caveats
 
-* The real pilot has three sequence clusters; every interval here is descriptive.
-* The real statistic needs a similarity scale per chunk. It is estimated from RMS radii and the
-  horizontal path check above says it is approximately right, but a scale error of 10 % would
-  move ratio_cmd by 10 % of (ratio_cmd − 1) — small compared with the observed error.
-* Pi3X's `conf` field is a log confidence; the floor was fixed at −1.0 by amendment 3 after a
-  probe, before any height was computed. The plane-admissibility rule also changed there (the
-  camera-axis "facing" test was removed because the reconstruction's gauge is arbitrary); both
-  changes are recorded and neither touches the stop rule.
-* One reconstruction directory was produced twice by two concurrent code versions (a killed
-  `modal run` does not stop the remote function). It was deleted and the pilot re-run once from
-  a single detached job; the analysis refuses units without the new confidence-field stamp.
-* Cost so far: about 2.5 USD of the 15 USD ceiling (see `docs/COST_LEDGER.md`), of which about
-  1.0 USD was the wasted concurrent passes.
+* Three real sequence clusters; every interval here is descriptive.
+* The real statistic needs a per-chunk similarity scale. The horizontal path check says it is
+  approximately right (0.96-1.46), and a 10 % scale error moves `ratio_cmd` by 10 % of
+  (ratio_cmd−1), small against the observed error.
+* Pi3X's confidence is a log field; the floor became a per-chunk 75th percentile (amendment 4)
+  after an absolute floor abstained on five clips for reasons unrelated to the scene. The pilot
+  was re-run once from a single job under the amended rule; the real median moved from 0.495 to
+  0.480, so the stop is not an artefact of the floor.
+* One volume directory was initially written by two concurrent code versions (a killed
+  `modal run` does not stop the remote function); it was deleted and re-run, and the analysis
+  refuses incomplete units.
+* Cost: about 5.5 USD of the 15 USD ceiling (`docs/COST_LEDGER.md`), including about 1 USD lost
+  to that accident and about 2.5 USD for the amended re-run.
 
 ## Reproduction
 
 ```
-PYTHONPATH=. python experiments/v_stage_frames.py --uzh-all      # frames at 7.5 Hz
-modal volume put awmv-v-data data/v/frames v_frames              # upload
-modal run remote/v_recon.py --all-units                          # Pi3X + plane fits
+PYTHONPATH=. python experiments/v_stage_frames.py --uzh-all
+modal volume put awmv-v-data data/v/frames v_frames
+modal run remote/v_recon.py --all-units
 python scripts/pull_volume.py awmv-v-data recon data/v/recon
-PYTHONPATH=. python experiments/v00_feasibility.py               # every number here
+PYTHONPATH=. python experiments/v00_feasibility.py      # every number in this report
+PYTHONPATH=. python experiments/v00_rigs.py             # the exploratory rig table
 PYTHONPATH=. python experiments/v00_figure.py outdoor_forward_1
 ```
