@@ -616,3 +616,19 @@ Round 3. New volume `awmv-n-data` (DPVO poses). Nothing written to R2.
 
 Regenerate: `modal run remote/n_rotation.py --which uzh|sim` (A10), pull `poses/` from
 `awmv-n-data`, then `PYTHONPATH=. python experiments/n01_rotation_pretest.py` (CPU, ~4 s).
+
+## Track V — commanded vertical motion (branch `track-v-vertical`, off `main` `8f404af`)
+
+Track V asks whether an altitude command is depicted with the commanded ratio, extending
+EyeHeight's scale-free camera-height measurement (arXiv 2611.21782) from constant-height
+retention to commanded vertical motion. The result is a **feasibility stop**: the estimator
+works on the rendered clips and not on real low-altitude footage.
+
+| ID | experiment | code | configs | stored results | report |
+| --- | --- | --- | --- | --- | --- |
+| V0 | feasibility: where commanded vertical motion exists, the EyeHeight-style height ratio on a 30-clip simulated pilot and on the UZH-FPV real sequences, the pre-registered stop rule | `experiments/v_stage_frames.py`, `experiments/v00_feasibility.py`, `experiments/v00_figure.py`, `remote/v_recon.py` | `configs/v00_feasibility_prereg.yaml` + amendments 1-3 | `results/v/v00/` | `reports/V0_feasibility.md` |
+| V1 | the check itself (defect renders, LOFO thresholds, real false rejects, generated clips) | `remote/v_render.py`, `experiments/v10_score.py` staged and pre-registered, **not run**: V0's stop rule fired | `configs/v10_vertical_prereg.yaml` + amendment 1 | — (unrun) | — |
+
+Data: volume `awmv-v-data` (`v_frames/`, `recon/`), local `data/v/` (frames, units table, the 16
+ANWM and 18 SolarWM climb-clip inputs), R2 not used (credentials rejected, see
+`docs/decisions.md` [V]). Spend about V_TOTAL USD of the 15 USD ceiling.

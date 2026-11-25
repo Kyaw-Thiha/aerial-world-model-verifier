@@ -359,3 +359,21 @@ if local runtime exceeds 3 h; it did not).
 | 2026-11-23 | N | N05/N06 estimate (before the runs) | A10/A10G | 6.0 | 7.0 est. | reader 200 clips at stride 2 (4.9 h) + DPVO 200 clips (0.6 h) + N06 320x180/UZH full-res (0.5 h); A10 1.10 USD/h |
 | 2026-11-23 | N | N05 reader, 200 clips stride 2 | A10G x4 | 2.57 | **2.83** | 2,312 s wall over 4 shards; 49,795 estimates; USD 1.10/h |
 | 2026-11-23 | N | N05/N06 DPVO (two full draws, half-res, full-res UZH) | A10/A10G | 1.10 | **1.21** | ~330 clip-runs; sum of per-clip wall time |
+
+## Track V — commanded vertical motion (2026-11-25; ceiling USD 15)
+
+Estimate posted with the pre-registration before any job: Part 0 about 1.5 USD (33-44 units,
+Pi3X at ≤64 frames per chunk on an L40S at 1.95 USD/h, one cached image build), Part 1 about
+2.0 USD of EEVEE renders, Part 1-2 reconstructions about 1.8 USD. Billing is from
+`modal billing report --start 2026-11-24 --end 2026-11-26`, by app id (the other `awmv-x-*`
+apps in the same window belong to other tracks and are excluded).
+
+| date | job | GPU | USD | note |
+| --- | --- | --- | --- | --- |
+| 2026-11-25 | `awmv-v-recon` image build + probes (7 app ids) | L40S | 0.45 | key/shape probes, one forced re-run of a single unit |
+| 2026-11-25 | `awmv-v-recon` pilot, first two launches | L40S | 1.26 | includes about 1.0 USD of passes that mixed two code versions after a killed local client left the remote functions running; the volume directory was deleted and the pilot re-run |
+| 2026-11-25 | `awmv-v-render` null-render test | A10G | 0.19 | one 364-frame render, 0.40 s/frame |
+| 2026-11-25 | `awmv-v-recon` final pilot (44 units, two parallel jobs) | L40S | V_RECON_FINAL | 30 simulated clips + 14 UZH sequences; one job stopped once the UZH sequences were done |
+
+**Track V total: V_TOTAL USD** against the 15 USD ceiling. No R2 object and no storage was
+used beyond the `awmv-v-data` volume (frames ~1.2 GB, recon ~200 MB).
