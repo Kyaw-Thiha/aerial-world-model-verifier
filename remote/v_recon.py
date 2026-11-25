@@ -144,8 +144,28 @@ def recon(specs: list[dict], force: bool = False, probe: bool = False) -> str:
                 with torch.amp.autocast("cuda", dtype=torch.bfloat16):
                     res = model(imgs=imgs, **cond2)
             if probe:
+                q = {}
+                if "conf" in res:
+                    cf = res["conf"][0].detach().float().cpu().numpy().reshape(-1)
+                    q["conf"] = {p_: float(np.percentile(cf, p_))
+                                 for p_ in (0, 1, 5, 25, 50, 75, 90, 99, 100)}
+                    q["conf_n"] = int(cf.size)
+                if "points" in res:
+                    pp = res["points"][0].detach().float().cpu().numpy()
+                    q["points_frame0_mean"] = pp[0].reshape(-1, 3).mean(0).tolist()
+                    q["points_frame1_mean"] = pp[1].reshape(-1, 3).mean(0).tolist()
+                    q["points_norm_median"] = float(np.median(
+                        np.linalg.norm(pp.reshape(-1, 3), axis=1)))
+                if "local_points" in res:
+                    lp = res["local_points"][0].detach().float().cpu().numpy()
+                    q["local_frame0_mean"] = lp[0].reshape(-1, 3).mean(0).tolist()
+                    q["local_frame1_mean"] = lp[1].reshape(-1, 3).mean(0).tolist()
+                cp = np.asarray(res["camera_poses"][0].detach().float().cpu())
+                q["cam_centres"] = [cp[0, :3, 3].tolist(), cp[1, :3, 3].tolist(),
+                                    cp[-1, :3, 3].tolist()]
+                q["cam_axis_z"] = [cp[0, :3, 2].tolist(), cp[0, :3, 1].tolist()]
                 recs.append({"unit": unit, "probe": True, "chunk": ci,
-                             "keys": sorted(str(k) for k in res.keys()),
+                             "keys": sorted(str(k) for k in res.keys()), "stats": q,
                              "shapes": {str(k): list(np.asarray(
                                  (res[k].detach().float().cpu() if hasattr(res[k], "detach")
                                   else res[k])).shape) for k in res.keys()},
@@ -163,13 +183,14 @@ def recon(specs: list[dict], force: bool = False, probe: bool = False) -> str:
                     conf = res[key][0].detach().float().cpu().numpy()
                     break
             cams = poses[:, :3, 3]
-            down = -poses[:, :3, 1]
+            conf_pct = ({p_: float(np.percentile(conf, p_)) for p_ in (1, 50, 90, 99)}
+                        if conf is not None else None)
             per_frame, labels = [], []
             for s in range(pts.shape[0]):
                 p = pts[s].reshape(-1, 3).astype(np.float64)
                 ok = np.isfinite(p).all(axis=1)
                 if conf is not None:
-                    ok &= conf[s].reshape(-1) >= 0.5
+                    ok &= conf[s].reshape(-1) >= -1.0      # log confidence (amendment 3)
                 p = p[ok]
                 if len(p) > POINTS_PER_FRAME:
                     p = p[:: int(np.ceil(len(p) / POINTS_PER_FRAME))][:POINTS_PER_FRAME]
@@ -177,7 +198,8 @@ def recon(specs: list[dict], force: bool = False, probe: bool = False) -> str:
                 labels.append(np.full(len(p), s, dtype=np.int32))
             pts_all = np.concatenate(per_frame, axis=0) if per_frame else np.zeros((0, 3))
             lab_all = np.concatenate(labels, axis=0) if labels else np.zeros(0, np.int32)
-            clip_plane = fit_ground_plane(subsample(pts_all, 200_000), cams, down)
+            clip_plane = fit_ground_plane(subsample(pts_all, 200_000), cams,
+                                          travel=cams[-1] - cams[0])
             name = out_dir / f"{unit}__c{ci}.npz"
             np.savez_compressed(
                 name, unit=unit, chunk=ci, i0=i0, i1=i1, t=t[i0:i1], c2w=poses,
@@ -187,7 +209,7 @@ def recon(specs: list[dict], force: bool = False, probe: bool = False) -> str:
                                        for k, v in clip_plane.items()}),
                 conf_available=conf is not None)
             chunk_files.append(name.name)
-            chunk_meta.append({"chunk": ci, "i0": i0, "i1": i1,
+            chunk_meta.append({"chunk": ci, "i0": i0, "i1": i1, "conf_pct": conf_pct,
                                "t_range": [float(t[i0]), float(t[i1 - 1])],
                                "n_points": int(len(pts_all)),
                                "clip_plane": {k: (v.as_dict() if k == "plane" else v)
@@ -205,10 +227,9 @@ def recon(specs: list[dict], force: bool = False, probe: bool = False) -> str:
             local = np.flatnonzero(m)
             c2w = d["c2w"]
             cams = c2w[local, :3, 3]
-            down = -c2w[local, :3, 1]
             sel = np.isin(d["pts_frame"], local)
             pts = d["pts"][sel]
-            fit = fit_ground_plane(pts, cams, down)
+            fit = fit_ground_plane(pts, cams, travel=cams[-1] - cams[0])
             win_rows.append({"t1": w["t1"], "t2": w["t2"], "chunk": int(k),
                              "i0": int(chunk_meta[k]["i0"]),
                              "plane": fit["plane"].as_dict() if fit.get("plane") else None,

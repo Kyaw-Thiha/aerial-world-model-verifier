@@ -1,0 +1,59 @@
+# Track V, Part 0 pre-registration — amendment 3.
+#
+# Written after a Pi3X *probe* (one chunk, key/shape/statistics only) and BEFORE any height,
+# ratio or coverage number existed. The probe showed two implementation facts that make two
+# rules of the first file wrong, and one rule invalid:
+#
+#  (1) Pi3X's ``conf`` field is a LOG confidence (chunk median -5.1, p90 -0.62, max 0.31), so
+#      the frozen floor ``conf >= 0.5`` keeps almost no pixels (one chunk kept 944 points of
+#      15.5 M and no window could be fitted). The floor becomes ``conf >= -1.0``.
+#  (2) The reconstruction's world frame is Pi3X's own gauge: it is not gravity-aligned, so the
+#      camera's image-down axis in that frame has no fixed relation to the ground plane. The
+#      "facing < 70 deg" admissibility rule therefore measures nothing and is removed.
+#  (3) With the upper height bound, a legitimate ground plane can be rejected when the
+#      reconstruction's scale differs from the camera-height scale; the bound is removed and
+#      replaced by a gauge-invariant motion condition.
+#
+# No stop-rule constant, population, window, statistic or success criterion changes. The
+# probe looked at model output shapes and confidence statistics only, never at a height.
+prereg: configs/v00_feasibility_prereg.yaml
+amends: [configs/v00_feasibility_prereg_amend1.yaml, configs/v00_feasibility_prereg_amend2.yaml]
+amendment: 3
+date: 2026-11-25
+owner: track-v
+reason_committed_before_output: true
+
+changes:
+  - id: A5
+    field: ground_plane.pixel_filter
+    was: "Pi3X confidence >= 0.5"
+    now: "Pi3X confidence >= -1.0 (log confidence; about the 85th percentile of the field)"
+    why: "see (1) above."
+  - id: A6
+    field: ground_plane.feasibility.facing
+    was: "angle(plane normal, mean camera-down axis) < 70 deg"
+    now: >
+      removed. Replaced by a gauge-invariant condition: when the camera centres inside the
+      window travel at least one scene scale, the mean displacement direction v̂ must satisfy
+      |n · v̂| <= 0.6 (the ground is not parallel to the flight). When the travel is shorter,
+      no motion condition applies.
+    why: "see (2) above; the camera axes are expressed in an arbitrary world gauge."
+  - id: A7
+    field: ground_plane.feasibility.height_band
+    was: "mean camera height in [0.01, 1.0] scene scale"
+    now: "mean camera height > 0.01 scene scale (no upper bound)"
+    why: "see (3) above: the bound can exclude the true ground when the gauge's scale is small;
+          an upper bound cannot add information once >= 95 % of the cameras are above the
+          plane."
+  - id: A8
+    field: ground_plane.selection
+    was: "most inliers; ties by smaller facing angle"
+    now: "most inliers; ties by lower mean camera height"
+    why: "facing no longer exists; the lower plane is the ground by EyeHeight's 'lowest dense
+          horizontal layer' reading."
+  - id: A9
+    field: diagnostics
+    added: >
+      every chunk stores its conf percentiles and every window stores all admissible and
+      inadmissible candidates, so the report can state how often the plane choice was
+      ambiguous and how much of the point cloud was used.

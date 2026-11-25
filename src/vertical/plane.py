@@ -11,8 +11,10 @@ The rule, restated so the code and the config cannot drift:
   candidates extracted greedily (each round's inliers removed before the next);
 * orient each normal so the mean camera centre has positive signed distance;
 * a candidate is admissible when >= 95 % of camera centres sit above it, the mean camera height
-  is in [0.01, 1.0] scene scale, and the normal is within 70 deg of the mean camera-down axis;
-* the winner is the admissible candidate with the most inliers (ties: smaller facing angle);
+  exceeds 0.01 scene scale, and -- when the window's cameras travel at least one scene scale --
+  the plane is not parallel to the flight (|n . v_hat| <= 0.6). Amendment 3 removed the former
+  camera-axis "facing" test: Pi3X's world frame is an arbitrary gauge, not gravity-aligned;
+* the winner is the admissible candidate with the most inliers (ties: lower mean camera height);
 * a window is reconstructable when the winner has >= 10 % of the pooled points as inliers.
 
 Nothing here uses truth. It is the estimator, and it is what a verifier would have.
@@ -23,14 +25,15 @@ from dataclasses import dataclass
 
 import numpy as np
 
-CONF_FLOOR = 0.5
+CONF_FLOOR = -1.0        # Pi3X conf is a log confidence (amendment 3)
 POINTS_PER_FRAME = 20_000
 POINTS_PER_WINDOW = 200_000
 TRIALS = 2000
 INLIER_FRAC = 0.01
 N_CANDIDATES = 3
 CAMERAS_ABOVE_FRAC = 0.95
-HEIGHT_BAND = (0.01, 1.0)
+HEIGHT_MIN_FRAC = 0.01
+MOTION_PERP_MAX = 0.6        # |n . v_hat| bound when the window travels >= 1 scene scale
 FACING_DEG = 70.0
 COVERAGE_INLIER_FRAC = 0.10
 RANSAC_POINTS = 20_000
@@ -41,9 +44,10 @@ class Plane:
     n: np.ndarray              # unit normal, oriented so the cameras are above
     d: float                   # offset: signed distance of the plane is n . p - d
     inlier_frac: float
-    facing_deg: float
+    facing_deg: float          # |n . v_hat|; nan when the window barely moves (amendment 3)
     admissible: bool
     n_inliers: int
+    height_ref: float = 0.0    # mean camera height above this plane, scene-scale units
 
     def height(self, points: np.ndarray) -> np.ndarray:
         p = np.atleast_2d(np.asarray(points, dtype=np.float64))
@@ -51,8 +55,10 @@ class Plane:
 
     def as_dict(self) -> dict:
         return {"n": [float(x) for x in self.n], "d": float(self.d),
+                "motion_abs_dot": float(self.facing_deg),
                 "inlier_frac": float(self.inlier_frac), "facing_deg": float(self.facing_deg),
-                "admissible": bool(self.admissible), "n_inliers": int(self.n_inliers)}
+                "admissible": bool(self.admissible), "n_inliers": int(self.n_inliers),
+                "height_scene_units": float(self.height_ref)}
 
 
 def _unit(v: np.ndarray) -> np.ndarray:
@@ -127,8 +133,8 @@ def _ransac(pts: np.ndarray, thr: float, rng: np.random.Generator,
     return n, d, inl
 
 
-def fit_ground_plane(points: np.ndarray, cams: np.ndarray, cams_down: np.ndarray,
-                     rng: np.random.Generator | None = None) -> dict:
+def fit_ground_plane(points: np.ndarray, cams: np.ndarray, rng: np.random.Generator | None = None,
+                     travel: np.ndarray | None = None) -> dict:
     """Fit the ground plane of one window. Returns the winner plus every candidate."""
     rng = rng or np.random.default_rng(1)
     p = np.asarray(points, dtype=np.float64)
@@ -141,8 +147,10 @@ def fit_ground_plane(points: np.ndarray, cams: np.ndarray, cams_down: np.ndarray
     thr = INLIER_FRAC * scale
     sub = subsample(p, RANSAC_POINTS)
     cams_mean = c.mean(axis=0)
-    down = _unit(np.asarray(cams_down, dtype=np.float64).mean(axis=0))
-    heights_band = (HEIGHT_BAND[0] * scale, HEIGHT_BAND[1] * scale)
+    # gauge-invariant motion condition (amendment 3, A6): the mean camera displacement
+    v_hat = None
+    if travel is not None and np.linalg.norm(travel) >= scale:
+        v_hat = _unit(np.asarray(travel, dtype=np.float64))
 
     candidates: list[Plane] = []
     remaining = sub
@@ -168,14 +176,15 @@ def fit_ground_plane(points: np.ndarray, cams: np.ndarray, cams_down: np.ndarray
             cdist = -cdist
         above = float(np.mean(cdist > 0.005 * scale))
         h_mean = float(cdist.mean())
-        facing = float(np.degrees(np.arccos(np.clip(abs(float(n @ down)), -1.0, 1.0))))
+        motion = float(abs(n @ v_hat)) if v_hat is not None else float("nan")
         admissible = bool(above >= CAMERAS_ABOVE_FRAC
-                          and heights_band[0] <= h_mean <= heights_band[1]
-                          and facing < FACING_DEG
+                          and h_mean > HEIGHT_MIN_FRAC * scale
+                          and (v_hat is None or motion <= MOTION_PERP_MAX)
                           and inlier_frac >= COVERAGE_INLIER_FRAC)
-        candidates.append(Plane(n=n, d=d, inlier_frac=inlier_frac, facing_deg=facing,
+        candidates.append(Plane(n=n, d=d, inlier_frac=inlier_frac, facing_deg=motion,
                                 admissible=admissible,
-                                n_inliers=int(np.count_nonzero(inl))))
+                                n_inliers=int(np.count_nonzero(inl)),
+                                height_ref=float(np.mean(cdist))))
         remaining = sub[~inl]
         if len(remaining) < 100:
             break
@@ -184,7 +193,7 @@ def fit_ground_plane(points: np.ndarray, cams: np.ndarray, cams_down: np.ndarray
     pool = admissible or candidates
     if not pool:
         return {"ok": False, "reason": "no_candidate", "scale": scale}
-    winner = max(pool, key=lambda c: (c.n_inliers, -c.facing_deg))
+    winner = max(pool, key=lambda c: (c.n_inliers, -float(c.height_ref)))
     return {"ok": True, "scale": float(scale), "plane": winner,
             "winning_admissible": bool(admissible),
             "n_candidates": len(candidates),

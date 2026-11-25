@@ -120,7 +120,8 @@ def main() -> int:
     # descriptive: the same comparison for the largest (reversed) defect
     reversed_bar = {u: defects[u]["reversed"]["median_abs"] for u in climb}
     n_exceed_rev = int(sum(1 for u in climb
-                           if np.isfinite(reversed_bar[u]) and real_median > reversed_bar[u]))
+                           if reversed_bar[u] is not None
+                           and np.isfinite(reversed_bar[u]) and real_median > reversed_bar[u]))
 
     boot = bootstrap_real(by_unit, real_units)
 
