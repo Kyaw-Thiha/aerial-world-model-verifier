@@ -1,0 +1,84 @@
+% Track V candidate section. Compile with the main report preamble; no new packages.
+\section{Commanded vertical motion}
+\label{sec:v-vertical}
+
+\paragraph{Scope.}
+A quadrotor's altitude is part of every action-conditioned aerial world model's control
+signal, and it is the one flatness axis that changes what the camera sees without changing the
+thrust direction: a commanded climb from $z_0$ to $z_0+\Delta z$ must change the camera's height
+above the ground by the ratio $(z_0+\Delta z)/z_0$. EyeHeight~\cite{eyeheight2026} measures
+whether a world model \emph{keeps} the camera height of its start frame on constant-height
+indoor trajectories; this section asks the complementary question, whether a commanded climb or
+descent is \emph{depicted} with the commanded ratio, and whether the measurement can be
+certified on real drone flights.
+
+\paragraph{Estimator and statistic.}
+Following EyeHeight we reconstruct every fourth frame in a single multi-view pass (Pi3X, the
+successor of their Pi3, with the camera intrinsics supplied) in overlapping 8\,s chunks at
+7.5\,Hz, fit a ground plane to the reconstruction's own point cloud, and read the camera's
+signed distance $h(t)$ to that plane. The check statistic is
+\begin{equation}
+e = \log\frac{h(t_2)}{h(t_1)} - \log\frac{z(t_2)}{z(t_1)}
+\label{eq:v-height-ratio}
+\end{equation}
+over a 3\,s window on the simulator (the scene ground is $z=0$ and the truth is exact) and
+\begin{equation}
+e = \log\frac{h(t_2)}{h(t_1)} - \log\left(1 + \frac{z(t_2)-z(t_1)}{s\,h(t_1)}\right)
+\label{eq:v-height-ratio-real}
+\end{equation}
+on real flights, where $s$ is one similarity scale per reconstruction chunk (the ratio of RMS
+radii of the camera-centre cloud to the Leica track) and $z$ is the truth altitude. The height
+ratio cancels the reconstruction's scale; it does not cancel an error in the plane's
+\emph{orientation}, which enters as $\delta \cdot L$ for a horizontal displacement $L$ and a
+normal error $\delta$. A scale-free alternative, $\rho = \Delta z / L$, is reported with it.
+
+\paragraph{Where the population is.}
+Of the 200 development clips of the simulated set, 28 have commanded vertical motion: all of
+them \texttt{climb\_turn}, climbing 9.4--48.4\,m from a 12\,m start (a per-window ratio of
+1.13--1.31). The real pilot is UZH-FPV's three outdoor forward sequences; TII is excluded
+because its fisheye distortion model is not carried by the reader feeds.
+
+\paragraph{Result.}
+On the rendered clips the estimator follows the commanded ratio: the median $|e|$ is
+V_SIM_MEDIAN across V_SIM_N clips with V_SIM_COVERAGE\% reconstructable windows, and the
+depicted height tracks the truth altitude per chunk. On the real outdoor flights it does not:
+the pooled median $|e|$ is V_REAL_MEDIAN over V_REAL_N windows from three sequences
+(V_REAL_PER_SEQ), and the per-chunk correlation between depicted height and truth altitude
+ranges from V_CORR_MIN to V_CORR_MAX. The implied ground-normal error is
+V_TILT_MEDIAN$^\circ$ (median over chunks, V_TILT_MIN--V_TILT_MAX), against the
+$O(0.5^\circ)$ that a $h \approx 2$\,m camera over a $L \approx 20$\,m baseline would need.
+The pre-registered stop rule compared the real error with the effect of the smallest labelled
+vertical defect (a $\times 0.5$ or $\times 1.5$ scaling of a per-window ratio near 1.2, i.e.\
+$|\log|$ of 0.06--0.11): the real error exceeds it on V_STOP_K of 28 vertical-motion clips, so
+the check stops at feasibility and no defect render, real false-reject table or generated-clip
+arm is reported. The vertex of the failure is geometric, not a threshold: at
+$h \sim 1$--3\,m over $L \sim 15$--45\,m of travel, the plane's orientation must be known to a
+few tenths of a degree, and a bumpy real ground does not provide it.
+
+\paragraph{What this does and does not show.}
+It shows that EyeHeight's measurement transfers to \emph{commanded} vertical motion on rendered
+clips at 12--60\,m altitude, and that it does not transfer to low, fast, outdoor drone footage
+with a forward camera. It does not show that no vertical-motion check is possible: a
+downward-looking rig, a near-field-only plane fit, or a gravity-referenced height from
+inertial-aligned visual odometry would all change the geometry, and none was tested. The
+generated-clip arm is unrun, so nothing is claimed about whether a particular generator follows
+a commanded climb.
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+ & windows & median $|e|$ & p90 $|e|$ & covered \\
+\midrule
+Simulated, 28 climb clips (rendered) & V_SIM_W & V_SIM_MEDIAN & V_SIM_P90 & V_SIM_COVERAGE \\
+UZH outdoor forward, 1 & V_U1_W & V_U1_MED & V_U1_P90 & V_U1_COV \\
+UZH outdoor forward, 3 & V_U3_W & V_U3_MED & V_U3_P90 & V_U3_COV \\
+UZH outdoor forward, 5 & V_U5_W & V_U5_MED & V_U5_P90 & V_U5_COV \\
+\bottomrule
+\end{tabular}
+\caption{Commanded-vertical-motion feasibility. $e$ is Eq.~\ref{eq:v-height-ratio} on the
+simulator and Eq.~\ref{eq:v-height-ratio-real} on the real flights; windows are 3\,s with a
+0.5\,s stride. Coverage is the fraction of windows whose window is reconstructable.}
+\label{tab:v-feasibility}
+\end{table}

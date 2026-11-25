@@ -88,8 +88,13 @@ def main() -> int:
                        "window_frac": len(ok) / max(1, len(by_unit[u])),
                        "covered": bool(len(ok) >= 0.5 * len(by_unit[u]))}
 
-    # per-clip defect reference on the vertical-motion clips
-    defects = {u: M.defect_table(by_unit[u]) for u in climb}
+    # per-clip defect reference: from the TRUTH (the pre-registered rule needs every one of
+    # the 28 clips, whether or not its reconstruction is usable)
+    all_climb = [u for u in units
+                 if u["kind"] == "sim" and u["unit"] not in ("i02_dev_000", "i02_dev_001")]
+    truth_bars = {u["unit"]: truth_defect_table(u) for u in all_climb}
+    defects = {u: (M.defect_table(by_unit[u]) if u in by_unit else truth_bars[u])
+               for u in truth_bars}
 
     # the real error distribution, pooled over windows and per sequence
     real_windows = [r for u in real_units for r in by_unit[u] if r.get("ok")]
@@ -103,24 +108,24 @@ def main() -> int:
 
     # stop rule
     stricter = {}
-    for u in climb:
-        d = defects[u]
+    for u in list(truth_bars):
+        d = truth_bars[u]
         vals = {f: d[f]["median_abs"] for f in ("scaled_0.5", "scaled_1.5")}
         vals = {f: v for f, v in vals.items() if v is not None}
         stricter[u] = (min(vals.values()) if vals else float("nan"), min(vals, key=vals.get)
                        if vals else None)
-    n_exceed = int(sum(1 for u in climb
+    n_exceed = int(sum(1 for u in truth_bars
                        if np.isfinite(stricter[u][0]) and real_median > stricter[u][0]))
-    cond_a = bool(len(climb) > 0 and n_exceed > len(climb) / 2)
+    cond_a = bool(len(truth_bars) > 0 and n_exceed > len(truth_bars) / 2)
 
-    cov_climb = [coverage[u]["covered"] for u in climb]
+    cov_climb = [coverage[u]["covered"] for u in climb] if climb else []
     cov_real = [coverage[u]["covered"] for u in real_units]
     cond_b = bool(np.mean(cov_climb) < 0.5 or np.mean(cov_real) < 0.5)
     stop = bool(cond_a or cond_b)
 
     # descriptive: the same comparison for the largest (reversed) defect
-    reversed_bar = {u: defects[u]["reversed"]["median_abs"] for u in climb}
-    n_exceed_rev = int(sum(1 for u in climb
+    reversed_bar = {u: truth_bars[u]["reversed"]["median_abs"] for u in truth_bars}
+    n_exceed_rev = int(sum(1 for u in truth_bars
                            if reversed_bar[u] is not None
                            and np.isfinite(reversed_bar[u]) and real_median > reversed_bar[u]))
 
@@ -148,7 +153,8 @@ def main() -> int:
                             if real_windows else None},
                  "per_sequence": per_seq,
                  "bootstrap": boot},
-        "sim": {"climb_units": climb, "control_units": controls,
+        "sim": {"climb_units_with_recon": climb, "control_units": controls,
+                "climb_units": len(truth_bars),
                 "coverage_climb": float(np.mean(cov_climb)) if cov_climb else None,
                 "coverage_real": float(np.mean(cov_real)) if cov_real else None,
                 "defect_reference": defects,
@@ -158,7 +164,7 @@ def main() -> int:
                 "n_clips_real_error_exceeds_reversed": n_exceed_rev},
         "stop_rule": {"condition_a_fires": cond_a, "condition_b_fires": cond_b,
                       "STOP": stop,
-                      "detail": {"n_climb": len(climb), "n_exceed_stricter": n_exceed,
+                      "detail": {"n_climb": len(truth_bars), "n_exceed_stricter": n_exceed,
                                  "coverage_climb": float(np.mean(cov_climb)) if cov_climb else None,
                                  "coverage_real": float(np.mean(cov_real)) if cov_real else None}},
         "meta": meta,
@@ -179,12 +185,29 @@ def main() -> int:
                      f"{_f(s.get('median_abs_e'))} | {_f(s.get('p90_abs_e'))} | "
                      f"{_f(s.get('median_abs_q'))} |")
     lines += ["", f"STOP = {stop} (A={cond_a}, B={cond_b}; "
-                  f"{n_exceed}/{len(climb)} clips with real error above the stricter bar)"]
+                  f"{n_exceed}/{len(truth_bars)} clips with real error above the stricter bar)"]
     (OUT / "table.md").write_text("\n".join(lines) + "\n")
     print("\n".join(lines[:8]))
     print(f"\nreal median |e| = {real_median:.3f}; STOP={stop} (A={cond_a}, B={cond_b}, "
-          f"{n_exceed}/{len(climb)})")
+          f"{n_exceed}/{len(truth_bars)})")
     return 0
+
+
+def truth_defect_table(unit: dict) -> dict:
+    """The defect reference from the truth path alone (the pre-registered definition)."""
+    t = np.asarray(unit["truth"]["t"], float)
+    z = np.asarray(unit["truth"]["pos"], float)[:, 2]
+    grid = np.arange(len(unit["t"])) / 7.5
+    wins = M.windows(grid)
+    rc = [float(np.interp(w["t2"], t, z) / np.interp(w["t1"], t, z))
+          for w in wins if len(w["idx"]) >= 6 and np.interp(w["t1"], t, z) > 0]
+    out = {}
+    for fam in M.DEFECT_FAMILIES:
+        vals = [v for v in (M.defect_reference(r, fam) for r in rc) if v is not None]
+        out[fam] = {"median_abs": float(np.median(np.abs(vals))) if vals else None,
+                    "n_windows": len(vals), "per_window": vals}
+    out["ratio_cmd_median"] = float(np.median(rc)) if rc else None
+    return out
 
 
 def chunk_diagnostics(data: dict, unit: dict) -> list[dict]:
