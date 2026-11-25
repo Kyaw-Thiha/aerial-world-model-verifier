@@ -43,11 +43,12 @@ frozen components into a single development table with coverage and denominators
 * LingBot-World: **0 clips** after three launches (the intrinsics file must be an `(F,4)` array;
   fixed twice, then the model load + first clip never completed in the window). Reported as not
   produced, with the spend recorded.
-* Readers: SolarWM 26+8, SANA 5 (shard still running), ANWM 17.
+* Readers: SolarWM 26+8, SANA 19, ANWM 16 (a final ANWM reader pass is the first thing to run if
+  that job has since finished).
 
-Every Modal app is stopped or finishes on its own; no detached orphan was left running. If ANWM is
-still running when this is read, it will write the remaining clips to `awmv-x-results:/x01/anwm/C`
-and the next step is to re-read and re-score it.
+LingBot and SANA-WM were stopped explicitly; the ANWM generation (18/25 at the last check) and one
+reader shard were left to finish on their own, which they do when their call sets complete. Nothing
+detached is left orphaned beyond that, and no app was left running without a completion path.
 
 ## Next (in order)
 
