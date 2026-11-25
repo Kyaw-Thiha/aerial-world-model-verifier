@@ -48,7 +48,8 @@ def load_units() -> dict[str, list[dict]]:
 def rows_for(unit: dict, defence: dict | None = None) -> tuple[list[dict], list[dict]]:
     data = RIO.load_unit(RECON, unit["unit"])
     if unit["kind"] in ("anwm", "solarwm"):
-        return [RIO.whole_clip_row(data, np.asarray(unit["truth"]["pos"], float))], []
+        return [RIO.whole_clip_row(data, np.asarray(unit["truth"]["pos"], float),
+                                   kind=unit["truth"].get("statistic", "net"))], []
     pos = np.asarray(unit["truth"]["pos"], float)
     t = np.asarray(unit["truth"]["t"], float)
     mode = "sim" if unit["kind"] in ("sim", "defect") else "real"

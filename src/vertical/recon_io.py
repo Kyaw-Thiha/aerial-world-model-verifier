@@ -67,14 +67,17 @@ def unit_rows(data: dict, truth_t: np.ndarray, truth_pos: np.ndarray, *, mode: s
     return rows, diag
 
 
-def whole_clip_row(data: dict, truth_pos: np.ndarray) -> dict:
+def whole_clip_row(data: dict, truth_pos: np.ndarray, kind: str = "net") -> dict:
     """The generated-clip statistic: one row over the whole clip, scale-free only.
 
     ``rho_dep = dz_dep / L_dep`` and ``rho_cmd = dz_cmd / L_cmd``; no height ratio is formed
     because the start height of a generated frame is not known (V1 pre-registration, Part 3).
     """
     pos = np.asarray(truth_pos, float)
-    dz_cmd = float(pos[-1, 2] - pos[0, 2])
+    if kind == "excursion":
+        dz_cmd = float(np.ptp(pos[:, 2]))
+    else:
+        dz_cmd = float(pos[-1, 2] - pos[0, 2])
     L_cmd = float(np.sum(np.linalg.norm(np.diff(pos[:, :2], axis=0), axis=1)))
     rho_cmd = dz_cmd / max(L_cmd, 1e-9)
     w = data["meta"]["windows"]
@@ -93,10 +96,10 @@ def whole_clip_row(data: dict, truth_pos: np.ndarray) -> dict:
     h = c @ n - d
     dperp = c - np.outer(c @ n, n)
     L_dep = float(np.sum(np.linalg.norm(np.diff(dperp, axis=0), axis=1)))
-    dz_dep = float(n @ (c[-1] - c[0]))
+    dz_dep = (float(np.ptp(h)) if kind == "excursion" else float(n @ (c[-1] - c[0])))
     rho_dep = dz_dep / max(L_dep, 1e-9)
     q = (rho_dep - rho_cmd) / (abs(rho_cmd) + 0.05)
-    return {"ok": True, "rho_cmd": rho_cmd, "rho_dep": rho_dep,
+    return {"ok": True, "kind": kind, "rho_cmd": rho_cmd, "rho_dep": rho_dep,
             "dz_cmd": dz_cmd, "L_cmd": L_cmd, "dz_dep": dz_dep, "L_dep": L_dep, "q": q,
             "abs_q": abs(q), "h_first": float(h[0]), "h_last": float(h[-1]),
             "inlier_frac": float(plane["inlier_frac"]), "n_frames": int(len(t_ch))}
