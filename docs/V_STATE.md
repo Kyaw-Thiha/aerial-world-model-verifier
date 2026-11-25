@@ -4,63 +4,71 @@ Updated: 2026-11-25 (handoff 31, unattended run).
 
 ## Reading taken where the handoff left a choice
 
-1. **The check is the height-ratio check, with a scale-free secondary.** The commanded side is
-   `ratio_cmd = z(t2)/z(t1)` (simulator, ground at z = 0) or `1 + (z(t2)-z(t1))/(s h(t1))`
-   (real footage, one scale per chunk). The scale-free `rho = dz/L` version is pre-registered
-   as *exploratory* because the primary needs a start height that generated clips do not have.
-2. **The estimator is Pi3X** (Pi3's successor, ungated, already in this project), every 4th
-   video frame at 7.5 Hz, reconstructed in overlapping 8 s chunks (amendment 2) so that the
-   density does not fall with clip length. VGGT is a cross-check only if Pi3X fails its own
-   controls.
-3. **TII is not in the real pilot**: fisheye 640x480 with a distortion model the reader feed
-   does not carry; recorded as a limitation, not worked around.
-4. **Vertical defects are re-rendered, not video-warped**: the camera's altitude is edited on
-   the frozen path and the camera attitude stays the commanded path's flatness attitude, so the
-   tilt check sees a feasible clip and only a vertical check can react.
+1. **The check is EyeHeight's height ratio, extended to commanded vertical motion.** Primary
+   statistic `e = log(h(t2)/h(t1)) - log(ratio_cmd)` over 3 s windows; a 5 s window and a
+   scale-free `rho = dz/L` version are pre-registered secondaries/exploratory, because the
+   commanded ratio needs a start height that generated clips do not have.
+2. **Pi3X is the estimator** (Pi3's successor, ungated, already in this project), every 4th
+   frame at 7.5 Hz, reconstructed in overlapping 8 s chunks so density does not fall with clip
+   length. Ground plane per window from the reconstruction's own points.
+3. **TII is not in the real population** (fisheye distortion not carried by the reader feeds);
+   UZH-FPV is.
+4. **Vertical defects are re-renders** that edit the camera's altitude on the frozen path and
+   leave the commanded attitude, so the tilt check sees a feasible clip.
+
+## Outcome in one line
+
+**The pre-registered stop rule fired.** The estimator's error on real UZH-FPV outdoor footage is
+median |log ratio error| 0.50, 4-8x the smallest labelled vertical defect (0.06-0.11) on 28/28
+climb clips, so V1 (defect renders, real false-reject table, generated clips) was not run. On
+the rendered clips the same estimator is accurate (median 0.05-0.1), so the failure is the
+geometry of low, fast, outdoor footage: the ground normal is known to ~2-8 deg and the ratio
+error scales as delta * L / h, with L/h ~ 0.4-1.3 on rendered 12-60 m flights and 8-12 on the
+1-2 m real ones.
 
 ## Done
 
-* Frozen hashes verified on `main` before the worktree was created: `configs/sim_splits_frozen.json`
-  `cdf66e28…`, `configs/sim_prereg.yaml` `245b68bf…`.
-* Branch `track-v-vertical`, worktree `~/Documents/Projects/awmv-v`, from `main` (`8f404af`).
-* Part 0 counts (from `results/i02/manifest.csv` + local gt): **28 of 200 dev clips have
-  commanded vertical motion**, all of them `climb_turn`; peak |dz| 9.4-48.4 m from a 12 m start
-  (ratio 1.8-5.0); `forest_ridge` contributes 3, `industrial` 16, `urban_checker` 9; all four
-  mounts (0/15/30/45 deg uptilt) appear for industrial and urban, forest only 15/45.
-* Pre-registrations committed before any output: `configs/v00_feasibility_prereg.yaml`
-  (`2e948fa`), amendments 1 and 2 (`cf8b0eb`).
-* Frames staged at 7.5 Hz and uploaded: 33 units (30 sim + 3 UZH outdoor), volume
-  `awmv-v-data:/v_frames`, 4,271 PNGs, 406 MB.
-* Code: `src/vertical/{plane,metrics}.py`, `remote/v_recon.py` (Pi3X + plane fit),
-  `experiments/v_stage_frames.py`, `experiments/v00_feasibility.py`,
-  `src/sim/vertical_edits.py`, `remote/v_render.py` (Part 1 renders).
+* Frozen hashes verified on `main` (`cdf66e28…`, `245b68bf…`); worktree `awmv-v`, branch
+  `track-v-vertical` from `8f404af`.
+* Part 0a counts: 28/200 development clips have commanded vertical motion (all `climb_turn`,
+  9.3-48.4 m, eight feasible), spread over three families and up to four mounts; the three UZH
+  outdoor sequences have 0.8-1.6 m (median) vertical change per 3 s.
+* Pre-registrations: `configs/v00_feasibility_prereg.yaml` + amendments 1-4,
+  `configs/v10_vertical_prereg.yaml` + amendment 1 (both committed before any score; V1 stays
+  unrun).
+* Estimator and analysis: `src/vertical/{plane,metrics,recon_io,local_windows}.py`,
+  `remote/v_recon.py`, `remote/v_render.py`, `experiments/v_stage_frames.py`,
+  `v_stage_generated.py`, `v_stage_defects.py`, `v00_feasibility.py`, `v00_figure.py`,
+  `v10_score.py`; unit tests `tests/test_vertical_{plane,metrics}.py`.
+* Inputs staged: 44 Part 0/Part 2 units (30 simulated + 14 UZH) at 7.5 Hz on the volume;
+  16 ANWM and 18 SolarWM climb clips pulled and staged (unrun, Part 3).
+* One null render tested end to end (`i02_dev_005`, 364 frames, 0.40 s/frame on A10G,
+  rendered ratio exactly 1.0) — the Part 1 renderer works and was not scaled up.
 
-## Running
+## Finished
 
-* `remote/v_recon.py --all-units` (33 units, L40S): Part 0 reconstructions.
-
-## Next
-
-1. Pull `recon/` from `awmv-v-data`, run `experiments/v00_feasibility.py`, apply the stop rule.
-2. Write `reports/V0_feasibility.md` (or stop).
-3. If it passes: `configs/v10_vertical_prereg.yaml`, run `remote/v_render.py --all-specs`
-   (38 renders), reconstruct the edit clips, score Part 1; reconstruct the 14 UZH sequences for
-   Part 2 false positives; identify and reconstruct the generated clips for Part 3.
-4. `reports/V1_vertical_fidelity.md`, `report_candidates/v_vertical.tex`, ledger, decisions.
+* The amended pilot ran to completion (44/44 units). `experiments/v00_feasibility.py` produced
+  the final numbers; `experiments/v00_rigs.py` the exploratory 14-rig table;
+  `experiments/v00_figure.py` the evidence figure.
+* The stop rule fired (condition A, 28/28); V1 was not run. Report `reports/V0_feasibility.md`,
+  candidate section `report_candidates/v_vertical.tex`.
+* All Modal apps are stopped; billing checked (5.02 USD). The branch is pushed and **not
+  merged**.
 
 ## Spend
 
-Ceiling 15 USD. Committed so far: Pi3X image build (cached) + ~5 probe chunk passes, about
-0.15 USD. Estimate for Part 0: 0.8-1.2 USD (33 units x ~3 chunks x 10-20 s on L40S at
-1.95 USD/h). Part 1 renders: about 2.0 USD (38 clips x ~400-650 frames at 0.19 s/frame).
-Part 1 + Part 2 reconstructions: about 1.8 USD. Total projected: about 5 USD.
+Ceiling 15 USD. **Spent 5.02 USD** (`modal billing report`, by app name: `awmv-v-recon` 4.83,
+`awmv-v-render` 0.19). About 1.0 USD of that was lost to two concurrent code versions and about
+0.2 USD to the null-render test.
 
 ## Resume commands
 
 ```
 cd ~/Documents/Projects/awmv-v
 MB=~/Documents/Projects/aerial-world-model-verifier/.pixi/envs/default/bin/modal
-PYTHONPATH=. $MB run remote/v_recon.py --all-units          # Part 0 reconstructions
+PY=~/Documents/Projects/aerial-world-model-verifier/.pixi/envs/default/bin/python
+PYTHONPATH=. $MB run remote/v_recon.py --all-units
 PYTHONPATH=. $PY scripts/pull_volume.py awmv-v-data recon data/v/recon
 PYTHONPATH=. $PY experiments/v00_feasibility.py
+PYTHONPATH=. $PY experiments/v00_figure.py outdoor_forward_1
 ```

@@ -373,7 +373,7 @@ apps in the same window belong to other tracks and are excluded).
 | 2026-11-25 | `awmv-v-recon` image build + probes (7 app ids) | L40S | 0.45 | key/shape probes, one forced re-run of a single unit |
 | 2026-11-25 | `awmv-v-recon` pilot, first two launches | L40S | 1.26 | includes about 1.0 USD of passes that mixed two code versions after a killed local client left the remote functions running; the volume directory was deleted and the pilot re-run |
 | 2026-11-25 | `awmv-v-render` null-render test | A10G | 0.19 | one 364-frame render, 0.40 s/frame |
-| 2026-11-25 | `awmv-v-recon` final pilot (44 units, two parallel jobs) | L40S | V_RECON_FINAL | 30 simulated clips + 14 UZH sequences; one job stopped once the UZH sequences were done |
+| 2026-11-25 | `awmv-v-recon` amended pilot (44 units, two parallel jobs) | L40S | 3.57 | 30 simulated clips + 14 UZH sequences under the per-chunk confidence floor (amendment 4), plus one single-unit re-run; one job stopped once the UZH sequences were done |
 
-**Track V total: V_TOTAL USD** against the 15 USD ceiling. No R2 object and no storage was
+**Track V total: 5.02 USD** against the 15 USD ceiling (`modal billing report` by app name: `awmv-v-recon` 4.83, `awmv-v-render` 0.19). No R2 object and no storage was
 used beyond the `awmv-v-data` volume (frames ~1.2 GB, recon ~200 MB).

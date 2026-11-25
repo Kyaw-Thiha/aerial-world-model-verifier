@@ -631,4 +631,4 @@ works on the rendered clips and not on real low-altitude footage.
 
 Data: volume `awmv-v-data` (`v_frames/`, `recon/`), local `data/v/` (frames, units table, the 16
 ANWM and 18 SolarWM climb-clip inputs), R2 not used (credentials rejected, see
-`docs/decisions.md` [V]). Spend about V_TOTAL USD of the 15 USD ceiling.
+`docs/decisions.md` [V]). Spend **5.02 USD** of the 15 USD ceiling.
