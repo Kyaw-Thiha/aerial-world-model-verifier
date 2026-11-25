@@ -28,7 +28,11 @@ FRAMES = OUT / "frames"
 UNITS = OUT / "units.json"
 
 SIM_CONTROLS = ("i02_dev_000", "i02_dev_001")
-UZH = ("outdoor_forward_1", "outdoor_forward_3", "outdoor_forward_5")
+UZH_PILOT = ("outdoor_forward_1", "outdoor_forward_3", "outdoor_forward_5")
+UZH_REST = ("indoor_forward_3", "indoor_forward_5", "indoor_forward_6", "indoor_forward_7",
+            "indoor_forward_9", "indoor_forward_10", "indoor_45_2", "indoor_45_4",
+            "indoor_45_9", "indoor_45_13", "outdoor_45_1")
+UZH_ALL = UZH_PILOT + UZH_REST
 SIM_K = {"fx": 320.0, "fy": 320.0, "cx": 319.5, "cy": 179.5, "w": 640, "h": 360}
 FPS_SIM = 30.0
 SIM_STRIDE = 4          # 30 fps -> 7.5 Hz
@@ -79,7 +83,7 @@ def stage_sim(clip_id: str) -> dict:
                       "ground_z": 0.0, "clip_z0": float(pos[m][0, 2])}}
 
 
-def stage_uzh(seq: str) -> dict:
+def stage_uzh(seq: str, population: str = "pilot") -> dict:
     src_dir = ROOT / f"data/n01/uzh_frames/{seq}"
     meta = json.loads((ROOT / f"data/uzh/{seq}/meta.json").read_text())
     files = sorted(src_dir.glob("*.png"))
@@ -100,7 +104,8 @@ def stage_uzh(seq: str) -> dict:
     pos = np.asarray(truth["pos"], dtype=float)
     m = (tp >= t[0] - 1e-6) & (tp <= t[-1] + 1e-6)
     K = meta["intrinsics_pinhole"]
-    return {"unit": seq, "kind": "uzh", "frames": str(dst.relative_to(FRAMES)),
+    return {"unit": seq, "kind": "uzh", "population": population,
+            "frames": str(dst.relative_to(FRAMES)),
             "n_frames": len(kept), "src": str(src_dir.relative_to(ROOT)),
             "src_frame_index": idx.tolist(), "t": t.tolist(),
             "K": {"fx": float(K["fx"]), "fy": float(K["fy"]), "cx": float(K["cx"]),
@@ -114,6 +119,8 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--sim-only", action="store_true")
     ap.add_argument("--uzh-only", action="store_true")
+    ap.add_argument("--uzh-all", action="store_true",
+                    help="stage the 11 further UZH sequences as well (V1 real population)")
     args = ap.parse_args()
     OUT.mkdir(parents=True, exist_ok=True)
     FRAMES.mkdir(parents=True, exist_ok=True)
@@ -124,8 +131,9 @@ def main() -> int:
             print(f"sim {cid}: {u['n_frames']} frames, t {u['t'][0]:.2f}-{u['t'][-1]:.2f}")
             units.append(u)
     if not args.sim_only:
-        for seq in UZH:
-            u = stage_uzh(seq)
+        seqs = UZH_ALL if args.uzh_all else UZH_PILOT
+        for seq in seqs:
+            u = stage_uzh(seq, "pilot" if seq in UZH_PILOT else "v1_real")
             print(f"uzh {seq}: {u['n_frames']} frames, t {u['t'][0]:.2f}-{u['t'][-1]:.2f}")
             units.append(u)
     old = []
@@ -135,7 +143,8 @@ def main() -> int:
     merged = units + [u for u in old if u["unit"] not in seen]
     UNITS.write_text(json.dumps({"generated": "experiments/v_stage_frames.py",
                                  "populations": {"sim": "28 climb_turn dev + 2 controls",
-                                                 "uzh": list(UZH)},
+                                                 "uzh_pilot": list(UZH_PILOT),
+                                                 "uzh_all": list(UZH_ALL)},
                                  "units": merged}, indent=1))
     print(f"\n{len(merged)} units -> {UNITS}")
     return 0

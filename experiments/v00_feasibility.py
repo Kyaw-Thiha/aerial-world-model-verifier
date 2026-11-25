@@ -24,6 +24,7 @@ from pathlib import Path
 import numpy as np
 
 from src.vertical import metrics as M
+from src.vertical import recon_io as RIO
 
 ROOT = Path(__file__).resolve().parents[1]
 UNITS = ROOT / "data/v/units.json"
@@ -32,63 +33,14 @@ OUT = ROOT / "results/v/v00"
 
 
 def load_unit(unit: dict) -> dict:
-    """Window table + chunk arrays for one unit."""
-    js = json.loads((RECON / f"{unit['unit']}.json").read_text())
-    chunks = {}
-    for c in js["chunks"]:
-        d = np.load(RECON / f"{unit['unit']}__c{c['chunk']}.npz")
-        chunks[c["chunk"]] = {"t": np.asarray(d["t"], float),
-                              "c2w": np.asarray(d["c2w"], float)}
-    return {"meta": js, "chunks": chunks}
+    return RIO.load_unit(RECON, unit["unit"])
 
 
 def unit_rows(unit: dict, data: dict) -> tuple[list[dict], list[dict]]:
     truth = unit["truth"]
-    tt = np.asarray(truth["t"], float)
-    pp = np.asarray(truth["pos"], float)
     mode = "sim" if unit["kind"] == "sim" else "real"
-    rows, diag = [], []
-    used_chunks = set()
-    for w in data["meta"]["windows"]:
-        ch = data["chunks"][w["chunk"]]
-        used_chunks.add(w["chunk"])
-        plane = w.get("plane")
-        if not plane or not plane.get("admissible"):
-            rows.append({"t1": w["t1"], "t2": w["t2"], "ok": False,
-                         "reason": "no_plane" if not plane else "plane_inadmissible"})
-            continue
-        if plane["inlier_frac"] < 0.10:
-            rows.append({"t1": w["t1"], "t2": w["t2"], "ok": False,
-                         "reason": "low_inlier_frac"})
-            continue
-        t_ch = ch["t"]
-        sel = (t_ch >= w["t1"] - 1e-9) & (t_ch <= w["t2"] + 1e-9)
-        if sel.sum() < 2:
-            rows.append({"t1": w["t1"], "t2": w["t2"], "ok": False, "reason": "too_few_frames"})
-            continue
-        cams = ch["c2w"][sel, :3, 3]
-        n = np.asarray(plane["n"], float)
-        d = float(plane["d"])
-        scale_s = None
-        if mode == "real":
-            # one similarity scale for this chunk (independent Pi3X pass), from the chunk's
-            # own camera centres against the truth positions at the same times
-            tc = t_ch
-            inside = (tc >= tt[0]) & (tc <= tt[-1])
-            if inside.sum() >= 4:
-                pos_i = np.column_stack([np.interp(tc[inside], tt, pp[:, k]) for k in range(3)])
-                scale_s = M.sequence_scale(ch["c2w"][inside, :3, 3], pos_i)
-        row = M.evaluate_window(t_ch[sel], cams, n, d, w["t1"], w["t2"], tt, pp,
-                                mode=mode, scale_s=scale_s)
-        if scale_s is not None:
-            row["scale_s"] = scale_s
-            row["h1_m"] = scale_s * row.get("h1", np.nan)
-        rows.append(row)
-        diag.append({"t1": w["t1"], "t2": w["t2"], "chunk": w["chunk"],
-                     "inlier_frac": plane["inlier_frac"],
-                     "facing_deg": plane["facing_deg"],
-                     "height_med": float(np.median(cams @ n - d))})
-    return rows, diag
+    return RIO.unit_rows(data, np.asarray(truth["t"], float),
+                         np.asarray(truth["pos"], float), mode=mode)
 
 
 def main() -> int:
@@ -97,8 +49,11 @@ def main() -> int:
     by_unit: dict[str, list[dict]] = {}
     diags: dict[str, list[dict]] = {}
     meta = {}
+    unit_population = {u["unit"]: u.get("population", "pilot") for u in units}
     for u in units:
         if u["kind"] not in ("sim", "uzh"):
+            continue
+        if u["kind"] == "uzh" and u.get("population", "pilot") != "pilot":
             continue
         if not (RECON / f"{u['unit']}.json").exists():
             print(f"MISSING recon for {u['unit']}")
@@ -118,7 +73,8 @@ def main() -> int:
                             ok=np.array([bool(r.get("ok")) for r in rows]))
 
     sim_units = [u for u in by_unit if meta[u]["kind"] == "sim"]
-    real_units = [u for u in by_unit if meta[u]["kind"] == "uzh"]
+    real_units = [u for u in by_unit if meta[u]["kind"] == "uzh"
+                  and unit_population.get(u, "pilot") == "pilot"]
     climb = [u for u in sim_units if u not in ("i02_dev_000", "i02_dev_001")]
     controls = [u for u in sim_units if u in ("i02_dev_000", "i02_dev_001")]
 

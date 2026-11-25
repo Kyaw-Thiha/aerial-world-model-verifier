@@ -126,7 +126,7 @@ def recon(specs: list[dict], force: bool = False, probe: bool = False) -> str:
         K = spec["K"]
         K_np = np.array([[K["fx"], 0.0, K["cx"]], [0.0, K["fy"], K["cy"]],
                          [0.0, 0.0, 1.0]], dtype=np.float32)
-        spans = chunk_index(spec["t"])
+        spans = [[0, len(t)]] if spec.get("single") else chunk_index(spec["t"])
         chunk_meta, chunk_files = [], []
         t0 = time.time()
         for ci, (i0, i1) in enumerate(spans):
@@ -194,7 +194,8 @@ def recon(specs: list[dict], force: bool = False, probe: bool = False) -> str:
                                               for k, v in clip_plane.items()}})
         if probe:
             continue
-        wins = window_list(spec["t"])
+        wins = ([{"t1": float(t[0]), "t2": float(t[-1]),
+                  "idx": list(range(len(t)))}] if spec.get("single") else window_list(spec["t"]))
         which = _assign_windows(wins, [c["t_range"] for c in chunk_meta])
         win_rows = []
         for w, k in zip(wins, which):
@@ -225,17 +226,19 @@ def recon(specs: list[dict], force: bool = False, probe: bool = False) -> str:
 
 
 @app.local_entrypoint()
-def main(units: str = "", all_units: bool = False, force: bool = False,
-         probe: bool = False, limit: int = 0):
+def main(units: str = "", all_units: bool = False, generated: bool = False,
+         force: bool = False, probe: bool = False, limit: int = 0):
     table = json.loads((Path("data/v/units.json")).read_text())["units"]
     if units:
         want = {u for u in units.split(",") if u}
         table = [u for u in table if u["unit"] in want]
     if all_units:
         table = [u for u in table if u["kind"] in ("sim", "uzh")]
+    if generated:
+        table = [u for u in table if u["kind"] in ("anwm", "solarwm")]
     if limit:
         table = table[:limit]
     specs = [{"unit": u["unit"], "kind": u["kind"], "frames": u["frames"], "t": u["t"],
-              "K": u["K"]} for u in table]
+              "K": u["K"], "single": u["kind"] in ("anwm", "solarwm")} for u in table]
     print(f"{len(specs)} units")
     print(recon.remote(specs, force, probe))
