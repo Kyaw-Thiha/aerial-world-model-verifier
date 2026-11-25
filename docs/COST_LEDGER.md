@@ -376,7 +376,7 @@ cap, readers 1.0).
 | 2026-11-25 | X | LingBot-World NF4, three launches, **no clip** | A100-80GB | ~3.0 | ~7.5 | two interface failures (intrinsics shape) then a long model load; the largest single line of this track and a pure loss |
 | 2026-11-25 | X | SANA-WM full campaign, 23 clips over 4 shards | A100-80GB | 1.6 | 4.0 | ~6 min per clip per shard (model reload per subprocess dominates) |
 | 2026-11-25 | X | frozen readers: SolarWM 26+8, SANA 5, ANWM 17 clips | A10 | 0.55 | 0.60 | 0.009-0.03 USD per 81-frame clip |
-| 2026-11-25 | X | contact sheets (40-clip kit) | CPU 4 | 0.05 | 0.01 | 24 sheets written |
+| 2026-11-25 | X | contact sheets (labelling kit) | CPU 4 | 0.06 | 0.01 | 27 sheets written, rebuilt after the full clip set landed |
 
 **Track X Stage-1 total (actual): USD 12.82**, from `modal billing report --start 2026-11-25
 --end 2026-11-26 --json` by app: SANA-WM 5.55, LingBot 3.53, SolarWM 1.85, ANWM 1.26, readers 0.63.

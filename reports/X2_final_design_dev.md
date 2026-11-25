@@ -84,17 +84,29 @@ order them.
 
 ### Pipeline development evidence (reused, cited — not recomputed here)
 
+The pipeline's own numbers are the frozen tier's, already published; they are quoted here with
+their denominators so the design is auditable in one place. Source: `results/g06/ablation/tables.md`
+and `detection_matched.csv` on `main`.
+
 | quantity | value | source |
 | --- | --- | --- |
-| window false-reject on real feasible flights, frozen coherence tier | not re-measured here (G06 reports it) | G06 |
-| clip-level false-reject / detection, dev simulated set, `a2_bh_coh12_q10` | not re-measured here (G06/G07 report it) | G06 |
-| anchored-start coverage, 200 dev clips | 16 feasible clips anchored; abstention 163-191/200 | N3B, N3D |
+| clip-level false-reject, `coh12_p1`, dev feasible clips | **1/17 (5.9 %)** | G06 |
+| detection, full-clip defects, `coh12_p1` | urban tilt_removed 3/3, urban mirrored 3/3; industrial tilt_removed 0/2, industrial mirrored 2/2, industrial tilt_scaled 0/4 | G06 |
+| forest_ridge testable clips under `coh12_p1` | **0 feasible and 0 defect clips are testable at all** | G06 |
+| window-level false-reject, `coh12_p1`, q = 0.10 per clip | 0/17 feasible clips flagged, 1 of 3,305 windows | G06 |
+| anchored-start coverage, 200 dev clips | 16 feasible clips anchored; fallback abstains on 163-191 of 200 | N3B, N3D |
 | anchored-start detection at the matched pooled 8/80 | 6/27 removals, 6/27 mirrors, 0/9 forest removals | N3B |
 | drift-flag recall | 3/6 tail clips against a >= 2/3 criterion (fails) | N3C |
 
+Two things follow and neither is flattering. The frozen tier's false-reject on the simulated
+development set is low (1/17) but its *testable* population is tiny, and **no forest clip is
+testable at all** — the same coverage problem the anchored start has, seen from the other side. The
+detection table is therefore dominated by urban and industrial full-clip defects, which is why
+criterion D3 (coverage) rather than D2 (detection) is the one this pipeline is most likely to fail.
+
 ### Human-judgement kit (new, unlabelled)
 
-`results/x/human_check/` holds 24 side-by-side contact sheets (six frames evenly spaced over each
+`results/x/human_check/` holds 27 side-by-side contact sheets (six frames evenly spaced over each
 clip, header naming the generator and the path) and `labels.csv` with a blank
 `plausible_1_to_5` column and a comment column. No verdict is drawn on the sheets: the question is
 "is this flight plausible?", and the labels are the user's to give. The kit is balanced across
@@ -135,5 +147,5 @@ without a visual-quality measurement to attach it to.
 * Four ANWM paths are not expressible in its action space and carry `expressible: false`.
 * The tilt gain is a Stage-1 statistic on 5 s clips; it is not a verdict and does not replace the
   clip-level BH rule.
-* The labelling kit has 24 sheets, not the 40 the handoff envisioned, because generation produced
+* The labelling kit has 27 sheets, not the 40 the handoff envisioned, because generation produced
   fewer clips in the window than planned; every sheet that exists is listed in `labels.csv`.
