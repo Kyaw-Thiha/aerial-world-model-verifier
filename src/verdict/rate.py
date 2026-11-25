@@ -127,12 +127,29 @@ def rotation_rates(R: np.ndarray, t: np.ndarray) -> np.ndarray:
     out = np.full((n, 3), np.nan)
     if n < 2:
         return out
-    for k in range(n):
-        lo, hi = max(k - 1, 0), min(k + 1, n - 1)
-        if hi == lo:
-            continue
-        d = Rotation.from_matrix(R[lo].T @ R[hi]).as_rotvec()
-        out[k] = d / (t[hi] - t[lo])
+    lo = np.maximum(np.arange(n) - 1, 0)
+    hi = np.minimum(np.arange(n) + 1, n - 1)
+    M = np.einsum("nij,nik->njk", R[lo], R[hi])
+    rv = Rotation.from_matrix(M).as_rotvec()
+    dt = t[hi] - t[lo]
+    ok = dt > 0
+    out[ok] = rv[ok] / dt[ok, None]
+    return out
+
+
+def central_axis_rate(b3: np.ndarray, t: np.ndarray) -> np.ndarray:
+    """``d b3/dt`` by the same 3-point stencil as :func:`rotation_rates`."""
+    b3 = np.asarray(b3, float)
+    t = np.asarray(t, float)
+    n = len(b3)
+    out = np.full((n, 3), np.nan)
+    if n < 2:
+        return out
+    lo = np.maximum(np.arange(n) - 1, 0)
+    hi = np.minimum(np.arange(n) + 1, n - 1)
+    dt = t[hi] - t[lo]
+    ok = (dt > 0) & np.isfinite(b3[lo]).all(1) & np.isfinite(b3[hi]).all(1)
+    out[ok] = (b3[hi][ok] - b3[lo][ok]) / dt[ok, None]
     return out
 
 
@@ -325,12 +342,15 @@ def noisy_sequence(R: np.ndarray, sigma_deg: float, rng: np.random.Generator) ->
     """Add iid Gaussian rotation noise (per axis, camera frame) to a pose sequence."""
     R = np.asarray(R, float)
     s = np.deg2rad(sigma_deg)
+    n = len(R)
+    eta = Rotation.from_rotvec(rng.normal(0.0, s, (n - 1, 3))).as_matrix()
+    steps = np.einsum("nij,njk->nik", np.einsum("nji,njk->nik", R[:-1], R[1:]), eta)
     out = np.empty_like(R)
     out[0] = R[0]
-    for k in range(len(R) - 1):
-        step = R[k].T @ R[k + 1]
-        eta = Rotation.from_rotvec(rng.normal(0.0, s, 3)).as_matrix()
-        out[k + 1] = out[k] @ step @ eta
+    cur = R[0]
+    for k in range(n - 1):
+        cur = cur @ steps[k]
+        out[k + 1] = cur
     return out
 
 

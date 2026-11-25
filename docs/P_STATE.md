@@ -19,10 +19,15 @@ Data note: this worktree's `data/` is a symlink to the shared gitignored tree
 
 | item | state |
 | --- | --- |
-| P0 error budget + stop-rule verdict | not started |
-| P1 rate consistency (Check B) | not started |
+| P0 error budget + stop-rule verdict | **done** — verdict: proceed. `reports/P0_error_budget.md` |
+| P1 rate consistency (Check B) | pre-registered, not run |
 | P2 thrust envelope (Check C) | not started |
 | docs / ledger / LaTeX / checks | not started |
+
+P0 in one line: the 5 % floor is 3.0 deg/s (sim) and 1.8 deg/s (UZH) against required rates of
+9.1 and 29 deg/s; 11 of 53 dynamic camera-defect clips are below it (all mirrored roll, 11/16),
+20.8 % < 50 %, so Check B proceeds. The handoff-literal rate form leaves 8.7 deg/s on feasible
+ground truth and is replaced by a per-clip gauge fit (0.0008 deg/s noiseless).
 
 ## Readings taken (the user is unavailable)
 

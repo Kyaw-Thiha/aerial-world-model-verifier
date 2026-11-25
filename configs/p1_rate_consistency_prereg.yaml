@@ -1,0 +1,90 @@
+# Track P, Part 1: the body-rate consistency check (Check B).
+#
+# Committed after the P0 budget and its verdict, before any video-derived rate was scored.
+prereg_version: 1
+date: 2026-11-25
+owner: track-p
+handoff: "30, Check B"
+status: committed_before_scoring
+depends_on: "results/p/p0/summary.json (P0 verdict recorded in docs/P_STATE.md)"
+
+question: >
+  Does the thrust axis the video depicts rotate at the rate the commanded path requires, and
+  which labelled camera defects and generated-clip failures does the mismatch detect, at a
+  false-reject measured on real feasible drone flight?
+
+scope:
+  sim: "all 200 development clips, DPVO draw 1 (stride 1, 30 fps); draw 2 as the null edit"
+  uzh: "outdoor_forward_1/3/5 and outdoor_45_1 primary (leave-one-sequence-out); ten indoor sequences descriptive"
+  tii: "six development flights, descriptive only (rotation tracking is dead there: P0 measures a 2.56 deg per-step error, a 60 deg/s noise floor)"
+  generated: "the 234 SolarWM clips with cached rotations (P3); never used to set a threshold"
+  heldout: "never opened: 100 held-out sim clips, TII 13p and 07a"
+
+statistic:
+  pipeline: "exactly P0: 100 Hz Savitzky-Golay path (0.31 s, poly 3, -3 dB at 4.05 Hz); identical 3-point central difference on both sides; per-clip Kabsch gauge fit"
+  window: "0.5 s, hop 0.25 s (primary); 0.25 s and 1.0 s reported"
+  testable: ">= 60 % finite frames and median |rb| >= 3 x the unit's null window residual (P0 rule)"
+  per_clip: "median over testable windows"
+  tiers:
+    - "B_abs (primary): |rb - rd| in deg/s; high is bad"
+    - "B_rel: |rb - rd| / |rb|; high is bad"
+    - "B_coh: cos(rb, rd); low is bad"
+  lag: "exploratory only: the lag in [-0.5, 0.5] s maximising the cross-correlation of |rb| and |rd|"
+
+operating_points:
+  sim_matched:
+    primary: "the top 4 of 80 feasible clip scores (5 % false-reject)"
+    curve: "2, 4, 6, 8, 10 of 80"
+    note: "thresholds from the feasible dev clips only"
+  real_loo:
+    rule: >
+      For each held-out outdoor sequence the threshold is the 95th percentile of the other three
+      sequences' testable window scores. Window-level false-reject is the primary real number;
+      the clip-level (per-sequence median) number is reported beside it. Four clusters is
+      descriptive, not a 95 % interval.
+  real_calibrated:
+    rule: >
+      tau_real = the pooled 95th percentile of the four outdoor sequences' testable window
+      scores (leave-one-out reported). Applied to the sim clip scores it is the deployment
+      number; the sim-matched point is the primary detection number.
+
+detection:
+  denominator: "testable clips only, k/n printed with every rate; untestable clips reported separately"
+  whole_clip: "clip score above threshold"
+  partial: "a testable window overlapping the labelled interval is above threshold; localisation is
+            IoU between the flagged windows and the exact interval, compared with G06's 0.15-0.24
+            (G01) and G06's 0/5 at 25 % and 1/5 at 50 % coverage"
+  controls:
+    yaw: >
+      a smooth rotation about the DEPICTED thrust axis, psi(t) = 20 deg * sin(2 pi t / 2 s),
+      applied to every feasible clip's rotation sequence. The check must be blind to it (the
+      body yaw is unconstrained); a rotation about the camera optical axis instead is reported
+      as exploratory with its mount dependence, because a rigid mount turns image roll into
+      body attitude.
+    null: "DPVO draw 2 on the same feasible clips; the false-flag rate must match the feasible rate"
+  strata: "scene family x mount for sim; rig for UZH"
+
+criteria_confirmatory:
+  C1_real_false_reject: "window false-reject <= 10 % on each held-out outdoor sequence at its LOO threshold, and <= 10 % pooled"
+  C2_detection: "at the sim-matched 4/80, B_abs detects at least 50 % of the testable dynamic whole-clip camera defects (removal + mirror + scale pooled)"
+  C3_mirror: "at the same point, B_abs detects at least 25 % of the testable dynamic mirrored-roll clips (the direction claim, which a magnitude-only check cannot make)"
+  C4_controls: "yaw control and null edit each flagged at no more than 4/80 feasible clips"
+  failing_any: "recorded as a failure, not repaired after the fact"
+
+exploratory:
+  - "B_rel and B_coh beside B_abs"
+  - "static (peak required tilt < 15 deg) versus dynamic clips"
+  - "partial-interval localisation and IoU"
+  - "the lag distribution on real vs sim vs generated"
+  - "the handoff-literal rate form on real video, to show the gauge error end to end"
+  - "mount dependence of the camera-roll yaw control"
+
+statistics: >
+  scene-clustered (sim) and flight-clustered (UZH) bootstrap, 5000 replicates,
+  numpy.random.default_rng(1); fewer than 10 clusters is descriptive and said so.
+
+outputs:
+  - results/p/p1/per_clip.csv
+  - results/p/p1/windows.csv
+  - results/p/p1/summary.json
+  - reports/P1_rate_consistency.md
