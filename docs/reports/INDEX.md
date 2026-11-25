@@ -187,6 +187,12 @@ Track G/G2 `GNN_`, Track H/H2 `HNN_`, Track J `JNN_`.
 | `N05_sim_propagated_verdicts.md` | C2 and coherence on the propagated lean over the 200 simulated dev clips | current; with a level-body start and no reader, C2 loses the verdict (0/27 removals against the reader's 16/27) |
 | `N06_mount_drift_diagnosis.md` | Diagnosing the 30/45 deg mount drift | current; the drift is run-to-run DPVO variance, not a stable bias |
 
+## Track V — commanded vertical motion (branch `track-v-vertical`, off `main` `8f404af`)
+
+| report | title | status |
+| --- | --- | --- |
+| `V0_feasibility.md` | Commanded vertical motion: feasibility | current — the pre-registered stop rule fired, so no V1 report exists |
+
 ## Notes
 
 * Report 04 quotes the pre-registration sha256 `b8fd7013…` for `configs/verdict_preregistration.yaml`
