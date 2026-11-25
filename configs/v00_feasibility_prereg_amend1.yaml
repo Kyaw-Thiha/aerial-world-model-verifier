@@ -1,0 +1,61 @@
+# Track V, Part 0 pre-registration — amendment 1.
+#
+# Written after configs/v00_feasibility_prereg.yaml was committed (2e948fa) and BEFORE any
+# reconstruction output existed: at the time of this commit no Pi3X forward pass had been run
+# on any Track V input, and no height/ratio/coverage number had been computed. The amendment
+# fixes two implementation choices that the first file left ambiguous or wrong. Nothing in the
+# stop rule, the populations, the statistic or the success criteria changes.
+prereg: configs/v00_feasibility_prereg.yaml
+amendment: 1
+date: 2026-11-25
+owner: track-v
+reason_committed_before_output: true
+
+changes:
+  - id: A1
+    field: estimator.frames
+    was: "source_stride 4 on every population"
+    now: >
+      SIM and GENERATED inputs: every 4th video frame (30 fps -> 7.5 Hz), then evenly
+      subsampled to at most 64 frames. UZH inputs: the prepared pinhole sequence is already
+      stride 2 of the native 30 fps (15.07 Hz), so every 2nd prepared frame is used (7.5 Hz),
+      then evenly subsampled to at most 64 frames.
+    why: >
+      Applying a stride of 4 to the already-halved UZH set would give 3.77 Hz, half of
+      EyeHeight's 7.5 Hz reconstruction density. The amendment makes the temporal density equal
+      across populations instead of equal in index stride.
+
+  - id: A2
+    field: ground_plane.pool / ground_plane.selection
+    was: "one plane pooled over all frames of the clip"
+    now: >
+      The plane is fitted PER WINDOW, from the points of the frames whose times lie in
+      [t1 - 0.5 s, t2 + 0.5 s]. A window-level fit is used because Track I's climb clips rise
+      from 12 m to as much as 60 m, where a single global plane mixes near-field ground with
+      grazing far-field points and can absorb reconstruction drift into the height series. The
+      clip-level pooled fit is retained as a reported diagnostic only (it is not scored).
+    why: >
+      the statistic is a within-window height ratio; the plane must be consistent for the two
+      frames that enter the ratio, and a per-window plane guarantees that without assuming
+      global reconstruction consistency. This is a robustness change, not a change of quantity:
+      EyeHeight fits one plane per clip because its trajectories hold height and stay indoors.
+
+  - id: A3
+    field: ground_plane.clip_coverage
+    was: "one reconstructable flag per clip"
+    now: >
+      Reconstructability is defined per window (an admissible plane with inlier fraction
+      >= 0.10 of the pooled points). A clip or sequence is COVERED when at least half of its
+      3 s windows are reconstructable. Population coverage is the fraction of covered clips;
+      the fraction of reconstructable windows is reported beside it. A non-reconstructable
+      window is an abstention: it enters the coverage denominator and is excluded from the
+      error distribution, and both denominators are printed.
+    why: "long climbs change the visible ground; a per-clip on/off flag cannot express that."
+
+unchanged:
+  - "the 30-clip sim pilot and the 3 UZH outdoor sequences"
+  - "the plane RANSAC rule (2000 trials, 1 % scene scale, 3 candidates, orientation, 95 %
+     cameras-above, height band, 70 deg facing, most inliers)"
+  - "the height-ratio primary metric and the scale-free secondary"
+  - "the defect reference and the two stop-rule conditions"
+  - "the spend ceiling and the prohibitions"

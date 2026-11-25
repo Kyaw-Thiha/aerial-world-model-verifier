@@ -1,0 +1,42 @@
+# Track V, Part 0 pre-registration — amendment 2.
+#
+# Written before any Pi3X forward pass on Track V inputs and before any height/ratio/coverage
+# number existed. It fixes the temporal coverage of the reconstruction, which amendment 1's
+# "at most 64 frames per clip" would otherwise have made too sparse on the 12-21 s simulated
+# clips and the 33 s UZH sequences. No stop-rule constant, population, plane rule or statistic
+# changes.
+prereg: configs/v00_feasibility_prereg.yaml
+amends: configs/v00_feasibility_prereg_amend1.yaml
+amendment: 2
+date: 2026-11-25
+owner: track-v
+reason_committed_before_output: true
+
+change:
+  id: A4
+  field: estimator.frames
+  was: "one pass of at most 64 evenly subsampled frames per clip"
+  now: >
+    Every input is reconstructed in OVERLAPPING CHUNKS of 8.0 s of source time at a uniform
+    7.5 Hz sampling (60 frames per chunk; simulator: every 4th 30 fps frame, UZH: every 2nd
+    prepared 15.07 Hz frame). Chunk starts advance by 4.0 s (30 frames); the final chunk is
+    shifted so that it ends at the clip end. Each 3 s analysis window is answered by the chunk
+    whose centre is nearest the window centre, so every window is reconstructed with at least
+    2.5 s of context on each side. Chunks are independent Pi3X passes: the model's shared scale
+    is per pass, and no quantity is compared across chunks (every statistic is within-window
+    and within-chunk).
+  why: >
+    Pi3X's memory and time grow with the frame count; a single 64-frame pass over a 21 s clip
+    samples at 3 Hz and over a 33 s sequence at 1.9 Hz, which would leave 3 s windows with 6
+    frames and make the estimator's error a function of clip length. Chunking keeps the
+    reconstruction density at EyeHeight's 7.5 Hz and the context long, at a cost that stays
+    inside the Part 0 estimate.
+  cost_consequence: >
+    about 110 Pi3X passes of 60 frames instead of about 35 passes; expected Part 0 spend
+    rises from ~1.5 to ~2.0-2.5 USD, still well inside the 15 USD ceiling.
+
+unchanged:
+  - "populations (28 climb_turn dev clips + 2 controls; the three UZH outdoor sequences)"
+  - "the plane RANSAC rule, admissibility, coverage and the min_frames = 6 window rule"
+  - "the primary height-ratio metric, the scale-free secondary, the defect reference"
+  - "both stop-rule conditions and every number in them"
