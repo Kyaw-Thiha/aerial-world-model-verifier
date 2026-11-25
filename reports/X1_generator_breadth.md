@@ -13,8 +13,8 @@ a new generator, SANA-WM, was added and produces clips at about 0.08 USD each �
 cross-generator setup no longer rests on ANWM alone. The **breadth criteria are not met at the
 cut-off** (two of four generators finished, ANWM was still running, LingBot produced nothing), and
 the tilt-gain comparison is a three-generator statement at very different strengths: SolarWM's
-median gain is -0.09 on 9 testable in-envelope paths against a null of 0.00, SANA-WM's is -0.90 on
-7 paths against a null of 0.67, and ANWM's is 0.00 on 3 exploratory paths. None of the three tracks
+median gain is -0.09 on 9 testable in-envelope paths against a null of 0.00, SANA-WM's is -0.28 on
+8 paths against a null of 0.50, and ANWM's is 0.00 on 3 exploratory paths. None of the three tracks
 the commanded attitude: each is at or below zero, and SANA-WM looks like the clearest non-response
 (its null is also non-zero, which is what a 7-path interval buys). The campaign's honest output on
 the gain is therefore a null-shaped result plus a usable four-generator harness — not a
@@ -97,7 +97,7 @@ clusters is labelled descriptive.
 | model | clips | testable | in-envelope | median gain | 95 % CI | paths | gain in [0.5, 1.5] | null | median ratio | R² |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | anwm | 16 | 3 | 3 | -0.00 | descriptive | 3 | 0/3 | 1.09 | 9.03 | 0.02 |
-| sana | 19 | 9 | 7 | -0.90 | descriptive | 7 | 1/7 | 0.67 | 0.52 | 0.51 |
+| sana | 22 | 10 | 8 | -0.28 | descriptive | 8 | 1/8 | 0.50 | 0.61 | 0.47 |
 | solarwm | 26 | 11 | 9 | -0.09 | descriptive | 9 | 2/9 | 0.00 | 0.56 | 0.36 |
 
 Cluster bootstrap over paths, 5,000 replicates, `default_rng(1)`; fewer than 10 clusters is labelled descriptive.  The null pairs one clip's depicted lean with another path's required lean.
@@ -110,7 +110,7 @@ Cluster bootstrap over paths, 5,000 replicates, `default_rng(1)`; fewer than 10 
 | sana | accel_brake | 1 | 0.33 | descriptive |
 | sana | arc | 4 | -6.35 | descriptive |
 | sana | climb_turn | 1 | -0.90 | descriptive |
-| sana | real | 1 | 0.80 | descriptive |
+| sana | real | 2 | 0.57 | descriptive |
 | solarwm | accel_brake | 1 | 0.35 | descriptive |
 | solarwm | arc | 4 | -3.90 | descriptive |
 | solarwm | climb_turn | 1 | 1.80 | descriptive |
@@ -123,13 +123,13 @@ Cluster bootstrap over paths, 5,000 replicates, `default_rng(1)`; fewer than 10 
 | --- | --- | --- | --- |
 | anwm-sana | 3 | +5.62 | -2.55 to +9.34 |
 | anwm-solarwm | 3 | +4.70 | +3.08 to +4.90 |
-| sana-solarwm | 7 | -2.54 | -4.64 to -0.01 |
+| sana-solarwm | 8 | -1.79 | -4.64 to -0.01 |
 
 ### Cost per clip (measured, GPU list price)
 
 | generator | clips with a manifest | median USD per clip |
 | --- | --- | --- |
-| C | 18 | 0.06 |
+| C | 19 | 0.06 |
 | lingbot | 1 | 0.40 |
 <!-- AUTO:END -->
 
@@ -137,14 +137,14 @@ Cluster bootstrap over paths, 5,000 replicates, `default_rng(1)`; fewer than 10 
 
 | generator | requested | produced | testable for a gain | measured cost per clip |
 | --- | --- | --- | --- | --- |
-| SolarWM-5B | 26 (25 paths + 1 swap; of5 impossible) | 26 | 11 | ~0.10 USD (4-step SGF, A100-80GB) |
-| SANA-WM | 24 (25 paths, of5 impossible) | 23 | 9 (19 read) | ~0.08 USD (20 steps, A100-80GB) |
-| ANWM | 25 | 17 at the cut-off (still running) | 3 | 0.067 USD (218 s/clip, A10) |
+| SolarWM-5B | 26 (25 paths + 1 swap; of5 impossible) | **26** | 11 | ~0.10 USD (4-step SGF, A100-80GB) |
+| SANA-WM | 24 (25 paths, of5 impossible) | **24** | 10 (22 read) | ~0.08 USD (20 steps, A100-80GB) |
+| ANWM | 25 | 19 at the cut-off (still running) | 3 | 0.067 USD (218 s/clip, A10) |
 | LingBot-World | 8 reference paths | **0** | — | — |
 
 **The Stage-1 success criteria are not met at the cut-off, and are reported as such.** S1a asks for
 at least three generators producing >= 90 % of their requested clips: SolarWM (26/26) and SANA-WM
-(23/24) qualify, ANWM was at 17/25 and LingBot at 0/8. S1b asks for at least three generators on at
+(24/24) qualify, ANWM was at 19/25 and LingBot at 0/8. S1b asks for at least three generators on at
 least 18 of the 25 paths: SolarWM (24) and SANA-WM (23) qualify, ANWM was at 17. The cause is wall
 time, not a capability: every generator shared one queue, the A100 batches ran ~10x slower than the
 2026-11-21 pilot rates once four containers read the same 61 GB weight volume, and ANWM's 218 s per
@@ -154,10 +154,10 @@ clip in about three hours of measured container time; its route is H01's, whose 
 a negative on roll response anyway.
 
 The tilt-gain column is therefore a **three-generator** statement at unequal strength: SolarWM 9
-testable in-envelope paths, SANA-WM 7, ANWM 3 (exploratory, and driven by a 16-frame clip whose
+testable in-envelope paths, SANA-WM 8, ANWM 3 (exploratory, and driven by a 16-frame clip whose
 signal rule had to be relaxed). All three medians are at or below zero, and each is labelled
 descriptive because it has fewer than 10 path clusters. The pairwise differences are reported for
-completeness (SANA - SolarWM -2.54 over 7 shared paths, ANWM - SolarWM +4.70 over 3) but only the
+completeness (SANA - SolarWM -1.79 over 8 shared paths, ANWM - SolarWM +4.70 over 3) but only the
 first has more than three clusters and even it is descriptive.
 
 ### The null

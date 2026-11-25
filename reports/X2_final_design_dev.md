@@ -74,7 +74,7 @@ commanded speed is constant, and every clip abstained on conditioning (amendment
 | generator | clips | testable | in-envelope paths | median tilt gain | null |
 | --- | --- | --- | --- | --- | --- |
 | SolarWM-5B | 26 | 11 | 9 | -0.09 | 0.00 |
-| SANA-WM | 19 read | 9 | 7 | -0.90 | 0.67 |
+| SANA-WM | 22 read | 10 | 8 | -0.28 | 0.50 |
 | ANWM | 16 | 3 | 3 | -0.00 | 1.09 |
 | LingBot-World | 0 | — | — | — | — |
 
@@ -102,7 +102,7 @@ generators and across in/out-of-envelope paths as far as the produced clips allo
 
 ### Visual quality does not track dynamics (descriptive)
 
-X1's per-generator gains are ordered SolarWM (-0.09) > ANWM (0.00) > SANA-WM (-0.90); the visual quality of the same generators was not
+X1's per-generator gains are ordered SolarWM (-0.09) > ANWM (0.00) > SANA-WM (-0.28); the visual quality of the same generators was not
 re-measured here (LPIPS/MUSIQ are not in this track's scope), so the Orbia-style claim "visual
 quality does not predict consistency" is **not** re-tested. What is available: SANA-WM produces the
 sharpest 720p frames and the weakest SANA-WM gain, while SolarWM produces 480p frames and a
