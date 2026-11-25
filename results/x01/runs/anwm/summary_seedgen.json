@@ -1,0 +1,735 @@
+{
+ "n_clips": 26,
+ "seconds_total": 5567.830312013626,
+ "seconds_per_clip": 211.7440606355667,
+ "clips": {
+  "x01_hover_00_S1": {
+   "frames": 16,
+   "seconds": 218.3771722316742,
+   "vram_peak_gb": 7.320701952,
+   "gpu": "NVIDIA A10",
+   "seed": 0,
+   "visual_integrity": {
+    "frame_std": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "temporal_delta": 0.0
+   }
+  },
+  "x01_cruise_00_S1": {
+   "frames": 16,
+   "seconds": 212.2770857810974,
+   "vram_peak_gb": 7.320701952,
+   "gpu": "NVIDIA A10",
+   "seed": 0,
+   "visual_integrity": {
+    "frame_std": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "temporal_delta": 0.0
+   }
+  },
+  "x01_s_5_S1": {
+   "frames": 16,
+   "seconds": 211.48672795295715,
+   "vram_peak_gb": 7.320701952,
+   "gpu": "NVIDIA A10",
+   "seed": 0,
+   "visual_integrity": {
+    "frame_std": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "temporal_delta": 0.0
+   }
+  },
+  "x01_slalom_5_S1": {
+   "frames": 16,
+   "seconds": 211.49386882781982,
+   "vram_peak_gb": 7.320701952,
+   "gpu": "NVIDIA A10",
+   "seed": 0,
+   "visual_integrity": {
+    "frame_std": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "temporal_delta": 0.0
+   }
+  },
+  "x01_fig8_5_S1": {
+   "frames": 16,
+   "seconds": 211.75867557525635,
+   "vram_peak_gb": 7.320701952,
+   "gpu": "NVIDIA A10",
+   "seed": 0,
+   "visual_integrity": {
+    "frame_std": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "temporal_delta": 0.0
+   }
+  },
+  "x01_s_10_S1": {
+   "frames": 16,
+   "seconds": 211.63534379005432,
+   "vram_peak_gb": 7.320701952,
+   "gpu": "NVIDIA A10",
+   "seed": 0,
+   "visual_integrity": {
+    "frame_std": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "temporal_delta": 0.0
+   }
+  },
+  "x01_slalom_10_S1": {
+   "frames": 16,
+   "seconds": 212.4195122718811,
+   "vram_peak_gb": 7.320701952,
+   "gpu": "NVIDIA A10",
+   "seed": 0,
+   "visual_integrity": {
+    "frame_std": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "temporal_delta": 0.0
+   }
+  },
+  "x01_arc_10_S1": {
+   "frames": 16,
+   "seconds": 211.72944569587708,
+   "vram_peak_gb": 7.320701952,
+   "gpu": "NVIDIA A10",
+   "seed": 0,
+   "visual_integrity": {
+    "frame_std": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "temporal_delta": 0.0
+   }
+  },
+  "x01_arc_15_S1": {
+   "frames": 16,
+   "seconds": 215.04936981201172,
+   "vram_peak_gb": 7.320701952,
+   "gpu": "NVIDIA A10",
+   "seed": 0,
+   "visual_integrity": {
+    "frame_std": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "temporal_delta": 0.0
+   }
+  },
+  "x01_arc_20_S1": {
+   "frames": 16,
+   "seconds": 211.7644317150116,
+   "vram_peak_gb": 7.320701952,
+   "gpu": "NVIDIA A10",
+   "seed": 0,
+   "visual_integrity": {
+    "frame_std": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "temporal_delta": 0.0
+   }
+  },
+  "x01_arc_25_S1": {
+   "frames": 16,
+   "seconds": 213.91218972206116,
+   "vram_peak_gb": 7.320701952,
+   "gpu": "NVIDIA A10",
+   "seed": 0,
+   "visual_integrity": {
+    "frame_std": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "temporal_delta": 0.0
+   }
+  },
+  "x01_climb_02_S1": {
+   "frames": 16,
+   "seconds": 210.8957860469818,
+   "vram_peak_gb": 7.320701952,
+   "gpu": "NVIDIA A10",
+   "seed": 0,
+   "visual_integrity": {
+    "frame_std": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "temporal_delta": 0.0
+   }
+  },
+  "x01_climb_04_S1": {
+   "frames": 16,
+   "seconds": 210.90532279014587,
+   "vram_peak_gb": 7.320701952,
+   "gpu": "NVIDIA A10",
+   "seed": 0,
+   "visual_integrity": {
+    "frame_std": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "temporal_delta": 0.0
+   }
+  },
+  "x01_descend_02_S1": {
+   "frames": 16,
+   "seconds": 211.31150817871094,
+   "vram_peak_gb": 7.320701952,
+   "gpu": "NVIDIA A10",
+   "seed": 0,
+   "visual_integrity": {
+    "frame_std": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "temporal_delta": 0.0
+   }
+  },
+  "x01_descend_04_S1": {
+   "frames": 16,
+   "seconds": 210.87534928321838,
+   "vram_peak_gb": 7.320701952,
+   "gpu": "NVIDIA A10",
+   "seed": 0,
+   "visual_integrity": {
+    "frame_std": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "temporal_delta": 0.0
+   }
+  },
+  "x01_climb_turn_10_S1": {
+   "frames": 16,
+   "seconds": 211.20999574661255,
+   "vram_peak_gb": 7.320701952,
+   "gpu": "NVIDIA A10",
+   "seed": 0,
+   "visual_integrity": {
+    "frame_std": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "temporal_delta": 0.0
+   }
+  },
+  "x01_climb_turn_20_S1": {
+   "frames": 16,
+   "seconds": 211.97111058235168,
+   "vram_peak_gb": 7.320701952,
+   "gpu": "NVIDIA A10",
+   "seed": 0,
+   "visual_integrity": {
+    "frame_std": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "temporal_delta": 0.0
+   }
+  },
+  "x01_accel_brake_10_S1": {
+   "frames": 16,
+   "seconds": 210.82874965667725,
+   "vram_peak_gb": 7.320701952,
+   "gpu": "NVIDIA A10",
+   "seed": 0,
+   "visual_integrity": {
+    "frame_std": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "temporal_delta": 0.0
+   }
+  },
+  "x01_accel_brake_20_S1": {
+   "frames": 16,
+   "seconds": 210.89202690124512,
+   "vram_peak_gb": 7.320701952,
+   "gpu": "NVIDIA A10",
+   "seed": 0,
+   "visual_integrity": {
+    "frame_std": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "temporal_delta": 0.0
+   }
+  },
+  "x01_arc_35_S1": {
+   "frames": 16,
+   "seconds": 211.89381170272827,
+   "vram_peak_gb": 7.320701952,
+   "gpu": "NVIDIA A10",
+   "seed": 0,
+   "visual_integrity": {
+    "frame_std": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "temporal_delta": 0.0
+   }
+  },
+  "x01_slalom_25_fast_S1": {
+   "frames": 16,
+   "seconds": 210.53177738189697,
+   "vram_peak_gb": 7.320701952,
+   "gpu": "NVIDIA A10",
+   "seed": 0,
+   "visual_integrity": {
+    "frame_std": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "temporal_delta": 0.0
+   }
+  },
+  "x01_climb_turn_30_S1": {
+   "frames": 16,
+   "seconds": 214.71312046051025,
+   "vram_peak_gb": 7.320701952,
+   "gpu": "NVIDIA A10",
+   "seed": 0,
+   "visual_integrity": {
+    "frame_std": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "temporal_delta": 0.0
+   }
+  },
+  "x01_real_uzh_of1_S1": {
+   "frames": 16,
+   "seconds": 214.9347734451294,
+   "vram_peak_gb": 7.320701952,
+   "gpu": "NVIDIA A10",
+   "seed": 0,
+   "visual_integrity": {
+    "frame_std": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "temporal_delta": 0.0
+   }
+  },
+  "x01_real_uzh_of3_S1": {
+   "frames": 16,
+   "seconds": 211.60575437545776,
+   "vram_peak_gb": 7.320701952,
+   "gpu": "NVIDIA A10",
+   "seed": 0,
+   "visual_integrity": {
+    "frame_std": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "temporal_delta": 0.0
+   }
+  },
+  "x01_arc_20__S2_S2": {
+   "frames": 16,
+   "seconds": 219.46165323257446,
+   "vram_peak_gb": 7.320701952,
+   "gpu": "NVIDIA A10",
+   "seed": 0,
+   "visual_integrity": {
+    "frame_std": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "temporal_delta": 0.0
+   }
+  },
+  "x01_slalom_10__S2_S2": {
+   "frames": 16,
+   "seconds": 212.39867687225342,
+   "vram_peak_gb": 7.320701952,
+   "gpu": "NVIDIA A10",
+   "seed": 0,
+   "visual_integrity": {
+    "frame_std": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "temporal_delta": 0.0
+   }
+  }
+ }
+}

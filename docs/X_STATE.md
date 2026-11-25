@@ -18,7 +18,8 @@ below before any Stage-2 work.
 
 ## Status at the cut-off (2026-11-25 ~02:45 EST)
 
-Stage 1 ran; X1 is written with the numbers that exist. Stages 2-4: the design is frozen
+Stage 1 completed: three generators on the whole path set (both breadth criteria met), LingBot
+not produced. X1 carries the final numbers. Stages 2-4: the design is frozen
 (`configs/x_final_frozen.yaml`, `0d10597b…`) and X2 records the development evidence that exists;
 **the held-out pass was not run** (X3 says so). The blocking item is one script that composes the
 frozen components into a single development table with coverage and denominators.
@@ -43,12 +44,10 @@ frozen components into a single development table with coverage and denominators
 * LingBot-World: **0 clips** after three launches (the intrinsics file must be an `(F,4)` array;
   fixed twice, then the model load + first clip never completed in the window). Reported as not
   produced, with the spend recorded.
-* Readers: SolarWM 26+8, SANA 19, ANWM 16 (a final ANWM reader pass is the first thing to run if
-  that job has since finished).
+* Readers: SolarWM 26+8, SANA 22, ANWM 24 (the ANWM pass was repeated after its job finished).
 
-LingBot and SANA-WM were stopped explicitly; the ANWM generation (18/25 at the last check) and one
-reader shard were left to finish on their own, which they do when their call sets complete. Nothing
-detached is left orphaned beyond that, and no app was left running without a completion path.
+Every app has finished or was stopped: LingBot and SANA-WM explicitly, ANWM and the readers when
+their call sets completed. Nothing detached is left running.
 
 ## Next (in order)
 

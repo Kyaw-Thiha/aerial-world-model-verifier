@@ -372,16 +372,16 @@ cap, readers 1.0).
 | 2026-11-25 | X | SANA-WM probe, 3 clips (2 of them the same path's two scenes) | A100-80GB | 0.05 | 0.13 | 20 steps, stage 1, 32 s sampling + 3 s VAE per clip |
 | 2026-11-25 | X | SolarWM-5B, draw 42, 26 clips in 4 parallel sub-batches | A100-80GB | 1.5 (4 x 330-345 s wall) | 3.75 | 0.10 USD per clip at list price |
 | 2026-11-25 | X | SolarWM-5B, draw 43, 8 reference paths in 2 sub-batches | A100-80GB | 0.3 | 0.75 | 0.09 per clip |
-| 2026-11-25 | X | ANWM, 17 of 25 clips at the cut-off | A10 | 1.0 | 1.13 | 218 s per clip measured; the job was still running |
+| 2026-11-25 | X | ANWM, 26 clips in one A10G container | A10 | 1.55 | 1.70 | 212 s per clip (13.4 s per frame) measured; the job ran 5,568 s wall |
 | 2026-11-25 | X | LingBot-World NF4, three launches, **no clip** | A100-80GB | ~3.0 | ~7.5 | two interface failures (intrinsics shape) then a long model load; the largest single line of this track and a pure loss |
-| 2026-11-25 | X | SANA-WM full campaign, 23 clips over 4 shards | A100-80GB | 1.6 | 4.0 | ~6 min per clip per shard (model reload per subprocess dominates) |
-| 2026-11-25 | X | frozen readers: SolarWM 26+8, SANA 5, ANWM 17 clips | A10 | 0.55 | 0.60 | 0.009-0.03 USD per 81-frame clip |
+| 2026-11-25 | X | SANA-WM full campaign, 24 clips over 4 shards | A100-80GB | 1.6 | 4.0 | ~6 min per clip per shard (the model reloads per subprocess and dominates) |
+| 2026-11-25 | X | frozen readers: SolarWM 26+8, SANA 22, ANWM 24 clips (three passes) | A10 | 0.70 | 0.77 | 0.009-0.03 USD per 81-frame clip; the ANWM set was re-read after its job finished |
 | 2026-11-25 | X | contact sheets (labelling kit) | CPU 4 | 0.06 | 0.01 | 27 sheets written, rebuilt after the full clip set landed |
 
-**Track X Stage-1 total (actual): USD 12.82**, from `modal billing report --start 2026-11-25
---end 2026-11-26 --json` by app: SANA-WM 5.55, LingBot 3.53, SolarWM 1.85, ANWM 1.26, readers 0.63.
-That is 43 % of the 30 USD Stage-1 cap and 37 % of the 35 USD track ceiling. The wall-time estimate
+**Track X Stage-1 total (actual): USD 13.62**, from `modal billing report --start 2026-11-25
+--end 2026-11-26 --json` by app: SANA-WM 5.61, LingBot 3.58, SolarWM 1.85, ANWM 1.81, readers 0.77.
+That is 45 % of the 30 USD Stage-1 cap and 39 % of the 35 USD track ceiling. The wall-time estimate
 above (18.4 USD) overstated the billing by 1.5x, consistent with the project's note that wall-time
-arithmetic overstates real spend. LingBot's 3.53 USD bought no clip; that is recorded rather than
+arithmetic overstates real spend. LingBot's 3.58 USD bought no clip; that is recorded rather than
 absorbed. Stage 4 (5 USD) was not spent because the held-out pass was not run
 (`reports/X3_heldout_frozen_evaluation.md`).
