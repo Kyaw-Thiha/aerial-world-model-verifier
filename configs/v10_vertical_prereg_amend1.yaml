@@ -1,0 +1,58 @@
+# Track V, V1 pre-registration — amendment 1.
+#
+# Written and committed BEFORE any Part 0, Part 1, Part 2 or Part 3 score exists: at this commit
+# no reconstruction output has been analysed (the plane rule had failed on Pi3X's log-confidence
+# field and the run was restarted; nothing was computed from it), and no real or simulated error
+# value has been seen. The amendment does three things and changes no success criterion.
+prereg: configs/v10_vertical_prereg.yaml
+amendment: 1
+date: 2026-11-25
+owner: track-v
+reason_committed_before_output: true
+
+changes:
+  - id: B1
+    field: populations.part3_generated.anwm.clips
+    was: "the 20 H01 ANWM climb_turn clips (5 designed paths x seeds 1-4)"
+    now: "the 16 H01 ANWM climb_turn clips that exist on the volume: 4 designed paths
+          (climb_turn_5_course_0, climb_turn_5_fixed_0, climb_turn_10_fixed_0,
+          climb_turn_20_fixed_0) x seeds 1-4"
+    why: >
+      C_climb_turn_20_fixed_1 appears in the H01 path table but was never written to
+      awmv-h-anwm-results/clips/C. The population is defined by what exists and is listed in
+      `results/v/v10/summary.json`; nothing is dropped silently.
+
+  - id: B2
+    field: populations.part3_generated.solarwm
+    now: >
+      18 clips, and their commanded vertical motion is NOT a net climb: the H04 climb_turn
+      path is z = A sin^2(pi x/span) e, which returns to the start altitude, so the clip's
+      vertical excursion is A = 0.190 m (climb_turn_10) or 0.369 m (climb_turn_20) over 14.2 m
+      of horizontal travel, i.e. an excursion ratio of 0.013 / 0.026. The Part 3 statistic for
+      these clips is therefore the matched excursion ratio: rho = ptp(z)/horizontal length,
+      measured as ptp(h)/horizontal length on the reconstruction. Stated descriptively.
+    why: "the generated clips exist and the commanded quantity has to be read from the path
+          that was actually conditioned on, not from the maneuver's name."
+
+  - id: B3
+    field: statistic.window
+    was: "3 s, stride 0.5 s, one operating point"
+    now: >
+      the primary window stays 3 s (stride 0.5 s) and is the confirmatory number. A SECOND
+      window length of 5 s (stride 0.5 s) is added as a pre-registered secondary statistic,
+      with the same LOFO thresholds and the same detection rules computed independently at
+      5 s. Every Part 1 and Part 2 table carries both columns; the 3 s column is the one the
+      success criteria are scored on.
+    why: >
+      the smallest defect the check must catch (x0.5 of a commanded climb) changes the height
+      ratio over a 3 s window from about (z+dz)/z to (z+0.5 dz)/z. For the frozen set's 12 m
+      start and a 1.5-3 m/s climb that is |log change| of roughly 0.14-0.2 at the first
+      window, which is at the edge of any plausible reconstruction resolution; over 5 s the
+      same defect gives about twice that. Reporting both before seeing either keeps the
+      confirmatory number honest and shows whether a power shortfall is a window-length
+      property rather than an estimator defect.
+
+unchanged:
+  - "every success criterion, including the 5/8 bar for x0.5 and x1.5"
+  - "the LOFO conformal procedure, alpha = 0.05 (0.10 as sensitivity), the populations of
+     Parts 1 and 2, the controls, the void rules and the prohibitions"
