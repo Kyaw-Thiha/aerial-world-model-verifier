@@ -1,0 +1,120 @@
+# Track P, Part 0: the error budget for the body-rate check, and the stop rule.
+#
+# Committed BEFORE the budget is computed. Everything the stop rule depends on -- the statistic,
+# the window lengths, the noise model, the definition of the smallest detectable error and the
+# count that stops the check -- is fixed here. The Part 0 numbers themselves are not yet known.
+prereg_version: 1
+date: 2026-11-25
+owner: track-p
+handoff: "30, Part 0"
+status: committed_before_run
+branch: track-p-rate-envelope
+
+question: >
+  Before any video rotation is scored: on ground-truth paths and ground-truth attitudes, with
+  synthetic noise matched to the measured DPVO step noise, how large is the required thrust-axis
+  rate, how large is its noise, and what is the smallest camera-attitude defect that the
+  body-rate statistic can detect at a matched 5 % false-reject? The stop rule uses the answer to
+  decide whether Check B proceeds at all.
+
+# ------------------------------------------------------------------ physics and filters
+constants:
+  g_ms2: 9.80665                 # src.verdict.anchor.G_ANCHOR, the project's value
+  k_d_per_s: 0.295               # the project's frozen world-frame drag
+  path_grid_hz: 100.0            # uniform grid, n3a's derivative pipeline
+  savgol_window_s: 0.31          # 31 samples at 100 Hz, poly 3
+  savgol_poly: 3
+
+pipeline:
+  required_axis: "b3_req = (a + g e3 + k_d v)/|.| on the 100 Hz grid"
+  required_rate_distribution: "d b3_req/dt from Savitzky-Golay deriv=1 on the 100 Hz grid"
+  residual_rate: >
+    Both sides are formed by the SAME 3-point central difference on the video frame grid:
+    rb_k = (b3_req[k+1] - b3_req[k-1]) / (t[k+1] - t[k-1]), rd_k = the angular-velocity form of
+    the same stencil on the depicted attitude. This is pre-registered to remove the bandwidth
+    mismatch between a 100 Hz Savitzky-Golay derivative and a 30 Hz finite difference; the
+    0.31 s Savitzky-Golay smoothing inside b3_req remains and its effect is measured separately.
+  depicted_rate_form: >
+    rd = R_hat_wb (omega_body x e3), R_hat_wb = G R_est R_cb^T, omega_body = R_cb omega_cam.
+    G is the constant rotation fitted per clip by Kabsch between the video-gauge thrust axis
+    c_k = R_est[k] (R_cb^T e3) and b3_req[k]; it is the only unknown (the start attitude is not
+    used). The handoff-literal form, rd = (R_cb omega_cam) x b3_req with an arbitrary minimal
+    frame, is NOT yaw-gauge invariant: a constant rotation about b3 that leaves the thrust axis
+    and its rate unchanged changes the literal residual by first order in |omega_perp| times the
+    yaw offset. It is reported only as the substitution-error measurement.
+  substitution_error: >
+    |rd_gauge_fit - rd_literal| on ground-truth attitudes, per clip, in deg/s, and the full
+    residual of the literal form on feasible ground truth. This is the "second-order error from
+    substituting b3_req" the handoff asks to quantify; the algebra above predicts it is first
+    order in the yaw offset, and the measurement reports it as it is.
+
+# ------------------------------------------------------------------ statistic
+windows: [0.25, 0.5, 1.0]        # seconds; hop = half a window
+primary_window_s: 0.5
+frame_stats:
+  abs_deg_s: "median_k |rb_k - rd_k|"
+  rel: "median_k |rb_k - rd_k| / median_k |rb_k|"
+  cos: "median_k cos(rb_k, rd_k) over frames with |rb|,|rd| > 0.5 x the window floor"
+clip_score: "median over testable windows of the window statistic"
+testable_window: >
+  at least 60 % of its frames finite AND median |rb| at least 3 x the source's median null
+  residual at that window length (the null residual is measured in this run on the same paths
+  with the feasible attitude at the matched noise level). A clip with no testable window is
+  reported as not evaluable, never as a pass.
+
+# ------------------------------------------------------------------ noise model
+noise:
+  model: "iid isotropic Gaussian rotation vector added in the camera frame at every step"
+  calibration: >
+    sigma per source = median measured per-step increment error (deg) between the DPVO rotation
+    and the ground-truth rotation, divided by the median angle of a unit isotropic Gaussian
+    rotation vector (computed numerically with 400000 draws). Measured separately for sim (30
+    fps, draw 1) and UZH (15.07 fps). The iid model is conservative for a rate statistic because
+    it puts all of the measured error at the highest frequency; the measured error is dominated
+    by low-frequency drift, which cancels in a difference.
+  draws: 8
+  rng_seed: 1
+  reported_beside: "the measured per-step error distribution of the real extractor on each source"
+
+# ------------------------------------------------------------------ Part 0 deliverables
+budget:
+  i_rate_distribution: >
+    |d b3_req/dt| on the 100 Hz grid: median, p90, p99 per scene family over the 200 dev sim
+    clips, and per flight over the four outdoor UZH sequences and the six TII development
+    flights (13p and 07a are held out and are never opened).
+  ii_snr: >
+    Per source: median |rb| divided by the measured null residual of the depicted rate at the
+    matched noise, for each window length; plus the noiseless self-consistency residual (the
+    floor of the pipeline itself) and the substitution error of the literal form.
+  iii_min_detectable: >
+    Per dev clip: MDR = 95th percentile of the clip score under the feasible (flatness)
+    attitude with matched noise; defect delta = the clip score with the labelled defect attitude
+    and NO noise (the rate error the defect actually creates); detectability = delta >= MDR.
+    Also: the scale sweep s in {0.5,0.6,...,1.5} on feasible clips gives the smallest detectable
+    |1 - s| at the matched point.
+
+# ------------------------------------------------------------------ stop rule (verbatim)
+stop_rule:
+  population: >
+    every development clip whose manifest label is a camera defect (tilt_removed,
+    mirrored_roll, tilt_scaled; whole-clip only, partial-interval clips excluded) with
+    peak_tilt_req_deg >= 15 (the project's established "dynamic" cut).
+  count: "number of those clips with defect delta < MDR at the 0.5 s window"
+  rule: >
+    Stop Check B if that count is more than half of the population. "Stop" means: write the P0
+    report and the P1 report with the budget as the finding, do not run the detection study, and
+    continue with Check C only.
+  commit_before_scoring: "the budget tables and this verdict are committed before any P1 number"
+
+splits_and_protocol:
+  sim: "results/n2/inputs/manifest.csv, split == dev only (200 clips)"
+  uzh: "outdoor_forward_1/3/5 and outdoor_45_1 are the primary real population; the ten indoor sequences are descriptive"
+  tii: "development flights only: 01a, 04a, 13a, 01p, 07p, 16p"
+  heldout: "never opened: 100 held-out sim clips, TII 13p and 07a"
+  exploratory: "every table cell is labelled confirmatory (this pre-registration) or exploratory"
+
+outputs:
+  - results/p/p0/budget.csv          # per unit and window
+  - results/p/p0/stop_rule.csv       # per clip rows
+  - results/p/p0/summary.json
+  - reports/P0_error_budget.md

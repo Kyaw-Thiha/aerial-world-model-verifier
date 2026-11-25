@@ -855,3 +855,36 @@ Every row below was read from the project's own repo/HF card on 2026-11-10. "ver
   8 false-rejects among 74 surviving feasible clips. The pre-registered recall criterion (>= 2/3)
   fails. The two-draw disagreement is the better flag (8/8 forest removals after abstaining) at
   double the pose cost, and `cover` and the polynomial rotation residual are uninformative.
+
+## Track P — rate consistency and thrust envelope (2026-11-25, branch `track-p-rate-envelope`)
+
+- [P-a] **The handoff-literal body-rate formula is not yaw-gauge invariant, and the fix is a
+  per-clip gauge fit.** The brief specifies `rd = (R_mount omega_cam) x b3_req` with
+  `R_mount` the camera mount. `omega_cam` is only known in the camera frame, and mapping it to
+  the world needs the camera's absolute attitude, of which only the thrust-axis direction is
+  known (yaw about `b3` is unconstrained, by the project's own premise). Writing the true rate as
+  `db3/dt = omega_world x b3` and `omega_world = R_wb omega_body`, the substitution
+  `R_wb -> R_ref` with *any* rotation whose third column is `b3_req` introduces an error
+  `R_ref[((Rz(psi) omega_body) x e3) - (omega_body x e3)]`, i.e. first order in the yaw offset
+  `psi` and in `|omega_perp|`, not second order. A test on a synthetic tilt-and-spin attitude
+  with the path-yaw convention fails by 0.63 rad/s on the literal form and passes at 1e-8 with
+  the gauge fit (tests/test_rate.py). **Fix:** estimate the single constant rotation `G` that
+  maps the video-gauge thrust axis `c_k = R_est[k] (R_cb^T e3)` onto `b3_req[k]` (Kabsch, one
+  fit per clip, 3 DoF, no start attitude), then `rd = G R_est R_cb^T (omega_body x e3)`. This is
+  exactly `omega_world x b3` under the fitted attitude and is invariant to any time-varying
+  rotation about `b3` (a unit test checks 1e-3 rad/s, the central-difference truncation). The
+  literal form is still measured and reported as the substitution error the brief asks for.
+- [P-b] **Both rates are formed by the same 3-point central difference on the video grid.** A
+  100 Hz Savitzky-Golay derivative of the path and a 30 Hz finite difference of the video have
+  different bandwidths, which would put a filter mismatch into every residual. The path axis is
+  smoothed at 0.31 s on the 100 Hz grid (n3a's convention) and then both sides are differentiated
+  by the identical stencil at the frame times; the 100 Hz rate is used only for the rate-magnitude
+  distribution. The noiseless self-consistency residual is reported as the pipeline floor.
+- [P-c] **Generated-clip inventory mismatch: the 234 cached H04 clips are all SolarWM.** The
+  handoff describes H04 as ANWM + LingBot-World + SolarWM-5B; `results/n04/clips.csv` and
+  `data/n04/poses/gen/fov90` hold 234 SolarWM clips (22 paths x 3 arms x 3 draws + swap paths).
+  N04 found ANWM two-frame rotation usable on 20/80 clips and LingBot frames not local. Part 3
+  therefore scores SolarWM and reports the other two as not measurable from cached rotations.
+- [P-d] **"UZH-FPV (4 sequences)" is read as the four outdoor sequences** (`outdoor_forward_1`,
+  `_3`, `_5`, `outdoor_45_1`); they are exactly four and are the dynamic outdoor stratum. The ten
+  indoor sequences are reported descriptively.
