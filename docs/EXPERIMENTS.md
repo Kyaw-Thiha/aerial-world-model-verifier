@@ -616,3 +616,17 @@ Round 3. New volume `awmv-n-data` (DPVO poses). Nothing written to R2.
 
 Regenerate: `modal run remote/n_rotation.py --which uzh|sim` (A10), pull `poses/` from
 `awmv-n-data`, then `PYTHONPATH=. python experiments/n01_rotation_pretest.py` (CPU, ~4 s).
+
+## Track X — final pipeline, generator breadth and one-shot held-out (branch `track-x-final-pipeline`, off `main` `8f404af`)
+
+Handoff 32. Stage 1 runs now; Stages 2-4 are gated on Track P and Track V decision reports and
+were not started (see `docs/X_STATE.md`).
+
+| ID | experiment | stored results | report | configs |
+| --- | --- | --- | --- | --- |
+| X01a | the common path set: 25 paths on four models' native grids, design-verified, per-model inputs | `results/x01/paths.npz`, `results/x01/paths_summary.json` | X1 | `x01_common_paths_prereg.yaml` |
+| X01b | generation: ANWM, LingBot-World (NF4), SolarWM-5B, SANA-WM (new) on the common set | `results/x01/runs/`, Modal `awmv-x-results:/x01/` | X1 | same |
+| X01c | the frozen reader on every generated clip and the tilt-fidelity statistic | `results/x01/depicted/`, `results/x01/score.json` | X1 | same |
+
+Regenerate: `bash scripts/x01_run.sh` (path build is CPU, generation and readers are Modal),
+then `bash scripts/x01_pull.sh` and `pixi run python experiments/x01_score.py`.

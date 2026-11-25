@@ -318,3 +318,18 @@ The pre-wave-2 tips of the seven merged branches and `main` are tagged
 `~/Documents/Projects/awmv-archive/backups/<branch>-pre-round2-wave2.bundle`, each
 `git bundle verify`-clean, sha256 in `SHA256SUMS-round2-wave2.txt` (140-205 MB each). Restore as in
 section 9. No R2 object and no Modal volume was created, written or deleted in wave 2.
+
+## 18. Track X — common path set and generator breadth (2026-11-25)
+
+| location | contents |
+| --- | --- |
+| git `results/x01/paths.npz`, `results/x01/paths_summary.json` | every commanded path on every model's frame grid (pos, vel, acc, yaw, roll, pitch, tilt, lean_req, tilt_req) plus the design checks |
+| git `results/x01/depicted/` | the frozen reader's per-frame rows for every generated clip |
+| git `results/x01/score.json`, `score_table.md` | the tilt-fidelity statistic, its cluster bootstrap, the null and the pairwise model differences |
+| git `results/x01/runs/` | each generation run's JSON (per-clip seconds, frames, VRAM, seed) and manifest |
+| local `data/x01/<model>/<path>__S*/` | per-model inputs (first frame in the model's native geometry, camera poses, intrinsics, prompt, meta); rebuild with `experiments/x01_common_paths.py` |
+| Modal `awmv-x-results:/x01/<model>/<tag>/<clip>/` | `clip.mp4`, `frames/*.png`, `manifest.json` |
+| Modal `awmv-x-weights` | SANA-WM Stage-1 DiT + LTX-2 VAE (`/sana`) and the Gemma-2-2B-IT text encoder (`/hf`); the other three models reuse `awmv-b-weights`, `awmv-h-weights` and `awmv-h2-weights` read-only |
+
+Nothing was written to R2 in Stage 1. The held-out simulated clips and the held-out TII flights
+were not read.

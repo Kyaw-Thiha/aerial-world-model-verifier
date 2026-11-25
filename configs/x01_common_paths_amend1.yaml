@@ -1,0 +1,48 @@
+# X01 amendment 1 — the tilt-fidelity statistic
+
+Written 2026-11-25 after the path set was built and the first reader run on SolarWM existed, and
+**before any per-generator gain was reported**. It changes one measurement choice, not the
+population, the paths, the models or the success criteria.
+
+## What changed
+
+The pre-registration said the tilt-fidelity score is "the median over in-envelope frames of
+|lean_dep| / |lean_req|". Two problems appeared when the statistic was implemented against the
+project's frozen gain fitter (`configs/gain_frozen.yaml`, `src/verdict/fit.py`):
+
+1. **The frozen fitter abstains on every clip of this path set.** Its design regresses depicted
+   lean on required lean, a drag channel `R_yaw v/g`, and an intercept. The common path set has no
+   forward-speed modulation outside the `accel_brake` family (S_AMP = 0 by design, so that a
+   banked turn carries only bank and a climb only pitch), so the drag regressor is nearly
+   collinear with the intercept: measured condition numbers **1.7e5-3.1e5** against the fitter's
+   frozen 1e3 ceiling. All 26 SolarWM clips abstain on `condition_number`. This is a property of
+   the path set interacting with the fitter, not of any generator.
+2. **The median magnitude ratio is not a gain.** On the same clips the median |dep|/|req| is 0.44
+   while the through-origin slope is 0.02 and the null (path A's depicted lean against path B's
+   required lean) is 0.38-0.48 — i.e. the ratio is dominated by the size of the depicted lean and
+   barely moves when the required lean is replaced by an unrelated one. Reporting it as a gain
+   would overstate every generator.
+
+## The statistic now
+
+Per clip, on eligible frames (|lean_req| >= 3 deg, finite both sides, in-envelope paths only):
+
+    for each axis k in {x, y}:  l_dep[k] = g_k * l_req[k] + b_k      (ordinary least squares)
+    gain = (g_x + g_y) / 2,  R2 = pooled coefficient of determination
+
+Eligibility uses the frozen rules where they can be applied: a required-lean excitation floor of
+2 deg (the frozen `abstention.excitation.floor_deg`), and at least 24 frames (10 for ANWM, whose
+clips are 16 frames long; labelled exploratory for that reason). The per-axis intercept absorbs a
+constant depicted lean, which is what the ratio form could not do.
+
+Aggregation, intervals and the null are unchanged from the pre-registration: median over
+in-envelope paths, scene/path-clustered bootstrap (5,000 replicates, `default_rng(1)`), the null
+by a fixed cyclic pairing of one path's depicted lean with another's required lean, and the
+fraction of paths whose gain lies in [0.5, 1.5].
+
+## What is labelled exploratory
+
+* The ANWM frame minimum of 10 (its clips are 16 frames) and therefore ANWM's whole gain column.
+* The magnitude ratio and R2 columns, kept because H04 used the ratio form and a reader of that
+  report needs the link; they are not the score.
+* Nothing about the populations, the models or the success criteria changes.
