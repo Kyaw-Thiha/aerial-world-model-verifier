@@ -10,8 +10,7 @@ with `experiments/x01_common_paths.py`; exact command list `scripts/x01_run.sh`.
 
 Three path-conditioned generators — SolarWM-5B, SANA-WM (new) and ANWM — were each driven on the
 whole 25-path common set at their native frame grids, so the paper's cross-generator setup no
-longer rests on ANWM alone, and **both Stage-1 breadth criteria are met** (S1a: three generators at
-24-26 of their 26-24 requested clips; S1b: three generators on 23-24 of the 25 paths). LingBot-World
+longer rests on ANWM alone, and **both Stage-1 breadth criteria are met** (S1a: 26/26, 24/24 and 26/26 of the requested clips; S1b: 24, 23 and 24 of the 25 paths). LingBot-World
 produced no clip (three launches, an intrinsics-interface failure, then no completion) and is
 reported as such. On the tilt gain the three sit within about 0.3 of zero — SolarWM -0.09 (9
 testable in-envelope paths, null 0.00), SANA-WM -0.28 (8, null 0.50), ANWM +0.01 (8, null 1.53) —
