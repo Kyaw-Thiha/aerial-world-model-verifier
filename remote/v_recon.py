@@ -197,14 +197,16 @@ def recon(specs: list[dict], force: bool = False, probe: bool = False) -> str:
                     conf = res[key][0].detach().float().cpu().numpy()
                     break
             cams = poses[:, :3, 3]
-            conf_pct = ({p_: float(np.percentile(conf, p_)) for p_ in (1, 50, 90, 99)}
+            conf_pct = ({p_: float(np.percentile(conf, p_)) for p_ in (1, 50, 75, 90, 99)}
                         if conf is not None else None)
+            conf_floor = (float(np.percentile(conf, 75)) if conf is not None else None)
             per_frame, labels = [], []
             for s in range(pts.shape[0]):
                 p = pts[s].reshape(-1, 3).astype(np.float64)
                 ok = np.isfinite(p).all(axis=1)
                 if conf is not None:
-                    ok &= conf[s].reshape(-1) >= -1.0      # log confidence (amendment 3)
+                    # per-chunk 75th percentile of the log-confidence field (amendment 4)
+                    ok &= conf[s].reshape(-1) >= conf_floor
                 p = p[ok]
                 if len(p) > POINTS_PER_FRAME:
                     p = p[:: int(np.ceil(len(p) / POINTS_PER_FRAME))][:POINTS_PER_FRAME]
@@ -224,6 +226,7 @@ def recon(specs: list[dict], force: bool = False, probe: bool = False) -> str:
                 conf_available=conf is not None)
             chunk_files.append(name.name)
             chunk_meta.append({"chunk": ci, "i0": i0, "i1": i1, "conf_pct": conf_pct,
+                               "conf_floor": conf_floor,
                                "t_range": [float(t[i0]), float(t[i1 - 1])],
                                "n_points": int(len(pts_all)),
                                "clip_plane": {k: (v.as_dict() if k == "plane" else v)

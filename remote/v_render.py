@@ -72,7 +72,7 @@ def plan() -> list[dict]:
     return out
 
 
-@app.function(image=image, gpu="L40S", timeout=6 * 3600, volumes={"/v": volume})
+@app.function(image=image, gpu="A10G", timeout=6 * 3600, volumes={"/v": volume})
 def render(specs: list[dict], force: bool = False, samples: int = 16,
            exposure: float = -3.0) -> str:
     import os

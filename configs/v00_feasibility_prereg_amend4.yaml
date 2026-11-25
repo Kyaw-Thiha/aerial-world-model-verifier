@@ -1,0 +1,33 @@
+# Track V, Part 0 pre-registration — amendment 4.
+#
+# Written AFTER the pilot had run on 15 of 44 units and before any sim-pilot aggregate existed.
+# What was seen: five of the fifteen simulated clips had stored zero/low point clouds, because
+# Pi3X's log-confidence field can sit far below the absolute floor of amendment 3 for a whole
+# chunk (one clip's 99th percentile is -4.6). This is an abstention produced by the *floor*,
+# not by the scene. No height, ratio or coverage number was used to choose the replacement; the
+# stop rule, the populations, the statistic and every success criterion are unchanged.
+prereg: configs/v00_feasibility_prereg.yaml
+amends: [amendment 1, amendment 2, amendment 3]
+amendment: 4
+date: 2026-11-25
+owner: track-v
+reason_committed_before_aggregate: true
+
+change:
+  id: A10
+  field: ground_plane.pixel_filter
+  was: "Pi3X confidence >= -1.0 (absolute, log confidence)"
+  now: >
+    Pi3X confidence >= the 75th percentile of that chunk's own confidence field, plus finite
+    coordinates. The percentile is computed per chunk (one Pi3X pass) from the full field.
+  why: >
+    the log-confidence field's location differs by more than five log units between clips
+    (chunk 99th percentiles observed between +0.1 and -4.6), so an absolute floor keeps
+    everything on some clips and nothing on others. A per-chunk percentile keeps the same
+    fraction of each chunk's pixels (a quarter) and makes abstention a property of the
+    admissibility tests rather than of the floor's units. Nothing in the plane rule's
+    thresholds, the windows, the statistic or the stop rule changes.
+  cost_consequence: >
+    the whole pilot (44 units) is re-run once under this rule, about 2.5 USD, which is inside
+    the 15 USD ceiling and inside the Part 0 estimate plus the 1.0 USD already lost to the
+    concurrent-version accident.
