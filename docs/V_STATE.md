@@ -28,7 +28,7 @@ Updated: 2026-11-25 (handoff 31, unattended run).
   (ratio 1.8-5.0); `forest_ridge` contributes 3, `industrial` 16, `urban_checker` 9; all four
   mounts (0/15/30/45 deg uptilt) appear for industrial and urban, forest only 15/45.
 * Pre-registrations committed before any output: `configs/v00_feasibility_prereg.yaml`
-  (`2e948fa`), amendments 1 (`0be7d18`) and 2.
+  (`2e948fa`), amendments 1 and 2 (`cf8b0eb`).
 * Frames staged at 7.5 Hz and uploaded: 33 units (30 sim + 3 UZH outdoor), volume
   `awmv-v-data:/v_frames`, 4,271 PNGs, 406 MB.
 * Code: `src/vertical/{plane,metrics}.py`, `remote/v_recon.py` (Pi3X + plane fit),
