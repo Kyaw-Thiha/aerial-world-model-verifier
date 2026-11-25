@@ -117,9 +117,18 @@ def recon(specs: list[dict], force: bool = False, probe: bool = False) -> str:
     recs = []
     for spec in specs:
         unit = spec["unit"]
-        if (out_dir / f"{unit}.json").exists() and not force and not probe:
-            recs.append({"unit": unit, "skipped": True})
-            continue
+        done = out_dir / f"{unit}.json"
+        if done.exists() and not force and not probe:
+            try:
+                prev = json.loads(done.read_text())
+                fresh = all(c.get("conf_pct") is not None and c.get("n_points", 0) > 1000
+                            for c in prev.get("chunks", [])) and prev.get("chunks")
+            except Exception:
+                fresh = False
+            if fresh:
+                recs.append({"unit": unit, "skipped": True})
+                continue
+            recs.append({"unit": unit, "stale_rerun": True})
         frames = sorted((Path(V_DATA) / "v_frames" / spec["frames"]).glob("*.png"))
         t = np.asarray(spec["t"], dtype=float)
         assert len(frames) == len(t), (unit, len(frames), len(t))
@@ -164,6 +173,11 @@ def recon(specs: list[dict], force: bool = False, probe: bool = False) -> str:
                 q["cam_centres"] = [cp[0, :3, 3].tolist(), cp[1, :3, 3].tolist(),
                                     cp[-1, :3, 3].tolist()]
                 q["cam_axis_z"] = [cp[0, :3, 2].tolist(), cp[0, :3, 1].tolist()]
+                if "points" in res:
+                    pp0 = res["points"][0].detach().float().cpu().numpy()
+                    q["points_nan_frac"] = float(np.mean(~np.isfinite(pp0)))
+                    q["points_absmax"] = float(np.nanmax(np.abs(pp0))) if np.isfinite(pp0).any() else None
+                q["has_conf"] = "conf" in res
                 recs.append({"unit": unit, "probe": True, "chunk": ci,
                              "keys": sorted(str(k) for k in res.keys()), "stats": q,
                              "shapes": {str(k): list(np.asarray(
