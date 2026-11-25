@@ -42,11 +42,20 @@ def unit_rows(data: dict, truth_t: np.ndarray, truth_pos: np.ndarray, *, mode: s
             continue
         t_ch = ch["t"]
         sel = (t_ch >= w["t1"] - 1e-9) & (t_ch <= w["t2"] + 1e-9)
-        if sel.sum() < 2:
+        # the two bracketing frames are needed so the window ends can be interpolated
+        before = np.flatnonzero(t_ch <= w["t1"] + 1e-9)
+        after = np.flatnonzero(t_ch >= w["t2"] - 1e-9)
+        keep = set(np.flatnonzero(sel).tolist())
+        if len(before):
+            keep.add(int(before[-1]))
+        if len(after):
+            keep.add(int(after[0]))
+        idx = np.array(sorted(keep), dtype=int)
+        if len(idx) < 2:
             rows.append({"t1": w["t1"], "t2": w["t2"], "ok": False,
                          "reason": "too_few_frames"})
             continue
-        cams = ch["c2w"][sel, :3, 3]
+        cams = ch["c2w"][idx, :3, 3]
         n = np.asarray(plane["n"], float)
         d = float(plane["d"])
         scale_s = None
@@ -56,7 +65,7 @@ def unit_rows(data: dict, truth_t: np.ndarray, truth_pos: np.ndarray, *, mode: s
                 pos_i = np.column_stack([np.interp(t_ch[inside], tt, pp[:, k])
                                          for k in range(3)])
                 scale_s = M.sequence_scale(ch["c2w"][inside, :3, 3], pos_i)
-        row = M.evaluate_window(t_ch[sel], cams, n, d, w["t1"], w["t2"], tt, pp,
+        row = M.evaluate_window(t_ch[idx], cams, n, d, w["t1"], w["t2"], tt, pp,
                                 mode=mode, scale_s=scale_s)
         if scale_s is not None:
             row["scale_s"] = scale_s
