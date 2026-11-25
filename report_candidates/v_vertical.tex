@@ -40,16 +40,19 @@ because its fisheye distortion model is not carried by the reader feeds.
 
 \paragraph{Result.}
 On the rendered clips the estimator follows the commanded ratio: the median $|e|$ is
-V_SIM_MEDIAN across V_SIM_N clips with V_SIM_COVERAGE\% reconstructable windows, and the
+0.094 across 761 clips with 97.3\% reconstructable windows, and the
 depicted height tracks the truth altitude per chunk. On the real outdoor flights it does not:
-the pooled median $|e|$ is V_REAL_MEDIAN over V_REAL_N windows from three sequences
-(V_REAL_PER_SEQ), and the per-chunk correlation between depicted height and truth altitude
-ranges from V_CORR_MIN to V_CORR_MAX. The implied ground-normal error is
-V_TILT_MEDIAN$^\circ$ (median over chunks, V_TILT_MIN--V_TILT_MAX), against the
-$O(0.5^\circ)$ that a $h \approx 2$\,m camera over a $L \approx 20$\,m baseline would need.
+the pooled median $|e|$ is 0.480 over 95 windows from three sequences
+(0.618, 0.502 and 0.433), and the per-chunk correlation between depicted height and truth altitude
+ranges from -0.93 to 1.00. The implied ground-normal error is
+7.1$^\circ$ (median over chunks, 1.3--53.8), against the
+$\sim0.5^\circ$ that a $h \approx 2$\,m camera over a $L \approx 20$\,m baseline would need
+(per-sequence medians 7.1$^\circ$, 11.2$^\circ$ and 24.9$^\circ$); the same quantity on the
+rendered clips is 6.6$^\circ$, so the plane is fitted about equally badly in both domains and what
+differs is the leverage $L/h$ (0.23--1.63 rendered, 7.9--12.0 real).
 The pre-registered stop rule compared the real error with the effect of the smallest labelled
 vertical defect (a $\times 0.5$ or $\times 1.5$ scaling of a per-window ratio near 1.2, i.e.\
-$|\log|$ of 0.06--0.11): the real error exceeds it on V_STOP_K of 28 vertical-motion clips, so
+$|\log|$ of 0.06--0.11): the real error exceeds it on 28 of 28 vertical-motion clips, so
 the check stops at feasibility and no defect render, real false-reject table or generated-clip
 arm is reported. The vertex of the failure is geometric, not a threshold: at
 $h \sim 1$--3\,m over $L \sim 15$--45\,m of travel, the plane's orientation must be known to a
@@ -57,10 +60,13 @@ few tenths of a degree, and a bumpy real ground does not provide it.
 
 \paragraph{What this does and does not show.}
 It shows that EyeHeight's measurement transfers to \emph{commanded} vertical motion on rendered
-clips at 12--60\,m altitude, and that it does not transfer to low, fast, outdoor drone footage
-with a forward camera. It does not show that no vertical-motion check is possible: a
-downward-looking rig, a near-field-only plane fit, or a gravity-referenced height from
-inertial-aligned visual odometry would all change the geometry, and none was tested. The
+clips at 12--60\,m altitude, and that it does not transfer to low, fast drone footage anywhere among the
+14 UZH rigs tried. It does not show that no vertical-motion check is possible: a
+near-field-only plane fit, a gravity-referenced height from inertial-aligned visual odometry, or
+a plane-free comparison of depicted vertical velocity against a metrically scaled path would all
+change the estimator, and none was tested. A downward-looking rig was tested and does not help
+(the 45$^\circ$-down UZH sequences have median $|e|$ 0.37--0.45 because their flights are low,
+$L/h \approx 6$--7). The
 generated-clip arm is unrun, so nothing is claimed about whether a particular generator follows
 a commanded climb.
 
@@ -71,10 +77,10 @@ a commanded climb.
 \toprule
  & windows & median $|e|$ & p90 $|e|$ & covered \\
 \midrule
-Simulated, 28 climb clips (rendered) & V_SIM_W & V_SIM_MEDIAN & V_SIM_P90 & V_SIM_COVERAGE \\
-UZH outdoor forward, 1 & V_U1_W & V_U1_MED & V_U1_P90 & V_U1_COV \\
-UZH outdoor forward, 3 & V_U3_W & V_U3_MED & V_U3_P90 & V_U3_COV \\
-UZH outdoor forward, 5 & V_U5_W & V_U5_MED & V_U5_P90 & V_U5_COV \\
+Simulated, 28 climb clips (rendered) & 761/782 & 0.094 & 0.227 & 97.3 \\
+UZH outdoor forward, 1 & 45/54 & 0.618 & 1.453 & 0.83 \\
+UZH outdoor forward, 3 & 33/54 & 0.502 & 1.816 & 0.61 \\
+UZH outdoor forward, 5 & 17/24 & 0.433 & 1.600 & 0.71 \\
 \bottomrule
 \end{tabular}
 \caption{Commanded-vertical-motion feasibility. $e$ is Eq.~\ref{eq:v-height-ratio} on the
